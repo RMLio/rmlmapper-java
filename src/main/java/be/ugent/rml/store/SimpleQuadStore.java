@@ -20,9 +20,6 @@ public class SimpleQuadStore implements QuadStore {
     }
 
     public void addTriple(String subject, String predicate, String object) {
-        System.out.println(subject);
-        System.out.println(predicate);
-        System.out.println(object);
         addQuad(subject, predicate, object, null);
     }
 
@@ -31,7 +28,7 @@ public class SimpleQuadStore implements QuadStore {
     }
 
     public List<Quad> getQuads(String subject, String predicate, String object, String graph) {
-        return null;
+        return quads;
     }
 
     public List<Quad> getQuads(String subject, String predicate, String object) {
