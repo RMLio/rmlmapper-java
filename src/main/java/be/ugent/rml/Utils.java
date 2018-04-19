@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Utils {
 
-    public static List<String> applyTemplate(String template, Record record) {
+    public static List<String> applyTemplate(List<Element> template, Record record) {
         return null;
     }
 
@@ -44,5 +44,9 @@ public class Utils {
 
     public static String getLiteral(String value) {
         return value;
+    }
+
+    public static boolean isLiteral(String value) {
+        return true;
     }
 }

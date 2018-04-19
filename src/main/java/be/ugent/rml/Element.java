@@ -3,9 +3,9 @@ package be.ugent.rml;
 public class Element {
 
     private String value;
-    private String type;
+    private TEMPLATETYPE type;
 
-    public Element(String value, String type) {
+    public Element(String value, TEMPLATETYPE type) {
         this.value = value;
         this.type = type;
     }
@@ -14,7 +14,7 @@ public class Element {
         return value;
     }
 
-    public String getType() {
+    public TEMPLATETYPE getType() {
         return type;
     }
 }

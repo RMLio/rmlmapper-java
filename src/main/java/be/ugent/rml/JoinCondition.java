@@ -1,14 +1,16 @@
 package be.ugent.rml;
 
+import java.util.List;
+
 public class JoinCondition {
 
-    private String parent, child;
+    private List<Element> parent, child;
 
-    public String getParent() {
+    public List<Element> getParent() {
         return parent;
     }
 
-    public String getChild() {
+    public List<Element> getChild() {
         return child;
     }
 }

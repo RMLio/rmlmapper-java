@@ -4,15 +4,15 @@ import java.util.List;
 
 public class ValuedJoinCondition {
 
-    private String path;
+    private List<Element> path;
     private List<String> values;
 
-    public ValuedJoinCondition(String path, List<String> values) {
+    public ValuedJoinCondition(List<Element> path, List<String> values) {
         this.path = path;
         this.values = values;
     }
 
-    public String getPath() {
+    public List<Element> getPath() {
         return path;
     }
 

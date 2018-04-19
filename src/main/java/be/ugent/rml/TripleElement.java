@@ -1,18 +1,19 @@
 package be.ugent.rml;
 
-import java.util.HashMap;
+import be.ugent.rml.functions.Function;
+
 import java.util.List;
 import java.util.Map;
 
 public class TripleElement {
 
-    private List<String> graphs;
+    private List<List<Element>> graphs;
 
-    public TripleElement(List<String> graphs, String termType, Function function, Map<String, Value> parameters) {
+    public TripleElement(List<List<Element>> graphs, String termType, Function function, Map<String, List<List<Element>>> parameters) {
         this.graphs = graphs;
     }
 
-    public List<String> getGraphs() {
+    public List<List<Element>> getGraphs() {
         return graphs;
     }
 
@@ -24,11 +25,11 @@ public class TripleElement {
         return null;
     }
 
-    public Map<String, Value> getParameters() {
+    public Map<String, List<List<Element>>> getParameters() {
         return null;
     }
 
-    public void setGraphs(List<String> graphs) {
+    public void setGraphs(List<List<Element>> graphs) {
         this.graphs = graphs;
     }
 }

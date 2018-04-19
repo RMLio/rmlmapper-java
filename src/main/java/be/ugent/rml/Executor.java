@@ -20,7 +20,6 @@ public class Executor {
     private RecordsFactory recordsFactory;
     private int blankNodeCounter;
     private HashMap<String, Mapping> mappings;
-    private static final String NS_RR = "";
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) {
         this.initializer = new Initializer(rmlStore, functionLoader);
@@ -66,18 +65,18 @@ public class Executor {
     }
 
     private void generatePredicateObjectsForSubject(String subject, Mapping mapping, Record record) {
-        ArrayList<String> subjectGraphs = new ArrayList<String>();
+        ArrayList<String> subjectGraphs = new ArrayList<>();
 
-        for (String graph : mapping.getSubject().getGraphs()) {
+        for (List<Element> graph: mapping.getSubject().getGraphs()) {
             subjectGraphs.add(Utils.applyTemplate(graph, record).get(0));
         }
 
-        PredicateObject[] predicateObjects = mapping.getPredicateObjects();
+        List<PredicateObject> predicateObjects = mapping.getPredicateObjects();
 
         for (PredicateObject po : predicateObjects) {
             ArrayList<String> poGraphs = new ArrayList<String>();
 
-            for (String graph : po.getGraphs()) {
+            for (List<Element> graph : po.getGraphs()) {
                 poGraphs.add(Utils.applyTemplate(graph, record).get(0));
             }
 
@@ -89,7 +88,7 @@ public class Executor {
                 List<String> objects = po.getFunction().execute(record, po.getParameters());
 
                 if (objects.size() > 0) {
-                    if (po.getTermType().equals(NS_RR + "IRI")) {
+                    if (po.getTermType().equals(NAMESPACES.RR + "IRI")) {
                         for (String object : objects) {
                             //todo check valid IRI
                         }
@@ -133,8 +132,8 @@ public class Executor {
         }
     }
 
-    private void generateTriples(String subject, String[] predicates, List<String> objects, Record record, List<String> graphs) {
-        for (String p : predicates) {
+    private void generateTriples(String subject, List<List<Element>> predicates, List<String> objects, Record record, List<String> graphs) {
+        for (List<Element> p : predicates) {
             List<String> realPredicates = Utils.applyTemplate(p, record);
 
             for (String predicate : realPredicates) {
@@ -178,7 +177,7 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<String> getIRIsWithValue(String triplesMap, String path, List<String> values) {
+    private List<String> getIRIsWithValue(String triplesMap, List<Element> path, List<String> values) {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
@@ -207,12 +206,12 @@ public class Executor {
 
     private String getSubject(String triplesMap, Mapping mapping, Record record, int i) {
         if (!this.subjects.containsKey(triplesMap)) {
-            this.subjects.put(triplesMap, new HashMap<Integer, String>());
+            this.subjects.put(triplesMap, new HashMap<>());
         }
 
         if (!this.subjects.get(triplesMap).containsKey(i)) {
             //we want a IRI and not a Blank Node
-            if (mapping.getSubject().getTermType().equals(NS_RR + "IRI")) {
+            if (mapping.getSubject().getTermType().equals(NAMESPACES.RR + "IRI")) {
                 //TODO encode URI
                 this.subjects.get(triplesMap).put(i, mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
             } else {
