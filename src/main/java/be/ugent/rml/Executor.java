@@ -13,7 +13,7 @@ import java.util.List;
 public class Executor {
 
     private Initializer initializer;
-    private HashMap<String, Record[]> recordsHolders;
+    private HashMap<String, List<Record>> recordsHolders;
     private HashMap<String, HashMap<Integer, String>> subjects;
     private QuadStore resultingTriples;
     private QuadStore rmlStore;
@@ -28,8 +28,8 @@ public class Executor {
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
         this.blankNodeCounter = 0;
-        this.recordsHolders = new HashMap<>();
-        this.subjects = new HashMap<>();
+        this.recordsHolders = new HashMap<String, List<Record>>();
+        this.subjects = new HashMap<String, HashMap<Integer, String>>();
     }
 
     public void execute(List<String> triplesMaps, boolean removeDuplicates) {
@@ -44,10 +44,10 @@ public class Executor {
             String triplesMap = triplesMaps.get(i);
             Mapping mapping = this.mappings.get(triplesMap);
 
-            Record[] records = this.getRecords(triplesMap);
+            List<Record> records = this.getRecords(triplesMap);
 
-            for (int j = 0; j < records.length; j++) {
-                Record record = records[j];
+            for (int j = 0; j < records.size(); j++) {
+                Record record = records.get(j);
                 String subject = getSubject(triplesMap, mapping, record, j);
 
                 //TODO validate subject or check if blank node
@@ -65,7 +65,7 @@ public class Executor {
     }
 
     private void generatePredicateObjectsForSubject(String subject, Mapping mapping, Record record) {
-        ArrayList<String> subjectGraphs = new ArrayList<>();
+        ArrayList<String> subjectGraphs = new ArrayList<String>();
 
         for (List<Element> graph: mapping.getSubject().getGraphs()) {
             subjectGraphs.add(Utils.applyTemplate(graph, record).get(0));
@@ -74,13 +74,13 @@ public class Executor {
         List<PredicateObject> predicateObjects = mapping.getPredicateObjects();
 
         for (PredicateObject po : predicateObjects) {
-            ArrayList<String> poGraphs = new ArrayList<>();
+            ArrayList<String> poGraphs = new ArrayList<String>();
 
             for (List<Element> graph : po.getGraphs()) {
                 poGraphs.add(Utils.applyTemplate(graph, record).get(0));
             }
 
-            List<String> combinedGraphs = new ArrayList<>();
+            List<String> combinedGraphs = new ArrayList<String>();
             combinedGraphs.addAll(subjectGraphs);
             combinedGraphs.addAll(poGraphs);
 
@@ -116,7 +116,7 @@ public class Executor {
             } else if (po.getParentTriplesMap() != null) {
                 //check if need to apply a join condition
                 if (po.getJoinConditions() != null) {
-                    ArrayList<ValuedJoinCondition> valuedJoinConditions = new ArrayList<>();
+                    ArrayList<ValuedJoinCondition> valuedJoinConditions = new ArrayList<ValuedJoinCondition>();
 
                     for (JoinCondition join : po.getJoinConditions()) {
                         valuedJoinConditions.add(new ValuedJoinCondition(join.getParent(), Utils.applyTemplate(join.getChild(), record)));
@@ -153,8 +153,8 @@ public class Executor {
     }
 
     private List<String> getIRIsWithConditions(String triplesMap, List<ValuedJoinCondition> conditions) {
-        ArrayList<String> goodIRIs = new ArrayList<>();
-        ArrayList<List<String>> allIRIs = new ArrayList<>();
+        ArrayList<String> goodIRIs = new ArrayList<String>();
+        ArrayList<List<String>> allIRIs = new ArrayList<List<String>>();
 
         for (ValuedJoinCondition condition : conditions) {
             allIRIs.add(this.getIRIsWithValue(triplesMap, condition.getPath(), condition.getValues()));
@@ -181,13 +181,13 @@ public class Executor {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
-        Record[] records = this.getRecords(triplesMap);
+        List<Record> records = this.getRecords(triplesMap);
         //this array contains all the IRIs that are valid regarding @path and @values
-        ArrayList<String> iris = new ArrayList<>();
+        ArrayList<String> iris = new ArrayList<String>();
 
         for (String value : values) {
-            for (int i = 0; i < records.length; i++) {
-                Record record = records[i];
+            for (int i = 0; i < records.size(); i++) {
+                Record record = records.get(i);
                 List<String> foundValues = Utils.applyTemplate(path, record);
 
                 //we found a match
@@ -204,7 +204,7 @@ public class Executor {
 
     private String getSubject(String triplesMap, Mapping mapping, Record record, int i) {
         if (!this.subjects.containsKey(triplesMap)) {
-            this.subjects.put(triplesMap, new HashMap<>());
+            this.subjects.put(triplesMap, new HashMap<Integer, String>());
         }
 
         if (!this.subjects.get(triplesMap).containsKey(i)) {
@@ -225,11 +225,11 @@ public class Executor {
     private List<String> getAllIRIs(String triplesMap) {
         Mapping mapping = this.mappings.get(triplesMap);
 
-        Record[] records = getRecords(triplesMap);
-        ArrayList<String> iris = new ArrayList<>();
+        List<Record> records = getRecords(triplesMap);
+        ArrayList<String> iris = new ArrayList<String>();
 
         for (int i = 0; i < iris.size(); i ++) {
-            Record record = records[i];
+            Record record = records.get(i);
             String subject = getSubject(triplesMap, mapping, record, i);
 
             iris.add(subject);
@@ -238,7 +238,7 @@ public class Executor {
         return iris;
     }
 
-    private Record[] getRecords(String triplesMap) {
+    private List<Record> getRecords(String triplesMap) {
         if (!this.recordsHolders.containsKey(triplesMap)) {
             this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
         }

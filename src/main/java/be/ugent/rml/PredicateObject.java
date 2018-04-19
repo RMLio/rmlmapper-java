@@ -15,7 +15,7 @@ public class PredicateObject extends TripleElement {
     public PredicateObject(List<List<Element>> predicates, List<List<Element>> graphs, String termType, Function function, Map<String, List<List<Element>>> parameters, String language, String datatype) {
         super(graphs, termType, function, parameters);
         this.predicates = predicates;
-        this.joinConditions = new ArrayList<>();
+        this.joinConditions = new ArrayList<JoinCondition>();
     }
 
     public PredicateObject(List<List<Element>> predicates, List<List<Element>> graphs, String termType, Function function, Map<String, List<List<Element>>> parameters) {

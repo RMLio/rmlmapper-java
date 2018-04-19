@@ -353,7 +353,7 @@ public class MappingFactory {
         if (!references.isEmpty()) {
             genericTemplate = "{" + Utils.getLiteral(references.get(0)) + "}";
         } else if (!templates.isEmpty()) {
-            genericTemplate = Utils.getLiteral(references.get(0));
+            genericTemplate = Utils.getLiteral(templates.get(0));
         } else if (!constants.isEmpty()) {
             if (Utils.isLiteral(constants.get(0))) {
                 genericTemplate = Utils.getLiteral(constants.get(0));

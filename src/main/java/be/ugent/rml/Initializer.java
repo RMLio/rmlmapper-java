@@ -14,8 +14,6 @@ public class Initializer {
     private FunctionLoader functionLoader;
     private List<String> triplesMaps;
     private HashMap<String, Mapping> mappings;
-    private final String NS_RML = "";
-    private final String NS_FNML = "";
 
     public Initializer(QuadStore rmlStore, FunctionLoader functionLoader) {
         this.rmlStore = rmlStore;
@@ -40,13 +38,13 @@ public class Initializer {
     }
 
     private List<String> getAllTriplesMaps() {
-        List<String> maps = Utils.getSubjectsFromQuads(this.rmlStore.getQuads(null, NS_RML + "logicalSource", null));
+        List<String> maps = Utils.getSubjectsFromQuads(this.rmlStore.getQuads(null, NAMESPACES.RML + "logicalSource", null));
 
         //filter outer Triples Maps that are used for functions
         ArrayList<String> temp = new ArrayList<String>();
 
         for(String map: maps) {
-            if (this.rmlStore.getQuads(null, NS_FNML + "functionValue", map).isEmpty()) {
+            if (this.rmlStore.getQuads(null, NAMESPACES.FNML + "functionValue", map).isEmpty()) {
                 temp.add(map);
             }
         }

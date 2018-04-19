@@ -9,7 +9,7 @@ import java.util.List;
 public class Utils {
 
     public static List<String> applyTemplate(List<Element> template, Record record) {
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
         result.add("");
         //we only return a result when all elements of the template are found
         boolean allValuesFound = true;
