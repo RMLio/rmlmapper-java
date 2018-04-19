@@ -1,7 +1,6 @@
 package be.ugent.rml.functions;
 
 import be.ugent.rml.Element;
-import be.ugent.rml.Value;
 
 import java.util.List;
 import java.util.Map;

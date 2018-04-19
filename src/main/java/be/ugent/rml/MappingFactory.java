@@ -141,8 +141,128 @@ public class MappingFactory {
         List<String> predicateobjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, NAMESPACES.RR + "predicateObjectMap", null));
 
         for (String pom : predicateobjectmaps) {
+            List<List<Element>> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR  + "predicate", null)).stream().map(i -> {
+                List<Element> temp = new ArrayList<>();
+                temp.add(new Element(i, TEMPLATETYPE.CONSTANT));
+                return temp;
+            }).collect(Collectors.toList());
 
+            List<String> predicatemaps = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "predicateMap", null));
+
+            for(String pm : predicatemaps) {
+                predicates.add(parseTemplate(getGenericTemplate(pm)));
+            }
+
+            List<List<Element>> graphs = parseGraphMaps(pom);
+            List<String> objectmaps = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "objectMap", null));
+
+            for (String objectmap : objectmaps) {
+                List<String> functionValues = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.FNML + "functionValue", null));
+                String termType = getTermType(objectmap);
+                String datatype = null;
+                String language = null;
+
+                List<String> datatypes = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "datatype", null));
+                List<String> languages = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "language", null));
+
+                //check if we need to apply a datatype to the object
+                if (!datatypes.isEmpty()) {
+                    datatype = datatypes.get(0);
+                }
+
+                //check if we need to apply a language to the object
+                if (!languages.isEmpty()) {
+                    language = Utils.getLiteral(languages.get(0));
+                }
+
+                if (functionValues.isEmpty()) {
+                    String genericTemplate = getGenericTemplate(objectmap);
+
+                    if (genericTemplate != null) {
+                        HashMap<String, List<List<Element>>> parameters = new HashMap<>();
+                        ArrayList<List<Element>> temp = new ArrayList<>();
+                        temp.add(parseTemplate(genericTemplate));
+                        parameters.put("_TEMPLATE", temp);
+                        predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(), parameters, language, datatype));
+                    } else {
+                        //look for parenttriplesmap
+                        List<String> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "parentTriplesMap", null));
+
+                        if (! parentTriplesMaps.isEmpty()) {
+                            if (parentTriplesMaps.size() > 1) {
+                                //todo logger warn
+                            }
+
+                            String parentTriplesMap = parentTriplesMaps.get(0);
+                            PredicateObject po = new PredicateObject(predicates, graphs, NAMESPACES.RR + "IRI", null, null);
+                            po.setParentTriplesMap(parentTriplesMap);
+
+                            List<String> joinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "joinCondition", null));
+
+                            for (String joinCondition : joinConditions) {
+                                List<String> parents = Utils.getObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "parent", null));
+                                List<String> childs = Utils.getObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "child", null));
+
+                                if (parents.isEmpty()) {
+                                    throw new Error("One of the join conditions of " + triplesMap + " is missing rr:parent.");
+                                } else if (childs.isEmpty()) {
+                                    throw new Error("One of the join conditions of " + triplesMap + " is missing rr:child.");
+                                } else {
+                                    List<Element> parent = new ArrayList<>();
+                                    parent.add(new Element(parents.get(0), TEMPLATETYPE.VARIABLE));
+                                    List<Element> child = new ArrayList<>();
+                                    child.add(new Element(childs.get(0), TEMPLATETYPE.VARIABLE));
+                                    po.addJoinCondition(new JoinCondition(parent, child));
+                                }
+                            }
+
+                            predicateObjects.add(po);
+                        }
+                    }
+                } else {
+                    FunctionDetails functionDetails = parseFunctionTermMap(functionValues.get(0));
+
+                    predicateObjects.add(new PredicateObject(predicates, graphs, termType, functionDetails.getFunction(), functionDetails.getParameters(), language, datatype));
+                }
+            }
+
+            //dealing with rr:object
+            List<String> objectsConstants = Utils.getLiteralObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "object", null));
+
+            for (String o : objectsConstants) {
+                HashMap<String, List<List<Element>>> parameters = new HashMap<>();
+                List<List<Element>> temp2 = new ArrayList<>();
+                ArrayList<Element> temp3 = new ArrayList<>();
+                temp3.add(new Element(o, TEMPLATETYPE.CONSTANT));
+                temp2.add(temp3);
+
+                parameters.put("_TEMPLATE", temp2);
+                predicateObjects.add(new PredicateObject(predicates, graphs, NAMESPACES.RR + "Literal", new ApplyTemplateFunction(), parameters));
+            }
         }
+    }
+
+    private String getTermType(String map) {
+        List<String> references = Utils.getObjectsFromQuads(store.getQuads(map, NAMESPACES.RML + "reference", null));
+        List<String> templates = Utils.getObjectsFromQuads(store.getQuads(map, NAMESPACES.RR  + "template", null));
+        List<String> constants = Utils.getObjectsFromQuads(store.getQuads(map, NAMESPACES.RR  + "constant", null));
+        List<String> termTypes = Utils.getObjectsFromQuads(store.getQuads(map, NAMESPACES.RR  + "termType", null));
+
+        String termType = null;
+
+        if (!termTypes.isEmpty()) {
+            termType = termTypes.get(0);
+        } else {
+            if (!references.isEmpty()) {
+                termType = NAMESPACES.RR + "Literal";
+            } else if (!templates.isEmpty()) {
+                termType = NAMESPACES.RR + "IRI";
+            } else if (!constants.isEmpty()) {
+                termType = NAMESPACES.RR + "Literal";
+            }
+        }
+
+        return termType;
     }
 
     private Function getExecutableFunction(Object o) {

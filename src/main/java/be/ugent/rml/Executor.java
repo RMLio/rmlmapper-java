@@ -28,8 +28,8 @@ public class Executor {
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
         this.blankNodeCounter = 0;
-        this.recordsHolders = new HashMap<String, Record[]>();
-        this.subjects = new HashMap<String, HashMap<Integer, String>>();
+        this.recordsHolders = new HashMap<>();
+        this.subjects = new HashMap<>();
     }
 
     public void execute(List<String> triplesMaps, boolean removeDuplicates) {
@@ -74,13 +74,13 @@ public class Executor {
         List<PredicateObject> predicateObjects = mapping.getPredicateObjects();
 
         for (PredicateObject po : predicateObjects) {
-            ArrayList<String> poGraphs = new ArrayList<String>();
+            ArrayList<String> poGraphs = new ArrayList<>();
 
             for (List<Element> graph : po.getGraphs()) {
                 poGraphs.add(Utils.applyTemplate(graph, record).get(0));
             }
 
-            List<String> combinedGraphs = new ArrayList<String>();
+            List<String> combinedGraphs = new ArrayList<>();
             combinedGraphs.addAll(subjectGraphs);
             combinedGraphs.addAll(poGraphs);
 
@@ -116,7 +116,7 @@ public class Executor {
             } else if (po.getParentTriplesMap() != null) {
                 //check if need to apply a join condition
                 if (po.getJoinConditions() != null) {
-                    ArrayList<ValuedJoinCondition> valuedJoinConditions = new ArrayList<ValuedJoinCondition>();
+                    ArrayList<ValuedJoinCondition> valuedJoinConditions = new ArrayList<>();
 
                     for (JoinCondition join : po.getJoinConditions()) {
                         valuedJoinConditions.add(new ValuedJoinCondition(join.getParent(), Utils.applyTemplate(join.getChild(), record)));
@@ -153,8 +153,8 @@ public class Executor {
     }
 
     private List<String> getIRIsWithConditions(String triplesMap, List<ValuedJoinCondition> conditions) {
-        ArrayList<String> goodIRIs = new ArrayList<String>();
-        ArrayList<List<String>> allIRIs = new ArrayList<List<String>>();
+        ArrayList<String> goodIRIs = new ArrayList<>();
+        ArrayList<List<String>> allIRIs = new ArrayList<>();
 
         for (ValuedJoinCondition condition : conditions) {
             allIRIs.add(this.getIRIsWithValue(triplesMap, condition.getPath(), condition.getValues()));
@@ -183,12 +183,10 @@ public class Executor {
         //iterator over all the records corresponding with @triplesMap
         Record[] records = this.getRecords(triplesMap);
         //this array contains all the IRIs that are valid regarding @path and @values
-        ArrayList<String> iris = new ArrayList<String>();
+        ArrayList<String> iris = new ArrayList<>();
 
-        for (int j = 0; j < values.size(); j++) {
-            String value = values.get(j);
-
-            for (int i = 0; i < records.length; i ++) {
+        for (String value : values) {
+            for (int i = 0; i < records.length; i++) {
                 Record record = records[i];
                 List<String> foundValues = Utils.applyTemplate(path, record);
 
@@ -228,7 +226,7 @@ public class Executor {
         Mapping mapping = this.mappings.get(triplesMap);
 
         Record[] records = getRecords(triplesMap);
-        ArrayList<String> iris = new ArrayList<String>();
+        ArrayList<String> iris = new ArrayList<>();
 
         for (int i = 0; i < iris.size(); i ++) {
             Record record = records[i];
