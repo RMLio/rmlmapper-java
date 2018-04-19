@@ -2,6 +2,7 @@ package be.ugent.rml.records;
 
 import com.opencsv.CSVReader;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +12,12 @@ import java.util.List;
 public class CSV {
 
     public static List<Record> get(String path) throws IOException {
+        File file = new File(path);
+
+        if (!file.isAbsolute()) {
+            path = System.getProperty("user.dir") + "/" + path;
+        }
+
         CSVReader reader = new CSVReader(new FileReader(path));
         List<String[]> myEntries = reader.readAll();
         List<Record> records = new ArrayList<Record>();

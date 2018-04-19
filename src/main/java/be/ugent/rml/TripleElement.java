@@ -8,9 +8,15 @@ import java.util.Map;
 public class TripleElement {
 
     private List<List<Element>> graphs;
+    private String termType;
+    private Function function;
+    private Map<String, List<List<Element>>> parameters;
 
     public TripleElement(List<List<Element>> graphs, String termType, Function function, Map<String, List<List<Element>>> parameters) {
         this.graphs = graphs;
+        this.termType = termType;
+        this.function = function;
+        this.parameters = parameters;
     }
 
     public List<List<Element>> getGraphs() {
@@ -18,15 +24,15 @@ public class TripleElement {
     }
 
     public String getTermType() {
-        return "";
+        return termType;
     }
 
     public Function getFunction() {
-        return null;
+        return function;
     }
 
     public Map<String, List<List<Element>>> getParameters() {
-        return null;
+        return parameters;
     }
 
     public void setGraphs(List<List<Element>> graphs) {

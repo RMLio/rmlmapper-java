@@ -5,6 +5,8 @@ import be.ugent.rml.store.Quad;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -112,10 +114,22 @@ public class Utils {
     }
 
     public static String getLiteral(String value) {
-        return value;
+        Pattern pattern = Pattern.compile("^\"(.*)\"");
+        Matcher matcher = pattern.matcher(value);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+
+        throw new Error("Invalid Literal: " + value);
     }
 
     public static boolean isLiteral(String value) {
-        return true;
+        try {
+            getLiteral(value);
+            return true;
+        } catch (Error e){
+            return false;
+        }
     }
 }

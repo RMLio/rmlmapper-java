@@ -4,6 +4,7 @@ import be.ugent.rml.DataFetcher;
 import be.ugent.rml.Executor;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.model.Model;
@@ -41,7 +42,9 @@ public class Main {
                 RDF4JStore rmlStore = new RDF4JStore(model);
 
                 Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore)), new FunctionLoader());
-                executor.execute(null);
+                QuadStore result = executor.execute(null);
+
+                System.out.println(result.toString());
             }
         }
         catch( ParseException exp ) {

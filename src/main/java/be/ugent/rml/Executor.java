@@ -32,7 +32,7 @@ public class Executor {
         this.subjects = new HashMap<String, HashMap<Integer, String>>();
     }
 
-    public void execute(List<String> triplesMaps, boolean removeDuplicates) {
+    public QuadStore execute(List<String> triplesMaps, boolean removeDuplicates) {
 
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
@@ -40,8 +40,7 @@ public class Executor {
         }
 
         //we execute every mapping
-        for (int i = 0; i < triplesMaps.size(); i++) {
-            String triplesMap = triplesMaps.get(i);
+        for (String triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
 
             List<Record> records = this.getRecords(triplesMap);
@@ -58,10 +57,12 @@ public class Executor {
         if (removeDuplicates) {
             this.resultingTriples.removeDuplicates();
         }
+
+        return resultingTriples;
     }
 
-    public void execute(List<String> triplesMaps) {
-        this.execute(triplesMaps, false);
+    public QuadStore execute(List<String> triplesMaps) {
+        return this.execute(triplesMaps, false);
     }
 
     private void generatePredicateObjectsForSubject(String subject, Mapping mapping, Record record) {

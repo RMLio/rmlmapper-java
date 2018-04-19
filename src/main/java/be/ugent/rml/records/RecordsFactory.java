@@ -37,7 +37,7 @@ public class RecordsFactory {
             } else if (sources.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a source.");
             } else {
-                String source = sources.get(0);
+                String source = Utils.getLiteral(sources.get(0));
 
                 if (referenceFormulations.get(0).equals(NAMESPACES.QL + "CSV")) {
                     if (allCSVRecords.containsKey(source)){
