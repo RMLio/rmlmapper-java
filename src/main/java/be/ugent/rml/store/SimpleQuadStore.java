@@ -3,7 +3,7 @@ package be.ugent.rml.store;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleQuadStore implements QuadStore {
+public class SimpleQuadStore extends QuadStore {
 
     private ArrayList<Quad> quads;
 
@@ -33,15 +33,5 @@ public class SimpleQuadStore implements QuadStore {
 
     public List<Quad> getQuads(String subject, String predicate, String object) {
         return getQuads(subject, predicate, object, null);
-    }
-
-    public String toString() {
-        String output = "";
-
-        for(Quad q: quads) {
-            output += q.getSubject() + " " + q.getPredicate() + " " + q.getObject() + "\n";
-        }
-
-        return output;
     }
 }
