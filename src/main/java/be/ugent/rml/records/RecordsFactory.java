@@ -4,7 +4,7 @@ import be.ugent.rml.DataFetcher;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class RecordsFactory {
                         return allCSVRecords.get(source);
                     } else {
                         try {
-                            allCSVRecords.put(source, CSV.get(source));
+                            allCSVRecords.put(source, CSV.get(source, dataFetcher.getCwd()));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

@@ -13,6 +13,10 @@ public class DataFetcher {
     private QuadStore rmlStore;
     private Map<String, List<Record>> sources;
 
+    public DataFetcher(QuadStore rmlStore) {
+        this(System.getProperty("user.dir"), rmlStore);
+    }
+
     public DataFetcher(String cwd, QuadStore rmlStore) {
         this.cwd = cwd;
         this.rmlStore = rmlStore;
@@ -35,5 +39,9 @@ public class DataFetcher {
     private List<Record> getData(String id) {
         String originalID = id;
         return null;
+    }
+
+    public String getCwd() {
+        return cwd;
     }
 }
