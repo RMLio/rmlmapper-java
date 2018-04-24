@@ -1,6 +1,6 @@
 package be.ugent.rml.store;
 
-public class Quad {
+public class Quad implements Comparable<Quad> {
 
     private String subject, predicate, object, graph;
 
@@ -29,5 +29,36 @@ public class Quad {
 
     public String getGraph() {
         return graph;
+    }
+
+    @Override
+    public int compareTo(Quad o) {
+        int compareGraph;
+        String oGraph = o.getGraph();
+        if (this.graph == null && oGraph == null) {
+            compareGraph = 0;
+        } else {
+            if (this.graph == null) {
+                compareGraph = -1;
+            } else if (oGraph == null) {
+                compareGraph = 1;
+            } else {
+                compareGraph = this.graph.compareTo(oGraph);
+            }
+        }
+        if (compareGraph == 0) {
+            int compareSubject = this.subject.compareTo(o.getSubject());
+            if (compareSubject == 0) {
+                int comparePredicate = this.predicate.compareTo(o.getPredicate());
+                if (comparePredicate == 0) {
+                    return this.object.compareTo(o.getObject());
+                }
+                return comparePredicate;
+            } else {
+                return compareSubject;
+            }
+        } else {
+            return compareGraph;
+        }
     }
 }
