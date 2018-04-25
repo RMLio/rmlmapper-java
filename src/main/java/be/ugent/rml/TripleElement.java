@@ -1,5 +1,6 @@
 package be.ugent.rml;
 
+import be.ugent.rml.functions.ApplyTemplateFunction;
 import be.ugent.rml.functions.Function;
 
 import java.util.List;
@@ -37,5 +38,13 @@ public class TripleElement {
 
     public void setGraphs(List<List<Element>> graphs) {
         this.graphs = graphs;
+    }
+
+    public void setFunction(Function function) {
+        this.function = function;
+    }
+
+    public void setParameters(Map<String, List<List<Element>>> parameters) {
+        this.parameters = parameters;
     }
 }

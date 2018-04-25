@@ -53,6 +53,16 @@ public class MappingFactory {
                     //checking if we are dealing with a Blank Node as subject
                     if (!termTypes.isEmpty() && termTypes.get(0).equals(NAMESPACES.RR  + "BlankNode")) {
                         this.subject = new TripleElement(null, termTypes.get(0), null, null);
+                        String template = getGenericTemplate(subjectmap);
+
+                        if (template != null) {
+                            this.subject.setFunction(new ApplyTemplateFunction());
+                            HashMap<String, List<List<Element>>> parameters = new HashMap<>();
+                            ArrayList<List<Element>> temp = new ArrayList<>();
+                            temp.add(parseTemplate(getGenericTemplate(subjectmap)));
+                            parameters.put("_TEMPLATE", temp);
+                            this.subject.setParameters(parameters);
+                        }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
                         HashMap<String, List<List<Element>>> parameters = new HashMap<>();
@@ -227,9 +237,17 @@ public class MappingFactory {
             }
 
             //dealing with rr:object
-            List<String> objectsConstants = Utils.getLiteralObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "object", null));
+            List<String> objectsConstants = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "object", null));
 
             for (String o : objectsConstants) {
+                String termType = NAMESPACES.RR + "Literal";
+
+                if (Utils.isLiteral(o)) {
+                    o = Utils.getLiteral(o);
+                } else {
+                    termType = NAMESPACES.RR + "IRI";
+                }
+
                 HashMap<String, List<List<Element>>> parameters = new HashMap<>();
                 List<List<Element>> temp2 = new ArrayList<>();
                 ArrayList<Element> temp3 = new ArrayList<>();
@@ -237,7 +255,7 @@ public class MappingFactory {
                 temp2.add(temp3);
 
                 parameters.put("_TEMPLATE", temp2);
-                predicateObjects.add(new PredicateObject(predicates, graphs, NAMESPACES.RR + "Literal", new ApplyTemplateFunction(), parameters));
+                predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(), parameters));
             }
         }
     }
@@ -278,7 +296,7 @@ public class MappingFactory {
             graphs.add(parseTemplate(getGenericTemplate(graphMap)));
         }
 
-        List<String> graphShortCuts = Utils.getLiteralObjectsFromQuads(store.getQuads(termMap, NAMESPACES.RR  + "graph", null));
+        List<String> graphShortCuts = Utils.getObjectsFromQuads(store.getQuads(termMap, NAMESPACES.RR  + "graph", null));
 
         for (String graph : graphShortCuts) {
             ArrayList<Element> temp = new ArrayList<>();

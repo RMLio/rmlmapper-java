@@ -215,8 +215,13 @@ public class Executor {
                 this.subjects.get(triplesMap).put(i, mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
             } else {
                 //we want a Blank Node
-                this.subjects.get(triplesMap).put(i, "_:b" + this.blankNodeCounter);
-                this.blankNodeCounter ++;
+
+                if (mapping.getSubject().getFunction() != null) {
+                    this.subjects.get(triplesMap).put(i, "_:" + mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
+                } else {
+                    this.subjects.get(triplesMap).put(i, "_:b" + this.blankNodeCounter);
+                    this.blankNodeCounter++;
+                }
             }
         }
 

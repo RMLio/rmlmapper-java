@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,12 @@ public class CSVRecord implements Record {
     }
 
     public List<String> get(String value) {
-        return values.get(value);
+        List<String> result = values.get(value);
+
+        if (result == null) {
+            result =  new ArrayList<>();
+        }
+
+        return result;
     }
 }

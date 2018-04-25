@@ -5,8 +5,12 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.rio.ParserConfig;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,20 +32,34 @@ abstract class TestCore {
 
         // load output file
         File outputFile = new File(classLoader.getResource(outPath).getFile());
-        QuadStore outputStore = this.readTurtle(outputFile);
+        QuadStore outputStore;
+
+        if (outPath.endsWith(".nq")) {
+            outputStore = this.readTurtle(outputFile, RDFFormat.NQUADS);
+        } else {
+            outputStore = this.readTurtle(outputFile);
+        }
 
         assertEquals(outputStore.toSortedString(), result.toSortedString());
     }
 
-    private QuadStore readTurtle(File mappingFile) {
+    private QuadStore readTurtle(File mappingFile, RDFFormat format) {
         InputStream mappingStream;
         Model model = null;
         try {
             mappingStream = new FileInputStream(mappingFile);
-            model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
+            //model = Rio.parse(mappingStream, "", format);
+
+            ParserConfig config = new ParserConfig();
+            config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+            model = Rio.parse(mappingStream, "", format, config, SimpleValueFactory.getInstance(), null);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return new RDF4JStore(model);
+    }
+
+    private QuadStore readTurtle(File mappingFile) {
+        return readTurtle(mappingFile, RDFFormat.TURTLE);
     }
 }

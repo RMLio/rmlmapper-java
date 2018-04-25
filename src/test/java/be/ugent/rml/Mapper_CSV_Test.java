@@ -55,7 +55,7 @@ public class Mapper_CSV_Test extends TestCore {
 
     @Test
     public void evaluate_0006a_CSV() {
-        doMapping("./test-cases/RMLTC0006a-CSV/mapping.ttl", "./test-cases/RMLTC0006a-CSV/output.ttl");
+        doMapping("./test-cases/RMLTC0006a-CSV/mapping.ttl", "./test-cases/RMLTC0006a-CSV/output.nq");
     }
 
     @Test
@@ -65,7 +65,7 @@ public class Mapper_CSV_Test extends TestCore {
 
     @Test
     public void evaluate_0007b_CSV() {
-        doMapping("./test-cases/RMLTC0007b-CSV/mapping.ttl", "./test-cases/RMLTC0007b-CSV/output.ttl");
+        doMapping("./test-cases/RMLTC0007b-CSV/mapping.ttl", "./test-cases/RMLTC0007b-CSV/output.nq");
     }
 
     @Test
