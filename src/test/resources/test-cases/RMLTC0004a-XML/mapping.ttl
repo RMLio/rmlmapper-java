@@ -15,7 +15,7 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/{Student}/"; 
+    rr:template "http://example.com/{Student}";
     rr:class ex:Student
   ];
 
@@ -35,7 +35,7 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/{Sport}/"; 
+    rr:template "http://example.com/{Sport}";
     rr:class ex:Sport
   ];
 

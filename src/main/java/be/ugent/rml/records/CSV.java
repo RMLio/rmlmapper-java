@@ -11,21 +11,21 @@ import java.util.List;
 
 public class CSV {
 
-    public static List<Record> get(String path) throws IOException {
-        return CSV.get(path, System.getProperty("user.dir"));
+    public List<Record> get(String path) throws IOException {
+        return get(path, System.getProperty("user.dir"));
     }
 
-    public static List<Record> get(String path, String cwd) throws IOException {
+    public List<Record> get(String path, String cwd) throws IOException {
         File file = new File(path);
 
         if (!file.isAbsolute()) {
             path = cwd + "/" + path;
         }
 
-        return CSV._get(path);
+        return _get(path);
     }
 
-    private static List<Record> _get(String path) throws IOException {
+    private List<Record> _get(String path) throws IOException {
         CSVReader reader = new CSVReader(new FileReader(path));
         List<String[]> myEntries = reader.readAll();
         List<Record> records = new ArrayList<Record>();

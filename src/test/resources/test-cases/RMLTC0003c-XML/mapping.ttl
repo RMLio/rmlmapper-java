@@ -15,7 +15,7 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/{ID}"; 
+    rr:template "http://example.com/Student{ID}";
   ];
 
   rr:predicateObjectMap [ 

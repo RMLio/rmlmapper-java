@@ -11,15 +11,17 @@ import org.eclipse.rdf4j.rio.ParserConfig;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 abstract class TestCore {
+
     void doMapping(String mapPath, String outPath) {
         ClassLoader classLoader = getClass().getClassLoader();
 
@@ -28,19 +30,38 @@ abstract class TestCore {
         QuadStore rmlStore = this.readTurtle(mappingFile);
 
         Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)), new FunctionLoader());
-        QuadStore result = executor.execute(null);
 
-        // load output file
-        File outputFile = new File(classLoader.getResource(outPath).getFile());
-        QuadStore outputStore;
+        try {
+            QuadStore result = executor.execute(null);
 
-        if (outPath.endsWith(".nq")) {
-            outputStore = this.readTurtle(outputFile, RDFFormat.NQUADS);
-        } else {
-            outputStore = this.readTurtle(outputFile);
+            // load output file
+            File outputFile = new File(classLoader.getResource(outPath).getFile());
+            QuadStore outputStore;
+
+            if (outPath.endsWith(".nq")) {
+                outputStore = this.readTurtle(outputFile, RDFFormat.NQUADS);
+            } else {
+                outputStore = this.readTurtle(outputFile);
+            }
+            assertEquals(outputStore.toSortedString(), result.toSortedString());
+        } catch (IOException e) {
+            fail();
         }
+    }
 
-        assertEquals(outputStore.toSortedString(), result.toSortedString());
+    void doMappingExpectError(String mapPath) {
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        // execute mapping file
+        File mappingFile = new File(classLoader.getResource(mapPath).getFile());
+        QuadStore rmlStore = this.readTurtle(mappingFile);
+
+        try {
+            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)), new FunctionLoader());
+            QuadStore result = executor.execute(null);
+        } catch (IOException e) {
+
+        }
     }
 
     private QuadStore readTurtle(File mappingFile, RDFFormat format) {

@@ -9,7 +9,7 @@
 <TriplesMap1> a rr:TriplesMap;
     
   rml:logicalSource [ 
-    rml:source "student.csv";
+    rml:source "student2.csv";
     rml:referenceFormulation ql:CSV
   ];
 

@@ -35,7 +35,7 @@ public class Mapper_JSON_Test extends TestCore {
 
     @Test
     public void evaluate_0002e_JSON() {
-        doMapping("./test-cases/RMLTC0002e-JSON/mapping.ttl", "./test-cases/RMLTC0002e-JSON/output.ttl");
+        doMappingExpectError("./test-cases/RMLTC0002e-JSON/mapping.ttl");
     }
 
     @Test
@@ -55,7 +55,7 @@ public class Mapper_JSON_Test extends TestCore {
 
     @Test
     public void evaluate_0006a_JSON() {
-        doMapping("./test-cases/RMLTC0006a-JSON/mapping.ttl", "./test-cases/RMLTC0006a-JSON/output.ttl");
+        doMapping("./test-cases/RMLTC0006a-JSON/mapping.ttl", "./test-cases/RMLTC0006a-JSON/output.nq");
     }
 
     @Test
@@ -65,7 +65,7 @@ public class Mapper_JSON_Test extends TestCore {
 
     @Test
     public void evaluate_0007b_JSON() {
-        doMapping("./test-cases/RMLTC0007b-JSON/mapping.ttl", "./test-cases/RMLTC0007b-JSON/output.ttl");
+        doMapping("./test-cases/RMLTC0007b-JSON/mapping.ttl", "./test-cases/RMLTC0007b-JSON/output.nq");
     }
 
     @Test

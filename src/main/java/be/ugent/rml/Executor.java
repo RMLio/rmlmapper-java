@@ -6,6 +6,7 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.SimpleQuadStore;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,7 @@ public class Executor {
         this.subjects = new HashMap<String, HashMap<Integer, String>>();
     }
 
-    public QuadStore execute(List<String> triplesMaps, boolean removeDuplicates) {
+    public QuadStore execute(List<String> triplesMaps, boolean removeDuplicates) throws IOException {
 
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
@@ -61,11 +62,11 @@ public class Executor {
         return resultingTriples;
     }
 
-    public QuadStore execute(List<String> triplesMaps) {
+    public QuadStore execute(List<String> triplesMaps) throws IOException {
         return this.execute(triplesMaps, false);
     }
 
-    private void generatePredicateObjectsForSubject(String subject, Mapping mapping, Record record) {
+    private void generatePredicateObjectsForSubject(String subject, Mapping mapping, Record record) throws IOException {
         ArrayList<String> subjectGraphs = new ArrayList<String>();
 
         for (List<Element> graph: mapping.getSubject().getGraphs()) {
@@ -153,7 +154,7 @@ public class Executor {
         }
     }
 
-    private List<String> getIRIsWithConditions(String triplesMap, List<ValuedJoinCondition> conditions) {
+    private List<String> getIRIsWithConditions(String triplesMap, List<ValuedJoinCondition> conditions) throws IOException {
         ArrayList<String> goodIRIs = new ArrayList<String>();
         ArrayList<List<String>> allIRIs = new ArrayList<List<String>>();
 
@@ -178,7 +179,7 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<String> getIRIsWithValue(String triplesMap, List<Element> path, List<String> values) {
+    private List<String> getIRIsWithValue(String triplesMap, List<Element> path, List<String> values) throws IOException {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
@@ -228,7 +229,7 @@ public class Executor {
         return this.subjects.get(triplesMap).get(i);
     }
 
-    private List<String> getAllIRIs(String triplesMap) {
+    private List<String> getAllIRIs(String triplesMap) throws IOException {
         Mapping mapping = this.mappings.get(triplesMap);
 
         List<Record> records = getRecords(triplesMap);
@@ -244,7 +245,7 @@ public class Executor {
         return iris;
     }
 
-    private List<Record> getRecords(String triplesMap) {
+    private List<Record> getRecords(String triplesMap) throws IOException {
         if (!this.recordsHolders.containsKey(triplesMap)) {
             this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
         }

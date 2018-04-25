@@ -15,13 +15,15 @@ public class RecordsFactory {
 
     private DataFetcher dataFetcher;
     private Map<String, List<Record>> allCSVRecords;
+    private Map<String, List<Record>> allJSONRecords;
 
     public RecordsFactory(DataFetcher dataFetcher) {
         this.dataFetcher = dataFetcher;
         allCSVRecords = new HashMap<String, List<Record>>();
+        allJSONRecords = new HashMap<String, List<Record>>();
     }
 
-    public List<Record> createRecords(String triplesMap, QuadStore rmlStore) {
+    public List<Record> createRecords(String triplesMap, QuadStore rmlStore) throws IOException {
         //get logical source
         List<String> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, NAMESPACES.RML + "logicalSource", null));
 
@@ -44,12 +46,32 @@ public class RecordsFactory {
                         return allCSVRecords.get(source);
                     } else {
                         try {
-                            allCSVRecords.put(source, CSV.get(source, dataFetcher.getCwd()));
+                            CSV csv = new CSV();
+                            allCSVRecords.put(source, csv.get(source, dataFetcher.getCwd()));
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            throw e;
                         }
 
                         return allCSVRecords.get(source);
+                    }
+                } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "XPath")) {
+                    throw new NotImplementedException();
+                } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "JSONPath")) {
+                    if (!iterators.isEmpty()) {
+                        if (allJSONRecords.containsKey(source)) {
+                            return allJSONRecords.get(source);
+                        } else {
+                            try {
+                                JSON json = new JSON();
+                                allJSONRecords.put(source, json.get(source, Utils.getLiteral(iterators.get(0)), dataFetcher.getCwd()));
+                            } catch (IOException e) {
+                                throw e;
+                            }
+
+                            return allJSONRecords.get(source);
+                        }
+                    } else {
+                        throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for JSONPath.");
                     }
                 } else {
                     throw new NotImplementedException();
