@@ -7,20 +7,19 @@
 @base <http://example.com/base/> .
 
 <TriplesMap1> a rr:TriplesMap;
-    
-  rml:logicalSource [ 
+
+  rml:logicalSource [
     rml:source "student.xml";
     rml:referenceFormulation ql:XPath;
     rml:iterator "/students/student"
   ];
 
-  rr:subjectMap [ 
-    rr:constant ex:BadStudent;  
+  rr:subjectMap [
+    rr:constant ex:BadStudent;
     rr:graphMap [ rr:constant <http://example.com/graph/student> ];
   ];
 
-  rr:predicateObjectMap [ 
-    rr:predicateMap [ rr:constant ex:description ]; 
+  rr:predicateObjectMap [
+    rr:predicateMap [ rr:constant ex:description ];
     rr:objectMap [ rr:constant "Bad Student"; ]
   ].
-

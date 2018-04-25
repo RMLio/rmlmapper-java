@@ -1,7 +1,6 @@
 package be.ugent.rml.records;
 
 import com.jayway.jsonpath.*;
-import net.minidev.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,25 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class JSON {
+public class JSON extends IteratorFormat {
 
-    public List<Record> get(String path, String iterator) throws IOException {
-        return get(path, iterator, System.getProperty("user.dir"));
-    }
-
-    public List<Record> get(String path, String iterator, String cwd) throws IOException {
-        File file = new File(path);
-
-        if (!file.isAbsolute()) {
-            path = cwd + "/" + path;
-        }
-
-        return _get(path, iterator);
-    }
-
-    private List<Record> _get(String path, String iterator) throws IOException {
+    protected List<Record> _get(String path, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
         File initialFile = new File(path);
         InputStream targetStream = new FileInputStream(initialFile);

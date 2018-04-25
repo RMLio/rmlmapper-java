@@ -23,7 +23,7 @@
   rr:predicateObjectMap [ 
     rr:predicate foaf:name; 
     rr:objectMap [
-      rml:references "Name"
+      rml:reference "Name"
     ]
   ].
 

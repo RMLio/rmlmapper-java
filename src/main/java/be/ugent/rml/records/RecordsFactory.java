@@ -16,11 +16,13 @@ public class RecordsFactory {
     private DataFetcher dataFetcher;
     private Map<String, List<Record>> allCSVRecords;
     private Map<String, List<Record>> allJSONRecords;
+    private Map<String, List<Record>> allXMLRecords;
 
     public RecordsFactory(DataFetcher dataFetcher) {
         this.dataFetcher = dataFetcher;
         allCSVRecords = new HashMap<String, List<Record>>();
         allJSONRecords = new HashMap<String, List<Record>>();
+        allXMLRecords = new HashMap<String, List<Record>>();
     }
 
     public List<Record> createRecords(String triplesMap, QuadStore rmlStore) throws IOException {
@@ -55,7 +57,22 @@ public class RecordsFactory {
                         return allCSVRecords.get(source);
                     }
                 } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "XPath")) {
-                    throw new NotImplementedException();
+                    if (!iterators.isEmpty()) {
+                        if (allXMLRecords.containsKey(source)) {
+                            return allXMLRecords.get(source);
+                        } else {
+                            try {
+                                XML xml = new XML();
+                                allXMLRecords.put(source, xml.get(source, Utils.getLiteral(iterators.get(0)), dataFetcher.getCwd()));
+                            } catch (IOException e) {
+                                throw e;
+                            }
+
+                            return allXMLRecords.get(source);
+                        }
+                    } else {
+                        throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for XPath.");
+                    }
                 } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "JSONPath")) {
                     if (!iterators.isEmpty()) {
                         if (allJSONRecords.containsKey(source)) {
