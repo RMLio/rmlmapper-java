@@ -1,5 +1,6 @@
 package be.ugent.rml.store;
 
+import be.ugent.rml.Utils;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -47,7 +48,7 @@ public class RDF4JStore extends QuadStore {
             if (object == null) {
                 if (subject == null) {
                     result = model.filter(null, vf.createIRI(predicate), null);
-                } else if (subject.startsWith("_:")) {
+                } else if (Utils.isBlankNode(subject)) {
                     result = model.filter(vf.createBNode(subject.replaceFirst("_:", "")), vf.createIRI(predicate), null);
                 } else {
                     result = model.filter(vf.createIRI(subject), vf.createIRI(predicate), null);
