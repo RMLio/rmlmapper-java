@@ -1,11 +1,9 @@
 package be.ugent.rml;
 
-import be.ugent.rml.functions.ApplyTemplateFunction;
-import be.ugent.rml.functions.Function;
-import be.ugent.rml.functions.FunctionDetails;
-import be.ugent.rml.functions.FunctionLoader;
+import be.ugent.rml.functions.*;
 import be.ugent.rml.store.QuadStore;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +20,7 @@ public class MappingFactory {
         this.functionLoader = functionLoader;
     }
 
-    public Mapping createMapping(String triplesMap, QuadStore store) {
+    public Mapping createMapping(String triplesMap, QuadStore store) throws IOException {
         this.triplesMap = triplesMap;
         this.store = store;
         this.subject = null;
@@ -35,7 +33,7 @@ public class MappingFactory {
         return new Mapping(subject, predicateObjects);
     }
 
-    private void parseSubjectMap() {
+    private void parseSubjectMap() throws IOException {
         if (this.subject == null) {
             List<String> subjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, NAMESPACES.RR + "subjectMap", null));
 
@@ -105,49 +103,7 @@ public class MappingFactory {
         }
     }
 
-    private FunctionDetails parseFunctionTermMap(String functionValue) {
-        List<String> functionPOMs = Utils.getObjectsFromQuads(store.getQuads(functionValue, NAMESPACES.RR  + "predicateObjectMap", null));
-        HashMap<String, List<List<Element>>> params = new HashMap<>();
-
-        for(String pom : functionPOMs) {
-            //process predicates
-            List<List<Element>> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR  + "predicate", null)).stream().map(i -> parseTemplate(i)).collect(Collectors.toList());
-            List<String> pms = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR  + "predicateMap", null));
-
-            for(String pm : pms) {
-                predicates.add(parseTemplate(getGenericTemplate(pm)));
-            }
-
-            //process objects
-            List<List<Element>> objects = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR  + "object", null)).stream().map(i -> parseTemplate(i)).collect(Collectors.toList());
-            List<String> oms = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR  + "objectMap", null));
-
-            for(String om : oms) {
-                objects.add(parseTemplate(getGenericTemplate(om)));
-            }
-
-            if (!objects.isEmpty()) {
-                for (List<Element> p : predicates) {
-                    String predicate = Utils.applyTemplate(p, null).get(0);
-
-                    if (!params.containsKey(predicate)) {
-                        params.put(predicate, new ArrayList<>());
-                    }
-
-                    for(List<Element> o : objects) {
-                        params.get(predicate).add(o);
-                    }
-                }
-            }
-        }
-
-        String fn = Utils.applyTemplate(params.get("http://w3id.org/function/ontology#executes").get(0), null).get(0);
-        params.remove("http://w3id.org/function/ontology#executes");
-
-        return new FunctionDetails(getExecutableFunction(functionLoader.getFunction(fn)), params);
-    }
-
-    private void parsePredicateObjectMaps() {
+    private void parsePredicateObjectMaps() throws IOException {
         List<String> predicateobjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, NAMESPACES.RR + "predicateObjectMap", null));
 
         for (String pom : predicateobjectmaps) {
@@ -232,6 +188,11 @@ public class MappingFactory {
                 } else {
                     FunctionDetails functionDetails = parseFunctionTermMap(functionValues.get(0));
 
+                    if (termType == null) {
+                        // TODO be smarter than this
+                        termType = NAMESPACES.RR + "Literal";
+                    }
+
                     predicateObjects.add(new PredicateObject(predicates, graphs, termType, functionDetails.getFunction(), functionDetails.getParameters(), language, datatype));
                 }
             }
@@ -260,6 +221,98 @@ public class MappingFactory {
         }
     }
 
+    private List<List<Element>> parseGraphMaps(String termMap) {
+        ArrayList<List<Element>> graphs = new ArrayList<>();
+
+        List<String> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, NAMESPACES.RR + "graphMap", null));
+
+        for (String graphMap : graphMaps) {
+            graphs.add(parseTemplate(getGenericTemplate(graphMap)));
+        }
+
+        List<String> graphShortCuts = Utils.getObjectsFromQuads(store.getQuads(termMap, NAMESPACES.RR + "graph", null));
+
+        for (String graph : graphShortCuts) {
+            ArrayList<Element> temp = new ArrayList<>();
+            temp.add(new Element(graph, TEMPLATETYPE.CONSTANT));
+            graphs.add(temp);
+        }
+
+        return graphs;
+    }
+
+    private FunctionDetails parseFunctionTermMap(String functionValue) throws IOException {
+        List<String> functionPOMs = Utils.getObjectsFromQuads(store.getQuads(functionValue, NAMESPACES.RR + "predicateObjectMap", null));
+        HashMap<String, List<List<Element>>> params = new HashMap<>();
+
+        for (String pom : functionPOMs) {
+            //process predicates
+            List<List<Element>> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "predicate", null)).stream().map(i -> parseTemplate(i)).collect(Collectors.toList());
+            List<String> pms = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "predicateMap", null));
+
+            for (String pm : pms) {
+                predicates.add(parseTemplate(getGenericTemplate(pm)));
+            }
+
+            //process objects
+            List<List<Element>> objects = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "object", null)).stream().map(i -> parseTemplate(i)).collect(Collectors.toList());
+            List<String> oms = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "objectMap", null));
+
+            for (String om : oms) {
+                objects.add(parseTemplate(getGenericTemplate(om)));
+            }
+
+            if (!objects.isEmpty()) {
+                for (List<Element> p : predicates) {
+                    String predicate = Utils.applyTemplate(p, null).get(0);
+
+                    if (!params.containsKey(predicate)) {
+                        params.put(predicate, new ArrayList<>());
+                    }
+
+                    for (List<Element> o : objects) {
+                        params.get(predicate).add(o);
+                    }
+                }
+            }
+        }
+
+        String fn = Utils.applyTemplate(params.get("http://w3id.org/function/ontology#executes").get(0), null).get(0);
+        params.remove("http://w3id.org/function/ontology#executes");
+
+        return new FunctionDetails(new Function(functionLoader.getFunction(fn)), params);
+    }
+
+    /**
+     * This method parses reference, template, and constant of a given Term Map and return a generic template.
+     **/
+    private String getGenericTemplate(String str) {
+        List<String> references = Utils.getObjectsFromQuads(store.getQuads(str, NAMESPACES.RML + "reference", null));
+        List<String> templates = Utils.getObjectsFromQuads(store.getQuads(str, NAMESPACES.RR + "template", null));
+        List<String> constants = Utils.getObjectsFromQuads(store.getQuads(str, NAMESPACES.RR + "constant", null));
+        String genericTemplate = null;
+
+        if (!references.isEmpty()) {
+            genericTemplate = "{" + Utils.getLiteral(references.get(0)) + "}";
+        } else if (!templates.isEmpty()) {
+            genericTemplate = Utils.getLiteral(templates.get(0));
+        } else if (!constants.isEmpty()) {
+            if (Utils.isLiteral(constants.get(0))) {
+                genericTemplate = Utils.getLiteral(constants.get(0));
+            } else {
+                genericTemplate = constants.get(0);
+            }
+
+            genericTemplate = genericTemplate.replaceAll("\\{", "\\\\{").replaceAll("}", "\\\\}");
+        }
+
+        return genericTemplate;
+    }
+
+    /**
+     * This method returns the TermType of a given Term Map.
+     * If no Term Type is found, a default Term Type is return based on the R2RML specification.
+     **/
     private String getTermType(String map) {
         List<String> references = Utils.getObjectsFromQuads(store.getQuads(map, NAMESPACES.RML + "reference", null));
         List<String> templates = Utils.getObjectsFromQuads(store.getQuads(map, NAMESPACES.RR  + "template", null));
@@ -283,30 +336,11 @@ public class MappingFactory {
         return termType;
     }
 
-    private Function getExecutableFunction(Object o) {
-        return null;
-    }
-
-    private List<List<Element>> parseGraphMaps(String termMap) {
-        ArrayList<List<Element>> graphs = new ArrayList<>();
-
-        List<String> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, NAMESPACES.RR  + "graphMap", null));
-
-        for (String graphMap : graphMaps) {
-            graphs.add(parseTemplate(getGenericTemplate(graphMap)));
-        }
-
-        List<String> graphShortCuts = Utils.getObjectsFromQuads(store.getQuads(termMap, NAMESPACES.RR  + "graph", null));
-
-        for (String graph : graphShortCuts) {
-            ArrayList<Element> temp = new ArrayList<>();
-            temp.add(new Element(graph, TEMPLATETYPE.CONSTANT));
-            graphs.add(temp);
-        }
-
-        return graphs;
-    }
-
+    /**
+     * This method parse the generic template and returns an array
+     * that can later be used by the executor (via applyTemplate)
+     * to get the data values from the records.
+     **/
     private List<Element> parseTemplate(String template) {
         ArrayList<Element> result = new ArrayList<>();
         String current = "";
@@ -362,26 +396,4 @@ public class MappingFactory {
         return result;
     }
 
-    private String getGenericTemplate(String str) {
-        List<String> references = Utils.getObjectsFromQuads(store.getQuads(str, NAMESPACES.RML + "reference", null));
-        List<String> templates = Utils.getObjectsFromQuads(store.getQuads(str, NAMESPACES.RR  + "template", null));
-        List<String> constants = Utils.getObjectsFromQuads(store.getQuads(str, NAMESPACES.RR  + "constant", null));
-        String genericTemplate = null;
-
-        if (!references.isEmpty()) {
-            genericTemplate = "{" + Utils.getLiteral(references.get(0)) + "}";
-        } else if (!templates.isEmpty()) {
-            genericTemplate = Utils.getLiteral(templates.get(0));
-        } else if (!constants.isEmpty()) {
-            if (Utils.isLiteral(constants.get(0))) {
-                genericTemplate = Utils.getLiteral(constants.get(0));
-            } else {
-                genericTemplate = constants.get(0);
-            }
-
-            genericTemplate = genericTemplate.replaceAll("\\{", "\\\\{").replaceAll("}", "\\\\}");
-        }
-
-        return genericTemplate;
-    }
 }

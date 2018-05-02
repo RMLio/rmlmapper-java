@@ -2,7 +2,19 @@ package be.ugent.rml;
 
 import be.ugent.rml.records.Record;
 import be.ugent.rml.store.Quad;
+import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.RDF4JStore;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.rio.ParserConfig;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -131,5 +143,42 @@ public class Utils {
         } catch (Error e){
             return false;
         }
+    }
+
+    public static List<String> getList(QuadStore store, String first) {
+        List<String> list = new ArrayList<>();
+        return getList(store, first, list);
+    }
+
+    public static List<String> getList(QuadStore store, String first, List<String> list) {
+        String value = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#first", null)).get(0);
+        String next = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest", null)).get(0);
+        list.add(value);
+        if (next.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+            return list;
+        } else {
+            list = getList(store, next, list);
+        }
+        return list;
+    }
+
+    public static QuadStore readTurtle(File file, RDFFormat format) {
+        InputStream is;
+        Model model = null;
+        try {
+            is = new FileInputStream(file);
+            //model = Rio.parse(mappingStream, "", format);
+
+            ParserConfig config = new ParserConfig();
+            config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+            model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new RDF4JStore(model);
+    }
+
+    public static QuadStore readTurtle(File mappingFile) {
+        return Utils.readTurtle(mappingFile, RDFFormat.TURTLE);
     }
 }

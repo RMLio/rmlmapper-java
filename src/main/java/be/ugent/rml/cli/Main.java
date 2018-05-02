@@ -41,7 +41,7 @@ public class Main {
                 Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
                 RDF4JStore rmlStore = new RDF4JStore(model);
 
-                Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore)), new FunctionLoader());
+                Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore)));
                 QuadStore result = executor.execute(null);
 
                 System.out.println(result.toString());

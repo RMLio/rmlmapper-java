@@ -22,7 +22,11 @@ public class Executor {
     private int blankNodeCounter;
     private HashMap<String, Mapping> mappings;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) {
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
+        this(rmlStore, recordsFactory, null);
+    }
+
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) throws IOException {
         this.initializer = new Initializer(rmlStore, functionLoader);
         this.mappings = this.initializer.getMappings();
         this.resultingTriples = new SimpleQuadStore();
@@ -87,7 +91,7 @@ public class Executor {
             combinedGraphs.addAll(poGraphs);
 
             if (po.getFunction() != null) {
-                List<String> objects = po.getFunction().execute(record, po.getParameters());
+                List<String> objects = (List<String>) po.getFunction().execute(record, po.getParameters());
 
                 if (objects.size() > 0) {
                     if (po.getTermType().equals(NAMESPACES.RR + "IRI")) {
@@ -213,7 +217,7 @@ public class Executor {
             //we want a IRI and not a Blank Node
             if (mapping.getSubject().getTermType().equals(NAMESPACES.RR + "IRI")) {
                 //TODO encode URI
-                this.subjects.get(triplesMap).put(i, mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
+                this.subjects.get(triplesMap).put(i, (String) mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
             } else {
                 //we want a Blank Node
 
