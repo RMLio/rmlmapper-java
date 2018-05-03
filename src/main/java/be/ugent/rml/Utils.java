@@ -3,6 +3,8 @@ package be.ugent.rml;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.TriplesQuads;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -12,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static List<String> applyTemplate(List<Element> template, Record record) {
         List<String> result = new ArrayList<String>();
@@ -43,8 +47,7 @@ public class Utils {
                 }
 
                 if (values.isEmpty()) {
-                    //TODO logger warn
-                    //logger.warn(`Not all values for a template where found. More specific, the variable ${template[i].value} did not provide any results.`);
+                    logger.warn("Not all values for a template where found. More specific, the variable " + template.get(i).getValue() + " did not provide any results.");
                     allValuesFound = false;
                 }
             }

@@ -9,15 +9,20 @@ import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.TriplesQuads;
+import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.List;
 
 public class Main {
+
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String [] args) {
         Options options = new Options();
@@ -33,12 +38,25 @@ public class Main {
                 .build();
         options.addOption(mappingdoc);
         options.addOption(outputfile);
+        options.addOption("v", false, "verbose");
+        options.addOption("vv", false, "more verbose");
+        options.addOption("vvv", false, "very verbose");
 
         // create the parser
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
             CommandLine line = parser.parse( options, args );
+
+            if (line.hasOption("v")) {
+                setLoggerLevel(Level.WARN);
+            } else if (line.hasOption("vv")) {
+                setLoggerLevel(Level.INFO);
+            } else if (line.hasOption("vvv")) {
+                setLoggerLevel(Level.DEBUG);
+            } else {
+                setLoggerLevel(Level.ERROR);
+            }
 
             if (line.hasOption("m")){
                 File mappingFile = new File(line.getOptionValue("m"));
@@ -66,30 +84,40 @@ public class Main {
                     //write quads
                     writeOutput("quad", tq.getTriples(), "nq", line);
                 }
+            } else {
+                printHelp(options);
             }
         }
         catch( ParseException exp ) {
             // oops, something went wrong
-            System.err.println( "Parsing failed. Reason: " + exp.getMessage() );
+            logger.error("Parsing failed. Reason: " + exp.getMessage());
+            printHelp(options);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
-    public static void writeOutput(String what, List<Quad> output, String extension, CommandLine line) {
+    private static void printHelp(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("java -jar mapper.jar <options>\noptions:", options);
+    }
+
+    private static void setLoggerLevel(Level level) {
+        Logger root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        ((ch.qos.logback.classic.Logger) root).setLevel(level);
+    }
+
+    private static void writeOutput(String what, List<Quad> output, String extension, CommandLine line) {
         if (output.size() > 1) {
-            //TODO
-            //logger.info(`${output.length} ${what}s were generated.`);
+            logger.info(output.size() + " " + what + "s were generated");
         } else {
-            //TODO
-            //logger.info(`${output.length} ${what} were generated.`);
+            logger.info(output.size() + " " + what + " was generated");
         }
 
         //if output file provided, write to triples output file
         if (line.hasOption("o")) {
-            //TODO
-            //logger.info(`Writing ${what}s to ${outputPath}...`);
             File outputFile = new File(line.getOptionValue("o") + "." + extension);
+            logger.info("Writing " + what + " to " + outputFile.getPath() + "...");
 
             if (!outputFile.isAbsolute()) {
                 outputFile = new File(System.getProperty("user.dir") + "/" + line.getOptionValue("o") + "." +  extension);
@@ -105,8 +133,7 @@ public class Main {
                 }
 
                 out.close();
-                //TODO
-                //logger.info(`Writing to ${outputPath} is done.`);
+                logger.info("Writing to " + outputFile.getPath() + " is done.");
             } catch(IOException e) {
                 System.err.println( "Writing output to file failed. Reason: " + e.getMessage() );
             }

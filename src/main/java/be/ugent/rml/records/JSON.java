@@ -28,7 +28,7 @@ public class JSON extends IteratorFormat {
                 records.add(new JSONRecord(document, p));
             }
         } catch(PathNotFoundException e) {
-            //TODO logger warn
+            logger.warn(e.getMessage(), e);
         }
 
         return records;
