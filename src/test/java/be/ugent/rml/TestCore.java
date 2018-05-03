@@ -3,8 +3,8 @@ package be.ugent.rml;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 import java.io.*;
@@ -14,7 +14,7 @@ import static org.junit.Assert.fail;
 
 abstract class TestCore {
 
-    final Logger logger = LogManager.getLogger(this.getClass());
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     Executor createExecutor(String mapPath) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
