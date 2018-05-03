@@ -4,6 +4,7 @@ import be.ugent.rml.records.Record;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
+import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.ParserConfig;
@@ -15,6 +16,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -180,5 +183,23 @@ public class Utils {
 
     public static QuadStore readTurtle(File mappingFile) {
         return Utils.readTurtle(mappingFile, RDFFormat.TURTLE);
+    }
+
+    public static String encodeURI(String s) {
+        // TODO make sure this is ok
+        if (!s.toLowerCase().matches("^\\w+://.*")) {
+            s = "http://" + s;
+        }
+        try {
+            URIBuilder builder = new URIBuilder(s);
+            URI uri = builder.build();
+            if(uri.getScheme() == null) {
+                builder.setScheme("http");
+            }
+
+            return builder.build().toASCIIString();
+        } catch (URISyntaxException e) {
+            return s;
+        }
     }
 }

@@ -1,0 +1,23 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mail: <http://example.com/mail#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix note: <http://www.example.com/note/> .
+@prefix dt: <http://www.example.com/DateTime/> .
+@prefix ex: <http://www.example.org/> .
+@prefix dbo: <http://dbpedia.org/ontology/>.
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>.
+
+ex:1 a ex:Test ;
+    dbo:title "test&amp;test" ;
+    dbo:name "TEST&TEST" .
+
+<http://TEST&TEST> a ex:RestPlace ;
+    geo:lon "50 50" .
+
+ex:2 a ex:Test ;
+    dbo:title "joepie" ;
+    dbo:name "JOEPIE" .
+
+<http://JOEPIE> a ex:RestPlace .
+
+

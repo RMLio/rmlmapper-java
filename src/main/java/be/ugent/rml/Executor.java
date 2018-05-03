@@ -216,8 +216,8 @@ public class Executor {
         if (!this.subjects.get(triplesMap).containsKey(i)) {
             //we want a IRI and not a Blank Node
             if (mapping.getSubject().getTermType().equals(NAMESPACES.RR + "IRI")) {
-                //TODO encode URI
-                this.subjects.get(triplesMap).put(i, (String) mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
+                String fnOutput = (String) mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0);
+                this.subjects.get(triplesMap).put(i, Utils.encodeURI(fnOutput));
             } else {
                 //we want a Blank Node
 

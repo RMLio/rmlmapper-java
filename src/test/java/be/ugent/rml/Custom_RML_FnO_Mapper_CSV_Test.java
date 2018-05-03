@@ -29,4 +29,9 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestCore {
             fail();
         }
     }
+
+    @Test
+    public void evaluate_0001_CSV() {
+        doMapping("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
+    }
 }
