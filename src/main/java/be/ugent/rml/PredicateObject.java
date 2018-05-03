@@ -11,6 +11,7 @@ public class PredicateObject extends TripleElement {
 
     private final List<List<Element>> predicates;
     private final List<JoinCondition> joinConditions;
+    private String parentTriplesMap;
 
     public PredicateObject(List<List<Element>> predicates, List<List<Element>> graphs, String termType, Function function, Map<String, List<List<Element>>> parameters, String language, String datatype) {
         super(graphs, termType, function, parameters);
@@ -35,7 +36,7 @@ public class PredicateObject extends TripleElement {
     }
 
     public String getParentTriplesMap() {
-        return null;
+        return parentTriplesMap;
     }
 
     public JoinCondition[] getJoinConditions() {
@@ -43,7 +44,7 @@ public class PredicateObject extends TripleElement {
     }
 
     public void setParentTriplesMap(String parentTriplesMap) {
-
+        this.parentTriplesMap = parentTriplesMap;
     }
 
     public void addJoinCondition(JoinCondition condition) {

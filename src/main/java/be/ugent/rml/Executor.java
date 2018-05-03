@@ -51,7 +51,9 @@ public class Executor {
                 String subject = getSubject(triplesMap, mapping, record, j);
 
                 //TODO validate subject or check if blank node
-                this.generatePredicateObjectsForSubject(subject, mapping, record);
+                if (subject != null) {
+                    this.generatePredicateObjectsForSubject(subject, mapping, record);
+                }
             }
         }
 
@@ -70,7 +72,11 @@ public class Executor {
         ArrayList<String> subjectGraphs = new ArrayList<String>();
 
         for (List<Element> graph: mapping.getSubject().getGraphs()) {
-            subjectGraphs.add(Utils.applyTemplate(graph, record).get(0));
+            String g = Utils.applyTemplate(graph, record).get(0);
+
+            if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
+                subjectGraphs.add(g);
+            }
         }
 
         List<PredicateObject> predicateObjects = mapping.getPredicateObjects();
@@ -79,7 +85,11 @@ public class Executor {
             ArrayList<String> poGraphs = new ArrayList<String>();
 
             for (List<Element> graph : po.getGraphs()) {
-                poGraphs.add(Utils.applyTemplate(graph, record).get(0));
+                String g = Utils.applyTemplate(graph, record).get(0);
+
+                if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
+                    poGraphs.add(g);
+                }
             }
 
             List<String> combinedGraphs = new ArrayList<String>();
@@ -213,7 +223,14 @@ public class Executor {
             //we want a IRI and not a Blank Node
             if (mapping.getSubject().getTermType().equals(NAMESPACES.RR + "IRI")) {
                 //TODO encode URI
-                this.subjects.get(triplesMap).put(i, mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
+                List<String> subjects = mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters());
+                String subject = null;
+
+                if (!subjects.isEmpty()) {
+                    subject = subjects.get(0);
+                }
+
+                this.subjects.get(triplesMap).put(i,subject);
             } else {
                 //we want a Blank Node
 
@@ -235,7 +252,7 @@ public class Executor {
         List<Record> records = getRecords(triplesMap);
         ArrayList<String> iris = new ArrayList<String>();
 
-        for (int i = 0; i < iris.size(); i ++) {
+        for (int i = 0; i < records.size(); i ++) {
             Record record = records.get(i);
             String subject = getSubject(triplesMap, mapping, record, i);
 

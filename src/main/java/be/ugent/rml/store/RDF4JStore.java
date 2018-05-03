@@ -70,7 +70,12 @@ public class RDF4JStore extends QuadStore {
             String s = st.getSubject().toString();
             String p = st.getPredicate().toString();
             String o = st.getObject().toString();
-            quads.add(new Quad(s, p, o));
+
+            if (st.getContext() == null) {
+                quads.add(new Quad(s, p, o));
+            } else {
+                quads.add(new Quad(s, p, o, st.getContext().toString()));
+            }
         }
 
         return quads;
