@@ -92,10 +92,14 @@ public class FunctionUtils {
         }
 
         // Resource path?
-        URL url = Resources.getResource(path);
-        f = new File(url.getFile());
-        if (f.exists()) {
-            return f;
+        try {
+            URL url = Resources.getResource(path);
+            f = new File(url.getFile());
+            if (f.exists()) {
+                return f;
+            }
+        } catch (IllegalArgumentException e) {
+            // Too bad
         }
 
         String basePath;
