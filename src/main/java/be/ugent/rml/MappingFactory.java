@@ -95,7 +95,8 @@ public class MappingFactory {
 
                     parameters.put("_TEMPLATE", temp2);
 
-                    predicateObjects.add(new PredicateObject(predicates, this.subject.getGraphs(), NAMESPACES.RR  + "IRI", new ApplyTemplateFunction(), parameters));
+                    // Don't put in graph for rr:class, subject is already put in graph, otherwise double export
+                    predicateObjects.add(new PredicateObject(predicates, null, NAMESPACES.RR  + "IRI", new ApplyTemplateFunction(), parameters));
                 }
             } else {
                 throw new Error(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");

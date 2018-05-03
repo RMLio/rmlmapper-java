@@ -1,8 +1,8 @@
 package be.ugent.rml;
 
-import be.ugent.rml.functions.ApplyTemplateFunction;
 import be.ugent.rml.functions.Function;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +21,11 @@ public class TripleElement {
     }
 
     public List<List<Element>> getGraphs() {
-        return graphs;
+        if (graphs == null) {
+            return new ArrayList<>();
+        } else {
+            return graphs;
+        }
     }
 
     public String getTermType() {

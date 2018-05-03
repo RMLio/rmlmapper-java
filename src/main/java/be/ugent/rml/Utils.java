@@ -3,6 +3,7 @@ package be.ugent.rml;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.store.RDF4JStore;
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.rdf4j.model.Model;
@@ -15,6 +16,7 @@ import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Writer;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -201,5 +203,94 @@ public class Utils {
         } catch (URISyntaxException e) {
             return s;
         }
+    }
+
+    public static boolean isBlankNode(String value) {
+        return value.startsWith("_:");
+    }
+
+    public static String toNTriples(List<Quad> quads) {
+        StringBuilder output = new StringBuilder();
+
+        for (Quad q : quads) {
+            output.append(Utils.getNTripleOfQuad(q) + "\n");
+        }
+
+        return output.toString();
+    }
+
+    public static String toNQuads(List<Quad> quads) {
+        StringBuilder output = new StringBuilder();
+
+        for (Quad q : quads) {
+            output.append(Utils.getNQuadOfQuad(q) + "\n");
+        }
+
+        return output.toString();
+    }
+
+    public static void toNTriples(List<Quad> quads, Writer out) throws IOException {
+        for (Quad q : quads) {
+            out.write(Utils.getNTripleOfQuad(q) + "\n");
+        }
+    }
+
+    public static void toNQuads(List<Quad> quads, Writer out) throws IOException {
+        for (Quad q : quads) {
+            out.write(Utils.getNQuadOfQuad(q) + "\n");
+        }
+    }
+
+    public static TriplesQuads getTriplesAndQuads(List<Quad> all) {
+        List<Quad> triples = new ArrayList<>();
+        List<Quad> quads = new ArrayList<>();
+
+        for (Quad q: all) {
+            if (q.getGraph() == null || q.getGraph().equals("")) {
+                triples.add(q);
+            } else {
+                quads.add(q);
+            }
+        }
+
+        return new TriplesQuads(triples, quads);
+    }
+
+    private static String getNTripleOfQuad(Quad q) {
+        String s = q.getSubject();
+
+        if (!Utils.isBlankNode(s)) {
+            s = "<" + s + ">";
+        }
+
+        String o = q.getObject();
+
+        if (!Utils.isBlankNode(s) && !Utils.isLiteral(o)) {
+            o = "<" + o + ">";
+        }
+
+        return s + " " + s + " " + o + ".";
+    }
+
+    private static String getNQuadOfQuad(Quad q) {
+        String s = q.getSubject();
+
+        if (!Utils.isBlankNode(s)) {
+            s = "<" + s + ">";
+        }
+
+        String o = q.getObject();
+
+        if (!Utils.isBlankNode(s) && !Utils.isLiteral(o)) {
+            o = "<" + o + ">";
+        }
+
+        String g = q.getGraph();
+
+        if (!Utils.isBlankNode(g)) {
+            g = "<" + g + ">";
+        }
+
+        return s + " " + s + " " + o + " " + g + ".";
     }
 }

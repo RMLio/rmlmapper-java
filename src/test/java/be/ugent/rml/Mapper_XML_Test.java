@@ -77,4 +77,29 @@ public class Mapper_XML_Test extends TestCore {
     public void evaluate_0007d_XML() {
         doMapping("./test-cases/RMLTC0007d-XML/mapping.ttl", "./test-cases/RMLTC0007d-XML/output.ttl");
     }
+
+    @Test
+    public void evaluate_0007e_XML() {
+        doMapping("./test-cases/RMLTC0007e-XML/mapping.ttl", "./test-cases/RMLTC0007e-XML/output.nq");
+    }
+
+    @Test
+    public void evaluate_0007f_XML() {
+        doMapping("./test-cases/RMLTC0007f-XML/mapping.ttl", "./test-cases/RMLTC0007f-XML/output.nq");
+    }
+
+    @Test
+    public void evaluate_0007g_XML() {
+        doMapping("./test-cases/RMLTC0007g-XML/mapping.ttl", "./test-cases/RMLTC0007g-XML/output.ttl");
+    }
+
+    @Test
+    public void evaluate_0007h_XML() {
+        doMapping("./test-cases/RMLTC0007h-XML/mapping.ttl", "./test-cases/RMLTC0007h-XML/output.nq");
+    }
+
+    @Test
+    public void evaluate_0008a_XML() {
+        doMapping("./test-cases/RMLTC0008a-XML/mapping.ttl", "./test-cases/RMLTC0008a-XML/output.ttl");
+    }
 }
