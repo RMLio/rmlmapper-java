@@ -57,10 +57,6 @@
  	rr:predicateObjectMap <#NameMapping> ;
  	rr:predicateObjectMap <#NameURIMapping> .
 
-<#CoordinatesGeoMapping>
-	rr:predicate dbo:restingPlacePosition ;
-	rr:objectMap  [ rr:parentTriplesMap <#IntermediateCoordinatesGeoMapping> ] .
-
 <#NameMapping>
 	rr:predicate dbo:name ;
 	rr:objectMap <#FunctionMapUppercaseIntermediateNameMapping> .
