@@ -75,7 +75,7 @@ public class Executor {
             String g = Utils.applyTemplate(graph, record).get(0);
 
             if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                subjectGraphs.add(g);
+                subjectGraphs.add(Utils.encodeURL(g));
             }
         }
 
@@ -88,7 +88,7 @@ public class Executor {
                 String g = Utils.applyTemplate(graph, record).get(0);
 
                 if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                    poGraphs.add(g);
+                    poGraphs.add(Utils.encodeURL(g));
                 }
             }
 
@@ -222,12 +222,11 @@ public class Executor {
         if (!this.subjects.get(triplesMap).containsKey(i)) {
             //we want a IRI and not a Blank Node
             if (mapping.getSubject().getTermType().equals(NAMESPACES.RR + "IRI")) {
-                //TODO encode URI
                 List<String> subjects = mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters());
                 String subject = null;
 
                 if (!subjects.isEmpty()) {
-                    subject = subjects.get(0);
+                    subject = Utils.encodeURL(subjects.get(0));
                 }
 
                 this.subjects.get(triplesMap).put(i,subject);

@@ -228,4 +228,9 @@ public class Utils {
 
         return s + " " + s + " " + o + " " + g + ".";
     }
+
+    public static String encodeURL(String url) {
+        //TODO I guess it needs more...
+        return url.replaceAll(" ", "%20");
+    }
 }
