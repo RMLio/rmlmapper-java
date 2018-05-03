@@ -3,6 +3,8 @@ package be.ugent.rml;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import be.ugent.rml.store.RDF4JStore;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -21,6 +23,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 abstract class TestCore {
+
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     void doMapping(String mapPath, String outPath) {
         ClassLoader classLoader = getClass().getClassLoader();
