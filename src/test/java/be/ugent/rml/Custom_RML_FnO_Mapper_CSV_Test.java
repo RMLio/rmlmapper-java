@@ -13,8 +13,13 @@ import static org.junit.Assert.fail;
 public class Custom_RML_FnO_Mapper_CSV_Test extends TestCore {
     @Test
     public void evaluate_0000_CSV() {
+        doMapping("./rml-fno-test-cases/RMLFNOTC0000-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0000-CSV/output.ttl");
+    }
+
+    @Test
+    public void evaluate_0000_CSV_preload() {
         Map<String, Class> libraryMap = new HashMap<>();
-        libraryMap.put("./stringfunctions.js", GrelProcessor.class);
+        libraryMap.put("GrelFunctions.jar", GrelProcessor.class);
         FunctionLoader functionLoader = new FunctionLoader(libraryMap);
         try {
             Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0000-CSV/mapping.ttl", functionLoader);

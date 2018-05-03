@@ -4,7 +4,7 @@ import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 public class GrelProcessor {
 
-    public static String toUpperCase(String test) {
+    public static String toUppercase(String test) {
         return test.toUpperCase();
     }
 
