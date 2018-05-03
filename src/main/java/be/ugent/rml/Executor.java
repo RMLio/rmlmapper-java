@@ -75,7 +75,7 @@ public class Executor {
             String g = Utils.applyTemplate(graph, record).get(0);
 
             if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                subjectGraphs.add(Utils.encodeURL(g));
+                subjectGraphs.add(Utils.encodeURI(g));
             }
         }
 
@@ -88,7 +88,7 @@ public class Executor {
                 String g = Utils.applyTemplate(graph, record).get(0);
 
                 if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                    poGraphs.add(Utils.encodeURL(g));
+                    poGraphs.add(Utils.encodeURI(g));
                 }
             }
 
@@ -226,7 +226,7 @@ public class Executor {
                 String subject = null;
 
                 if (!subjects.isEmpty()) {
-                    subject = Utils.encodeURL(subjects.get(0));
+                    subject = Utils.encodeURI(subjects.get(0));
                 }
 
                 this.subjects.get(triplesMap).put(i,subject);
@@ -234,7 +234,7 @@ public class Executor {
                 //we want a Blank Node
 
                 if (mapping.getSubject().getFunction() != null) {
-                    this.subjects.get(triplesMap).put(i, "_:" + mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
+                    this.subjects.get(triplesMap).put(i, "_:" +  Utils.encodeURI(mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0)));
                 } else {
                     this.subjects.get(triplesMap).put(i, "_:b" + this.blankNodeCounter);
                     this.blankNodeCounter++;
