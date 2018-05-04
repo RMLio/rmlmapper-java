@@ -36,8 +36,13 @@ public class Main {
                 .hasArg()
                 .desc(  "path to output file" )
                 .build();
+        Option removeduplicates = Option.builder("d")
+                .longOpt( "duplicates" )
+                .desc(  "remove duplicates" )
+                .build();
         options.addOption(mappingdoc);
         options.addOption(outputfile);
+        options.addOption(removeduplicates);
         options.addOption("v", false, "verbose");
         options.addOption("vv", false, "more verbose");
         options.addOption("vvv", false, "very verbose");
@@ -71,7 +76,7 @@ public class Main {
                 RDF4JStore rmlStore = new RDF4JStore(model);
 
                 Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore)), new FunctionLoader());
-                QuadStore result = executor.execute(null);
+                QuadStore result = executor.execute(null, line.hasOption("d"));
 
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 

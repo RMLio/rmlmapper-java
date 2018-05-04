@@ -5,7 +5,7 @@ import java.util.List;
 
 public class SimpleQuadStore extends QuadStore {
 
-    private ArrayList<Quad> quads;
+    private List<Quad> quads;
 
     public SimpleQuadStore(ArrayList<Quad> quads) {
         this.quads = quads;
@@ -16,7 +16,25 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     public void removeDuplicates() {
+        List<Quad> quadsWithDuplicates = new ArrayList<>();
 
+        for (Quad q : quads) {
+            int i = 0;
+
+            while (i < quadsWithDuplicates.size() && ! (quadsWithDuplicates.get(i).getSubject().equals(q.getSubject())
+                    && quadsWithDuplicates.get(i).getObject().equals(q.getObject())
+                    && quadsWithDuplicates.get(i).getPredicate().equals(q.getPredicate())
+                    && quadsWithDuplicates.get(i).getGraph().equals(q.getGraph())
+            )) {
+                i ++;
+            }
+
+            if (i == quadsWithDuplicates.size()) {
+                quadsWithDuplicates.add(q);
+            }
+        }
+
+        quads = quadsWithDuplicates;
     }
 
     public void addTriple(String subject, String predicate, String object) {
