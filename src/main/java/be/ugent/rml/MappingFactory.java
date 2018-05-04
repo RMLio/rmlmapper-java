@@ -2,6 +2,8 @@ package be.ugent.rml;
 
 import be.ugent.rml.functions.*;
 import be.ugent.rml.store.QuadStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ public class MappingFactory {
     private String triplesMap;
     private QuadStore store;
     private ArrayList<PredicateObject> predicateObjects;
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public MappingFactory(FunctionLoader functionLoader) {
         this.functionLoader = functionLoader;
@@ -39,7 +42,7 @@ public class MappingFactory {
 
             if (!subjectmaps.isEmpty()) {
                 if (subjectmaps.size() > 1) {
-                    //TODO logger warn
+                    logger.warn(triplesMap + " has " + subjectmaps.size() + "Subject Maps. You can only have one. A random one is taken.");
                 }
 
                 String subjectmap = subjectmaps.get(0);
@@ -157,7 +160,7 @@ public class MappingFactory {
 
                         if (! parentTriplesMaps.isEmpty()) {
                             if (parentTriplesMaps.size() > 1) {
-                                //todo logger warn
+                                logger.warn(triplesMap + " has " + parentTriplesMaps.size() + " Parent Triples Maps. You can only have one. A random one is taken.");
                             }
 
                             String parentTriplesMap = parentTriplesMaps.get(0);

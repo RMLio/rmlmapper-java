@@ -6,6 +6,8 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.store.RDF4JStore;
 import org.apache.http.client.utils.URIBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.ParserConfig;
@@ -26,6 +28,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static List<String> applyTemplate(List<Element> template, Record record) {
         List<String> result = new ArrayList<String>();
@@ -57,8 +61,7 @@ public class Utils {
                 }
 
                 if (values.isEmpty()) {
-                    //TODO logger warn
-                    //logger.warn(`Not all values for a template where found. More specific, the variable ${template[i].value} did not provide any results.`);
+                    logger.warn("Not all values for a template where found. More specific, the variable " + template.get(i).getValue() + " did not provide any results.");
                     allValuesFound = false;
                 }
             }
@@ -187,7 +190,7 @@ public class Utils {
         return Utils.readTurtle(mappingFile, RDFFormat.TURTLE);
     }
 
-    public static String encodeURI(String s) {
+    public static String encodeHttpURI(String s) {
         // TODO make sure this is ok
         if (!s.toLowerCase().matches("^\\w+://.*")) {
             s = "http://" + s;
@@ -195,13 +198,13 @@ public class Utils {
         try {
             URIBuilder builder = new URIBuilder(s);
             URI uri = builder.build();
-            if(uri.getScheme() == null) {
+            if (uri.getScheme() == null) {
                 builder.setScheme("http");
             }
 
-            return builder.build().toASCIIString();
+            return encodeURI(builder.build().toASCIIString());
         } catch (URISyntaxException e) {
-            return s;
+            return encodeURI(s);
         }
     }
 
@@ -292,5 +295,10 @@ public class Utils {
         }
 
         return s + " " + s + " " + o + " " + g + ".";
+    }
+
+    public static String encodeURI(String url) {
+        //TODO I guess it needs more...
+        return url.replaceAll(" ", "%20");
     }
 }

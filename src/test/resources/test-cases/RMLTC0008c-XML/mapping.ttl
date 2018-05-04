@@ -4,6 +4,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix activity: <http://example.com/activity/> .
 @base <http://example.com/base/> .
 
 <TriplesMap1>
@@ -15,27 +16,10 @@
     rml:iterator "/students/student"
   ];
 
-  rr:subjectMap [ 
-    rr:template "http://example.com/Student/{ID}/{Name}"; 
-    rr:graphMap [ rr:template "http://example.com/graph/Student/{ID}/{Name}" ]
-  ];
+  rr:subjectMap [ rr:template "http://example.com/Student/{ID}/{Name}" ];
 	
-  rr:predicateObjectMap [ 
-    rr:predicate rdf:type ;
-    rr:object foaf:Person; 
-  ];
-	
-  rr:predicateObjectMap [ 
-    rr:predicate ex:id ;
-    rr:objectMap [ rml:reference "ID" ]
-  ];
-
   rr:predicateObjectMap [ 
     rr:predicate foaf:name ;
+    rr:predicate ex:name ;
     rr:objectMap [ rml:reference "Name" ]
-  ];
-
-  rr:predicateObjectMap [ 
-    rr:predicate ex:Sport ;
-    rr:objectMap [ rml:reference "Sport" ]
   ] .

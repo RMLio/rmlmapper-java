@@ -2,11 +2,15 @@ package be.ugent.rml.records;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JSONRecord implements Record {
+
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private String path;
     private Object document;
@@ -24,7 +28,7 @@ public class JSONRecord implements Record {
             Object t = JsonPath.read(document, this.path + "." + value);
             results.add(t.toString());
         } catch(PathNotFoundException e) {
-            //TODO logger warn
+            logger.warn(e.getMessage(), e);
         }
 
         return results;
