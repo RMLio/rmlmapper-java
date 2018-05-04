@@ -51,9 +51,7 @@ public class Main {
         options.addOption(outputfile);
         options.addOption(removeduplicates);
         options.addOption(triplesmaps);
-        options.addOption("v", false, "verbose");
-        options.addOption("vv", false, "more verbose");
-        options.addOption("vvv", false, "very verbose");
+        options.addOption("v", "verbose", false, "verbose");
 
         // create the parser
         CommandLineParser parser = new DefaultParser();
@@ -62,10 +60,6 @@ public class Main {
             CommandLine line = parser.parse( options, args );
 
             if (line.hasOption("v")) {
-                setLoggerLevel(Level.WARN);
-            } else if (line.hasOption("vv")) {
-                setLoggerLevel(Level.INFO);
-            } else if (line.hasOption("vvv")) {
                 setLoggerLevel(Level.DEBUG);
             } else {
                 setLoggerLevel(Level.ERROR);
