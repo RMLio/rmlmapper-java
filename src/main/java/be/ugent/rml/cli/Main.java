@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -36,6 +38,11 @@ public class Main {
                 .hasArg()
                 .desc(  "path to output file" )
                 .build();
+        Option triplesmaps = Option.builder("t")
+                .longOpt( "triplesmaps" )
+                .hasArg()
+                .desc(  "IRIs of the triplesmaps that should be executed (default is all triplesmaps)" )
+                .build();
         Option removeduplicates = Option.builder("d")
                 .longOpt( "duplicates" )
                 .desc(  "remove duplicates" )
@@ -43,6 +50,7 @@ public class Main {
         options.addOption(mappingdoc);
         options.addOption(outputfile);
         options.addOption(removeduplicates);
+        options.addOption(triplesmaps);
         options.addOption("v", false, "verbose");
         options.addOption("vv", false, "more verbose");
         options.addOption("vvv", false, "very verbose");
@@ -75,8 +83,14 @@ public class Main {
                 Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
                 RDF4JStore rmlStore = new RDF4JStore(model);
 
+                List<String> triplesMaps = new ArrayList<>();
+
+                if (line.hasOption("t")) {
+                    triplesMaps = Arrays.asList(line.getOptionValue("t").split(","));
+                }
+
                 Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore)), new FunctionLoader());
-                QuadStore result = executor.execute(null, line.hasOption("d"));
+                QuadStore result = executor.execute(triplesMaps, line.hasOption("d"));
 
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 
