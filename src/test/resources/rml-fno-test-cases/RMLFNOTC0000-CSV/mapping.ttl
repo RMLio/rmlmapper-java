@@ -1,130 +1,36 @@
-######################################################################################
-# 1. Prefixes
-######################################################################################
+# Function on object, 0 parameters
 
-@prefix rr:     <http://www.w3.org/ns/r2rml#>.
-@prefix rml:    <http://semweb.mmlab.be/ns/rml#> .
-@prefix crml:   <http://semweb.mmlab.be/ns/crml#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 @prefix fnml:   <http://semweb.mmlab.be/ns/fnml#> .
 @prefix fno: 	<http://w3id.org/function/ontology#> .
-@prefix ql:     <http://semweb.mmlab.be/ns/ql#> .
-@prefix dbo:	<http://dbpedia.org/ontology/> .
-@prefix dbf:	<http://dbpedia.org/function/> .
-@prefix geo: 	<http://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix georss: <http://www.georss.org/georss/> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
-@prefix rdf: 	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix ex: 	<http://example.com/uppercase#> .
 @prefix grel: 	<http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 
-@base	<http://example.com/uppercaseMapping/> .
+@base <http://example.com/base/> .
 
+<TriplesMap1>
+  a rr:TriplesMap;
 
-######################################################################################
-# 2. Mapping Document Metadata
-######################################################################################
+  rml:logicalSource [
+    rml:source "../student.csv";
+    rml:referenceFormulation ql:CSV
+  ];
 
-[]  dcterms:title "DBpedia Mappings";
-    dcterms:created "2016-07-09"^^xsd:date ;
-    dcterms:modified "2016-07-09"^^xsd:date .
+  rr:subjectMap [
+    rr:template "http://example.com/{Name}"
+  ];
 
-
-######################################################################################
-# 3. Input Sources
-######################################################################################
-
-
-# 3.1 Data Sources
-######################################################################################
-
-
-# 3.1 Logical Sources
-######################################################################################
-
-<#Person_LogicalSource>
-	rml:source "input.csv" ;
-	rml:referenceFormulation ql:CSV .
-
-######################################################################################
-# 4. Mapping Definitions
-######################################################################################
-
-<#Person_TemplateMapping>
-	rml:logicalSource <#Person_LogicalSource> ;
-	rr:subjectMap <#Person_SubjectMap> ;
-	rr:predicateObjectMap <#CoordinatesGeoMapping> ;
- 	rr:predicateObjectMap <#NameMapping> ;
- 	rr:predicateObjectMap <#NameURIMapping> .
-
-<#NameMapping>
-	rr:predicate dbo:name ;
-	rr:objectMap <#FunctionMapUppercaseIntermediateNameMapping> .
-
-<#NameURIMapping>
-	rr:predicate dbo:title ;
-	rr:objectMap <#FunctionMapUppercaseIntermediateNameURIMapping> .
-
-
-<#IntermediateCoordinatesGeoMapping>
-	rml:logicalSource <#Person_LogicalSource> ;
-	rr:subjectMap <#RestingPlace_SubjectMap> ;
-
-	rr:predicateObjectMap [
-		rr:predicate geo:lon ;
-		rr:objectMap  [ rml:reference "coordinates" ;
-		    crml:equalCondition <#FunctionMapIsSetIntermediateCoordinatesGeoMapping> ] ] .
-
-<#Person_SubjectMap>
-	rr:template "http://example.com/uppercase#{id}" ;
-	rr:class ex:Test .
-
-<#RestingPlace_SubjectMap>
-	rr:template "http://example.com/uppercase/restPlace/{id}" ;
-	rr:class ex:RestPlace .
-
-<#FunctionMapIsSetIntermediateCoordinatesGeoMapping>
-	a fnml:FunctionTermMap ;
-	fnml:functionValue <#FunctionValueIsSetIntermediateCoordinatesGeoMapping> .
-
-<#FunctionMapUppercaseIntermediateNameMapping>
-	a fnml:FunctionTermMap ;
-	fnml:functionValue <#FunctionValueUppercaseIntermediateNameMapping> .
-
-<#FunctionMapUppercaseIntermediateNameURIMapping>
-	a fnml:FunctionTermMap ;
-	fnml:functionValue <#FunctionValueUppercaseIntermediateNameURIMapping> .
-
-
-<#FunctionValueIsSetIntermediateCoordinatesGeoMapping>
-	rml:logicalSource <#Person_LogicalSource> ;
-	rr:subjectMap <#GeoCoordinates_SubjectMap> ;
-	rr:predicateObjectMap [
-		rr:predicate fno:executes ;
-		rr:objectMap [ rr:constant grel:isSet ] ] ;
-	rr:predicateObjectMap [
-		rr:predicate grel:valueParameter ;
-		rr:objectMap [ rml:reference "coordinates" ] ] .
-
-<#FunctionValueUppercaseIntermediateNameMapping>
-	rml:logicalSource <#Person_LogicalSource> ;
-	rr:subjectMap <#GeoCoordinates_SubjectMap> ;
-	rr:predicateObjectMap [
-		rr:predicate fno:executes ;
-		rr:objectMap [ rr:constant grel:toUpperCase ] ] ;
-	rr:predicateObjectMap [
-		rr:predicate grel:valueParameter ;
-		rr:objectMap [ rml:reference "name" ] ] .
-
-<#FunctionValueUppercaseIntermediateNameURIMapping>
-	rml:logicalSource <#Person_LogicalSource> ;
-	rr:subjectMap <#GeoCoordinates_SubjectMap> ;
-	rr:predicateObjectMap [
-		rr:predicate fno:executes ;
-		rr:objectMap [ rr:constant grel:escape ] ] ;
-	rr:predicateObjectMap [
-		rr:predicate grel:valueParameter ;
-		rr:objectMap [ rml:reference "name" ] ] ;
-	rr:predicateObjectMap [
-        rr:predicate grel:modeParameter ;
-        rr:objectMap [ rr:constant "html" ] ] .
+  rr:predicateObjectMap [
+    rr:predicate foaf:name;
+    rr:objectMap [
+      fnml:functionValue [
+      	rr:predicateObjectMap [
+      		rr:predicate fno:executes ;
+      		rr:objectMap [ rr:constant grel:random ] ]
+      ]
+    ]
+  ].

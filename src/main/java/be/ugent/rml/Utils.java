@@ -159,6 +159,9 @@ public class Utils {
     }
 
     public static List<String> getList(QuadStore store, String first, List<String> list) {
+        if (first.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+            return list;
+        }
         String value = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#first", null)).get(0);
         String next = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest", null)).get(0);
         list.add(value);

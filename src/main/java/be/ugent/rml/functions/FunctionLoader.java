@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,11 @@ public class FunctionLoader {
                         this.classMap.put(pathName, cls);
                     }
 
-                    List<String> parameters = Utils.getList(this.functionDescriptionTriples, Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(iri, "http://semweb.datasciencelab.be/ns/function#expects", null)).get(0));
+                    List<String> parameters = new ArrayList<>();
+                    List<String> expectList = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(iri, "http://semweb.datasciencelab.be/ns/function#expects", null));
+                    if (expectList.size() > 0) {
+                        parameters = Utils.getList(this.functionDescriptionTriples, expectList.get(0));
+                    }
                     Class<?>[] orderedParameters = FunctionUtils.parseFunctionParameters(this.functionDescriptionTriples, parameters);
                     List<String> methods = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(libraries.get(0), libraryNamespace + "method", null));
 

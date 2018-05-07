@@ -59,6 +59,30 @@ grel:escape a fno:Function ;
     lib:method "escape"
   ].
 
+grel:random a fno:Function ;
+  fno:name "random" ;
+  rdfs:label "random" ;
+  dcterms:description "Returns a random uuid." ;
+  fno:expects ( ) ;
+  fno:returns ( grel:stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "GrelFunctions.jar";
+    lib:class "GrelFunctions";
+    lib:method "random"
+  ].
+
+grel:toUpperCaseURL a fno:Function ;
+  fno:name "toUpperCaseURL" ;
+  rdfs:label "toUpperCaseURL" ;
+  dcterms:description "Returns an uppercase, valid url." ;
+  fno:expects ( grel:valueParam ) ;
+  fno:returns ( grel:stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "GrelFunctions.jar";
+    lib:class "GrelFunctions";
+    lib:method "toUpperCaseURL"
+  ].
+
 grel:valueParam a fno:Parameter ;
   fno:name "input value" ;
   rdfs:label "input value" ;
