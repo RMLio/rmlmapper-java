@@ -2,9 +2,12 @@ package be.ugent.rml.records;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +29,16 @@ public class JSONRecord implements Record {
 
         try {
             Object t = JsonPath.read(document, this.path + "." + value);
-            results.add(t.toString());
+
+            if (t instanceof JSONArray) {
+                JSONArray array = (JSONArray) t;
+
+                for (int i = 0; i < array.size(); i ++) {
+                    results.add(array.get(i).toString());
+                }
+            } else {
+                results.add(t.toString());
+            }
         } catch(PathNotFoundException e) {
             logger.warn(e.getMessage(), e);
         }
