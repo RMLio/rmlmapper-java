@@ -15,14 +15,14 @@ public class RecordsFactory {
 
     private DataFetcher dataFetcher;
     private Map<String, List<Record>> allCSVRecords;
-    private Map<String, List<Record>> allJSONRecords;
-    private Map<String, List<Record>> allXMLRecords;
+    private Map<String, Map<String, List<Record>>> allJSONRecords;
+    private Map<String, Map<String, List<Record>>> allXMLRecords;
 
     public RecordsFactory(DataFetcher dataFetcher) {
         this.dataFetcher = dataFetcher;
-        allCSVRecords = new HashMap<String, List<Record>>();
-        allJSONRecords = new HashMap<String, List<Record>>();
-        allXMLRecords = new HashMap<String, List<Record>>();
+        allCSVRecords = new HashMap<>();
+        allJSONRecords = new HashMap<>();
+        allXMLRecords = new HashMap<>();
     }
 
     public List<Record> createRecords(String triplesMap, QuadStore rmlStore) throws IOException {
@@ -59,19 +59,26 @@ public class RecordsFactory {
                 } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "XPath")) {
                     if (!iterators.isEmpty()) {
                         String iterator = Utils.getLiteral(iterators.get(0));
-                        String key = source + iterator;
 
-                        if (allXMLRecords.containsKey(key)) {
-                            return allXMLRecords.get(key);
+                        if (allXMLRecords.containsKey(source) && allXMLRecords.get(source).containsKey(iterator)) {
+                            return allXMLRecords.get(source).get(iterator);
                         } else {
                             try {
                                 XML xml = new XML();
-                                allXMLRecords.put(key, xml.get(source, iterator, dataFetcher.getCwd()));
+                                List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
+
+                                if (allXMLRecords.containsKey(source)) {
+                                    allXMLRecords.get(source).put(iterator, records);
+                                } else {
+                                    Map<String, List<Record>> temp = new HashMap<>();
+                                    temp.put(iterator, records);
+                                    allXMLRecords.put(source, temp);
+                                }
+
+                                return records;
                             } catch (IOException e) {
                                 throw e;
                             }
-
-                            return allXMLRecords.get(key);
                         }
                     } else {
                         throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for XPath.");
@@ -79,19 +86,26 @@ public class RecordsFactory {
                 } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "JSONPath")) {
                     if (!iterators.isEmpty()) {
                         String iterator = Utils.getLiteral(iterators.get(0));
-                        String key = source + iterator;
 
-                        if (allJSONRecords.containsKey(key)) {
-                            return allJSONRecords.get(key);
+                        if (allJSONRecords.containsKey(source) && allJSONRecords.get(source).containsKey(iterator)) {
+                            return allJSONRecords.get(source).get(iterator);
                         } else {
                             try {
                                 JSON json = new JSON();
-                                allJSONRecords.put(key, json.get(source, iterator, dataFetcher.getCwd()));
+                                List<Record> records = json.get(source, iterator, dataFetcher.getCwd());
+
+                                if (allJSONRecords.containsKey(source)) {
+                                    allJSONRecords.get(source).put(iterator, records);
+                                } else {
+                                    Map<String, List<Record>> temp = new HashMap<>();
+                                    temp.put(iterator, records);
+                                    allJSONRecords.put(source, temp);
+                                }
+
+                                return records;
                             } catch (IOException e) {
                                 throw e;
                             }
-
-                            return allJSONRecords.get(key);
                         }
                     } else {
                         throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for JSONPath.");
