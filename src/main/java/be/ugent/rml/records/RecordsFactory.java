@@ -58,34 +58,40 @@ public class RecordsFactory {
                     }
                 } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "XPath")) {
                     if (!iterators.isEmpty()) {
-                        if (allXMLRecords.containsKey(source)) {
-                            return allXMLRecords.get(source);
+                        String iterator = Utils.getLiteral(iterators.get(0));
+                        String key = source + iterator;
+
+                        if (allXMLRecords.containsKey(key)) {
+                            return allXMLRecords.get(key);
                         } else {
                             try {
                                 XML xml = new XML();
-                                allXMLRecords.put(source, xml.get(source, Utils.getLiteral(iterators.get(0)), dataFetcher.getCwd()));
+                                allXMLRecords.put(key, xml.get(source, iterator, dataFetcher.getCwd()));
                             } catch (IOException e) {
                                 throw e;
                             }
 
-                            return allXMLRecords.get(source);
+                            return allXMLRecords.get(key);
                         }
                     } else {
                         throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for XPath.");
                     }
                 } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "JSONPath")) {
                     if (!iterators.isEmpty()) {
-                        if (allJSONRecords.containsKey(source)) {
-                            return allJSONRecords.get(source);
+                        String iterator = Utils.getLiteral(iterators.get(0));
+                        String key = source + iterator;
+
+                        if (allJSONRecords.containsKey(key)) {
+                            return allJSONRecords.get(key);
                         } else {
                             try {
                                 JSON json = new JSON();
-                                allJSONRecords.put(source, json.get(source, Utils.getLiteral(iterators.get(0)), dataFetcher.getCwd()));
+                                allJSONRecords.put(key, json.get(source, iterator, dataFetcher.getCwd()));
                             } catch (IOException e) {
                                 throw e;
                             }
 
-                            return allJSONRecords.get(source);
+                            return allJSONRecords.get(key);
                         }
                     } else {
                         throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for JSONPath.");
