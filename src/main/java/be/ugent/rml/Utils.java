@@ -198,13 +198,14 @@ public class Utils {
             s = "<" + s + ">";
         }
 
+        String p = "<" + q.getPredicate() + ">";
         String o = q.getObject();
 
         if (!Utils.isBlankNode(s) && !Utils.isLiteral(o)) {
             o = "<" + o + ">";
         }
 
-        return s + " " + s + " " + o + ".";
+        return s + " " + p + " " + o + ".";
     }
 
     private static String getNQuadOfQuad(Quad q) {
