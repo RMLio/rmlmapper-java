@@ -37,3 +37,56 @@ The following options are available.
 - `-d, --duplicates`: remove duplicates in the output
 - `-v, --verbose`: show more details
 - `-h, --help`: show help
+
+### Including functions
+
+There are two ways to include (new) functions within the RML Mapper
+  * dynamic loading: you add links to java files or jar files, and those files are loaded dynamically at runtime
+  * preloading: you register functionality via code, and you need to rebuild the mapper to use that functionality
+  
+Registration of functions is done using a Turtle file, which you can find in `src/main/resources/functions.ttl`
+
+The snippet below for example links an fno:function to a library, provided by a jar-file (`GrelFunctions.jar`).
+
+```
+grel:toUpperCase a fno:Function ;
+  fno:name "to Uppercase" ;
+  rdfs:label "to Uppercase" ;
+  dcterms:description "Returns the input with all letters in upper case." ;
+  fno:expects ( grel:valueParam ) ;
+  fno:returns ( grel:stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "GrelFunctions.jar";
+    lib:class "GrelFunctions";
+    lib:method "toUppercase"
+  ].
+```
+
+#### Dynamic loading
+
+Just put the java or jar-file in the resources folder,
+at the root folder of the jar-location,
+or the parent folder of the jar-location,
+it will be found dynamically.
+
+#### Preloading
+
+This overrides the dynamic loading.
+See the snippet below for an example of how to do it.
+
+```
+import be.ugent.rml.functions.lib.GrelProcessor;
+
+String mapPath = "path/to/mapping/file";
+String outPath = "path/to/where/the/output/triples/should/be/written";
+
+Map<String, Class> libraryMap = new HashMap<>();
+libraryMap.put("GrelFunctions.jar", GrelProcessor.class);
+FunctionLoader functionLoader = new FunctionLoader(libraryMap);
+try {
+    Executor executor = this.createExecutor(mapPath, functionLoader);
+    doMapping(executor, outPath);
+} catch (IOException e) {
+    logger.error(e.getMessage(), e);
+}
+```
