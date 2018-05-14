@@ -230,7 +230,7 @@ public class Executor {
                 String subject = null;
 
                 if (!subjects.isEmpty()) {
-                    subject = Utils.encodeHttpURI(subjects.get(0));
+                    subject = subjects.get(0);
                 }
 
                 this.subjects.get(triplesMap).put(i,subject);
@@ -238,7 +238,7 @@ public class Executor {
                 //we want a Blank Node
 
                 if (mapping.getSubject().getFunction() != null) {
-                    this.subjects.get(triplesMap).put(i, "_:" +  Utils.encodeURI((String) mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0)));
+                    this.subjects.get(triplesMap).put(i, "_:" + mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
                 } else {
                     this.subjects.get(triplesMap).put(i, "_:b" + this.blankNodeCounter);
                     this.blankNodeCounter++;

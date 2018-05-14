@@ -9,12 +9,20 @@ import java.util.Map;
 
 public class ApplyTemplateFunction extends Function{
 
-    public ApplyTemplateFunction() {
+    private boolean encodeURI;
+
+    public ApplyTemplateFunction(boolean encodeURI) {
         super(null);
+
+        this.encodeURI = encodeURI;
+    }
+
+    public ApplyTemplateFunction() {
+        this(false);
     }
 
     @Override
     public List<?> execute(Record record, Map<String, List<List<Element>>> parameters) {
-        return Utils.applyTemplate(parameters.get("_TEMPLATE").get(0), record);
+        return Utils.applyTemplate(parameters.get("_TEMPLATE").get(0), record, encodeURI);
     }
 }

@@ -57,7 +57,7 @@ public class MappingFactory {
                         String template = getGenericTemplate(subjectmap);
 
                         if (template != null) {
-                            this.subject.setFunction(new ApplyTemplateFunction());
+                            this.subject.setFunction(new ApplyTemplateFunction(true));
                             HashMap<String, List<List<Element>>> parameters = new HashMap<>();
                             ArrayList<List<Element>> temp = new ArrayList<>();
                             temp.add(parseTemplate(getGenericTemplate(subjectmap)));
@@ -70,7 +70,7 @@ public class MappingFactory {
                         ArrayList<List<Element>> temp = new ArrayList<>();
                         temp.add(parseTemplate(getGenericTemplate(subjectmap)));
                         parameters.put("_TEMPLATE", temp);
-                        this.subject = new TripleElement(null, NAMESPACES.RR  + "IRI", new ApplyTemplateFunction(), parameters);
+                        this.subject = new TripleElement(null, NAMESPACES.RR  + "IRI", new ApplyTemplateFunction(true), parameters);
                     }
                 } else {
                     FunctionDetails functionDetails = parseFunctionTermMap(functionValues.get(0));

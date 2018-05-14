@@ -32,6 +32,10 @@ public class Utils {
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static List<String> applyTemplate(List<Element> template, Record record) {
+        return Utils.applyTemplate(template, record, false);
+    }
+
+    public static List<String> applyTemplate(List<Element> template, Record record, boolean encodeURIEnabled) {
         List<String> result = new ArrayList<String>();
         result.add("");
         //we only return a result when all elements of the template are found
@@ -51,6 +55,11 @@ public class Utils {
                 List<String> values = record.get(template.get(i).getValue());
 
                 for (String value : values) {
+
+                    if (encodeURIEnabled) {
+                        value = Utils.encodeURI(value);
+                    }
+
                     for (String aResult : result) {
                         temp.add(aResult + value);
                     }
