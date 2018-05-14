@@ -1,6 +1,5 @@
 package be.ugent.rml;
 
-import be.ugent.rml.functions.ApplyTemplateFunction;
 import be.ugent.rml.functions.Function;
 
 import java.util.ArrayList;

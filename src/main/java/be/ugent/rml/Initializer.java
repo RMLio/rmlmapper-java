@@ -3,6 +3,7 @@ package be.ugent.rml;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.store.QuadStore;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,7 @@ public class Initializer {
     private List<String> triplesMaps;
     private HashMap<String, Mapping> mappings;
 
-    public Initializer(QuadStore rmlStore, FunctionLoader functionLoader) {
+    public Initializer(QuadStore rmlStore, FunctionLoader functionLoader) throws IOException {
         this.rmlStore = rmlStore;
         //we get all the TriplesMaps from the mapping
         this.triplesMaps = this.getAllTriplesMaps();
@@ -31,7 +32,7 @@ public class Initializer {
         extractMappings();
     }
 
-    private void extractMappings() {
+    private void extractMappings() throws IOException {
         for (String triplesMap : triplesMaps) {
             this.mappings.put(triplesMap, factory.createMapping(triplesMap, rmlStore));
         }

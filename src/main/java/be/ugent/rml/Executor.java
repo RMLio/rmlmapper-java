@@ -22,7 +22,11 @@ public class Executor {
     private int blankNodeCounter;
     private HashMap<String, Mapping> mappings;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) {
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
+        this(rmlStore, recordsFactory, null);
+    }
+
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) throws IOException {
         this.initializer = new Initializer(rmlStore, functionLoader);
         this.mappings = this.initializer.getMappings();
         this.resultingTriples = new SimpleQuadStore();
@@ -97,7 +101,7 @@ public class Executor {
             combinedGraphs.addAll(poGraphs);
 
             if (po.getFunction() != null) {
-                List<String> objects = po.getFunction().execute(record, po.getParameters());
+                List<String> objects = (List<String>) po.getFunction().execute(record, po.getParameters());
 
                 if (objects.size() > 0) {
                     if (po.getTermType().equals(NAMESPACES.RR + "IRI")) {
@@ -222,11 +226,11 @@ public class Executor {
         if (!this.subjects.get(triplesMap).containsKey(i)) {
             //we want a IRI and not a Blank Node
             if (mapping.getSubject().getTermType().equals(NAMESPACES.RR + "IRI")) {
-                List<String> subjects = mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters());
+                List<String> subjects = (List<String>) mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters());
                 String subject = null;
 
                 if (!subjects.isEmpty()) {
-                    subject = Utils.encodeURI(subjects.get(0));
+                    subject = Utils.encodeHttpURI(subjects.get(0));
                 }
 
                 this.subjects.get(triplesMap).put(i,subject);
@@ -234,7 +238,7 @@ public class Executor {
                 //we want a Blank Node
 
                 if (mapping.getSubject().getFunction() != null) {
-                    this.subjects.get(triplesMap).put(i, "_:" +  Utils.encodeURI(mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0)));
+                    this.subjects.get(triplesMap).put(i, "_:" +  Utils.encodeURI((String) mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0)));
                 } else {
                     this.subjects.get(triplesMap).put(i, "_:b" + this.blankNodeCounter);
                     this.blankNodeCounter++;

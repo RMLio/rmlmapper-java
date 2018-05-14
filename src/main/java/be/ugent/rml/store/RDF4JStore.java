@@ -1,9 +1,7 @@
 package be.ugent.rml.store;
 
 import be.ugent.rml.Utils;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import java.util.ArrayList;
@@ -42,27 +40,30 @@ public class RDF4JStore extends QuadStore {
         ValueFactory vf = SimpleValueFactory.getInstance();
         Model result;
 
-        if (subject == null && predicate == null && object == null) {
-            result = model.filter(null, null, null);
-        } else {
-            if (object == null) {
-                if (subject == null) {
-                    result = model.filter(null, vf.createIRI(predicate), null);
-                } else if (Utils.isBlankNode(subject)) {
-                    result = model.filter(vf.createBNode(subject.replaceFirst("_:", "")), vf.createIRI(predicate), null);
-                } else {
-                    result = model.filter(vf.createIRI(subject), vf.createIRI(predicate), null);
-                }
-            } else if (object.startsWith("\"")) {
-                result = model.filter(vf.createIRI(subject), vf.createIRI(predicate), vf.createLiteral(object));
+        Object filterSubject = null;
+        Object filterPredicate = null;
+        Object filterObject = null;
+        if (subject != null) {
+            if (Utils.isBlankNode(subject)) {
+                filterSubject= vf.createBNode(subject.replaceFirst("_:", ""));
             } else {
-                if (subject == null) {
-                    result = model.filter(null, vf.createIRI(predicate), vf.createIRI(object));
-                } else {
-                    result = model.filter(vf.createIRI(subject), vf.createIRI(predicate), vf.createIRI(object));
-                }
+                filterSubject = vf.createIRI(subject);
             }
         }
+
+        if (predicate != null) {
+            filterPredicate = vf.createIRI(predicate);
+        }
+
+        if (object != null) {
+            if (object.startsWith("\"")) {
+                filterObject = vf.createLiteral(object);
+            } else {
+                filterObject = vf.createIRI(object);
+            }
+        }
+
+        result = model.filter((Resource) filterSubject, (IRI) filterPredicate, (Value) filterObject);
 
         List<Quad> quads = new ArrayList<>();
 

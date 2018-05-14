@@ -83,7 +83,7 @@ public class Main {
                     triplesMaps = Arrays.asList(line.getOptionValue("t").split(","));
                 }
 
-                Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore)), new FunctionLoader());
+                Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore)));
                 QuadStore result = executor.execute(triplesMaps, line.hasOption("d"));
 
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
