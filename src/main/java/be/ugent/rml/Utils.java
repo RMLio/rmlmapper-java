@@ -192,6 +192,7 @@ public class Utils {
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
+            is.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

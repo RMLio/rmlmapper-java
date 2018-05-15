@@ -66,4 +66,8 @@ public class Initializer {
     public List<String> getTriplesMaps() {
         return this.triplesMaps;
     }
+
+    public FunctionLoader getFunctionLoader() {
+        return this.functionLoader;
+    }
 }
