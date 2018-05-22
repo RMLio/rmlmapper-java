@@ -3,7 +3,6 @@ package be.ugent.rml.cli;
 import be.ugent.rml.DataFetcher;
 import be.ugent.rml.Executor;
 import be.ugent.rml.Utils;
-import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
@@ -52,12 +51,18 @@ public class Main {
         options.addOption(removeduplicates);
         options.addOption(triplesmaps);
         options.addOption("v", "verbose", false, "verbose");
+        options.addOption("h", "help", false, "get help info");
 
         // create the parser
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
             CommandLine line = parser.parse( options, args );
+
+            if (line.hasOption("h")) {
+                printHelp(options);
+                return;
+            }
 
             if (line.hasOption("v")) {
                 setLoggerLevel(Level.DEBUG);

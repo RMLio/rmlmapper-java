@@ -80,7 +80,7 @@ public class FunctionUtils {
         return null;
     }
 
-    private static File getFile(String path) throws IOException {
+    static File getFile(String path) throws IOException {
         // Absolute path?
         File f = new File(path);
         if (f.isAbsolute()) {
@@ -89,17 +89,6 @@ public class FunctionUtils {
             } else {
                 throw new FileNotFoundException();
             }
-        }
-
-        // Resource path?
-        try {
-            URL url = Resources.getResource(path);
-            f = new File(url.getFile());
-            if (f.exists()) {
-                return f;
-            }
-        } catch (IllegalArgumentException e) {
-            // Too bad
         }
 
         String basePath;
@@ -121,6 +110,16 @@ public class FunctionUtils {
             return f;
         }
 
+        // Resource path?
+        try {
+            URL url = Resources.getResource(path);
+            f = new File(url.getFile());
+            if (f.exists()) {
+                return f;
+            }
+        } catch (IllegalArgumentException e) {
+            // Too bad
+        }
 
         throw new FileNotFoundException();
     }

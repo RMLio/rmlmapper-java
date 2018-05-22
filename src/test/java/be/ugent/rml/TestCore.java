@@ -34,14 +34,17 @@ abstract class TestCore {
         return new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)), functionLoader);
     }
 
-    void doMapping(String mapPath, String outPath) {
+    Executor doMapping(String mapPath, String outPath) {
         try {
             Executor executor = this.createExecutor(mapPath);
             doMapping(executor, outPath);
+            return executor;
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             fail();
         }
+
+        return null;
     }
 
     void doMapping(Executor executor, String outPath) {

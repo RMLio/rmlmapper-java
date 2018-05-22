@@ -272,4 +272,8 @@ public class Executor {
 
         return this.recordsHolders.get(triplesMap);
     }
+
+    public FunctionLoader getFunctionLoader() {
+        return this.initializer.getFunctionLoader();
+    }
 }

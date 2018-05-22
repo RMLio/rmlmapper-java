@@ -3,14 +3,14 @@ package be.ugent.rml.functions;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
-import com.google.common.io.Resources;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,19 +18,23 @@ import java.util.Map;
 
 public class FunctionLoader {
 
+    private static final Logger logger = LoggerFactory.getLogger(FunctionLoader.class);
+
     private Map<String, FunctionModel> loadedMethods;
     private Map<String, Class> classMap;
     private QuadStore functionDescriptionTriples;
     private String libraryNamespace = "http://example.com/library#";
+    private Map<String, String> libraryMap;
 
     public FunctionLoader() {
         this.loadedMethods = new HashMap<>();
         this.classMap = new HashMap<>();
-        URL url = Resources.getResource("functions.ttl");
+        this.libraryMap = new HashMap<>();
         QuadStore store;
         try {
-            File myFile = new File(url.toURI());
-            store = Utils.readTurtle(myFile);
+            File sourceFile = FunctionUtils.getFile("functions.ttl");
+            logger.info("Found functions.ttl on path " + sourceFile.getPath());
+            store = Utils.readTurtle(sourceFile);
         } catch (Exception e) {
             ModelBuilder builder = new ModelBuilder();
             Model model = builder.build();
@@ -42,17 +46,25 @@ public class FunctionLoader {
     public FunctionLoader(Map<String, Class> libraryMap) {
         this();
         this.classMap = libraryMap;
+        for (String key : libraryMap.keySet()) {
+            this.libraryMap.put(key, "__local");
+        }
     }
 
-    public FunctionLoader(RDF4JStore functionDescriptionTriples) {
+    public FunctionLoader(QuadStore functionDescriptionTriples) {
         this.loadedMethods = new HashMap<>();
         this.classMap = new HashMap<>();
+        this.libraryMap = new HashMap<>();
         this.functionDescriptionTriples = functionDescriptionTriples;
     }
 
-    public FunctionLoader(RDF4JStore functionDescriptionTriples, Map<String, Class> libraryMap) {
+    public FunctionLoader(QuadStore functionDescriptionTriples, Map<String, Class> libraryMap) {
         this.loadedMethods = new HashMap<>();
         this.classMap = libraryMap;
+        this.libraryMap = new HashMap<>();
+        for (String key : libraryMap.keySet()) {
+            this.libraryMap.put(key, "__local");
+        }
         this.functionDescriptionTriples = functionDescriptionTriples;
     }
 
@@ -66,12 +78,14 @@ public class FunctionLoader {
 
                 if (pathNames.size() > 0 && classes.size() > 0) {
                     String pathName = Utils.getLiteral(pathNames.get(0));
+                    String className = Utils.getLiteral(classes.get(0));
                     Class cls;
-                    if (this.classMap.containsKey(pathName)) {
-                        cls = this.classMap.get(pathName);
+                    if (this.classMap.containsKey(className)) {
+                        cls = this.classMap.get(className);
                     } else {
-                        cls = FunctionUtils.functionRequire(pathName, Utils.getLiteral(classes.get(0)));
-                        this.classMap.put(pathName, cls);
+                        cls = FunctionUtils.functionRequire(pathName, className);
+                        this.classMap.put(className, cls);
+                        this.libraryMap.put(className, FunctionUtils.getFile(pathName).getPath());
                     }
 
                     List<String> parameters = new ArrayList<>();
@@ -106,5 +120,9 @@ public class FunctionLoader {
         }
 
         return this.loadedMethods.get(iri);
+    }
+
+    public String getLibraryPath(String className) {
+        return this.libraryMap.get(className);
     }
 }
