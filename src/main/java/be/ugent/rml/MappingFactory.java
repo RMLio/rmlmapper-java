@@ -153,7 +153,7 @@ public class MappingFactory {
                         ArrayList<List<Element>> temp = new ArrayList<>();
                         temp.add(parseTemplate(genericTemplate));
                         parameters.put("_TEMPLATE", temp);
-                        predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(), parameters, language, datatype));
+                        predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(termType.equals(NAMESPACES.RR + "IRI")), parameters, language, datatype));
                     } else {
                         //look for parenttriplesmap
                         List<String> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "parentTriplesMap", null));
