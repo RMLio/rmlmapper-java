@@ -281,7 +281,7 @@ public class Utils {
         String p = "<" + q.getPredicate() + ">";
         String o = q.getObject();
 
-        if (!Utils.isBlankNode(s) && !Utils.isLiteral(o)) {
+        if (!Utils.isBlankNode(o) && !Utils.isLiteral(o)) {
             o = "<" + o + ">";
         }
 
@@ -297,7 +297,7 @@ public class Utils {
 
         String o = q.getObject();
 
-        if (!Utils.isBlankNode(s) && !Utils.isLiteral(o)) {
+        if (!Utils.isBlankNode(o) && !Utils.isLiteral(o)) {
             o = "<" + o + ">";
         }
 
