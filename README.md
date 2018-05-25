@@ -38,6 +38,34 @@ The following options are available.
 - `-v, --verbose`: show more details
 - `-h, --help`: show help
 
+### Library
+
+An example of how you can use the RMLMapper as an external library can be found below.
+
+```
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
+
+import be.ugent.rml.DataFetcher;
+import be.ugent.rml.Executor;
+import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.store.QuadStore;
+
+boolean removeDuplicates = false; //set to true if you want to remove duplicates triples/quads from the output
+String cwd = "/home/rml"; //path to default directory for local files
+String mappingFile = "/home/rml/mapping.rml.ttl" //path to the mapping file that needs to be executed
+List<String> triplesMaps = new ArrayList<>(); //list of triplesmaps to execute. When this list is empty all triplesmaps in the mapping file are executed
+
+InputStream mappingStream = new FileInputStream(mappingFile);
+Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
+RDF4JStore rmlStore = new RDF4JStore(model);
+
+Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(cwd, rmlStore)));
+QuadStore result = executor.execute(triplesMaps, removeDuplicates);
+```
+
 ### Including functions
 
 There are two ways to include (new) functions within the RML Mapper
