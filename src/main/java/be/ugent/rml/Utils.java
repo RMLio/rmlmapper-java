@@ -202,24 +202,6 @@ public class Utils {
         return Utils.readTurtle(mappingFile, RDFFormat.TURTLE);
     }
 
-    public static String encodeHttpURI(String s) {
-        // TODO make sure this is ok
-        if (!s.toLowerCase().matches("^\\w+://.*")) {
-            s = "http://" + s;
-        }
-        try {
-            URIBuilder builder = new URIBuilder(s);
-            URI uri = builder.build();
-            if (uri.getScheme() == null) {
-                builder.setScheme("http");
-            }
-
-            return encodeURI(builder.build().toASCIIString());
-        } catch (URISyntaxException e) {
-            return encodeURI(s);
-        }
-    }
-
     public static boolean isBlankNode(String value) {
         return value.startsWith("_:");
     }
@@ -311,13 +293,7 @@ public class Utils {
     }
 
     public static String encodeURI(String url) {
-//        try {
-            Escaper escaper = UrlEscapers.urlFragmentEscaper();
-            return escaper.escape(url);
-            //return URLEncoder.encode(url, "utf-8");
-//        } catch (UnsupportedEncodingException e) {
-//            logger.error(url + " could not be URI encoded.");
-//            return null;
-//        }
+        Escaper escaper = UrlEscapers.urlFragmentEscaper();
+        return escaper.escape(url);
     }
 }
