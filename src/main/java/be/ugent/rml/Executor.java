@@ -76,10 +76,10 @@ public class Executor {
         ArrayList<String> subjectGraphs = new ArrayList<String>();
 
         for (List<Element> graph: mapping.getSubject().getGraphs()) {
-            String g = Utils.applyTemplate(graph, record).get(0);
+            String g = Utils.applyTemplate(graph, record, true).get(0);
 
             if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                subjectGraphs.add(Utils.encodeURI(g));
+                subjectGraphs.add(g);
             }
         }
 
@@ -89,10 +89,10 @@ public class Executor {
             ArrayList<String> poGraphs = new ArrayList<String>();
 
             for (List<Element> graph : po.getGraphs()) {
-                String g = Utils.applyTemplate(graph, record).get(0);
+                String g = Utils.applyTemplate(graph, record, true).get(0);
 
                 if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                    poGraphs.add(Utils.encodeURI(g));
+                    poGraphs.add(g);
                 }
             }
 

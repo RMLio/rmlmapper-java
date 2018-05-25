@@ -5,6 +5,8 @@ import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.store.RDF4JStore;
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +17,10 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.Writer;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -312,7 +311,13 @@ public class Utils {
     }
 
     public static String encodeURI(String url) {
-        //TODO I guess it needs more...
-        return url.replaceAll(" ", "%20");
+//        try {
+            Escaper escaper = UrlEscapers.urlFragmentEscaper();
+            return escaper.escape(url);
+            //return URLEncoder.encode(url, "utf-8");
+//        } catch (UnsupportedEncodingException e) {
+//            logger.error(url + " could not be URI encoded.");
+//            return null;
+//        }
     }
 }
