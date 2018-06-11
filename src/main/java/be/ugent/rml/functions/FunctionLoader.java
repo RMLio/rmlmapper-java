@@ -19,53 +19,74 @@ import java.util.Map;
 public class FunctionLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(FunctionLoader.class);
+    private static String libraryNamespace = "http://example.com/library#";
+    private static String defaultFunctionsPath = "functions.ttl";
 
-    private Map<String, FunctionModel> loadedMethods;
+    private final File functionsFile;
+    private final File basePath;
+    private final QuadStore functionDescriptionTriples;
+
+    // updated dynamically
+    /**
+     * Cache for loaded classes
+     */
     private Map<String, Class> classMap;
-    private QuadStore functionDescriptionTriples;
-    private String libraryNamespace = "http://example.com/library#";
+    /**
+     * Cache for library paths
+     */
     private Map<String, String> libraryMap;
+    /**
+     * Cache for loaded functions
+     */
+    private Map<String, FunctionModel> loadedMethods;
 
     public FunctionLoader() {
-        this.loadedMethods = new HashMap<>();
-        this.classMap = new HashMap<>();
-        this.libraryMap = new HashMap<>();
-        QuadStore store;
-        try {
-            File sourceFile = FunctionUtils.getFile("functions.ttl");
-            logger.info("Found functions.ttl on path " + sourceFile.getPath());
-            store = Utils.readTurtle(sourceFile);
-        } catch (Exception e) {
-            ModelBuilder builder = new ModelBuilder();
-            Model model = builder.build();
-            store = new RDF4JStore(model);
-        }
-        this.functionDescriptionTriples = store;
+        this(null, null, null);
     }
 
-    public FunctionLoader(Map<String, Class> libraryMap) {
-        this();
-        this.classMap = libraryMap;
-        for (String key : libraryMap.keySet()) {
-            this.libraryMap.put(key, "__local");
-        }
+    public FunctionLoader(File functionsFile) {
+        this(functionsFile, null, null);
     }
 
-    public FunctionLoader(QuadStore functionDescriptionTriples) {
-        this.loadedMethods = new HashMap<>();
-        this.classMap = new HashMap<>();
-        this.libraryMap = new HashMap<>();
-        this.functionDescriptionTriples = functionDescriptionTriples;
-    }
-
-    public FunctionLoader(QuadStore functionDescriptionTriples, Map<String, Class> libraryMap) {
-        this.loadedMethods = new HashMap<>();
-        this.classMap = libraryMap;
-        this.libraryMap = new HashMap<>();
-        for (String key : libraryMap.keySet()) {
-            this.libraryMap.put(key, "__local");
+    public FunctionLoader(File functionsFile, QuadStore functionDescriptionTriples, Map<String, Class> libraryMap) {
+        if (functionsFile == null) {
+            try {
+                functionsFile = Utils.getFile(defaultFunctionsPath);
+            } catch (IOException e) {
+                logger.warn(e.getMessage(), e);
+            }
+            this.functionsFile = functionsFile;
+            if (functionsFile == null) {
+                this.basePath = null;
+            } else {
+                this.basePath = this.functionsFile.getParentFile();
+            }
+        } else {
+            this.functionsFile = functionsFile;
+            this.basePath = this.functionsFile.getParentFile();
         }
-        this.functionDescriptionTriples = functionDescriptionTriples;
+
+        if (functionDescriptionTriples == null) {
+            if (functionsFile == null) {
+                ModelBuilder builder = new ModelBuilder();
+                Model model = builder.build();
+                this.functionDescriptionTriples = new RDF4JStore(model);
+            } else {
+                this.functionDescriptionTriples = Utils.readTurtle(functionsFile);
+            }
+        } else {
+            this.functionDescriptionTriples = functionDescriptionTriples;
+        }
+        this.libraryMap = new HashMap<>();
+        if (libraryMap == null) {
+            this.classMap = new HashMap<>();
+        } else {
+            this.classMap = libraryMap;
+            for (String key : libraryMap.keySet()) {
+                this.libraryMap.put(key, "__local");
+            }
+        }
+        this.loadedMethods = new HashMap<>();
     }
 
     public FunctionModel getFunction(String iri) throws IOException {
@@ -83,9 +104,10 @@ public class FunctionLoader {
                     if (this.classMap.containsKey(className)) {
                         cls = this.classMap.get(className);
                     } else {
-                        cls = FunctionUtils.functionRequire(pathName, className);
+                        File functionFile = Utils.getFile(pathName, this.basePath);
+                        cls = FunctionUtils.functionRequire(functionFile, className);
                         this.classMap.put(className, cls);
-                        this.libraryMap.put(className, FunctionUtils.getFile(pathName).getPath());
+                        this.libraryMap.put(className, functionFile.getCanonicalPath());
                     }
 
                     List<String> parameters = new ArrayList<>();
