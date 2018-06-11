@@ -39,4 +39,10 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     public void evaluate_0005_CSV() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0005-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0005-CSV/output.ttl");
     }
+
+    @Test
+    @Ignore
+    public void evaluate_0006_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0006-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0006-CSV/output.nq");
+    }
 }
