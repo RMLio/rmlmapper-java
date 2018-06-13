@@ -21,9 +21,7 @@ public class GrelProcessor {
     }
 
     public static String random() {
-        // Return fixed string for easier test case comparison
-        return "random string here";
-        // return UUID.randomUUID().toString();
+        return UUID.randomUUID().toString();
     }
 
     public static String toUpperCaseURL(String test) {
