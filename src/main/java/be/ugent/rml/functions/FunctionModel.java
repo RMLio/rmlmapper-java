@@ -33,35 +33,20 @@ public class FunctionModel {
     public List<String> execute(Map<String, Object> args) {
         Object[] parameters = this.getParameters(args);
         try {
-            Long start = System.currentTimeMillis();
             Object object = this.method.invoke(null, parameters);
-            Long end = System.currentTimeMillis() - start;
+            //            ArrayList<Value> result = this.toValue(object, this.getDataType(args));
             List<String> result = new ArrayList<>();
-            result.add(object.toString());
+            if (object != null) {
+                result.add(object.toString());
+            }
             return result;
 
         } catch (IllegalAccessException | InvocationTargetException e) {
             // Nothing to do?
             e.printStackTrace(); // maybe this? :p
         }
-        return null;
+        return new ArrayList<>();
     }
-
-//    public ArrayList<Value> execute(Map<String, Object> args) {
-//        Object[] parameters = this.getParameters(args);
-//        try {
-//            Long start = System.currentTimeMillis();
-//            Object object = this.method.invoke(null, parameters);
-//            Long end = System.currentTimeMillis() - start;
-//            ArrayList<Value> result = this.toValue(object, this.getDataType(args));
-//            return result;
-//
-//        } catch (IllegalAccessException | InvocationTargetException e) {
-//            // Nothing to do?
-//            e.printStackTrace(); // maybe this? :p
-//        }
-//        return null;
-//    }
 
     public String getURI() {
         return URI;

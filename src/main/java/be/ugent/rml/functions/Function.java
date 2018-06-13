@@ -19,7 +19,13 @@ public class Function {
     public List<?> execute(Record record, Map<String, List<List<Element>>> parameters) {
         Map <String, Object> filledInParameters = new HashMap<>();
         for (Map.Entry<String, List<List<Element>>> entry : parameters.entrySet()) {
-            filledInParameters.put(entry.getKey(), Utils.applyTemplate(entry.getValue().get(0), record).get(0));
+            List<String> objects = Utils.applyTemplate(entry.getValue().get(0), record);
+            if (objects.size() > 0) {
+                filledInParameters.put(entry.getKey(), objects.get(0));
+            } else {
+                // TODO check whether key is actually optional!
+                filledInParameters.put(entry.getKey(), null);
+            }
         }
 
         return this.functionModel.execute(filledInParameters);
