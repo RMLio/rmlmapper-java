@@ -8,7 +8,6 @@ import be.ugent.rml.store.RDF4JStore;
 import com.google.common.escape.Escaper;
 import com.google.common.io.Resources;
 import com.google.common.net.UrlEscapers;
-import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -19,9 +18,6 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
