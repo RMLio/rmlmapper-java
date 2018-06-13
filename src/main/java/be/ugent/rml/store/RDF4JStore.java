@@ -56,7 +56,9 @@ public class RDF4JStore extends QuadStore {
         }
 
         if (object != null) {
-            if (object.startsWith("\"")) {
+            if (Utils.isBlankNode(object)) {
+                filterObject = vf.createBNode(object.replaceFirst("_:", ""));
+            } else if (object.startsWith("\"")) {
                 filterObject = vf.createLiteral(object);
             } else {
                 filterObject = vf.createIRI(object);

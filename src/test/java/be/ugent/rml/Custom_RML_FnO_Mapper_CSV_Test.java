@@ -50,4 +50,37 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     public void evaluate_0007_CSV() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0007-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0007-CSV/output.ttl");
     }
+
+    @Test
+    public void evaluate_0008_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0008-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0008-CSV/output.ttl");
+    }
+
+    @Test
+    @Ignore
+    public void evaluate_0009_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0009-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0009-CSV/output.ttl");
+    }
+
+    @Test
+    @Ignore
+    public void evaluate_0010_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0010-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0010-CSV/output.ttl");
+    }
+
+    @Test
+    @Ignore
+    public void evaluate_0011_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0011-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0011-CSV/output.ttl");
+    }
+
+    @Test
+    public void evaluate_0012_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0012-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0012-CSV/output.ttl");
+    }
+
+    @Test
+    public void evaluate_0013_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0013-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0013-CSV/output.ttl");
+    }
 }

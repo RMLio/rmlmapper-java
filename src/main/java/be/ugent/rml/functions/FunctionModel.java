@@ -34,7 +34,7 @@ public class FunctionModel {
         Object[] parameters = this.getParameters(args);
         try {
             Object object = this.method.invoke(null, parameters);
-            //            ArrayList<Value> result = this.toValue(object, this.getDataType(args));
+//            ArrayList<Value> result = this.toValue(object, this.getDataType(args));
             List<String> result = new ArrayList<>();
             if (object != null) {
                 result.add(object.toString());
