@@ -83,6 +83,18 @@ grel:generateNull a fno:Function ;
     lib:method "getNull"
   ].
 
+grel:generateA a fno:Function ;
+  fno:name "generateA" ;
+  rdfs:label "generateA" ;
+  dcterms:description "Always returns `A_by_function`" ;
+  fno:expects ( ) ;
+  fno:returns ( grel:stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "GrelFunctions.jar";
+    lib:class "GrelFunctions";
+    lib:method "generateA"
+  ].
+
 grel:toUpperCaseURL a fno:Function ;
   fno:name "toUpperCaseURL" ;
   rdfs:label "toUpperCaseURL" ;

@@ -33,4 +33,8 @@ public class GrelTestProcessor {
     public static String getNull() {
         return null;
     }
+
+    public static String generateA() {
+        return "A_by_function";
+    }
 }

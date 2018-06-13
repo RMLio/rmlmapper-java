@@ -83,4 +83,28 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     public void evaluate_0013_CSV() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0013-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0013-CSV/output.ttl");
     }
+
+    @Test
+    @Ignore
+    public void evaluate_0014_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0014-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0014-CSV/output.ttl");
+    }
+    
+    @Test
+    @Ignore
+    public void evaluate_0015_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0015-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0015-CSV/output.ttl");
+    }
+
+    @Test
+    @Ignore
+    public void evaluate_0016_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0016-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0016-CSV/output.ttl");
+    }
+
+    @Test
+    @Ignore
+    public void evaluate_0017_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0017-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0017-CSV/output.ttl");
+    }
 }
