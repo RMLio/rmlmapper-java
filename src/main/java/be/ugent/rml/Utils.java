@@ -6,8 +6,8 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.store.RDF4JStore;
 import com.google.common.escape.Escaper;
+import com.google.common.io.Resources;
 import com.google.common.net.UrlEscapers;
-import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -18,9 +18,7 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,6 +27,67 @@ import java.util.regex.Pattern;
 public class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+
+    /**
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    public static File getFile(String path) throws IOException {
+        return Utils.getFile(path, null);
+    }
+
+    /**
+     * @param path
+     * @param basePath
+     * @return
+     * @throws IOException
+     */
+    public static File getFile(String path, File basePath) throws IOException {
+        // Absolute path?
+        File f = new File(path);
+        if (f.isAbsolute()) {
+            if (f.exists()) {
+                return f;
+            } else {
+                throw new FileNotFoundException();
+            }
+        }
+
+        if (basePath == null) {
+            try {
+                basePath = new File(System.getProperty("user.dir"));
+            } catch (Exception e) {
+                throw new FileNotFoundException();
+            }
+        }
+
+
+        // Relative from user dir?
+        f = new File(basePath, path);
+        if (f.exists()) {
+            return f;
+        }
+
+        // Relative from parent of user dir?
+        f = new File(basePath, "../" + path);
+        if (f.exists()) {
+            return f;
+        }
+
+        // Resource path?
+        try {
+            URL url = Resources.getResource(path);
+            f = new File(url.getFile());
+            if (f.exists()) {
+                return f;
+            }
+        } catch (IllegalArgumentException e) {
+            // Too bad
+        }
+
+        throw new FileNotFoundException();
+    }
 
     public static List<String> applyTemplate(List<Element> template, Record record) {
         return Utils.applyTemplate(template, record, false);

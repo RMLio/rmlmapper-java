@@ -1,0 +1,5 @@
+image: maven:3.5.0-jdk-8
+
+verify:
+  script:
+    - mvn test --batch-mode

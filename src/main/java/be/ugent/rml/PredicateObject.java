@@ -11,10 +11,14 @@ public class PredicateObject extends TripleElement {
 
     private final List<List<Element>> predicates;
     private final List<JoinCondition> joinConditions;
+    private final String language;
+    private final String datatype;
     private String parentTriplesMap;
 
     public PredicateObject(List<List<Element>> predicates, List<List<Element>> graphs, String termType, Function function, Map<String, List<List<Element>>> parameters, String language, String datatype) {
         super(graphs, termType, function, parameters);
+        this.language = language;
+        this.datatype = datatype;
         this.predicates = predicates;
         this.joinConditions = new ArrayList<JoinCondition>();
     }
@@ -24,10 +28,13 @@ public class PredicateObject extends TripleElement {
     }
 
     public String getLanguage() {
-        return null;
+        return this.language;
     }
 
     public String getDataType() {
+        if (this.language == null) {
+            return this.datatype;
+        }
         return null;
     }
 

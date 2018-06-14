@@ -21,11 +21,12 @@ public class FunctionUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FunctionUtils.class);
 
-    public static Class functionRequire(String path, String className) throws IOException {
+    public static Class functionRequire(File file, String className) throws IOException {
+        String path = file.getPath();
         if (path.endsWith(".jar")) {
-            return FunctionUtils.getClass(path, className, "application/java-archive");
+            return FunctionUtils.getClass(file, className, "application/java-archive");
         } else if (path.endsWith(".java")) {
-            return FunctionUtils.getClass(path, className, "text/x-java-source");
+            return FunctionUtils.getClass(file, className, "text/x-java-source");
         }
 
         throw new IOException("Not a valid path for a JAVA implementation: " + path);
@@ -66,9 +67,8 @@ public class FunctionUtils {
         }
     }
 
-    private static Class getClass(String path, String className, String mime) throws IOException {
-        File sourceFile = FunctionUtils.getFile(path);
-        logger.info("Found class on path " + sourceFile.getPath());
+    private static Class getClass(File sourceFile, String className, String mime) throws IOException {
+        logger.info("Found class on path " + sourceFile.getCanonicalPath());
 
         switch (mime) {
             case "text/x-java-source":
@@ -78,50 +78,6 @@ public class FunctionUtils {
         }
 
         return null;
-    }
-
-    static File getFile(String path) throws IOException {
-        // Absolute path?
-        File f = new File(path);
-        if (f.isAbsolute()) {
-            if (f.exists()) {
-                return f;
-            } else {
-                throw new FileNotFoundException();
-            }
-        }
-
-        String basePath;
-        try {
-            basePath = System.getProperty("user.dir");
-        } catch (Exception e) {
-            throw new FileNotFoundException();
-        }
-
-        // Relative from user dir?
-        f = new File(basePath + "/" + path);
-        if (f.exists()) {
-            return f;
-        }
-
-        // Relative from parent of user dir?
-        f = new File(basePath + "/../" + path);
-        if (f.exists()) {
-            return f;
-        }
-
-        // Resource path?
-        try {
-            URL url = Resources.getResource(path);
-            f = new File(url.getFile());
-            if (f.exists()) {
-                return f;
-            }
-        } catch (IllegalArgumentException e) {
-            // Too bad
-        }
-
-        throw new FileNotFoundException();
     }
 
     private static Class getClassFromJAVA(File sourceFile, String className) {

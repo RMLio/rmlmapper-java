@@ -117,7 +117,7 @@ public class Executor {
                             if (po.getLanguage() != null) {
                                 objects.set(i, objects.get(i) + "@" + po.getLanguage());
                             } else if (po.getDataType() != null) {
-                                //add datatype if present; language and datatype can't be combined because the lauguage tag implies langString as datatype
+                                //add datatype if present; language and datatype can't be combined because the language tag implies langString as datatype
                                 objects.set(i, objects.get(i) + "^^" + po.getDataType());
                             }
                         }

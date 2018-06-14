@@ -97,6 +97,9 @@ at the root folder of the jar-location,
 or the parent folder of the jar-location,
 it will be found dynamically.
 
+> Note: the java or jar-files are found relative to the loaded functions.ttl.
+You can change the functions.ttl path using a commandline-option (`-f`).
+
 #### Preloading
 
 This overrides the dynamic loading.

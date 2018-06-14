@@ -1,10 +1,8 @@
 package be.ugent.rml.functions.lib;
 
-import java.util.UUID;
-
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
-public class GrelProcessor {
+public class GrelTestProcessor {
 
     public static String toUppercase(String test) {
         return test.toUpperCase();
@@ -21,7 +19,7 @@ public class GrelProcessor {
     }
 
     public static String random() {
-        return UUID.randomUUID().toString();
+        return "random string here";
     }
 
     public static String toUpperCaseURL(String test) {
@@ -30,5 +28,13 @@ public class GrelProcessor {
             upperTest = "http://" + upperTest;
         }
         return upperTest;
+    }
+
+    public static String getNull() {
+        return null;
+    }
+
+    public static String generateA() {
+        return "A_by_function";
     }
 }

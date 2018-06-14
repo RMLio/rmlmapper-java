@@ -3,16 +3,13 @@ package be.ugent.rml.cli;
 import be.ugent.rml.DataFetcher;
 import be.ugent.rml.Executor;
 import be.ugent.rml.Utils;
+import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.TriplesQuads;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +34,11 @@ public class Main {
                 .hasArg()
                 .desc(  "path to output file" )
                 .build();
+        Option functionfile = Option.builder("f")
+                .longOpt("functionfile")
+                .hasArg()
+                .desc("path to functions.ttl file (dynamic functions are found relative to functions.ttl)")
+                .build();
         Option triplesmaps = Option.builder("t")
                 .longOpt( "triplesmaps" )
                 .hasArg()
@@ -48,6 +50,7 @@ public class Main {
                 .build();
         options.addOption(mappingdoc);
         options.addOption(outputfile);
+        options.addOption(functionfile);
         options.addOption(removeduplicates);
         options.addOption(triplesmaps);
         options.addOption("v", "verbose", false, "verbose");
@@ -70,17 +73,19 @@ public class Main {
                 setLoggerLevel(Level.ERROR);
             }
 
-            if (line.hasOption("m")){
-                File mappingFile = new File(line.getOptionValue("m"));
+            if (line.hasOption("m")){// Let's map!
+                File mappingFile = Utils.getFile(line.getOptionValue("m"));
+                QuadStore rmlStore = Utils.readTurtle(mappingFile);
+                RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
+                Executor executor;
 
-                if (!mappingFile.isAbsolute()) {
-                    mappingFile = new File(System.getProperty("user.dir") + "/" + line.getOptionValue("m"));
+                if (line.hasOption("f")) {
+                    File functionFile = Utils.getFile(line.getOptionValue("f"));
+                    FunctionLoader functionLoader = new FunctionLoader(functionFile);
+                    executor = new Executor(rmlStore, factory, functionLoader);
+                } else {
+                    executor = new Executor(rmlStore, factory);
                 }
-
-                InputStream mappingStream = new FileInputStream(mappingFile);
-
-                Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
-                RDF4JStore rmlStore = new RDF4JStore(model);
 
                 List<String> triplesMaps = new ArrayList<>();
 
@@ -88,7 +93,6 @@ public class Main {
                     triplesMaps = Arrays.asList(line.getOptionValue("t").split(","));
                 }
 
-                Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore)));
                 QuadStore result = executor.execute(triplesMaps, line.hasOption("d"));
 
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
