@@ -8,6 +8,11 @@
         <junit.version>4.12</junit.version>
     </properties>
 
+    <scm>
+        <connection>scm:git:ssh://git@git.datasciencelab.ugent.be:4444/rml/rmlmapper-java.git</connection>
+        <url>https://git.datasciencelab.ugent.be:4444/rml/rmlmapper-java</url>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -60,6 +65,7 @@
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
+        <finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -99,6 +105,25 @@
                 <configuration>
                     <parallel>methods</parallel>
                     <threadCount>10</threadCount>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <format>{0,number}</format>
+                    <items>
+                        <item>buildNumber0</item>
+                    </items>
                 </configuration>
             </plugin>
         </plugins>
