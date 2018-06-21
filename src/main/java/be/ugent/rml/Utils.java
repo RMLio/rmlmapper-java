@@ -28,6 +28,40 @@ public class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
+    public static Reader getReaderFromLocation(String location) throws IOException {
+        return getReaderFromLocation(location, null);
+    }
+
+    public static Reader getReaderFromLocation(String location, File basePath) throws IOException {
+        if (isRemoteFile(location)) {
+            try {
+                return getReaderFromURL(new URL(location));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            return getReaderFromFile(getFile(location, basePath));
+        }
+    }
+
+    public static InputStream getInputStreamFromLocation(String location) throws IOException {
+        return getInputStreamFromLocation(location,null);
+    }
+
+    public static InputStream getInputStreamFromLocation(String location, File basePath) throws IOException {
+        if (isRemoteFile(location)) {
+            try {
+                return getInputStreamFromURL(new URL(location));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            return getInputStreamFromFile(getFile(location, basePath));
+        }
+    }
+
     /**
      * @param path
      * @return
@@ -87,6 +121,26 @@ public class Utils {
         }
 
         throw new FileNotFoundException();
+    }
+
+    public static Reader getReaderFromURL(URL url) throws IOException {
+        return new BufferedReader(new InputStreamReader(url.openStream()));
+    }
+
+    public static Reader getReaderFromFile(File file) throws FileNotFoundException {
+        return new FileReader(file);
+    }
+
+    public static InputStream getInputStreamFromURL(URL url) throws IOException {
+        return url.openStream();
+    }
+
+    public static InputStream getInputStreamFromFile(File file) throws FileNotFoundException {
+        return new FileInputStream(file);
+    }
+
+    public static boolean isRemoteFile(String location) {
+        return location.startsWith("https://") || location.startsWith("http://");
     }
 
     public static List<String> applyTemplate(List<Element> template, Record record) {

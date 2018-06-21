@@ -16,20 +16,20 @@ import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class XML extends IteratorFormat {
 
     @Override
-    List<Record> _get(File file, String iterator) throws IOException {
+    List<Record> _get(InputStream stream, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
 
         try {
-            FileInputStream fileIS = new FileInputStream(file);
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            Document xmlDocument = builder.parse(fileIS);
+            Document xmlDocument = builder.parse(stream);
 
             XPath xPath = XPathFactory.newInstance().newXPath();
             NodeList result = (NodeList) xPath.compile(iterator).evaluate(xmlDocument, XPathConstants.NODESET);

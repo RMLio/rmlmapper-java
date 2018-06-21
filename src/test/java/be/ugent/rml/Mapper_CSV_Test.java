@@ -1,5 +1,6 @@
 package be.ugent.rml;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class Mapper_CSV_Test extends TestCore {
@@ -111,5 +112,10 @@ public class Mapper_CSV_Test extends TestCore {
     @Test
     public void evaluate_0008c_CSV() {
         doMapping("./test-cases/RMLTC0008c-CSV/mapping.ttl", "./test-cases/RMLTC0008c-CSV/output.ttl");
+    }
+
+    @Test
+    public void evaluate_1003_CSV() {
+        doMapping("./test-cases/RMLTC1003-CSV/mapping.ttl", "./test-cases/RMLTC1003-CSV/output.ttl");
     }
 }

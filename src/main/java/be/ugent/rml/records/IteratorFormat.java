@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public abstract class IteratorFormat {
@@ -17,10 +18,10 @@ public abstract class IteratorFormat {
     }
 
     public List<Record> get(String location, String iterator, String cwd) throws IOException {
-        File file = Utils.getFile(location, new File(cwd));
+        InputStream stream = Utils.getInputStreamFromLocation(location, new File(cwd));
 
-        return _get(file, iterator);
+        return _get(stream, iterator);
     }
 
-    abstract List<Record> _get(File file, String iterator) throws IOException;
+    abstract List<Record> _get(InputStream stream, String iterator) throws IOException;
 }

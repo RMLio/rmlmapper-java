@@ -6,6 +6,7 @@ import com.opencsv.CSVReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,14 +18,15 @@ public class CSV {
     }
 
     public List<Record> get(String path, String cwd) throws IOException {
-        File file = Utils.getFile(path, new File(cwd));
+        Reader reader = Utils.getReaderFromLocation(path, new File(cwd));
 
-        return _get(file);
+        return _get(reader);
     }
 
-    private List<Record> _get(File file) throws IOException {
-        CSVReader reader = new CSVReader(new FileReader(file));
-        List<String[]> myEntries = reader.readAll();
+    private List<Record> _get(Reader reader) throws IOException {
+        CSVReader csvReader = new CSVReader(reader);
+
+        List<String[]> myEntries = csvReader.readAll();
         List<Record> records = new ArrayList<Record>();
 
         String[] headers = myEntries.get(0);
