@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.rml.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,19 +12,15 @@ public abstract class IteratorFormat {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public List<Record> get(String path, String iterator) throws IOException {
-        return get(path, iterator, System.getProperty("user.dir"));
+    public List<Record> get(String location, String iterator) throws IOException {
+        return get(location, iterator, System.getProperty("user.dir"));
     }
 
-    public List<Record> get(String path, String iterator, String cwd) throws IOException {
-        File file = new File(path);
+    public List<Record> get(String location, String iterator, String cwd) throws IOException {
+        File file = Utils.getFile(location, new File(cwd));
 
-        if (!file.isAbsolute()) {
-            path = cwd + "/" + path;
-        }
-
-        return _get(path, iterator);
+        return _get(file, iterator);
     }
 
-    abstract List<Record> _get(String path, String iterator) throws IOException;
+    abstract List<Record> _get(File file, String iterator) throws IOException;
 }

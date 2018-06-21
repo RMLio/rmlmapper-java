@@ -11,10 +11,9 @@ import java.util.List;
 
 public class JSON extends IteratorFormat {
 
-    protected List<Record> _get(String path, String iterator) throws IOException {
+    protected List<Record> _get(File file, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
-        File initialFile = new File(path);
-        InputStream targetStream = new FileInputStream(initialFile);
+        InputStream targetStream = new FileInputStream(file);
 
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(targetStream, "utf-8");
 

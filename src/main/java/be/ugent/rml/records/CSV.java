@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.rml.Utils;
 import com.opencsv.CSVReader;
 
 import java.io.File;
@@ -16,17 +17,13 @@ public class CSV {
     }
 
     public List<Record> get(String path, String cwd) throws IOException {
-        File file = new File(path);
+        File file = Utils.getFile(path, new File(cwd));
 
-        if (!file.isAbsolute()) {
-            path = cwd + "/" + path;
-        }
-
-        return _get(path);
+        return _get(file);
     }
 
-    private List<Record> _get(String path) throws IOException {
-        CSVReader reader = new CSVReader(new FileReader(path));
+    private List<Record> _get(File file) throws IOException {
+        CSVReader reader = new CSVReader(new FileReader(file));
         List<String[]> myEntries = reader.readAll();
         List<Record> records = new ArrayList<Record>();
 

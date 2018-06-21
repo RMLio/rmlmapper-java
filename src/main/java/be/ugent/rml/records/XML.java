@@ -22,11 +22,11 @@ import java.util.List;
 public class XML extends IteratorFormat {
 
     @Override
-    List<Record> _get(String path, String iterator) throws IOException {
+    List<Record> _get(File file, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
 
         try {
-            FileInputStream fileIS = new FileInputStream(new File(path));
+            FileInputStream fileIS = new FileInputStream(file);
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             Document xmlDocument = builder.parse(fileIS);
