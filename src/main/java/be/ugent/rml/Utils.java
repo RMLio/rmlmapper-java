@@ -407,6 +407,27 @@ public class Utils {
 
     public static String encodeURI(String url) {
         Escaper escaper = UrlEscapers.urlFragmentEscaper();
-        return escaper.escape(url);
+        String result =  escaper.escape(url);
+
+        result = result.replaceAll("!", "%21");
+        result = result.replaceAll("#", "%23");
+        result = result.replaceAll("\\$", "%24");
+        result = result.replaceAll("&", "%26");
+        result = result.replaceAll("'", "%27");
+        result = result.replaceAll("\\(", "%28");
+        result = result.replaceAll("\\)", "%29");
+        result = result.replaceAll("\\*", "%2A");
+        result = result.replaceAll("\\+", "%2B");
+        result = result.replaceAll(",", "%2C");
+        result = result.replaceAll("/", "%2F");
+        result = result.replaceAll(":", "%3A");
+        result = result.replaceAll(";", "%3B");
+        result = result.replaceAll("=", "%3D");
+        result = result.replaceAll("\\?", "%3F");
+        result = result.replaceAll("@", "%40");
+        result = result.replaceAll("\\[", "%5B");
+        result = result.replaceAll("]", "%5D");
+
+        return result;
     }
 }
