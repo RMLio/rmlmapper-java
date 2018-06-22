@@ -25,6 +25,10 @@ public class JSONRecord implements Record {
         List<String> results = new ArrayList<>();
 
         try {
+            if (value.contains(" ")) {
+                value = "['" + value + "']";
+            }
+
             Object t = JsonPath.read(document, this.path + "." + value);
 
             if (t instanceof JSONArray) {
