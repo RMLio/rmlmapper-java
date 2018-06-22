@@ -127,4 +127,9 @@ public class Mapper_JSON_Test extends TestCore {
     public void evaluate_0010a_JSON() {
         doMapping("./test-cases/RMLTC0010a-JSON/mapping.ttl", "./test-cases/RMLTC0010a-JSON/output.ttl");
     }
+    
+    @Test
+    public void evaluate_0010b_JSON() {
+        doMapping("./test-cases/RMLTC0010b-JSON/mapping.ttl", "./test-cases/RMLTC0010b-JSON/output.ttl");
+    }
 }

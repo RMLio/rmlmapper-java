@@ -122,4 +122,9 @@ public class Mapper_XML_Test extends TestCore {
     public void evaluate_0009b_XML() {
         doMapping("./test-cases/RMLTC0009b-XML/mapping.ttl", "./test-cases/RMLTC0009b-XML/output.nq");
     }
+    
+    @Test
+    public void evaluate_0010b_XML() {
+        doMapping("./test-cases/RMLTC0010b-XML/mapping.ttl", "./test-cases/RMLTC0010b-XML/output.ttl");
+    }
 }
