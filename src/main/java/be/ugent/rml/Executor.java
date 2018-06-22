@@ -131,7 +131,7 @@ public class Executor {
                 //check if we are dealing with a parentTriplesMap (RefObjMap)
             } else if (po.getParentTriplesMap() != null) {
                 //check if need to apply a join condition
-                if (po.getJoinConditions() != null) {
+                if (!po.getJoinConditions().isEmpty()) {
                     ArrayList<ValuedJoinCondition> valuedJoinConditions = new ArrayList<ValuedJoinCondition>();
 
                     for (JoinCondition join : po.getJoinConditions()) {

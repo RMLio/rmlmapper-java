@@ -170,8 +170,8 @@ public class MappingFactory {
                             List<String> joinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "joinCondition", null));
 
                             for (String joinCondition : joinConditions) {
-                                List<String> parents = Utils.getObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "parent", null));
-                                List<String> childs = Utils.getObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "child", null));
+                                List<String> parents = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "parent", null));
+                                List<String> childs = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "child", null));
 
                                 if (parents.isEmpty()) {
                                     throw new Error("One of the join conditions of " + triplesMap + " is missing rr:parent.");

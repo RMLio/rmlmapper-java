@@ -115,6 +115,16 @@ public class Mapper_CSV_Test extends TestCore {
     }
 
     @Test
+    public void evaluate_0009a_CSV() {
+        doMapping("./test-cases/RMLTC0009a-CSV/mapping.ttl", "./test-cases/RMLTC0009a-CSV/output.ttl");
+    }
+
+    @Test
+    public void evaluate_0009b_CSV() {
+        doMapping("./test-cases/RMLTC0009b-CSV/mapping.ttl", "./test-cases/RMLTC0009b-CSV/output.nq");
+    }
+
+    @Test
     public void evaluate_1003_CSV() {
         doMapping("./test-cases/RMLTC1003-CSV/mapping.ttl", "./test-cases/RMLTC1003-CSV/output.ttl");
     }

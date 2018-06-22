@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.Function;
+import org.eclipse.rdf4j.query.algebra.Join;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +47,8 @@ public class PredicateObject extends TripleElement {
         return parentTriplesMap;
     }
 
-    public JoinCondition[] getJoinConditions() {
-        return null;
+    public List<JoinCondition> getJoinConditions() {
+        return joinConditions;
     }
 
     public void setParentTriplesMap(String parentTriplesMap) {

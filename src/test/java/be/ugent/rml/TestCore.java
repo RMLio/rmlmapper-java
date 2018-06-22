@@ -52,6 +52,7 @@ abstract class TestCore {
 
         try {
             QuadStore result = executor.execute(null);
+            result.removeDuplicates();
 
             // load output file
             File outputFile = new File(classLoader.getResource(outPath).getFile());
@@ -62,6 +63,7 @@ abstract class TestCore {
             } else {
                 outputStore = Utils.readTurtle(outputFile);
             }
+
             assertEquals(outputStore.toSortedString(), result.toSortedString());
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
