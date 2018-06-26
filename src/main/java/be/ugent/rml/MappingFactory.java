@@ -361,14 +361,14 @@ public class MappingFactory {
                     } else if(variableBusy) {
                         throw new Error("Parsing of template failed. Probably a { was followed by a second { without first closing the first {. Make sure that you use { and } correctly.");
                     } else {
+                        variableBusy = true;
+
                         if (!current.equals("")) {
                             result.add(new Element(current, TEMPLATETYPE.CONSTANT));
                         }
 
                         current = "";
                     }
-
-                    variableBusy = true;
                 } else if (c == '}') {
                     if (previousWasBackslash) {
                         current += c;
