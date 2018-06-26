@@ -134,12 +134,17 @@ public class Mapper_JSON_Test extends TestCore {
     }
 
     @Test
+    public void evaluate_0010c_JSON() {
+        doMapping("./test-cases/RMLTC0010c-JSON/mapping.ttl", "./test-cases/RMLTC0010c-JSON/output.ttl");
+    }
+
+    @Test
     public void evaluate_0011b_JSON() {
         doMapping("./test-cases/RMLTC0011b-JSON/mapping.ttl", "./test-cases/RMLTC0011b-JSON/output.ttl");
     }
 
     @Test
-    public void evaluate_0010c_JSON() {
-        doMapping("./test-cases/RMLTC0010c-JSON/mapping.ttl", "./test-cases/RMLTC0010c-JSON/output.ttl");
+    public void evaluate_0012a_JSON() {
+        doMapping("./test-cases/RMLTC0012a-JSON/mapping.ttl", "./test-cases/RMLTC0012a-JSON/output.ttl");
     }
 }
