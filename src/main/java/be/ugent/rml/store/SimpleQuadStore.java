@@ -24,7 +24,7 @@ public class SimpleQuadStore extends QuadStore {
             while (i < quadsWithDuplicates.size() && ! (quadsWithDuplicates.get(i).getSubject().equals(q.getSubject())
                     && quadsWithDuplicates.get(i).getObject().equals(q.getObject())
                     && quadsWithDuplicates.get(i).getPredicate().equals(q.getPredicate())
-                    && quadsWithDuplicates.get(i).getGraph().equals(q.getGraph())
+                    && ((quadsWithDuplicates.get(i).getGraph() == null && q.getGraph() == null) || quadsWithDuplicates.get(i).getGraph().equals(q.getGraph()))
             )) {
                 i ++;
             }
