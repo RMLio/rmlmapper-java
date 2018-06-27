@@ -15,16 +15,16 @@ public class PredicateObject extends TripleElement {
     private final String datatype;
     private String parentTriplesMap;
 
-    public PredicateObject(List<Template> predicates, List<Template> graphs, String termType, Function function, Map<String, List<Template>> parameters, String language, String datatype) {
-        super(graphs, termType, function, parameters);
+    public PredicateObject(List<Template> predicates, List<Template> graphs, String termType, Function function, String language, String datatype) {
+        super(graphs, termType, function);
         this.language = language;
         this.datatype = datatype;
         this.predicates = predicates;
         this.joinConditions = new ArrayList<JoinCondition>();
     }
 
-    public PredicateObject(List<Template> predicates, List<Template> graphs, String termType, Function function, Map<String, List<Template>> parameters) {
-        this(predicates, graphs, termType, function, parameters, null, null);
+    public PredicateObject(List<Template> predicates, List<Template> graphs, String termType, Function function) {
+        this(predicates, graphs, termType, function, null, null);
     }
 
     public String getLanguage() {

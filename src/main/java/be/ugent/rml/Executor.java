@@ -101,7 +101,7 @@ public class Executor {
             combinedGraphs.addAll(poGraphs);
 
             if (po.getFunction() != null) {
-                List<String> objects = (List<String>) po.getFunction().execute(record, po.getParameters());
+                List<String> objects = (List<String>) po.getFunction().execute(record);
 
                 if (objects.size() > 0) {
                     if (po.getTermType().equals(NAMESPACES.RR + "IRI")) {
@@ -226,7 +226,7 @@ public class Executor {
         if (!this.subjects.get(triplesMap).containsKey(i)) {
             //we want a IRI and not a Blank Node
             if (mapping.getSubject().getTermType().equals(NAMESPACES.RR + "IRI")) {
-                List<String> subjects = (List<String>) mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters());
+                List<String> subjects = (List<String>) mapping.getSubject().getFunction().execute(record);
                 String subject = null;
 
                 if (!subjects.isEmpty()) {
@@ -238,7 +238,7 @@ public class Executor {
                 //we want a Blank Node
 
                 if (mapping.getSubject().getFunction() != null) {
-                    this.subjects.get(triplesMap).put(i, "_:" + mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
+                    this.subjects.get(triplesMap).put(i, "_:" + mapping.getSubject().getFunction().execute(record).get(0));
                 } else {
                     this.subjects.get(triplesMap).put(i, "_:b" + this.blankNodeCounter);
                     this.blankNodeCounter++;

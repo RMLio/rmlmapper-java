@@ -53,16 +53,15 @@ public class MappingFactory {
 
                     //checking if we are dealing with a Blank Node as subject
                     if (!termTypes.isEmpty() && termTypes.get(0).equals(NAMESPACES.RR  + "BlankNode")) {
-                        this.subject = new TripleElement(null, termTypes.get(0), null, null);
+                        this.subject = new TripleElement(null, termTypes.get(0), null);
                         String template = getGenericTemplate(subjectmap);
 
                         if (template != null) {
-                            this.subject.setFunction(new ApplyTemplateFunction(true));
                             HashMap<String, List<Template>> parameters = new HashMap<>();
                             ArrayList<Template> temp = new ArrayList<>();
                             temp.add(parseTemplate(getGenericTemplate(subjectmap)));
                             parameters.put("_TEMPLATE", temp);
-                            this.subject.setParameters(parameters);
+                            this.subject.setFunction(new ApplyTemplateFunction(parameters, true));
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
@@ -70,12 +69,12 @@ public class MappingFactory {
                         ArrayList<Template> temp = new ArrayList<>();
                         temp.add(parseTemplate(getGenericTemplate(subjectmap)));
                         parameters.put("_TEMPLATE", temp);
-                        this.subject = new TripleElement(null, NAMESPACES.RR  + "IRI", new ApplyTemplateFunction(true), parameters);
+                        this.subject = new TripleElement(null, NAMESPACES.RR + "IRI", new ApplyTemplateFunction(parameters, true));
                     }
                 } else {
-                    FunctionDetails functionDetails = parseFunctionTermMap(functionValues.get(0));
+                    Function function = parseFunctionTermMap(functionValues.get(0));
 
-                    this.subject = new TripleElement(null, NAMESPACES.RR  + "IRI", functionDetails.getFunction(), functionDetails.getParameters());
+                    this.subject = new TripleElement(null, NAMESPACES.RR + "IRI", function);
                 }
 
                 this.subject.setGraphs(parseGraphMaps(subjectmap));
@@ -99,7 +98,7 @@ public class MappingFactory {
                     parameters.put("_TEMPLATE", temp2);
 
                     // Don't put in graph for rr:class, subject is already put in graph, otherwise double export
-                    predicateObjects.add(new PredicateObject(predicates, null, NAMESPACES.RR  + "IRI", new ApplyTemplateFunction(), parameters));
+                    predicateObjects.add(new PredicateObject(predicates, null, NAMESPACES.RR + "IRI", new ApplyTemplateFunction(parameters)));
                 }
             } else {
                 throw new Error(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");
@@ -153,7 +152,7 @@ public class MappingFactory {
                         ArrayList<Template> temp = new ArrayList<>();
                         temp.add(parseTemplate(genericTemplate));
                         parameters.put("_TEMPLATE", temp);
-                        predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(termType.equals(NAMESPACES.RR + "IRI")), parameters, language, datatype));
+                        predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(parameters, termType.equals(NAMESPACES.RR + "IRI")), language, datatype));
                     } else {
                         //look for parenttriplesmap
                         List<String> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "parentTriplesMap", null));
@@ -164,7 +163,7 @@ public class MappingFactory {
                             }
 
                             String parentTriplesMap = parentTriplesMaps.get(0);
-                            PredicateObject po = new PredicateObject(predicates, graphs, NAMESPACES.RR + "IRI", null, null);
+                            PredicateObject po = new PredicateObject(predicates, graphs, NAMESPACES.RR + "IRI", null);
                             po.setParentTriplesMap(parentTriplesMap);
 
                             List<String> joinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "joinCondition", null));
@@ -190,14 +189,14 @@ public class MappingFactory {
                         }
                     }
                 } else {
-                    FunctionDetails functionDetails = parseFunctionTermMap(functionValues.get(0));
+                    Function function = parseFunctionTermMap(functionValues.get(0));
 
                     if (termType == null) {
                         // TODO be smarter than this
                         termType = NAMESPACES.RR + "Literal";
                     }
 
-                    predicateObjects.add(new PredicateObject(predicates, graphs, termType, functionDetails.getFunction(), functionDetails.getParameters(), language, datatype));
+                    predicateObjects.add(new PredicateObject(predicates, graphs, termType, function, language, datatype));
                 }
             }
 
@@ -220,7 +219,7 @@ public class MappingFactory {
                 temp2.add(temp3);
 
                 parameters.put("_TEMPLATE", temp2);
-                predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(), parameters));
+                predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(parameters)));
             }
         }
     }
@@ -245,7 +244,7 @@ public class MappingFactory {
         return graphs;
     }
 
-    private FunctionDetails parseFunctionTermMap(String functionValue) throws IOException {
+    private Function parseFunctionTermMap(String functionValue) throws IOException {
         List<String> functionPOMs = Utils.getObjectsFromQuads(store.getQuads(functionValue, NAMESPACES.RR + "predicateObjectMap", null));
         HashMap<String, List<Template>> params = new HashMap<>();
 
@@ -284,7 +283,7 @@ public class MappingFactory {
         String fn = Utils.applyTemplate(params.get("http://w3id.org/function/ontology#executes").get(0), null).get(0);
         params.remove("http://w3id.org/function/ontology#executes");
 
-        return new FunctionDetails(new Function(functionLoader.getFunction(fn)), params);
+        return new Function(functionLoader.getFunction(fn), params);
     }
 
     /**
