@@ -1,6 +1,6 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.Element;
+import be.ugent.rml.Template;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.Record;
 
@@ -16,9 +16,9 @@ public class Function {
         this.functionModel = model;
     }
 
-    public List<?> execute(Record record, Map<String, List<List<Element>>> parameters) {
+    public List<?> execute(Record record, Map<String, List<Template>> parameters) {
         Map <String, Object> filledInParameters = new HashMap<>();
-        for (Map.Entry<String, List<List<Element>>> entry : parameters.entrySet()) {
+        for (Map.Entry<String, List<Template>> entry : parameters.entrySet()) {
             List<String> objects = Utils.applyTemplate(entry.getValue().get(0), record);
             if (objects.size() > 0) {
                 filledInParameters.put(entry.getKey(), objects.get(0));

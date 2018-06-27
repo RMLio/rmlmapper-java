@@ -1,7 +1,6 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.Function;
-import org.eclipse.rdf4j.query.algebra.Join;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +9,13 @@ import java.util.Map;
 public class PredicateObject extends TripleElement {
 
 
-    private final List<List<Element>> predicates;
+    private final List<Template> predicates;
     private final List<JoinCondition> joinConditions;
     private final String language;
     private final String datatype;
     private String parentTriplesMap;
 
-    public PredicateObject(List<List<Element>> predicates, List<List<Element>> graphs, String termType, Function function, Map<String, List<List<Element>>> parameters, String language, String datatype) {
+    public PredicateObject(List<Template> predicates, List<Template> graphs, String termType, Function function, Map<String, List<Template>> parameters, String language, String datatype) {
         super(graphs, termType, function, parameters);
         this.language = language;
         this.datatype = datatype;
@@ -24,7 +23,7 @@ public class PredicateObject extends TripleElement {
         this.joinConditions = new ArrayList<JoinCondition>();
     }
 
-    public PredicateObject(List<List<Element>> predicates, List<List<Element>> graphs, String termType, Function function, Map<String, List<List<Element>>> parameters) {
+    public PredicateObject(List<Template> predicates, List<Template> graphs, String termType, Function function, Map<String, List<Template>> parameters) {
         this(predicates, graphs, termType, function, parameters, null, null);
     }
 
@@ -39,7 +38,7 @@ public class PredicateObject extends TripleElement {
         return null;
     }
 
-    public List<List<Element>> getPredicates() {
+    public List<Template> getPredicates() {
         return predicates;
     }
 

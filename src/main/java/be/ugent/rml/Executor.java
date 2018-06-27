@@ -75,7 +75,7 @@ public class Executor {
     private void generatePredicateObjectsForSubject(String subject, Mapping mapping, Record record) throws IOException {
         ArrayList<String> subjectGraphs = new ArrayList<String>();
 
-        for (List<Element> graph: mapping.getSubject().getGraphs()) {
+        for (Template graph: mapping.getSubject().getGraphs()) {
             String g = Utils.applyTemplate(graph, record, true).get(0);
 
             if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
@@ -88,7 +88,7 @@ public class Executor {
         for (PredicateObject po : predicateObjects) {
             ArrayList<String> poGraphs = new ArrayList<String>();
 
-            for (List<Element> graph : po.getGraphs()) {
+            for (Template graph : po.getGraphs()) {
                 String g = Utils.applyTemplate(graph, record, true).get(0);
 
                 if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
@@ -148,8 +148,8 @@ public class Executor {
         }
     }
 
-    private void generateTriples(String subject, List<List<Element>> predicates, List<String> objects, Record record, List<String> graphs) {
-        for (List<Element> p : predicates) {
+    private void generateTriples(String subject, List<Template> predicates, List<String> objects, Record record, List<String> graphs) {
+        for (Template p : predicates) {
             List<String> realPredicates = Utils.applyTemplate(p, record);
 
             for (String predicate : realPredicates) {
@@ -193,7 +193,7 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<String> getIRIsWithValue(String triplesMap, List<Element> path, List<String> values) throws IOException {
+    private List<String> getIRIsWithValue(String triplesMap, Template path, List<String> values) throws IOException {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap

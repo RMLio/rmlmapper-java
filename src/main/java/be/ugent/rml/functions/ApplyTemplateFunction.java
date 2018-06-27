@@ -1,6 +1,6 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.Element;
+import be.ugent.rml.Template;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.Record;
 
@@ -22,7 +22,7 @@ public class ApplyTemplateFunction extends Function{
     }
 
     @Override
-    public List<?> execute(Record record, Map<String, List<List<Element>>> parameters) {
+    public List<?> execute(Record record, Map<String, List<Template>> parameters) {
         return Utils.applyTemplate(parameters.get("_TEMPLATE").get(0), record, encodeURI);
     }
 }
