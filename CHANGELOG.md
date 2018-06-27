@@ -21,5 +21,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing JSON data sources with JSONPath
 - support for accessing XML data sources with XPath
 - support for accessing local files
-- support for accessing  files (via HTTP GET)
+- support for accessing remote files (via HTTP GET)
 - basic support for functions
