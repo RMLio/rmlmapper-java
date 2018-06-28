@@ -154,17 +154,18 @@ public class Utils {
         boolean allValuesFound = true;
 
         //we iterate over all elements of the template, unless one is not found
-        for (int i = 0; allValuesFound && i < template.getElements().size(); i++) {
+        for (int i = 0; allValuesFound && i < template.getTemplateElements().size(); i++) {
+            TemplateElement element = template.getTemplateElements().get(i);
             //if the element is constant, we don't need to look at the data, so we can just add it to the result
-            if (template.getElements().get(i).getType() == TEMPLATETYPE.CONSTANT) {
+            if (element.getType() == TEMPLATETYPE.CONSTANT) {
                 for (int j = 0; j < result.size(); j ++) {
-                    result.set(j, result.get(j) + template.getElements().get(i).getValue());
+                    result.set(j, result.get(j) + element.getValue());
                 }
             } else {
                 //we need to get the variables from the data
                 //we also need to keep all combinations of multiple results are returned for variable; pretty tricky business
                 List<String> temp = new ArrayList<>();
-                List<String> values = record.get(template.getElements().get(i).getValue());
+                List<String> values = record.get(element.getValue());
 
                 for (String value : values) {
 
@@ -182,7 +183,7 @@ public class Utils {
                 }
 
                 if (values.isEmpty()) {
-                    logger.warn("Not all values for a template where found. More specific, the variable " + template.getElements().get(i).getValue() + " did not provide any results.");
+                    logger.warn("Not all values for a template where found. More specific, the variable " + element.getValue() + " did not provide any results.");
                     allValuesFound = false;
                 }
             }
@@ -203,7 +204,7 @@ public class Utils {
     private static String getEmptyTemplate(Template template) {
         String output = "";
 
-        for (Element t : template.getElements()) {
+        for (TemplateElement t : template.getTemplateElements()) {
             if (t.getType() == TEMPLATETYPE.CONSTANT) {
                 output += t.getValue();
             }

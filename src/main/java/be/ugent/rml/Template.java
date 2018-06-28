@@ -4,28 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Template {
-    private List<Element> elements;
+    private List<TemplateElement> templateElements;
 
     public Template() {
-        this.elements = new ArrayList<>();
+        this.templateElements = new ArrayList<>();
     }
 
-    public Template(List<Element> elements) {
-        this.elements = elements;
+    public Template(List<TemplateElement> templateElements) {
+        this.templateElements = templateElements;
     }
 
-    public List<Element> getElements() {
-        return elements;
+    public List<TemplateElement> getTemplateElements() {
+        return templateElements;
     }
 
-    public void addElement(Element element) {
-        this.elements.add(element);
+    public void addElement(TemplateElement templateElement) {
+        this.templateElements.add(templateElement);
     }
 
     public int countVariables() {
         int counter = 0;
 
-        for (Element aTemplate : this.elements) {
+        for (TemplateElement aTemplate : this.templateElements) {
             if (aTemplate.getType() == TEMPLATETYPE.VARIABLE) {
                 counter++;
             }

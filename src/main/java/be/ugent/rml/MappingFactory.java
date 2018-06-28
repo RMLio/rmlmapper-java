@@ -86,13 +86,13 @@ public class MappingFactory {
                 for (String c: classes) {
                     List<Template> predicates = new ArrayList<>();
                     Template temp = new Template();
-                    temp.addElement(new Element(NAMESPACES.RDF + "type", TEMPLATETYPE.CONSTANT));
+                    temp.addElement(new TemplateElement(NAMESPACES.RDF + "type", TEMPLATETYPE.CONSTANT));
                     predicates.add(temp);
 
                     HashMap<String, List<Template>> parameters = new HashMap<>();
                     List<Template> temp2 = new ArrayList<>();
                     Template temp3 = new Template();
-                    temp3.addElement(new Element(c, TEMPLATETYPE.CONSTANT));
+                    temp3.addElement(new TemplateElement(c, TEMPLATETYPE.CONSTANT));
                     temp2.add(temp3);
 
                     parameters.put("_TEMPLATE", temp2);
@@ -112,7 +112,7 @@ public class MappingFactory {
         for (String pom : predicateobjectmaps) {
             List<Template> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR  + "predicate", null)).stream().map(i -> {
                 Template temp = new Template();
-                temp.addElement(new Element(i, TEMPLATETYPE.CONSTANT));
+                temp.addElement(new TemplateElement(i, TEMPLATETYPE.CONSTANT));
                 return temp;
             }).collect(Collectors.toList());
 
@@ -178,9 +178,9 @@ public class MappingFactory {
                                     throw new Error("One of the join conditions of " + triplesMap + " is missing rr:child.");
                                 } else {
                                     Template parent = new Template();
-                                    parent.addElement(new Element(parents.get(0), TEMPLATETYPE.VARIABLE));
+                                    parent.addElement(new TemplateElement(parents.get(0), TEMPLATETYPE.VARIABLE));
                                     Template child = new Template();
-                                    child.addElement(new Element(childs.get(0), TEMPLATETYPE.VARIABLE));
+                                    child.addElement(new TemplateElement(childs.get(0), TEMPLATETYPE.VARIABLE));
                                     po.addJoinCondition(new JoinCondition(parent, child));
                                 }
                             }
@@ -215,7 +215,7 @@ public class MappingFactory {
                 HashMap<String, List<Template>> parameters = new HashMap<>();
                 List<Template> temp2 = new ArrayList<>();
                 Template temp3 = new Template();
-                temp3.addElement(new Element(o, TEMPLATETYPE.CONSTANT));
+                temp3.addElement(new TemplateElement(o, TEMPLATETYPE.CONSTANT));
                 temp2.add(temp3);
 
                 parameters.put("_TEMPLATE", temp2);
@@ -237,7 +237,7 @@ public class MappingFactory {
 
         for (String graph : graphShortCuts) {
             Template temp = new Template();
-            temp.addElement(new Element(graph, TEMPLATETYPE.CONSTANT));
+            temp.addElement(new TemplateElement(graph, TEMPLATETYPE.CONSTANT));
             graphs.add(temp);
         }
 
@@ -361,7 +361,7 @@ public class MappingFactory {
                         throw new Error("Parsing of template failed. Probably a { was followed by a second { without first closing the first {. Make sure that you use { and } correctly.");
                     } else {
                         if (!current.equals("")) {
-                            result.addElement(new Element(current, TEMPLATETYPE.CONSTANT));
+                            result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
                         }
 
                         current = "";
@@ -373,7 +373,7 @@ public class MappingFactory {
                         current += c;
                         previousWasBackslash = false;
                     } else if (variableBusy){
-                        result.addElement(new Element(current, TEMPLATETYPE.VARIABLE));
+                        result.addElement(new TemplateElement(current, TEMPLATETYPE.VARIABLE));
                         current = "";
                         variableBusy = false;
                     } else {
@@ -392,7 +392,7 @@ public class MappingFactory {
             }
 
             if (!current.equals("")) {
-                result.addElement(new Element(current, TEMPLATETYPE.CONSTANT));
+                result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
             }
         }
 
