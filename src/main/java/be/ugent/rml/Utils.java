@@ -6,7 +6,6 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.store.RDF4JStore;
 import com.google.common.escape.Escaper;
-import com.google.common.io.Resources;
 import com.google.common.net.UrlEscapers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,12 +110,8 @@ public class Utils {
 
         // Resource path?
         try {
-            URL url = Resources.getResource(path);
-            f = new File(url.getFile());
-            if (f.exists()) {
-                return f;
-            }
-        } catch (IllegalArgumentException e) {
+            return MyFileUtils.getResourceAsFile(path);
+        } catch (IOException e) {
             // Too bad
         }
 

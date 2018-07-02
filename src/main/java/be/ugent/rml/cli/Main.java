@@ -104,7 +104,7 @@ public class Main {
 
                 if (!tq.getQuads().isEmpty()) {
                     //write quads
-                    writeOutput("quad", tq.getTriples(), "nq", line);
+                    writeOutput("quad", tq.getQuads(), "nq", line);
                 }
             } else {
                 printHelp(options);
