@@ -1,11 +1,11 @@
 package be.ugent.rml;
 
-public class Element {
+public class TemplateElement {
 
     private String value;
     private TEMPLATETYPE type;
 
-    public Element(String value, TEMPLATETYPE type) {
+    public TemplateElement(String value, TEMPLATETYPE type) {
         this.value = value;
         this.type = type;
     }

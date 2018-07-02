@@ -75,7 +75,7 @@ public class Executor {
     private void generatePredicateObjectsForSubject(String subject, Mapping mapping, Record record) throws IOException {
         ArrayList<String> subjectGraphs = new ArrayList<String>();
 
-        for (List<Element> graph: mapping.getSubject().getGraphs()) {
+        for (Template graph: mapping.getSubject().getGraphs()) {
             String g = Utils.applyTemplate(graph, record, true).get(0);
 
             if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
@@ -88,7 +88,7 @@ public class Executor {
         for (PredicateObject po : predicateObjects) {
             ArrayList<String> poGraphs = new ArrayList<String>();
 
-            for (List<Element> graph : po.getGraphs()) {
+            for (Template graph : po.getGraphs()) {
                 String g = Utils.applyTemplate(graph, record, true).get(0);
 
                 if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
@@ -101,7 +101,7 @@ public class Executor {
             combinedGraphs.addAll(poGraphs);
 
             if (po.getFunction() != null) {
-                List<String> objects = (List<String>) po.getFunction().execute(record, po.getParameters());
+                List<String> objects = (List<String>) po.getFunction().execute(record);
 
                 if (objects.size() > 0) {
                     if (po.getTermType().equals(NAMESPACES.RR + "IRI")) {
@@ -148,8 +148,8 @@ public class Executor {
         }
     }
 
-    private void generateTriples(String subject, List<List<Element>> predicates, List<String> objects, Record record, List<String> graphs) {
-        for (List<Element> p : predicates) {
+    private void generateTriples(String subject, List<Template> predicates, List<String> objects, Record record, List<String> graphs) {
+        for (Template p : predicates) {
             List<String> realPredicates = Utils.applyTemplate(p, record);
 
             for (String predicate : realPredicates) {
@@ -193,7 +193,7 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<String> getIRIsWithValue(String triplesMap, List<Element> path, List<String> values) throws IOException {
+    private List<String> getIRIsWithValue(String triplesMap, Template path, List<String> values) throws IOException {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
@@ -226,7 +226,7 @@ public class Executor {
         if (!this.subjects.get(triplesMap).containsKey(i)) {
             //we want a IRI and not a Blank Node
             if (mapping.getSubject().getTermType().equals(NAMESPACES.RR + "IRI")) {
-                List<String> subjects = (List<String>) mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters());
+                List<String> subjects = (List<String>) mapping.getSubject().getFunction().execute(record);
                 String subject = null;
 
                 if (!subjects.isEmpty()) {
@@ -238,7 +238,7 @@ public class Executor {
                 //we want a Blank Node
 
                 if (mapping.getSubject().getFunction() != null) {
-                    this.subjects.get(triplesMap).put(i, "_:" + mapping.getSubject().getFunction().execute(record, mapping.getSubject().getParameters()).get(0));
+                    this.subjects.get(triplesMap).put(i, "_:" + mapping.getSubject().getFunction().execute(record).get(0));
                 } else {
                     this.subjects.get(triplesMap).put(i, "_:b" + this.blankNodeCounter);
                     this.blankNodeCounter++;

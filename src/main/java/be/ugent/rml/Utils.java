@@ -143,28 +143,29 @@ public class Utils {
         return location.startsWith("https://") || location.startsWith("http://");
     }
 
-    public static List<String> applyTemplate(List<Element> template, Record record) {
+    public static List<String> applyTemplate(Template template, Record record) {
         return Utils.applyTemplate(template, record, false);
     }
 
-    public static List<String> applyTemplate(List<Element> template, Record record, boolean encodeURIEnabled) {
+    public static List<String> applyTemplate(Template template, Record record, boolean encodeURIEnabled) {
         List<String> result = new ArrayList<String>();
         result.add("");
         //we only return a result when all elements of the template are found
         boolean allValuesFound = true;
 
         //we iterate over all elements of the template, unless one is not found
-        for (int i = 0; allValuesFound && i < template.size(); i ++) {
+        for (int i = 0; allValuesFound && i < template.getTemplateElements().size(); i++) {
+            TemplateElement element = template.getTemplateElements().get(i);
             //if the element is constant, we don't need to look at the data, so we can just add it to the result
-            if (template.get(i).getType() == TEMPLATETYPE.CONSTANT) {
+            if (element.getType() == TEMPLATETYPE.CONSTANT) {
                 for (int j = 0; j < result.size(); j ++) {
-                    result.set(j, result.get(j) + template.get(i).getValue());
+                    result.set(j, result.get(j) + element.getValue());
                 }
             } else {
                 //we need to get the variables from the data
                 //we also need to keep all combinations of multiple results are returned for variable; pretty tricky business
                 List<String> temp = new ArrayList<>();
-                List<String> values = record.get(template.get(i).getValue());
+                List<String> values = record.get(element.getValue());
 
                 for (String value : values) {
 
@@ -182,14 +183,14 @@ public class Utils {
                 }
 
                 if (values.isEmpty()) {
-                    logger.warn("Not all values for a template where found. More specific, the variable " + template.get(i).getValue() + " did not provide any results.");
+                    logger.warn("Not all values for a template where found. More specific, the variable " + element.getValue() + " did not provide any results.");
                     allValuesFound = false;
                 }
             }
         }
 
         if (allValuesFound) {
-            if (countVariablesInTemplate(template) > 0) {
+            if (template.countVariables() > 0) {
                 String emptyTemplate = getEmptyTemplate(template);
                 result.removeIf(s -> s.equals(emptyTemplate));
             }
@@ -200,28 +201,16 @@ public class Utils {
         }
     }
 
-    private static String getEmptyTemplate(List<Element> template) {
+    private static String getEmptyTemplate(Template template) {
         String output = "";
 
-        for (Element t : template) {
+        for (TemplateElement t : template.getTemplateElements()) {
             if (t.getType() == TEMPLATETYPE.CONSTANT) {
                 output += t.getValue();
             }
         }
 
         return output;
-    }
-
-    private static int countVariablesInTemplate(List<Element> template) {
-        int counter = 0;
-
-        for (Element aTemplate : template) {
-            if (aTemplate.getType() == TEMPLATETYPE.VARIABLE) {
-                counter++;
-            }
-        }
-
-        return counter;
     }
 
     public static List<String> getSubjectsFromQuads(List<Quad> quads) {
