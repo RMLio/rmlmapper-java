@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.Function;
+import be.ugent.rml.functions.JoinConditionFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ public class PredicateObject extends TripleElement {
 
 
     private final List<Template> predicates;
-    private final List<JoinCondition> joinConditions;
+    private final List<JoinConditionFunction> joinConditions;
     private final String language;
     private final String datatype;
     private String parentTriplesMap;
@@ -20,7 +21,7 @@ public class PredicateObject extends TripleElement {
         this.language = language;
         this.datatype = datatype;
         this.predicates = predicates;
-        this.joinConditions = new ArrayList<JoinCondition>();
+        this.joinConditions = new ArrayList<JoinConditionFunction>();
     }
 
     public PredicateObject(List<Template> predicates, List<Template> graphs, String termType, Function function) {
@@ -46,7 +47,7 @@ public class PredicateObject extends TripleElement {
         return parentTriplesMap;
     }
 
-    public List<JoinCondition> getJoinConditions() {
+    public List<JoinConditionFunction> getJoinConditions() {
         return joinConditions;
     }
 
@@ -54,7 +55,7 @@ public class PredicateObject extends TripleElement {
         this.parentTriplesMap = parentTriplesMap;
     }
 
-    public void addJoinCondition(JoinCondition condition) {
+    public void addJoinCondition(JoinConditionFunction condition) {
         joinConditions.add(condition);
     }
 }

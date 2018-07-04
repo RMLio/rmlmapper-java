@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MappingFactory {
@@ -169,6 +170,7 @@ public class MappingFactory {
                             List<String> joinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "joinCondition", null));
 
                             for (String joinCondition : joinConditions) {
+
                                 List<String> parents = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "parent", null));
                                 List<String> childs = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "child", null));
 
@@ -177,11 +179,26 @@ public class MappingFactory {
                                 } else if (childs.isEmpty()) {
                                     throw new Error("One of the join conditions of " + triplesMap + " is missing rr:child.");
                                 } else {
+                                    FunctionModel equal = functionLoader.getFunction("http://example.com/idlab/function/equal");
+                                    Map<String, Object[]> parameters = new HashMap<>();
+
                                     Template parent = new Template();
                                     parent.addElement(new TemplateElement(parents.get(0), TEMPLATETYPE.VARIABLE));
+                                    List<Template> parentsList = new ArrayList<>();
+                                    parentsList.add(parent);
+                                    Object[] detailsParent = {"parent", parentsList};
+                                    parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
+
                                     Template child = new Template();
                                     child.addElement(new TemplateElement(childs.get(0), TEMPLATETYPE.VARIABLE));
-                                    po.addJoinCondition(new JoinCondition(parent, child));
+                                    List<Template> childsList = new ArrayList<>();
+                                    childsList.add(child);
+                                    Object[] detailsChild = {"child", childsList};
+                                    parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
+
+                                    JoinConditionFunction joinConditionFunction = new JoinConditionFunction(equal, parameters);
+
+                                    po.addJoinCondition(joinConditionFunction);
                                 }
                             }
 

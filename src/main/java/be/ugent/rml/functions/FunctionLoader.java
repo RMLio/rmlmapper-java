@@ -1,6 +1,7 @@
 package be.ugent.rml.functions;
 
 import be.ugent.rml.Utils;
+import be.ugent.rml.functions.lib.UtilFunctions;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import org.eclipse.rdf4j.model.Model;
@@ -77,7 +78,9 @@ public class FunctionLoader {
         } else {
             this.functionDescriptionTriples = functionDescriptionTriples;
         }
+
         this.libraryMap = new HashMap<>();
+
         if (libraryMap == null) {
             this.classMap = new HashMap<>();
         } else {
@@ -86,6 +89,10 @@ public class FunctionLoader {
                 this.libraryMap.put(key, "__local");
             }
         }
+
+        this.classMap.put("UtilFunctions", UtilFunctions.class);
+        this.libraryMap.put("UtilFunctions.jar", "__local");
+
         this.loadedMethods = new HashMap<>();
     }
 
