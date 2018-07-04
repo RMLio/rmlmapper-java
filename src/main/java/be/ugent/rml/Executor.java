@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
+import be.ugent.rml.functions.JoinConditionFunction;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
@@ -132,13 +133,7 @@ public class Executor {
             } else if (po.getParentTriplesMap() != null) {
                 //check if need to apply a join condition
                 if (!po.getJoinConditions().isEmpty()) {
-                    ArrayList<ValuedJoinCondition> valuedJoinConditions = new ArrayList<ValuedJoinCondition>();
-
-                    for (JoinCondition join : po.getJoinConditions()) {
-                        valuedJoinConditions.add(new ValuedJoinCondition(join.getParent(), Utils.applyTemplate(join.getChild(), record)));
-                    }
-
-                    List<String> objects = this.getIRIsWithConditions(po.getParentTriplesMap(), valuedJoinConditions);
+                    List<String> objects = this.getIRIsWithConditions(record, po.getParentTriplesMap(), po.getJoinConditions());
                     this.generateTriples(subject, po.getPredicates(), objects, record, combinedGraphs);
                 } else {
                     List<String> objects = this.getAllIRIs(po.getParentTriplesMap());
@@ -168,12 +163,12 @@ public class Executor {
         }
     }
 
-    private List<String> getIRIsWithConditions(String triplesMap, List<ValuedJoinCondition> conditions) throws IOException {
+    private List<String> getIRIsWithConditions(Record record, String triplesMap, List<JoinConditionFunction> conditions) throws IOException {
         ArrayList<String> goodIRIs = new ArrayList<String>();
         ArrayList<List<String>> allIRIs = new ArrayList<List<String>>();
 
-        for (ValuedJoinCondition condition : conditions) {
-            allIRIs.add(this.getIRIsWithValue(triplesMap, condition.getPath(), condition.getValues()));
+        for (JoinConditionFunction condition : conditions) {
+            allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
         }
 
         if (allIRIs.size() > 0) {
@@ -193,7 +188,7 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<String> getIRIsWithValue(String triplesMap, Template path, List<String> values) throws IOException {
+    private List<String> getIRIsWithTrueCondition(Record child, String triplesMap, JoinConditionFunction condition) throws IOException {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
@@ -201,17 +196,12 @@ public class Executor {
         //this array contains all the IRIs that are valid regarding @path and @values
         ArrayList<String> iris = new ArrayList<String>();
 
-        for (String value : values) {
-            for (int i = 0; i < records.size(); i++) {
-                Record record = records.get(i);
-                List<String> foundValues = Utils.applyTemplate(path, record);
+        for (int i = 0; i < records.size(); i++) {
+            Record parent = records.get(i);
 
-                //we found a match
-                if (foundValues.contains(value)) {
-                    //we get the subject corresponding to the current record
-                    String subject = this.getSubject(triplesMap, mapping, record, i);
-                    iris.add(subject);
-                }
+            if (condition.execute(child, parent)) {
+                String subject = this.getSubject(triplesMap, mapping, parent, i);
+                iris.add(subject);
             }
         }
 
