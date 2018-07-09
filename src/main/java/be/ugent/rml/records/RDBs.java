@@ -1,14 +1,20 @@
 package be.ugent.rml.records;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.sql.*;
 
 public class RDBs  {
 
 
-    public List<Record> _get(String jdbcDSN, String jdbcDriver, String username, String password, String query) throws IOException {
+    public List<Record> get(String jdbcDSN, String jdbcDriver, String username, String password, String query) throws IOException {
 
+        // List containing generated records
+        List<Record> records = new ArrayList<>();
+
+        // JDBC objects
         Connection connection = null;
         Statement statement = null;
 
@@ -24,21 +30,26 @@ public class RDBs  {
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
+            // Get number of requested columns
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+
             // Extract data from result set
             while(rs.next()){
-                //Retrieve by column name
-                int id  = rs.getInt("id");
-                int age = rs.getInt("age");
-                String first = rs.getString("first");
-                String last = rs.getString("last");
+                HashMap<String, List<String>> values = new HashMap<>();
 
-                //Display values
-                System.out.print("ID: " + id);
-                System.out.print(", Age: " + age);
-                System.out.print(", First: " + first);
-                System.out.println(", Last: " + last);
+                // Iterate over column names
+                for (int i = 0; i <= columnCount; i++) {
+                    String columnName = rsmd.getColumnName(i);
+
+                    List<String> temp = new ArrayList<String>();
+                    temp.add(rs.getString(columnName));
+                    values.put(columnName, temp);
+                }
+
+                records.add(new RDBsRecord(values));
             }
-            
+
 
             // Clean-up environment
             rs.close();
@@ -46,24 +57,30 @@ public class RDBs  {
             connection.close();
 
 
+        } catch (SQLException sqlE) {
+            sqlE.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            //finally block used to close resources
+
+            // finally block used to close resources
             try{
-                if(statement!=null)
+                if(statement != null) {
                     statement.close();
-            }catch(SQLException se2){
+                }
+            } catch (SQLException se2) {
             }// nothing we can do
+
             try{
-                if(connection !=null)
+                if(connection != null) {
                     connection.close();
-            }catch(SQLException se){
+                }
+            } catch (SQLException se) {
                 se.printStackTrace();
-            }//end finally try
+            }
         }
 
 
-        return null;
+        return records;
     }
 }
