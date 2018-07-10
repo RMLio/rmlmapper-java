@@ -9,7 +9,7 @@ import java.sql.*;
 public class RDBs  {
 
 
-    public List<Record> get(String jdbcDSN, String jdbcDriver, String username, String password, String query) throws IOException {
+    public List<Record> get(String jdbcDSN, String jdbcDriver, String username, String password, String query) {
 
         // List containing generated records
         List<Record> records = new ArrayList<>();
@@ -26,7 +26,6 @@ public class RDBs  {
             connection = DriverManager.getConnection(jdbcDSN, username, password);
 
             // Execute query
-            System.out.println("Creating statement...");
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 

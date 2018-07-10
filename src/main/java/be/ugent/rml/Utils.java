@@ -19,6 +19,7 @@ import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -413,5 +414,52 @@ public class Utils {
         result = result.replaceAll("]", "%5D");
 
         return result;
+    }
+
+    /*
+        Extracts the selected columns from the SQL query
+        Orders them alphabetically
+        Returns hash of concatenated string
+     */
+    // todo: Take subquerries into account
+    public static int selectedColumnHash(String query) {
+        Pattern p = Pattern.compile("^SELECT(.*)FROM");
+        Matcher m = p.matcher(query);
+
+        if (m.find()) {
+            String columns = m.group(1);
+            String[] columnNames = columns.replace("DISTINCT", "").replace(" ", "").split(",");
+            Arrays.sort(columnNames);
+            return String.join("", columnNames).hashCode();
+        }
+
+        throw new Error("Invalid query: " + query);
+    }
+
+
+    /*
+        Retrieves the JDBC driver URL from a given string containing the type of the DB
+     */
+    public static String getDbDriverURL(String db) {
+        String db_lower = db.toLowerCase();
+        if (db_lower.contains("mysql")) {
+            return DATABASE_DRIVERS.MYSQL;
+        } else if (db_lower.contains("postgres")) {
+            return DATABASE_DRIVERS.POSTGRES;
+        } else if (db_lower.contains("sqlserver")) {
+            return DATABASE_DRIVERS.SQL_SERVER;
+        } else if (db_lower.contains("oracle")) {
+            return DATABASE_DRIVERS.ORACLE;
+        } else {
+            throw new Error("Couldn't find a driver for the given DB: " + db);
+        }
+    }
+
+    /*
+        todo: implement this
+        Removes the part before // and adds the correct prefix given the driver (here --> JDBC)
+     */
+    public static String getgetDbDSN(String dsn, String driver) {
+        return null;
     }
 }
