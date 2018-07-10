@@ -30,7 +30,7 @@
 
 										
 <#DB_source> a d2rq:Database;
-  d2rq:jdbcDSN "jdbc:mysql://localhost/example"; # the "jbdc:mysql:// part is ignored
+  d2rq:jdbcDSN "jdbc:mysql://localhost/test"; # the "jbdc:mysql:// part is ignored
   d2rq:jdbcDriver "com.mysql.jdbc.Driver"; # this is ignored
-  d2rq:username "user";
-  d2rq:password "password" .
+  d2rq:username "root";
+  d2rq:password "" .

@@ -10,7 +10,6 @@ import java.sql.*;
 
 public class RDBs  {
 
-
     /*
         This method adds the "jdbc:XXX://" prefix to the given dsn. This way the caller of this function doesn't need
         to take JDBC specific details into account.

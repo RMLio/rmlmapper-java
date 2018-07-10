@@ -7,7 +7,7 @@ package be.ugent.rml;
 
 public class Database_Utils {
 
-    public static final String MYSQL = "com.mysql.jdbc.Driver";
+    public static final String MYSQL = "com.mysql.cj.jdbc.Driver";
     public static final String POSTGRES = "org.postgresql.Driver";
     public static final String SQL_SERVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     //public static final String ORACLE = "oracle.jdbc.driver.OracleDrive";
