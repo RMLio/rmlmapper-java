@@ -435,31 +435,4 @@ public class Utils {
 
         throw new Error("Invalid query: " + query);
     }
-
-
-    /*
-        Retrieves the JDBC driver URL from a given string containing the type of the DB
-     */
-    public static String getDbDriverURL(String db) {
-        String db_lower = db.toLowerCase();
-        if (db_lower.contains("mysql")) {
-            return DATABASE_DRIVERS.MYSQL;
-        } else if (db_lower.contains("postgres")) {
-            return DATABASE_DRIVERS.POSTGRES;
-        } else if (db_lower.contains("sqlserver")) {
-            return DATABASE_DRIVERS.SQL_SERVER;
-        } else if (db_lower.contains("oracle")) {
-            return DATABASE_DRIVERS.ORACLE;
-        } else {
-            throw new Error("Couldn't find a driver for the given DB: " + db);
-        }
-    }
-
-    /*
-        todo: implement this
-        Removes the part before // and adds the correct prefix given the driver (here --> JDBC)
-     */
-    public static String getgetDbDSN(String dsn, String driver) {
-        return null;
-    }
 }

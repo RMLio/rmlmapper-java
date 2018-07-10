@@ -1,6 +1,8 @@
 package be.ugent.rml.records;
 
-import java.io.IOException;
+import be.ugent.rml.Database_Utils;
+import be.ugent.rml.Utils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,21 +11,26 @@ import java.sql.*;
 public class RDBs  {
 
 
-    public List<Record> get(String jdbcDSN, String jdbcDriver, String username, String password, String query) {
-
+    /*
+        This method adds the "jdbc:XXX://" prefix to the given dsn. This way the caller of this function doesn't need
+        to take JDBC specific details into account.
+     */
+    public List<Record> get(String dsn, Database_Utils.Database database, String username, String password, String query) {
         // List containing generated records
         List<Record> records = new ArrayList<>();
 
         // JDBC objects
         Connection connection = null;
         Statement statement = null;
+        String jdbcDriver = Database_Utils.getDriver(database);
+        String jdbcDSN = "jdbc:" + database.toString() + "://" + dsn;
 
         try {
             // Register JDBC driver
             Class.forName(jdbcDriver);
 
             // Open connection
-            connection = DriverManager.getConnection(jdbcDSN, username, password);
+            connection = DriverManager.getConnection(jdbcDSN + "?user=" + username + "&password=" + password + "&serverTimezone=UTC");
 
             // Execute query
             statement = connection.createStatement();
@@ -38,7 +45,7 @@ public class RDBs  {
                 HashMap<String, List<String>> values = new HashMap<>();
 
                 // Iterate over column names
-                for (int i = 0; i <= columnCount; i++) {
+                for (int i = 1; i <= columnCount; i++) {
                     String columnName = rsmd.getColumnName(i);
 
                     List<String> temp = new ArrayList<String>();

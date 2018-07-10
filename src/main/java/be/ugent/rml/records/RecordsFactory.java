@@ -1,11 +1,11 @@
 package be.ugent.rml.records;
 
+import be.ugent.rml.Database_Utils;
 import be.ugent.rml.DataFetcher;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
 import org.apache.commons.lang.NotImplementedException;
-import org.eclipse.rdf4j.query.algebra.Str;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class RecordsFactory {
             List<String> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "referenceFormulation", null));
             List<String> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "source", null));
             List<String> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "iterator", null));
-            List<String> table = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "table", null));
+            List<String> table = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "tableName", null));
 
             // If no rml:referenceFormulation is given, but a table is given --> CSV
             if (referenceFormulations.isEmpty() && !table.isEmpty()) {
@@ -75,7 +75,7 @@ public class RecordsFactory {
                     List<String> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "sqlVersion", null));
 
                     if (referenceFormulations.get(0).toLowerCase().contains("sql") || (!sqlVersion.isEmpty() && sqlVersion.get(0).toLowerCase().contains("sql"))) {
-                        return rdbsRecords(rmlStore, source, logicalSource, triplesMap);
+                        return rdbsRecords(rmlStore, source, logicalSource, triplesMap, table);
                     } else { // Unknown type
                         throw new NotImplementedException();
                     }
@@ -159,7 +159,7 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> rdbsRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap) {
+    private List<Record> rdbsRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap, List<String> table) {
         // Retrieve database information from source object
 
         // - Driver URL
@@ -167,7 +167,7 @@ public class RecordsFactory {
         if (driverObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a driver.");
         }
-        String driver = Utils.getDbDriverURL(driverObject.get(0));
+        Database_Utils.Database database = Database_Utils.getDBtype(driverObject.get(0));
 
         // - DSN
         List<String> dsnObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "jdbcDSN", null));
@@ -175,13 +175,20 @@ public class RecordsFactory {
             throw new Error("The database source object " + source + " does not include a Data Source Name.");
         }
         String dsn = Utils.getLiteral(dsnObject.get(0));
+        dsn = dsn.substring(dsn.indexOf("//") + 2);
 
         // - SQL query
+        String query;
         List<String> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "query", null));
         if (queryObject.isEmpty()) {
-            throw new Error("The Logical Source of " + triplesMap + " does not include a SQL query.");
+            if (table.isEmpty()) {
+                throw new Error("The Logical Source of " + triplesMap + " does not include a SQL query nor a target table.");
+            } else {
+                query = "SELECT * FROM " + Utils.getLiteral(table.get(0));
+            }
+        } else {
+            query = Utils.getLiteral(queryObject.get(0));
         }
-        String query = Utils.getLiteral(queryObject.get(0));
 
         // - Username
         List<String> usernameObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "username", null));
@@ -205,7 +212,7 @@ public class RecordsFactory {
             return allRDBsRecords.get(source).get(queryHash);
         } else {
             RDBs rdbs = new RDBs();
-            return rdbs.get(dsn, driver, username, password, query);
+            return rdbs.get(dsn, database, username, password, query);
         }
     }
 }
