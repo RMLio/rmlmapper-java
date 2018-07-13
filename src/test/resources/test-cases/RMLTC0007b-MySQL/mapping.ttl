@@ -5,28 +5,34 @@
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@base <http://example.com/base/> .
 @prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@base <http://example.com/base/> .
 
 <TriplesMap1> a rr:TriplesMap;
-    
-  rml:logicalSource [ 
-    rml:source "student.csv";
-    rml:referenceFormulation ql:CSV
-  ];
 
-  rr:subjectMap [ 
+  rml:logicalSource [
+    rml:source <#DB_source>;
+    rr:sqlVersion rr:SQL2008;
+    rr:tableName "student";
+];
+
+  rr:subjectMap [
     rr:template "http://example.com/Student/{ID}/{FirstName}";
     rr:graph ex:PersonGraph
   ];
 
-  rr:predicateObjectMap [ 
+  rr:predicateObjectMap [
     rr:predicate rdf:type;
-    rr:object foaf:Person; 
+    rr:object foaf:Person;
   ];
 
-  rr:predicateObjectMap [ 
+  rr:predicateObjectMap [
     rr:predicate foaf:name;
     rr:objectMap [ rml:reference "FirstName" ]
   ].
 
+<#DB_source> a d2rq:Database;
+  d2rq:jdbcDSN "jdbc:mysql://localhost:50898/test"; # the "jbdc:mysql:// part is ignored
+  d2rq:jdbcDriver "com.mysql.jdbc.Driver"; # this is ignored
+  d2rq:username "root";
+  d2rq:password "" .

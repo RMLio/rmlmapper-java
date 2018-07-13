@@ -6,7 +6,6 @@ import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
 import org.apache.commons.lang.NotImplementedException;
-import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,11 +74,11 @@ public class RecordsFactory {
 
                     List<String> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.RDF + "type", null));
                     switch(sourceType.get(0)) {
-                        case NAMESPACES.D2RQ + "DATABASE":  // RDBs
+                        case NAMESPACES.D2RQ + "Database":  // RDBs
                             // Check if SQL version is given
                             List<String> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "sqlVersion", null));
                             if (sqlVersion.isEmpty()) {
-                                throw new Error("No SQL identifier detected.");
+                                throw new Error("No SQL version identifier detected.");
                             }
                             return rdbsRecords(rmlStore, source, logicalSource, triplesMap, table);
                         default:

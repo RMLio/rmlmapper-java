@@ -4,6 +4,6 @@ CREATE TABLE persons (
   lname VARCHAR(200),
   amount INTEGER
 );
-INSERT INTO sport values ('Bob','Smith','30');
-INSERT INTO sport values ('Sue','Jones','20');
-INSERT INTO sport values ('Bob','Smith','30';
+INSERT INTO persons values ('Bob','Smith','30');
+INSERT INTO persons values ('Sue','Jones','20');
+INSERT INTO persons values ('Bob','Smith','30');
