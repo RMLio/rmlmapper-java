@@ -6,6 +6,7 @@ import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
 import org.apache.commons.lang.NotImplementedException;
+import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,27 +58,33 @@ public class RecordsFactory {
                 if (Utils.isLiteral(sources.get(0))) {
                     source = Utils.getLiteral(sources.get(0));
 
-                    if (referenceFormulations.get(0).equals(NAMESPACES.QL + "CSV")) {
-                        return csvRecords(source);
-                    } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "XPath")) {
-                        return xmlRecords(source, iterators, triplesMap);
-                    } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "JSONPath")) {
-                        return jsonRecords(source, iterators, triplesMap);
-                    } else {
-                        throw new NotImplementedException();
+                    switch(referenceFormulations.get(0)) {
+                        case NAMESPACES.QL + "CSV":
+                            return csvRecords(source);
+                        case NAMESPACES.QL + "XPath":
+                            return csvRecords(source);
+                        case NAMESPACES.QL + "JSONPath":
+                            return csvRecords(source);
+                        default:
+                            throw new NotImplementedException();
+
                     }
 
                 } else {
                     source = sources.get(0);
 
-                    // Check if RDBs
-                    // Todo: will sqlVersion always be added? Maybe checking if source points to a DB is better
-                    List<String> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "sqlVersion", null));
+                    List<String> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.RDF + "type", null));
+                    switch(sourceType.get(0)) {
+                        case NAMESPACES.D2RQ + "DATABASE":  // RDBs
+                            // Check if SQL version is given
+                            List<String> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "sqlVersion", null));
+                            if (sqlVersion.isEmpty()) {
+                                throw new Error("No SQL identifier detected.");
+                            }
+                            return rdbsRecords(rmlStore, source, logicalSource, triplesMap, table);
+                        default:
+                            throw new NotImplementedException();
 
-                    if (referenceFormulations.get(0).toLowerCase().contains("sql") || (!sqlVersion.isEmpty() && sqlVersion.get(0).toLowerCase().contains("sql"))) {
-                        return rdbsRecords(rmlStore, source, logicalSource, triplesMap, table);
-                    } else { // Unknown type
-                        throw new NotImplementedException();
                     }
                 }
             }
