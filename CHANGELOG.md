@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for SPARQL endpoints
 - support for TPF servers
 
+## [0.1.4] - 2018-07-16
+
+### Fixed
+
+- Content negotiation done right
+
+## [0.1.3] - 2018-07-16
+
+### Fixed
+
+- If JSONPath gives a null, just don't create a triple instead of crashing
+
 ## [0.1.2] - 2018-07-02
 
 ### Fixed
@@ -36,5 +48,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[0.1.4]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.3...v0.1.4
+[0.1.3]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.0...v0.1.1

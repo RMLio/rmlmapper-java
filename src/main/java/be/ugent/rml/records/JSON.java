@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.rml.Utils;
 import com.jayway.jsonpath.*;
 
 import java.io.*;
@@ -7,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JSON extends IteratorFormat {
+
+    protected String getContentType() {
+        return "application/json";
+    }
 
     protected List<Record> _get(InputStream stream, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
