@@ -21,6 +21,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public static void startDB() throws Exception {
         DBConfigurationBuilder configBuilder = DBConfigurationBuilder.newBuilder();
         configBuilder.setPort(PORTNUMBER);
+        configBuilder.addArg("--user=root");
         currentDB = DB.newEmbeddedDB(configBuilder.build());
         currentDB.start();
 
