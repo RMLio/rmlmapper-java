@@ -31,14 +31,16 @@ public class JSONRecord implements Record {
 
             Object t = JsonPath.read(document, this.path + "." + value);
 
-            if (t instanceof JSONArray) {
-                JSONArray array = (JSONArray) t;
+            if (t != null) {
+                if (t instanceof JSONArray) {
+                    JSONArray array = (JSONArray) t;
 
-                for (int i = 0; i < array.size(); i ++) {
-                    results.add(array.get(i).toString());
+                    for (int i = 0; i < array.size(); i ++) {
+                        results.add(array.get(i).toString());
+                    }
+                } else {
+                    results.add(t.toString());
                 }
-            } else {
-                results.add(t.toString());
             }
         } catch(PathNotFoundException e) {
             logger.warn(e.getMessage(), e);
