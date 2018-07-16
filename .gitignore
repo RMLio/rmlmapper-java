@@ -1,4 +1,4 @@
 .idea
 target
 rmlmapper.iml
-classes/
+.DS_Store
