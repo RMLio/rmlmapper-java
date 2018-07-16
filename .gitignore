@@ -1,5 +1,4 @@
 .idea
 target
 rmlmapper.iml
-lib/*
-.gitignore
+.DS_Store
