@@ -13,7 +13,7 @@ import ch.vorburger.mariadb4j.DB;
 //  USE DYNAMIC PORT NUMBER AS DESCRIBED BELOW OR USE STATIC PORT NUMBERS IN MAPPING FILE's JDBC DSN
 public class Mapper_RDBs_Test extends TestCore {
 
-    private static final int PORTNUMBER = 50898;
+    private static final int PORTNUMBER = 50897;
 
     private static DB currentDB;
 
