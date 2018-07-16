@@ -13,12 +13,16 @@ import java.util.List;
 
 public class CSV {
 
+    protected String getContentType() {
+        return "text/csv";
+    }
+
     public List<Record> get(String path) throws IOException {
         return get(path, System.getProperty("user.dir"));
     }
 
     public List<Record> get(String path, String cwd) throws IOException {
-        Reader reader = Utils.getReaderFromLocation(path, new File(cwd));
+        Reader reader = Utils.getReaderFromLocation(path, new File(cwd), getContentType());
 
         return _get(reader);
     }
