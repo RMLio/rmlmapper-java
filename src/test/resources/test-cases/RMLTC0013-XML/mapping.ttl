@@ -1,0 +1,26 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://citadel.ilabt.imec.be/exampleontology/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@base <http://example.com/base/> .
+
+<TriplesMap1> a rr:TriplesMap;
+    
+  rml:logicalSource [ 
+    rml:source "cities.xml";
+    rml:referenceFormulation ql:XPath;
+    rml:iterator "/cities/city"
+  ];
+
+  rr:subjectMap [ 
+    rr:template "http://example.com/city/{id}";
+  ];
+
+  rr:predicateObjectMap [
+      rr:predicate ex:name;
+      rr:objectMap [
+        rml:reference "name"
+      ]
+    ].
