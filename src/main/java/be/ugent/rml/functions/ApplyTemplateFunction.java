@@ -1,6 +1,6 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.Element;
+import be.ugent.rml.Template;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.Record;
 
@@ -11,18 +11,18 @@ public class ApplyTemplateFunction extends Function{
 
     private boolean encodeURI;
 
-    public ApplyTemplateFunction(boolean encodeURI) {
-        super(null);
+    public ApplyTemplateFunction(Map<String, List<Template>> parameters, boolean encodeURI) {
+        super(null, parameters);
 
         this.encodeURI = encodeURI;
     }
 
-    public ApplyTemplateFunction() {
-        this(false);
+    public ApplyTemplateFunction(Map<String, List<Template>> parameters) {
+        this(parameters, false);
     }
 
     @Override
-    public List<?> execute(Record record, Map<String, List<List<Element>>> parameters) {
-        return Utils.applyTemplate(parameters.get("_TEMPLATE").get(0), record, encodeURI);
+    public List<?> execute(Record record) {
+        return Utils.applyTemplate(this.parameters.get("_TEMPLATE").get(0), record, encodeURI);
     }
 }

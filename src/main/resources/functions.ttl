@@ -5,6 +5,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 @prefix : <http://example.com/idlab/functions/string/> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
 @prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 
 ########################
@@ -81,6 +82,18 @@ grel:toUpperCaseURL a fno:Function ;
     lib:localLibrary "GrelFunctions.jar";
     lib:class "GrelFunctions";
     lib:method "toUpperCaseURL"
+  ].
+
+idlab-fn:equal a fno:Function ;
+  fno:name "equal" ;
+  rdfs:label "equal" ;
+  dcterms:description "Returns true if strings are equal." ;
+  fno:expects ( grel:valueParam grel:valueParam2 ) ;
+  fno:returns ( grel:stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "UtilFunctions.jar";
+    lib:class "UtilFunctions";
+    lib:method "equal"
   ].
 
 grel:valueParam a fno:Parameter ;

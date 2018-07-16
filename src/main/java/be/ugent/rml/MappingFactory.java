@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MappingFactory {
@@ -53,29 +54,28 @@ public class MappingFactory {
 
                     //checking if we are dealing with a Blank Node as subject
                     if (!termTypes.isEmpty() && termTypes.get(0).equals(NAMESPACES.RR  + "BlankNode")) {
-                        this.subject = new TripleElement(null, termTypes.get(0), null, null);
+                        this.subject = new TripleElement(null, termTypes.get(0), null);
                         String template = getGenericTemplate(subjectmap);
 
                         if (template != null) {
-                            this.subject.setFunction(new ApplyTemplateFunction(true));
-                            HashMap<String, List<List<Element>>> parameters = new HashMap<>();
-                            ArrayList<List<Element>> temp = new ArrayList<>();
+                            HashMap<String, List<Template>> parameters = new HashMap<>();
+                            ArrayList<Template> temp = new ArrayList<>();
                             temp.add(parseTemplate(getGenericTemplate(subjectmap)));
                             parameters.put("_TEMPLATE", temp);
-                            this.subject.setParameters(parameters);
+                            this.subject.setFunction(new ApplyTemplateFunction(parameters, true));
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
-                        HashMap<String, List<List<Element>>> parameters = new HashMap<>();
-                        ArrayList<List<Element>> temp = new ArrayList<>();
+                        HashMap<String, List<Template>> parameters = new HashMap<>();
+                        ArrayList<Template> temp = new ArrayList<>();
                         temp.add(parseTemplate(getGenericTemplate(subjectmap)));
                         parameters.put("_TEMPLATE", temp);
-                        this.subject = new TripleElement(null, NAMESPACES.RR  + "IRI", new ApplyTemplateFunction(true), parameters);
+                        this.subject = new TripleElement(null, NAMESPACES.RR + "IRI", new ApplyTemplateFunction(parameters, true));
                     }
                 } else {
-                    FunctionDetails functionDetails = parseFunctionTermMap(functionValues.get(0));
+                    Function function = parseFunctionTermMap(functionValues.get(0));
 
-                    this.subject = new TripleElement(null, NAMESPACES.RR  + "IRI", functionDetails.getFunction(), functionDetails.getParameters());
+                    this.subject = new TripleElement(null, NAMESPACES.RR + "IRI", function);
                 }
 
                 this.subject.setGraphs(parseGraphMaps(subjectmap));
@@ -85,21 +85,21 @@ public class MappingFactory {
 
                 //we create predicateobjects for the classes
                 for (String c: classes) {
-                    List<List<Element>> predicates = new ArrayList<>();
-                    ArrayList<Element> temp = new ArrayList<>();
-                    temp.add(new Element(NAMESPACES.RDF + "type", TEMPLATETYPE.CONSTANT));
+                    List<Template> predicates = new ArrayList<>();
+                    Template temp = new Template();
+                    temp.addElement(new TemplateElement(NAMESPACES.RDF + "type", TEMPLATETYPE.CONSTANT));
                     predicates.add(temp);
 
-                    HashMap<String, List<List<Element>>> parameters = new HashMap<>();
-                    List<List<Element>> temp2 = new ArrayList<>();
-                    ArrayList<Element> temp3 = new ArrayList<>();
-                    temp3.add(new Element(c, TEMPLATETYPE.CONSTANT));
+                    HashMap<String, List<Template>> parameters = new HashMap<>();
+                    List<Template> temp2 = new ArrayList<>();
+                    Template temp3 = new Template();
+                    temp3.addElement(new TemplateElement(c, TEMPLATETYPE.CONSTANT));
                     temp2.add(temp3);
 
                     parameters.put("_TEMPLATE", temp2);
 
                     // Don't put in graph for rr:class, subject is already put in graph, otherwise double export
-                    predicateObjects.add(new PredicateObject(predicates, null, NAMESPACES.RR  + "IRI", new ApplyTemplateFunction(), parameters));
+                    predicateObjects.add(new PredicateObject(predicates, null, NAMESPACES.RR + "IRI", new ApplyTemplateFunction(parameters)));
                 }
             } else {
                 throw new Error(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");
@@ -111,9 +111,9 @@ public class MappingFactory {
         List<String> predicateobjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, NAMESPACES.RR + "predicateObjectMap", null));
 
         for (String pom : predicateobjectmaps) {
-            List<List<Element>> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR  + "predicate", null)).stream().map(i -> {
-                List<Element> temp = new ArrayList<>();
-                temp.add(new Element(i, TEMPLATETYPE.CONSTANT));
+            List<Template> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR  + "predicate", null)).stream().map(i -> {
+                Template temp = new Template();
+                temp.addElement(new TemplateElement(i, TEMPLATETYPE.CONSTANT));
                 return temp;
             }).collect(Collectors.toList());
 
@@ -123,7 +123,7 @@ public class MappingFactory {
                 predicates.add(parseTemplate(getGenericTemplate(pm)));
             }
 
-            List<List<Element>> graphs = parseGraphMaps(pom);
+            List<Template> graphs = parseGraphMaps(pom);
             List<String> objectmaps = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "objectMap", null));
 
             for (String objectmap : objectmaps) {
@@ -149,11 +149,11 @@ public class MappingFactory {
                     String genericTemplate = getGenericTemplate(objectmap);
 
                     if (genericTemplate != null) {
-                        HashMap<String, List<List<Element>>> parameters = new HashMap<>();
-                        ArrayList<List<Element>> temp = new ArrayList<>();
+                        HashMap<String, List<Template>> parameters = new HashMap<>();
+                        ArrayList<Template> temp = new ArrayList<>();
                         temp.add(parseTemplate(genericTemplate));
                         parameters.put("_TEMPLATE", temp);
-                        predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(termType.equals(NAMESPACES.RR + "IRI")), parameters, language, datatype));
+                        predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(parameters, termType.equals(NAMESPACES.RR + "IRI")), language, datatype));
                     } else {
                         //look for parenttriplesmap
                         List<String> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "parentTriplesMap", null));
@@ -164,12 +164,13 @@ public class MappingFactory {
                             }
 
                             String parentTriplesMap = parentTriplesMaps.get(0);
-                            PredicateObject po = new PredicateObject(predicates, graphs, NAMESPACES.RR + "IRI", null, null);
+                            PredicateObject po = new PredicateObject(predicates, graphs, NAMESPACES.RR + "IRI", null);
                             po.setParentTriplesMap(parentTriplesMap);
 
                             List<String> joinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, NAMESPACES.RR + "joinCondition", null));
 
                             for (String joinCondition : joinConditions) {
+
                                 List<String> parents = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "parent", null));
                                 List<String> childs = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, NAMESPACES.RR + "child", null));
 
@@ -178,11 +179,26 @@ public class MappingFactory {
                                 } else if (childs.isEmpty()) {
                                     throw new Error("One of the join conditions of " + triplesMap + " is missing rr:child.");
                                 } else {
-                                    List<Element> parent = new ArrayList<>();
-                                    parent.add(new Element(parents.get(0), TEMPLATETYPE.VARIABLE));
-                                    List<Element> child = new ArrayList<>();
-                                    child.add(new Element(childs.get(0), TEMPLATETYPE.VARIABLE));
-                                    po.addJoinCondition(new JoinCondition(parent, child));
+                                    FunctionModel equal = functionLoader.getFunction("http://example.com/idlab/function/equal");
+                                    Map<String, Object[]> parameters = new HashMap<>();
+
+                                    Template parent = new Template();
+                                    parent.addElement(new TemplateElement(parents.get(0), TEMPLATETYPE.VARIABLE));
+                                    List<Template> parentsList = new ArrayList<>();
+                                    parentsList.add(parent);
+                                    Object[] detailsParent = {"parent", parentsList};
+                                    parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
+
+                                    Template child = new Template();
+                                    child.addElement(new TemplateElement(childs.get(0), TEMPLATETYPE.VARIABLE));
+                                    List<Template> childsList = new ArrayList<>();
+                                    childsList.add(child);
+                                    Object[] detailsChild = {"child", childsList};
+                                    parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
+
+                                    JoinConditionFunction joinConditionFunction = new JoinConditionFunction(equal, parameters);
+
+                                    po.addJoinCondition(joinConditionFunction);
                                 }
                             }
 
@@ -190,14 +206,14 @@ public class MappingFactory {
                         }
                     }
                 } else {
-                    FunctionDetails functionDetails = parseFunctionTermMap(functionValues.get(0));
+                    Function function = parseFunctionTermMap(functionValues.get(0));
 
                     if (termType == null) {
                         // TODO be smarter than this
                         termType = NAMESPACES.RR + "Literal";
                     }
 
-                    predicateObjects.add(new PredicateObject(predicates, graphs, termType, functionDetails.getFunction(), functionDetails.getParameters(), language, datatype));
+                    predicateObjects.add(new PredicateObject(predicates, graphs, termType, function, language, datatype));
                 }
             }
 
@@ -213,20 +229,20 @@ public class MappingFactory {
                     termType = NAMESPACES.RR + "IRI";
                 }
 
-                HashMap<String, List<List<Element>>> parameters = new HashMap<>();
-                List<List<Element>> temp2 = new ArrayList<>();
-                ArrayList<Element> temp3 = new ArrayList<>();
-                temp3.add(new Element(o, TEMPLATETYPE.CONSTANT));
+                HashMap<String, List<Template>> parameters = new HashMap<>();
+                List<Template> temp2 = new ArrayList<>();
+                Template temp3 = new Template();
+                temp3.addElement(new TemplateElement(o, TEMPLATETYPE.CONSTANT));
                 temp2.add(temp3);
 
                 parameters.put("_TEMPLATE", temp2);
-                predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(), parameters));
+                predicateObjects.add(new PredicateObject(predicates, graphs, termType, new ApplyTemplateFunction(parameters)));
             }
         }
     }
 
-    private List<List<Element>> parseGraphMaps(String termMap) {
-        ArrayList<List<Element>> graphs = new ArrayList<>();
+    private List<Template> parseGraphMaps(String termMap) {
+        ArrayList<Template> graphs = new ArrayList<>();
 
         List<String> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, NAMESPACES.RR + "graphMap", null));
 
@@ -237,21 +253,21 @@ public class MappingFactory {
         List<String> graphShortCuts = Utils.getObjectsFromQuads(store.getQuads(termMap, NAMESPACES.RR + "graph", null));
 
         for (String graph : graphShortCuts) {
-            ArrayList<Element> temp = new ArrayList<>();
-            temp.add(new Element(graph, TEMPLATETYPE.CONSTANT));
+            Template temp = new Template();
+            temp.addElement(new TemplateElement(graph, TEMPLATETYPE.CONSTANT));
             graphs.add(temp);
         }
 
         return graphs;
     }
 
-    private FunctionDetails parseFunctionTermMap(String functionValue) throws IOException {
+    private Function parseFunctionTermMap(String functionValue) throws IOException {
         List<String> functionPOMs = Utils.getObjectsFromQuads(store.getQuads(functionValue, NAMESPACES.RR + "predicateObjectMap", null));
-        HashMap<String, List<List<Element>>> params = new HashMap<>();
+        HashMap<String, List<Template>> params = new HashMap<>();
 
         for (String pom : functionPOMs) {
             //process predicates
-            List<List<Element>> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "predicate", null)).stream().map(i -> parseTemplate(i)).collect(Collectors.toList());
+            List<Template> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "predicate", null)).stream().map(i -> parseTemplate(i)).collect(Collectors.toList());
             List<String> pms = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "predicateMap", null));
 
             for (String pm : pms) {
@@ -259,7 +275,7 @@ public class MappingFactory {
             }
 
             //process objects
-            List<List<Element>> objects = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "object", null)).stream().map(i -> parseTemplate(i)).collect(Collectors.toList());
+            List<Template> objects = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "object", null)).stream().map(i -> parseTemplate(i)).collect(Collectors.toList());
             List<String> oms = Utils.getObjectsFromQuads(store.getQuads(pom, NAMESPACES.RR + "objectMap", null));
 
             for (String om : oms) {
@@ -267,14 +283,14 @@ public class MappingFactory {
             }
 
             if (!objects.isEmpty()) {
-                for (List<Element> p : predicates) {
+                for (Template p : predicates) {
                     String predicate = Utils.applyTemplate(p, null).get(0);
 
                     if (!params.containsKey(predicate)) {
                         params.put(predicate, new ArrayList<>());
                     }
 
-                    for (List<Element> o : objects) {
+                    for (Template o : objects) {
                         params.get(predicate).add(o);
                     }
                 }
@@ -284,7 +300,7 @@ public class MappingFactory {
         String fn = Utils.applyTemplate(params.get("http://w3id.org/function/ontology#executes").get(0), null).get(0);
         params.remove("http://w3id.org/function/ontology#executes");
 
-        return new FunctionDetails(new Function(functionLoader.getFunction(fn)), params);
+        return new Function(functionLoader.getFunction(fn), params);
     }
 
     /**
@@ -345,8 +361,8 @@ public class MappingFactory {
      * that can later be used by the executor (via applyTemplate)
      * to get the data values from the records.
      **/
-    private List<Element> parseTemplate(String template) {
-        ArrayList<Element> result = new ArrayList<>();
+    private Template parseTemplate(String template) {
+        Template result = new Template();
         String current = "";
         boolean previousWasBackslash = false;
         boolean variableBusy = false;
@@ -364,7 +380,7 @@ public class MappingFactory {
                         variableBusy = true;
 
                         if (!current.equals("")) {
-                            result.add(new Element(current, TEMPLATETYPE.CONSTANT));
+                            result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
                         }
 
                         current = "";
@@ -374,7 +390,7 @@ public class MappingFactory {
                         current += c;
                         previousWasBackslash = false;
                     } else if (variableBusy){
-                        result.add(new Element(current, TEMPLATETYPE.VARIABLE));
+                        result.addElement(new TemplateElement(current, TEMPLATETYPE.VARIABLE));
                         current = "";
                         variableBusy = false;
                     } else {
@@ -393,7 +409,7 @@ public class MappingFactory {
             }
 
             if (!current.equals("")) {
-                result.add(new Element(current, TEMPLATETYPE.CONSTANT));
+                result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
             }
         }
 

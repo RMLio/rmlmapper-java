@@ -1,21 +1,19 @@
 package be.ugent.rml;
 
-import java.util.List;
-
 public class JoinCondition {
 
-    private List<Element> parent, child;
+    private Template parent, child;
 
-    public JoinCondition(List<Element> parent, List<Element> child) {
+    public JoinCondition(Template parent, Template child) {
         this.parent = parent;
         this.child = child;
     }
 
-    public List<Element> getParent() {
+    public Template getParent() {
         return parent;
     }
 
-    public List<Element> getChild() {
+    public Template getChild() {
         return child;
     }
 }

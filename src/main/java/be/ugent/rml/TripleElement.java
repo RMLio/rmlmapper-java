@@ -8,19 +8,17 @@ import java.util.Map;
 
 public class TripleElement {
 
-    private List<List<Element>> graphs;
+    private List<Template> graphs;
     private String termType;
     private Function function;
-    private Map<String, List<List<Element>>> parameters;
 
-    public TripleElement(List<List<Element>> graphs, String termType, Function function, Map<String, List<List<Element>>> parameters) {
+    public TripleElement(List<Template> graphs, String termType, Function function) {
         this.graphs = graphs;
         this.termType = termType;
         this.function = function;
-        this.parameters = parameters;
     }
 
-    public List<List<Element>> getGraphs() {
+    public List<Template> getGraphs() {
         if (graphs == null) {
             return new ArrayList<>();
         } else {
@@ -36,19 +34,11 @@ public class TripleElement {
         return function;
     }
 
-    public Map<String, List<List<Element>>> getParameters() {
-        return parameters;
-    }
-
-    public void setGraphs(List<List<Element>> graphs) {
+    public void setGraphs(List<Template> graphs) {
         this.graphs = graphs;
     }
 
     public void setFunction(Function function) {
         this.function = function;
-    }
-
-    public void setParameters(Map<String, List<List<Element>>> parameters) {
-        this.parameters = parameters;
     }
 }
