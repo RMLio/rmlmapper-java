@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.rml.Utils;
 import com.jayway.jsonpath.*;
 
 import java.io.*;
@@ -7,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JSON extends IteratorFormat {
+
+    public static final String CONTENT_TYPE = "application/json";
 
     protected List<Record> _get(InputStream stream, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
@@ -27,5 +30,11 @@ public class JSON extends IteratorFormat {
         }
 
         return records;
+    }
+
+    public List<Record> get(String location, String iterator, String cwd) throws IOException {
+        InputStream stream = Utils.getInputStreamFromLocation(location, new File(cwd), CONTENT_TYPE);
+
+        return _get(stream, iterator);
     }
 }

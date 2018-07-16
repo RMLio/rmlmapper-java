@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.rml.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,6 +23,8 @@ import java.util.List;
 
 public class XML extends IteratorFormat {
 
+    public static final String CONTENT_TYPE = "application/xml";
+
     @Override
     List<Record> _get(InputStream stream, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
@@ -42,5 +45,11 @@ public class XML extends IteratorFormat {
         }
 
         return records;
+    }
+
+    public List<Record> get(String location, String iterator, String cwd) throws IOException {
+        InputStream stream = Utils.getInputStreamFromLocation(location, new File(cwd), CONTENT_TYPE);
+
+        return _get(stream, iterator);
     }
 }
