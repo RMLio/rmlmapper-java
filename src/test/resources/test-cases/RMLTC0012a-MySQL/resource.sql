@@ -1,4 +1,6 @@
 USE test;
+DROP TABLE IF EXISTS test.persons;
+
 CREATE TABLE persons (
   fname VARCHAR(200),
   lname VARCHAR(200),

@@ -1,4 +1,6 @@
 USE test;
+DROP TABLE IF EXISTS test.country_info;
+
 CREATE TABLE country_info (
   `Country Code` INTEGER,
   Name VARCHAR(100),
