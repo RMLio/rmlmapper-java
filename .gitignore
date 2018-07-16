@@ -1,3 +1,5 @@
 .idea
 target
 rmlmapper.iml
+lib/*
+.gitignore
