@@ -23,7 +23,9 @@ import java.util.List;
 
 public class XML extends IteratorFormat {
 
-    public static final String CONTENT_TYPE = "application/xml";
+    protected String getContentType() {
+        return "application/xml";
+    }
 
     @Override
     List<Record> _get(InputStream stream, String iterator) throws IOException {
@@ -45,11 +47,5 @@ public class XML extends IteratorFormat {
         }
 
         return records;
-    }
-
-    public List<Record> get(String location, String iterator, String cwd) throws IOException {
-        InputStream stream = Utils.getInputStreamFromLocation(location, new File(cwd), CONTENT_TYPE);
-
-        return _get(stream, iterator);
     }
 }

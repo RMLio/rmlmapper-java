@@ -17,7 +17,13 @@ public abstract class IteratorFormat {
         return get(location, iterator, System.getProperty("user.dir"));
     }
 
-    abstract List<Record> get(String location, String iterator, String cwd) throws IOException;
+    public List<Record> get(String location, String iterator, String cwd) throws IOException {
+        InputStream stream = Utils.getInputStreamFromLocation(location, new File(cwd), getContentType());
+
+        return _get(stream, iterator);
+    }
 
     abstract List<Record> _get(InputStream stream, String iterator) throws IOException;
+
+    abstract String getContentType();
 }
