@@ -61,9 +61,9 @@ public class RecordsFactory {
                         case NAMESPACES.QL + "CSV":
                             return csvRecords(source);
                         case NAMESPACES.QL + "XPath":
-                            return csvRecords(source);
+                            return xmlRecords(source, iterators, triplesMap);
                         case NAMESPACES.QL + "JSONPath":
-                            return csvRecords(source);
+                            return jsonRecords(source, iterators, triplesMap);
                         default:
                             throw new NotImplementedException();
 
