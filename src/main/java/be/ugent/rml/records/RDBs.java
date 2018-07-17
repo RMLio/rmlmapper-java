@@ -29,7 +29,11 @@ public class RDBs  {
             Class.forName(jdbcDriver);
 
             // Open connection
-            connection = DriverManager.getConnection(jdbcDSN + "?user=" + username + "&password=" + password + "&serverTimezone=UTC&useSSL=false");
+            String connectionString = jdbcDSN + "?user=" + username + "&password=" + password;
+            if (database == Database_Utils.Database.MYSQL) {
+                connectionString += "&serverTimezone=UTC&useSSL=false";
+            }
+            connection = DriverManager.getConnection(connectionString);
 
             // Execute query
             statement = connection.createStatement();

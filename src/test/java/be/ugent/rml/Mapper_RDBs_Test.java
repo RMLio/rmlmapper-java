@@ -1,59 +1,67 @@
 package be.ugent.rml;
 
-;
 import ch.vorburger.exec.ManagedProcessException;
 import ch.vorburger.mariadb4j.DBConfigurationBuilder;
+import com.googlecode.zohhak.api.TestWith;
+import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import org.junit.*;
 import org.junit.Test;
 
 import ch.vorburger.mariadb4j.DB;
+import org.junit.runner.RunWith;
+import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
-// IMPORTANT FOR TESTING:
-//  USE DYNAMIC PORT NUMBER AS DESCRIBED BELOW OR USE STATIC PORT NUMBERS IN MAPPING FILE's JDBC DSN
+import static ru.yandex.qatools.embed.postgresql.distribution.Version.Main.V9_6;
+
+@RunWith(ZohhakRunner.class)
 public class Mapper_RDBs_Test extends TestCore {
 
-    private static final int PORTNUMBER = 50898;
+    private static final int PORTNUMBER_MYSQL = 50898;
+    private static final int PORTNUMBER_POSTGRESQL = 50897;
 
-    private static DB currentDB;
+    private static DB mysqlDB;
+    private static EmbeddedPostgres postgresDB;
 
     @BeforeClass
-    public static void startDB() throws Exception {
-        DBConfigurationBuilder configBuilder = DBConfigurationBuilder.newBuilder();
-        configBuilder.setPort(PORTNUMBER);
-        configBuilder.addArg("--user=root");
-        currentDB = DB.newEmbeddedDB(configBuilder.build());
-        currentDB.start();
-
-        // To set the correct port number in the mapping file in a dynamic way:
-        //  Change PORTNUMBER constant to 0 to automatically detect free port
-        //  Change "jdbc:mysql://localhost:50898/test" to "jdbc:mysql://localhost:PORTNUMBER/test" in the mapping file
-        /*
-            Path path = Paths.get(mappingPath);
-            Charset charset = StandardCharsets.UTF_8;
-            String content = new String(Files.readAllBytes(path), charset);
-            content = content.replaceAll("PORTNUMBER", Integer.toString(configBuilder.getPort()));
-            Files.write(path, content.getBytes(charset));
-         */
+    public static void startDBs() throws Exception {
+        startMySQLDB();
+        startPostgreSQL();
     }
 
     @AfterClass
-    public static void stopDB() throws ManagedProcessException {
-        if (currentDB != null) {
-            currentDB.stop();
+    public static void stopDBs() throws ManagedProcessException {
+        if (mysqlDB != null) {
+            mysqlDB.stop();
+        }
+        if (postgresDB != null) {
+            postgresDB.stop();
         }
     }
 
     // MySQL -----------------------------------------------------------------------------------------------------------
+
+    private static void startMySQLDB() throws Exception {
+        DBConfigurationBuilder configBuilder = DBConfigurationBuilder.newBuilder();
+        configBuilder.setPort(PORTNUMBER_MYSQL);
+        configBuilder.addArg("--user=root");
+        mysqlDB = DB.newEmbeddedDB(configBuilder.build());
+        mysqlDB.start();
+    }
 
     @Test
     public void evaluate_0000_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0000-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0000-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0000-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
 
@@ -62,9 +70,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0001a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0001a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0001a-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test
@@ -72,9 +79,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0001b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0001b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0001b-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test
@@ -82,9 +88,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002a-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test
@@ -92,9 +97,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002b-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test(expected = Error.class)
@@ -102,9 +106,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002c-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test(expected = Error.class)
@@ -112,9 +115,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002e-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002e-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002e-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test
@@ -122,9 +124,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002g-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002g-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002g-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test
@@ -132,9 +133,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002h-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002h-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002h-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test(expected = Error.class)
@@ -142,9 +142,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002i-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002i-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002i-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test
@@ -152,9 +151,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002j-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002j-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002j-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test(expected = Error.class)
@@ -162,9 +160,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0003a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0003a-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test
@@ -172,9 +169,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0003b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0003b-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-
     }
 
     @Test
@@ -182,7 +178,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0003c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0003c-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -192,7 +188,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0004a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0004a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0004a-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -202,7 +198,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0004b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0004b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0004b-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -212,7 +208,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0006a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0006a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0006a-MySQL/output.nq";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -222,7 +218,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007a-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -232,7 +228,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007b-MySQL/output.nq";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -242,7 +238,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007c-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -252,7 +248,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007d-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007d-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007d-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -262,7 +258,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007e-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007e-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007e-MySQL/output.nq";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -272,7 +268,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007f-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007f-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007f-MySQL/output.nq";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -282,7 +278,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007g-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007g-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007g-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -292,7 +288,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007h-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007h-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007h-MySQL/output.nq";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -302,7 +298,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0008a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0008a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0008a-MySQL/output.nq";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -312,7 +308,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0008b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0008b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0008b-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -322,7 +318,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0008c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0008c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0008c-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -332,9 +328,18 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0009a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0009a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0009a-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
+    }
+
+    @Test
+    public void evaluate_0009b_RDBs_MySQL() throws Exception {
+        String resourcePath = "./test-cases/RMLTC0009b-MySQL/resource.sql";
+        String mappingPath = "./test-cases/RMLTC0009b-MySQL/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0009b-MySQL/output.nq";
+        mysqlDB.source(resourcePath);
+        doMapping(mappingPath, outputPath);
     }
 
     @Test
@@ -342,7 +347,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0010a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0010a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0010a-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -352,7 +357,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0010b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0010b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0010b-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -362,7 +367,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0010c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0010c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0010c-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -372,7 +377,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0011b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0011b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0011b-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -382,7 +387,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0012a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0012a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0012a-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
 
     }
@@ -392,8 +397,128 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0012b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0012b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0012b-MySQL/output.ttl";
-        currentDB.source(resourcePath);
+        mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
         
+    }
+
+    // PostgreSQL ------------------------------------------------------------------------------------------------------
+
+    private static void startPostgreSQL() throws IOException {
+        // Start Postgres
+        postgresDB = new EmbeddedPostgres(V9_6);
+        final String url = postgresDB.start("localhost", PORTNUMBER_POSTGRESQL, "test", "root", "password");
+    }
+
+    @TestWith({
+            "RMLTC0000-PostgreSQL, ttl",
+            "RMLTC0001a-PostgreSQL, ttl",
+            "RMLTC0001b-PostgreSQL, ttl",
+            "RMLTC0002a-PostgreSQL, ttl",
+            "RMLTC0002b-PostgreSQL, ttl",
+            "RMLTC0002g-PostgreSQL, ttl",
+            "RMLTC0002h-PostgreSQL, ttl",
+            "RMLTC0002j-PostgreSQL, ttl",
+            "RMLTC0003b-PostgreSQL, ttl",
+            "RMLTC0003c-PostgreSQL, ttl",
+            "RMLTC0004a-PostgreSQL, ttl",
+            "RMLTC0004b-PostgreSQL, ttl",
+            "RMLTC0006a-PostgreSQL, nq",
+            "RMLTC0007a-PostgreSQL, ttl",
+            "RMLTC0007b-PostgreSQL, nq",
+            "RMLTC0007c-PostgreSQL, ttl",
+            "RMLTC0007d-PostgreSQL, ttl",
+            "RMLTC0007e-PostgreSQL, nq",
+            "RMLTC0007f-PostgreSQL, nq",
+            "RMLTC0007g-PostgreSQL, ttl",
+            "RMLTC0007h-PostgreSQL, nq",
+            "RMLTC0008a-PostgreSQL, nq",
+            "RMLTC0008b-PostgreSQL, ttl",
+            "RMLTC0008c-PostgreSQL, ttl",
+            "RMLTC0009a-PostgreSQL, ttl",
+            "RMLTC0009b-PostgreSQL, nq",
+            "RMLTC0010a-PostgreSQL, ttl",
+            "RMLTC0010b-PostgreSQL, ttl",
+            "RMLTC0010c-PostgreSQL, ttl",
+            "RMLTC0011b-PostgreSQL, ttl",
+            "RMLTC0012a-PostgreSQL, ttl",
+            "RMLTC0012b-PostgreSQL, ttl"})
+    public void evaluate_XXXX_RDBs_PostgreSQL(String resourceDir, String outputExtension) throws Exception {
+        String resourcePath = "test-cases/" + resourceDir + "/resource.sql";
+        String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
+        String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
+    }
+
+    @Test(expected = Error.class)
+    public void evaluate_0002c_RDBs_PostgreSQL() throws Exception {
+        String resourcePath = "test-cases/RMLTC0002c-PostgreSQL/resource.sql";
+        String mappingPath = "./test-cases/RMLTC0002c-PostgreSQL/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0002c-PostgreSQL/output.ttl";
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
+    }
+
+    @Test(expected = Error.class)
+    public void evaluate_0002e_RDBs_PostgreSQL() throws Exception {
+        String resourcePath = "test-cases/RMLTC0002e-PostgreSQL/resource.sql";
+        String mappingPath = "./test-cases/RMLTC0002e-PostgreSQL/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0002e-PostgreSQL/output.ttl";
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
+    }
+
+    @Test(expected = Error.class)
+    public void evaluate_0002i_RDBs_PostgreSQL() throws Exception {
+        String resourcePath = "test-cases/RMLTC0002i-PostgreSQL/resource.sql";
+        String mappingPath = "./test-cases/RMLTC0002i-PostgreSQL/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0002i-PostgreSQL/output.ttl";
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
+    }
+
+    @Test(expected = Error.class)
+    public void evaluate_0003a_RDBs_PostgreSQL() throws Exception {
+        String resourcePath = "test-cases/RMLTC0003a-PostgreSQL/resource.sql";
+        String mappingPath = "./test-cases/RMLTC0003a-PostgreSQL/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0003a-PostgreSQL/output.ttl";
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
     }
 }

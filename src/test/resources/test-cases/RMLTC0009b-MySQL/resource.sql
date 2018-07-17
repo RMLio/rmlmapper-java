@@ -7,7 +7,7 @@ CREATE TABLE student (
   Name VARCHAR(50)
 );
 INSERT INTO student values ('10', '100', 'Venus Williams');
-INSERT INTO student values ('20', , 'Venus Williams');
+INSERT INTO student values ('20', NULL, 'Demi Moore');
 
 DROP TABLE IF EXISTS test.sport;
 
