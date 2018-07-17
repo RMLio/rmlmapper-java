@@ -29,7 +29,6 @@ public class RDBs  {
             Class.forName(jdbcDriver);
 
             // Open connection
-            //connection = DriverManager.getConnection("jdbc:mysql://localhost/test", "root", "");
             connection = DriverManager.getConnection(jdbcDSN + "?user=" + username + "&password=" + password + "&serverTimezone=UTC&useSSL=false");
 
             // Execute query

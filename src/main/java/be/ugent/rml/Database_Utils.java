@@ -24,7 +24,7 @@ public class Database_Utils {
     public enum Database {
         MYSQL ("mysql"),
         POSTGRES ("postgresql"),
-        SQL_SERVER ("microsoft:sqlserver"),
+        SQL_SERVER ("sqlserver"),
         //ORACLE (""),
         DB2 ("as400");
 
