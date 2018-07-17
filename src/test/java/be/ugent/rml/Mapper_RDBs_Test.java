@@ -396,26 +396,4 @@ public class Mapper_RDBs_Test extends TestCore {
         doMapping(mappingPath, outputPath);
         
     }
-
-    // PostgreSQL ------------------------------------------------------------------------------------------------------
-
-    @Test
-    public void evaluate_0001a_RDBs_PostgreSQL() throws Exception {
-        String resourcePath = "./test-cases/RMLTC0001a-PostgreSQL/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0001a-PostgreSQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0001a-PostgreSQL/output.ttl";
-        currentDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
-    }
-
-    // SQL Server ------------------------------------------------------------------------------------------------------
-
-    @Test
-    public void evaluate_0001a_RDBs_SQLServer() throws Exception {
-        String resourcePath = "./test-cases/RMLTC0001a-SQLServer/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0001a-SQLServer/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0001a-SQLServer/output.ttl";
-        currentDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
-    }
 }
