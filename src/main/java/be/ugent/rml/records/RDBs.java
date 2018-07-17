@@ -56,12 +56,10 @@ public class RDBs  {
                 records.add(new RDBsRecord(values));
             }
 
-
             // Clean-up environment
             rs.close();
             statement.close();
             connection.close();
-
 
         } catch (SQLException sqlE) {
             sqlE.printStackTrace();
@@ -85,7 +83,6 @@ public class RDBs  {
                 se.printStackTrace();
             }
         }
-
 
         return records;
     }

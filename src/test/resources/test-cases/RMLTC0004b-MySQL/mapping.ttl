@@ -34,4 +34,3 @@
   d2rq:jdbcDriver "com.mysql.jdbc.Driver"; # this is ignored
   d2rq:username "root";
   d2rq:password "" .
-										
