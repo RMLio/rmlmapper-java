@@ -121,3 +121,23 @@ try {
     logger.error(e.getMessage(), e);
 }
 ```
+
+# Dependencies
+
+|             Dependency             | License                                                            |
+|:----------------------------------:|--------------------------------------------------------------------|
+| com.spotify docker client          | Apache License 2.0                                                 |
+| com.h2database h2                  | Eclipse Public License 1.0 & Mozilla Public License 2.0            |
+| com.googlecode.zohhak              | GNU Lesser General Public License v3.0                             |
+| com.microsoft.sqlserver mssql-jdbc | MIT                                                                |
+| ch.vorbuger.mariaDB4j              | Apache License 2.0                                                 |
+| mysql-connector-java               | GNU General Public License v2.0                                    |
+| com.google.guava                   | Apache License 2.0                                                 |
+| javax.xml.parsers jaxp-api         | Apache License 2.0                                                 |
+| com.jayway.jsonpath                | Apache License 2.0                                                 |
+| junit                              | Eclipse Public License 1.0                                         |
+| org.eclipse.rdf4j rdf4j-runtime    | Eclipse Public License 1.0                                         |
+| commons-cli                        | Apache License 2.0                                                 |
+| com.opencsv opencsv                | Apache License 2.0                                                 |
+| commons-lang                       | Apache License 2.0                                                 |
+| ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
