@@ -4,30 +4,40 @@ import ch.vorburger.exec.ManagedProcessException;
 import ch.vorburger.mariadb4j.DBConfigurationBuilder;
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.messages.*;
 import org.junit.*;
 import org.junit.Test;
 
 import ch.vorburger.mariadb4j.DB;
 import org.junit.runner.RunWith;
-import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static ru.yandex.qatools.embed.postgresql.distribution.Version.Main.V9_6;
 
 @RunWith(ZohhakRunner.class)
 public class Mapper_RDBs_Test extends TestCore {
+
+    private static Logger logger = LoggerFactory.getLogger(Mapper_RDBs_Test.class);
 
     private static final int PORTNUMBER_MYSQL = 50898;
     private static final int PORTNUMBER_POSTGRESQL = 50897;
 
     private static DB mysqlDB;
-    private static EmbeddedPostgres postgresDB;
+    private static PostgreSQLDB postgreSQLDB;
 
     @BeforeClass
     public static void startDBs() throws Exception {
@@ -40,8 +50,21 @@ public class Mapper_RDBs_Test extends TestCore {
         if (mysqlDB != null) {
             mysqlDB.stop();
         }
-        if (postgresDB != null) {
-            postgresDB.stop();
+        if (postgreSQLDB != null) {
+            try {
+                // Kill container
+                postgreSQLDB.docker.killContainer(postgreSQLDB.containerID);
+
+                // Remove container
+                postgreSQLDB.docker.removeContainer(postgreSQLDB.containerID);
+
+                // Close the docker client
+                postgreSQLDB.docker.close();
+            } catch (DockerException | InterruptedException ex) {
+                logger.warn("Could not kill the PostgreSQL container!");
+                ex.printStackTrace();
+            }
+
         }
     }
 
@@ -404,11 +427,84 @@ public class Mapper_RDBs_Test extends TestCore {
 
     // PostgreSQL ------------------------------------------------------------------------------------------------------
 
-    private static void startPostgreSQL() throws IOException {
-        // Start Postgres
-        postgresDB = new EmbeddedPostgres(V9_6);
-        final String url = postgresDB.start("localhost", PORTNUMBER_POSTGRESQL, "test", "root", "password");
+    private static class PostgreSQLDB {
+        protected String connectionString;
+        protected String containerID;
+        protected DockerClient docker;
+
+        public PostgreSQLDB(DockerClient docker, String connectionString, String containerID) {
+            this.docker = docker;
+            this.connectionString = connectionString;
+            this.containerID = containerID;
+        }
     }
+
+    // Start postgres docker container and check connection
+    // https://github.com/spotify/docker-client
+    private static void startPostgreSQL() throws SQLException {
+        final String address = "0.0.0.0";
+        final String dockerHost = "unix:///var/run/docker.sock";
+        final String exportedPort = "5432";
+        final String postgresImage = "postgres:10.4";
+
+        try {
+            final DockerClient docker = new DefaultDockerClient(dockerHost);
+
+            docker.pull(postgresImage);
+
+            // Map exported port to our static PORTNUMBER_POSTGRESQL
+            final Map<String, List<PortBinding>> portBindings = new HashMap<>();
+            List<PortBinding> staticPorts = new ArrayList<>();
+            staticPorts.add(PortBinding.create(address, Integer.toString(PORTNUMBER_POSTGRESQL)));
+            portBindings.put(exportedPort , staticPorts);
+
+            final HostConfig hostConfig = HostConfig.builder()
+                    .portBindings(portBindings)
+                    .build();
+
+            final ContainerConfig config = ContainerConfig.builder()
+                    .hostConfig(hostConfig)
+                    .image(postgresImage).exposedPorts(exportedPort)
+                    .build();
+            final ContainerCreation creation = docker.createContainer(config);
+            final String id = creation.id();
+
+            // Container is now created, let's start it up
+            docker.startContainer(id);
+
+            // startContainer swallows errors, so check if the container is in the running state
+            final ContainerInfo info = docker.inspectContainer(id);
+            if (!info.state().running()) {
+                throw new IllegalStateException("Could not start Postgres container");
+            }
+
+            // We need to build the connection string to connect to Postgres
+            // Find the random port in the network settings
+            final String connectionString = String.format("jdbc:postgresql://%s:%d/postgres?user=postgres", address, PORTNUMBER_POSTGRESQL);
+
+            postgreSQLDB = new PostgreSQLDB(docker, connectionString, id);
+
+            // It takes a while for the Postgres application to start up inside the container. Time limit: 10 seconds
+            Connection conn = null;
+            int tries = 1;
+            while (conn == null && tries <= 20) {
+                try {
+                    conn = DriverManager.getConnection(connectionString);
+                    conn.close();
+                } catch (SQLException ignored) {
+                    logger.debug("Retrying ({}/20)...", tries);
+                    tries++;
+                    Thread.sleep(500);
+                }
+            }
+            if (tries > 20) {
+                throw new SQLException("Could not connect to Postgres container");
+            }
+        } catch (InterruptedException | DockerException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @TestWith({
             "RMLTC0000-PostgreSQL, ttl",
@@ -451,7 +547,7 @@ public class Mapper_RDBs_Test extends TestCore {
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        final Connection conn = DriverManager.getConnection(postgreSQLDB.connectionString);
         conn.createStatement().execute(sql);
         conn.close();
 
@@ -467,7 +563,7 @@ public class Mapper_RDBs_Test extends TestCore {
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        final Connection conn = DriverManager.getConnection(postgreSQLDB.connectionString);
         conn.createStatement().execute(sql);
         conn.close();
 
@@ -483,7 +579,7 @@ public class Mapper_RDBs_Test extends TestCore {
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        final Connection conn = DriverManager.getConnection(postgreSQLDB.connectionString);
         conn.createStatement().execute(sql);
         conn.close();
 
@@ -499,7 +595,7 @@ public class Mapper_RDBs_Test extends TestCore {
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        final Connection conn = DriverManager.getConnection(postgreSQLDB.connectionString);
         conn.createStatement().execute(sql);
         conn.close();
 
@@ -515,7 +611,7 @@ public class Mapper_RDBs_Test extends TestCore {
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(postgresDB.getConnectionUrl().get());
+        final Connection conn = DriverManager.getConnection(postgreSQLDB.connectionString);
         conn.createStatement().execute(sql);
         conn.close();
 
