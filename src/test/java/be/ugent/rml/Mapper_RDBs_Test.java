@@ -456,7 +456,7 @@ public class Mapper_RDBs_Test extends TestCore {
             final Map<String, List<PortBinding>> portBindings = new HashMap<>();
             List<PortBinding> staticPorts = new ArrayList<>();
             staticPorts.add(PortBinding.create(address, Integer.toString(PORTNUMBER_POSTGRESQL)));
-            portBindings.put(exportedPort , staticPorts);
+            portBindings.put(exportedPort, staticPorts);
 
             final HostConfig hostConfig = HostConfig.builder()
                     .portBindings(portBindings)
