@@ -17,6 +17,7 @@ verify:
 
 services:
   - postgres:10.4
+  - microsoft/mssql-server-linux:latest
 
 variables:
   DATABASE_URL: jdbc:postgresql://postgres/postgres
