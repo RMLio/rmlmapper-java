@@ -31,6 +31,9 @@ import java.util.Map;
 @RunWith(ZohhakRunner.class)
 public class Mapper_RDBs_Test extends TestCore {
 
+    // Change this if needed
+    private static final Boolean LOCAL_TESTING = false;
+
     private static Logger logger = LoggerFactory.getLogger(Mapper_RDBs_Test.class);
 
     private static final int PORTNUMBER_MYSQL = 50898;
@@ -42,6 +45,12 @@ public class Mapper_RDBs_Test extends TestCore {
     @BeforeClass
     public static void startDBs() throws Exception {
         startMySQLDB();
+
+        if (LOCAL_TESTING) {
+            startPostgreSQLLocal();
+        } else {
+            postgreSQLDB = new PostgreSQLDB("jdbc:postgres://runner@postgres:5432/postgres"); // see .gitlab-ci.yml file
+        }
     }
 
     @AfterClass
@@ -49,7 +58,7 @@ public class Mapper_RDBs_Test extends TestCore {
         if (mysqlDB != null) {
             mysqlDB.stop();
         }
-        if (postgreSQLDB != null) {
+        if (postgreSQLDB.docker != null) {
             try {
                 // Kill container
                 postgreSQLDB.docker.killContainer(postgreSQLDB.containerID);
@@ -435,6 +444,10 @@ public class Mapper_RDBs_Test extends TestCore {
             this.docker = docker;
             this.connectionString = connectionString;
             this.containerID = containerID;
+        }
+
+        public PostgreSQLDB(String connectionString) {
+            this.connectionString = connectionString;
         }
     }
 
