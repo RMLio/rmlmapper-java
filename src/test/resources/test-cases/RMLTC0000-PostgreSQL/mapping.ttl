@@ -30,7 +30,7 @@
 
 
 <#DB_source> a d2rq:Database;
-  d2rq:jdbcDSN "jdbc:postgresql://localhost:50897/postgres";
+  d2rq:jdbcDSN "jdbc:postgresql://postgres:50897/postgres";
   d2rq:jdbcDriver "org.postgresql.Driver";
-d2rq:username "postgres";
+  d2rq:username "postgres";
   d2rq:password "" .
