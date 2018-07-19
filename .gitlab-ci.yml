@@ -19,6 +19,7 @@ services:
   - postgres:10.4
 
 variables:
+  DATABASE_URL: jdbc:postgres://runner@postgres:5432/postgres
   POSTGRES_DB: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: ""
