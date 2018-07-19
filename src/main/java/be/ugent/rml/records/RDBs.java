@@ -35,6 +35,9 @@ public class RDBs  {
             }
             if (database == Database_Utils.Database.SQL_SERVER) {
                 connectionString = connectionString.replaceAll("\\?|&", "");
+                if (!connectionString.endsWith(";")) {
+                    connectionString += ";";
+                }
             }
             connection = DriverManager.getConnection(connectionString);
 
