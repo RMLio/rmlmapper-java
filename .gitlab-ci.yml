@@ -19,7 +19,7 @@ services:
   - postgres:10.4
 
 variables:
-  DATABASE_URL: jdbc:postgresql://postgres:50897/postgres
+  DATABASE_URL: jdbc:postgresql://postgres/postgres
   POSTGRES_DB: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: ""

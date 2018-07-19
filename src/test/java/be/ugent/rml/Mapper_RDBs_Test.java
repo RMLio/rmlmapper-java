@@ -37,7 +37,7 @@ public class Mapper_RDBs_Test extends TestCore {
     private static Logger logger = LoggerFactory.getLogger(Mapper_RDBs_Test.class);
 
     private static final int PORTNUMBER_MYSQL = 50898;
-    private static final int PORTNUMBER_POSTGRESQL = 50897;
+    private static final int PORTNUMBER_POSTGRESQL = 5432;
 
     private static DB mysqlDB;
     private static PostgreSQLDB postgreSQLDB;
@@ -49,7 +49,7 @@ public class Mapper_RDBs_Test extends TestCore {
         if (LOCAL_TESTING) {
             startPostgreSQLLocal();
         } else {
-            postgreSQLDB = new PostgreSQLDB("jdbc:postgresql://postgres:50897/postgres"); // see .gitlab-ci.yml file
+            postgreSQLDB = new PostgreSQLDB("jdbc:postgresql://postgres/postgres"); // see .gitlab-ci.yml file
         }
     }
 
@@ -453,7 +453,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     /*
         USED FOR LOCAL TESTING
-        Change   d2rq:jdbcDSN "jdbc:postgresql://postgres:50897/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:50897/postgres";
+        Change   d2rq:jdbcDSN "jdbc:postgresql://postgres/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:5432/postgres";
         in the mapping files before executing
         -----
         Start postgres docker container and check connection
