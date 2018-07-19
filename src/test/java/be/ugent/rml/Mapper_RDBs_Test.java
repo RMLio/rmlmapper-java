@@ -49,7 +49,7 @@ public class Mapper_RDBs_Test extends TestCore {
         if (LOCAL_TESTING) {
             startPostgreSQLLocal();
         } else {
-            postgreSQLDB = new PostgreSQLDB("jdbc:postgresql://postgres/postgres"); // see .gitlab-ci.yml file
+            postgreSQLDB = new PostgreSQLDB("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
         }
     }
 
