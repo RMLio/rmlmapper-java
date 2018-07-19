@@ -26,3 +26,4 @@ variables:
   POSTGRES_PASSWORD: ""
     # SQLServer
   ACCEPT_EULA: Y
+  SA_PASSWORD: "YourSTRONG!Passw0rd"
