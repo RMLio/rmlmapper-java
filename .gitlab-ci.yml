@@ -20,7 +20,9 @@ services:
   - microsoft/mssql-server-linux:latest
 
 variables:
-  DATABASE_URL: jdbc:postgresql://postgres/postgres
+    # Postgres
   POSTGRES_DB: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: ""
+    # SQLServer
+  ACCEPT_EULA: Y
