@@ -33,6 +33,9 @@ public class RDBs  {
             if (database == Database_Utils.Database.MYSQL) {
                 connectionString += "&serverTimezone=UTC&useSSL=false";
             }
+            if (database == Database_Utils.Database.SQL_SERVER) {
+                connectionString = connectionString.replaceAll("\\?|&", "");
+            }
             connection = DriverManager.getConnection(connectionString);
 
             // Execute query

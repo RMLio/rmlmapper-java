@@ -40,7 +40,24 @@ public class Mapper_RDBs_Test extends TestCore {
     private static final int PORTNUMBER_POSTGRESQL = 5432;
 
     private static DB mysqlDB;
-    private static PostgreSQLDB postgreSQLDB;
+    private static DockerDBInfo postgreSQLDB;
+    private static DockerDBInfo sqlServerDB;
+
+    private static class DockerDBInfo {
+        protected String connectionString;
+        protected String containerID;
+        protected DockerClient docker;
+
+        public DockerDBInfo(DockerClient docker, String connectionString, String containerID) {
+            this.docker = docker;
+            this.connectionString = connectionString;
+            this.containerID = containerID;
+        }
+
+        public DockerDBInfo(String connectionString) {
+            this.connectionString = connectionString;
+        }
+    }
 
     @BeforeClass
     public static void startDBs() throws Exception {
@@ -48,8 +65,10 @@ public class Mapper_RDBs_Test extends TestCore {
 
         if (LOCAL_TESTING) {
             startPostgreSQLLocal();
+            startSQLServerLocal();
         } else {
-            postgreSQLDB = new PostgreSQLDB("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
+            postgreSQLDB = new DockerDBInfo("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
+            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://localhost;user=sa;password=YourSTRONG!Passw0rd");
         }
     }
 
@@ -435,22 +454,6 @@ public class Mapper_RDBs_Test extends TestCore {
 
     // PostgreSQL ------------------------------------------------------------------------------------------------------
 
-    private static class PostgreSQLDB {
-        protected String connectionString;
-        protected String containerID;
-        protected DockerClient docker;
-
-        public PostgreSQLDB(DockerClient docker, String connectionString, String containerID) {
-            this.docker = docker;
-            this.connectionString = connectionString;
-            this.containerID = containerID;
-        }
-
-        public PostgreSQLDB(String connectionString) {
-            this.connectionString = connectionString;
-        }
-    }
-
     /*
         USED FOR LOCAL TESTING
         Change   d2rq:jdbcDSN "jdbc:postgresql://postgres/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:5432/postgres";
@@ -500,7 +503,7 @@ public class Mapper_RDBs_Test extends TestCore {
             // Find the random port in the network settings
             final String connectionString = String.format("jdbc:postgresql://%s:%d/postgres?user=postgres", address, PORTNUMBER_POSTGRESQL);
 
-            postgreSQLDB = new PostgreSQLDB(docker, connectionString, id);
+            postgreSQLDB = new DockerDBInfo(docker, connectionString, id);
 
             // It takes a while for the Postgres application to start up inside the container. Time limit: 10 seconds
             Connection conn = null;
@@ -630,6 +633,125 @@ public class Mapper_RDBs_Test extends TestCore {
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
         final Connection conn = DriverManager.getConnection(postgreSQLDB.connectionString);
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
+    }
+
+    // SQL Server ------------------------------------------------------------------------------------------------------
+
+    // Todo: implement this
+    private static void startSQLServerLocal() throws Exception {
+
+    }
+
+    @TestWith({
+            "RMLTC0000-SQLServer, ttl",
+            "RMLTC0001a-SQLServer, ttl",
+            "RMLTC0001b-SQLServer, ttl",
+            "RMLTC0002a-SQLServer, ttl",
+            "RMLTC0002b-SQLServer, ttl",
+            "RMLTC0002g-SQLServer, ttl",
+            "RMLTC0002h-SQLServer, ttl",
+            "RMLTC0002j-SQLServer, ttl",
+            "RMLTC0003b-SQLServer, ttl",
+            "RMLTC0003c-SQLServer, ttl",
+            "RMLTC0004a-SQLServer, ttl",
+            "RMLTC0004b-SQLServer, ttl",
+            "RMLTC0006a-SQLServer, nq",
+            "RMLTC0007a-SQLServer, ttl",
+            "RMLTC0007b-SQLServer, nq",
+            "RMLTC0007c-SQLServer, ttl",
+            "RMLTC0007d-SQLServer, ttl",
+            "RMLTC0007e-SQLServer, nq",
+            "RMLTC0007f-SQLServer, nq",
+            "RMLTC0007g-SQLServer, ttl",
+            "RMLTC0007h-SQLServer, nq",
+            "RMLTC0008a-SQLServer, nq",
+            "RMLTC0008b-SQLServer, ttl",
+            "RMLTC0008c-SQLServer, ttl",
+            "RMLTC0009a-SQLServer, ttl",
+            "RMLTC0009b-SQLServer, nq",
+            "RMLTC0010a-SQLServer, ttl",
+            "RMLTC0010b-SQLServer, ttl",
+            "RMLTC0010c-SQLServer, ttl",
+            "RMLTC0011b-SQLServer, ttl",
+            "RMLTC0012a-SQLServer, ttl",
+            "RMLTC0012b-SQLServer, ttl"})
+    public void evaluate_XXXX_RDBs_SQLServer(String resourceDir, String outputExtension) throws Exception {
+        String resourcePath = "test-cases/" + resourceDir + "/resource.sql";
+        String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
+        String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
+    }
+
+    @Test(expected = Error.class)
+    public void evaluate_0002c_RDBs_SQLServer() throws Exception {
+        String resourcePath = "test-cases/RMLTC0002c-SQLServer/resource.sql";
+        String mappingPath = "./test-cases/RMLTC0002c-SQLServer/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0002c-SQLServer/output.ttl";
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
+    }
+
+    @Test(expected = Error.class)
+    public void evaluate_0002e_RDBs_SQLServer() throws Exception {
+        String resourcePath = "test-cases/RMLTC0002e-SQLServer/resource.sql";
+        String mappingPath = "./test-cases/RMLTC0002e-SQLServer/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0002e-SQLServer/output.ttl";
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
+    }
+
+    @Test(expected = Error.class)
+    public void evaluate_0002i_RDBs_SQLServer() throws Exception {
+        String resourcePath = "test-cases/RMLTC0002i-SQLServer/resource.sql";
+        String mappingPath = "./test-cases/RMLTC0002i-SQLServer/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0002i-SQLServer/output.ttl";
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
+        conn.createStatement().execute(sql);
+        conn.close();
+
+        doMapping(mappingPath, outputPath);
+    }
+
+    @Test(expected = Error.class)
+    public void evaluate_0003a_RDBs_SQLServer() throws Exception {
+        String resourcePath = "test-cases/RMLTC0003a-SQLServer/resource.sql";
+        String mappingPath = "./test-cases/RMLTC0003a-SQLServer/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0003a-SQLServer/output.ttl";
+
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
         conn.createStatement().execute(sql);
         conn.close();
 
