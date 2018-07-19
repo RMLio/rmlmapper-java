@@ -68,7 +68,7 @@ public class Mapper_RDBs_Test extends TestCore {
             startSQLServerLocal();
         } else {
             postgreSQLDB = new DockerDBInfo("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
-            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://localhost;user=sa;password=YourSTRONG!Passw0rd");
+            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://localhost;user=sa;password=YourSTRONG!Passw0rd;");
         }
     }
 
