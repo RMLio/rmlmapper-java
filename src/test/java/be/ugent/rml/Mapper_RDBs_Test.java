@@ -42,7 +42,6 @@ public class Mapper_RDBs_Test extends TestCore {
     @BeforeClass
     public static void startDBs() throws Exception {
         startMySQLDB();
-        startPostgreSQL();
     }
 
     @AfterClass
@@ -439,9 +438,15 @@ public class Mapper_RDBs_Test extends TestCore {
         }
     }
 
-    // Start postgres docker container and check connection
-    // https://github.com/spotify/docker-client
-    private static void startPostgreSQL() throws SQLException {
+    /*
+        USED FOR LOCAL TESTING
+        Change   d2rq:jdbcDSN "jdbc:postgresql://postgres:50897/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:50897/postgres";
+        in the mapping files before executing
+        -----
+        Start postgres docker container and check connection
+        https://github.com/spotify/docker-client
+     */
+    private static void startPostgreSQLLocal() throws SQLException {
         final String address = "0.0.0.0";
         final String dockerHost = "unix:///var/run/docker.sock";
         final String exportedPort = "5432";
