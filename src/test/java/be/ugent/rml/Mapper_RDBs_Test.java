@@ -71,6 +71,17 @@ public class Mapper_RDBs_Test extends TestCore {
         } else {
             postgreSQLDB = new DockerDBInfo("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
             sqlServerDB = new DockerDBInfo("jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;");
+
+            // TODO: cleanup
+            // Creates testing db
+            try {
+                final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
+                conn.createStatement().execute("CREATE DATABASE TestDB");
+                conn.close();
+            } catch (SQLException ex) {
+                // Doesn't matter
+            }
+
         }
     }
 
