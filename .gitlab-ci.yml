@@ -17,7 +17,8 @@ verify:
 
 services:
   - postgres:10.4
-  - microsoft/mssql-server-linux:latest
+  - name: microsoft/mssql-server-linux:latest
+    alias: sqlserver
 
 variables:
     # Postgres
