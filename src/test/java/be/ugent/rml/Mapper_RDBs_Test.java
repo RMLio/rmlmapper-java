@@ -16,8 +16,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -69,18 +67,8 @@ public class Mapper_RDBs_Test extends TestCore {
             startPostgreSQLLocal();
             startSQLServerLocal();
         } else {
-            InetAddress ip = null;
-            try {
-
-                ip = InetAddress.getLocalHost();
-
-            } catch (UnknownHostException e) {
-
-                e.printStackTrace();
-
-            }
             postgreSQLDB = new DockerDBInfo("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
-            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://" + "sqlserver" + ";user=sa;password=YourSTRONG!Passw0rd;");
+            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;");
         }
     }
 
