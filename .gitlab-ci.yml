@@ -21,7 +21,7 @@ services:
 
 job1:
   script:
-    - docker ps
+    - ifconfig
 
 variables:
     # Postgres
