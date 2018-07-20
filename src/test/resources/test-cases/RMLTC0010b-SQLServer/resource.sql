@@ -1,3 +1,4 @@
+USE TestDB;
 DROP TABLE IF EXISTS country_info;
 
 CREATE TABLE country_info (

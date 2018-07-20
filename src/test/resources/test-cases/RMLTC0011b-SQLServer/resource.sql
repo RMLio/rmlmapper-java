@@ -1,3 +1,4 @@
+USE TestDB;
 DROP TABLE IF EXISTS sport;
 CREATE TABLE sport (
   "ID" INTEGER,

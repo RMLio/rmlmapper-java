@@ -34,7 +34,7 @@ public class RDBs  {
                 connectionString += "&serverTimezone=UTC&useSSL=false";
             }
             if (database == Database_Utils.Database.SQL_SERVER) {
-                connectionString = connectionString.replaceAll("\\?|&", "");
+                connectionString = connectionString.replaceAll("\\?|&", ";");
                 if (!connectionString.endsWith(";")) {
                     connectionString += ";";
                 }

@@ -8,6 +8,7 @@ import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.*;
+import org.graalvm.compiler.nodes.NodeView;
 import org.junit.*;
 import org.junit.Test;
 
@@ -38,6 +39,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static final int PORTNUMBER_MYSQL = 50898;
     private static final int PORTNUMBER_POSTGRESQL = 5432;
+    private static final int PORTNUMBER_SQLSERVER = 50899;
 
     private static DB mysqlDB;
     private static DockerDBInfo postgreSQLDB;
@@ -61,11 +63,11 @@ public class Mapper_RDBs_Test extends TestCore {
 
     @BeforeClass
     public static void startDBs() throws Exception {
-        startMySQLDB();
-
+        //startMySQLDB();
         if (LOCAL_TESTING) {
-            startPostgreSQLLocal();
-            startSQLServerLocal();
+            //startPostgreSQLLocal();
+            //startSQLServerLocal();
+            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://localhost;databaseName=TestDB;user=sa;password=$uP3RC0mpl3Xp@$$w0rD!;");
         } else {
             postgreSQLDB = new DockerDBInfo("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
             sqlServerDB = new DockerDBInfo("jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;");
@@ -77,21 +79,25 @@ public class Mapper_RDBs_Test extends TestCore {
         if (mysqlDB != null) {
             mysqlDB.stop();
         }
-        if (postgreSQLDB.docker != null) {
+        closeDocker(postgreSQLDB);
+        closeDocker(sqlServerDB);
+    }
+
+    private static void closeDocker(DockerDBInfo dockerDBInfo) {
+        if (dockerDBInfo.docker != null) {
             try {
                 // Kill container
-                postgreSQLDB.docker.killContainer(postgreSQLDB.containerID);
+                dockerDBInfo.docker.killContainer(dockerDBInfo.containerID);
 
                 // Remove container
-                postgreSQLDB.docker.removeContainer(postgreSQLDB.containerID);
+                dockerDBInfo.docker.removeContainer(dockerDBInfo.containerID);
 
                 // Close the docker client
-                postgreSQLDB.docker.close();
+                dockerDBInfo.docker.close();
             } catch (DockerException | InterruptedException ex) {
-                logger.warn("Could not kill the PostgreSQL container!");
+                logger.warn("Could not kill the database container with connection string: " + dockerDBInfo.connectionString + "!");
                 ex.printStackTrace();
             }
-
         }
     }
 
@@ -462,16 +468,17 @@ public class Mapper_RDBs_Test extends TestCore {
         Start postgres docker container and check connection
         https://github.com/spotify/docker-client
      */
+
     private static void startPostgreSQLLocal() throws SQLException {
         final String address = "0.0.0.0";
         final String dockerHost = "unix:///var/run/docker.sock";
         final String exportedPort = "5432";
-        final String postgresImage = "postgres:10.4";
+        final String image = "postgres:10.4";
 
         try {
             final DockerClient docker = new DefaultDockerClient(dockerHost);
 
-            docker.pull(postgresImage);
+            docker.pull(image);
 
             // Map exported port to our static PORTNUMBER_POSTGRESQL
             final Map<String, List<PortBinding>> portBindings = new HashMap<>();
@@ -485,7 +492,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
             final ContainerConfig config = ContainerConfig.builder()
                     .hostConfig(hostConfig)
-                    .image(postgresImage).exposedPorts(exportedPort)
+                    .image(image).exposedPorts(exportedPort)
                     .build();
             final ContainerCreation creation = docker.createContainer(config);
             final String id = creation.id();
@@ -525,7 +532,6 @@ public class Mapper_RDBs_Test extends TestCore {
             e.printStackTrace();
         }
     }
-
 
     @TestWith({
             "RMLTC0000-PostgreSQL, ttl",
@@ -641,9 +647,69 @@ public class Mapper_RDBs_Test extends TestCore {
 
     // SQL Server ------------------------------------------------------------------------------------------------------
 
-    // Todo: implement this
+    // Todo: Add 'ACCEPT_EULA=Y' & 'SA_PASSWORD=yourStrong(!)Password' to container config
     private static void startSQLServerLocal() throws Exception {
+        final String address = "0.0.0.0";
+        final String dockerHost = "unix:///var/run/docker.sock";
+        final String exportedPort = "1433";
+        final String image = "microsoft/mssql-server-linux:latest";
 
+        try {
+            final DockerClient docker = new DefaultDockerClient(dockerHost);
+
+            docker.pull(image);
+
+            // Map exported port to our static PORTNUMBER_SQLSERVER
+            final Map<String, List<PortBinding>> portBindings = new HashMap<>();
+            List<PortBinding> staticPorts = new ArrayList<>();
+            staticPorts.add(PortBinding.create(address, Integer.toString(PORTNUMBER_SQLSERVER)));
+            portBindings.put(exportedPort, staticPorts);
+
+            final HostConfig hostConfig = HostConfig.builder()
+                    .portBindings(portBindings)
+                    .build();
+
+            final ContainerConfig config = ContainerConfig.builder()
+                    .hostConfig(hostConfig)
+                    .image(image).exposedPorts(exportedPort)
+                    .build();
+            final ContainerCreation creation = docker.createContainer(config);
+            final String id = creation.id();
+
+            // Container is now created, let's start it up
+            docker.startContainer(id);
+
+            // startContainer swallows errors, so check if the container is in the running state
+            final ContainerInfo info = docker.inspectContainer(id);
+            if (!info.state().running()) {
+                throw new IllegalStateException("Could not start SQL Server container");
+            }
+
+            // We need to build the connection string to connect to Postgres
+            // Find the random port in the network settings
+            final String connectionString = String.format("jdbc:sqlserver://localhost;databaseName=TestDB:1433;user=sa;password=$uP3RC0mpl3Xp@$$w0rD$uP3RC0mpl3Xp@$$w0rD;");
+
+            sqlServerDB = new DockerDBInfo(docker, connectionString, id);
+
+            // It takes a while for the Postgres application to start up inside the container. Time limit: 10 seconds
+            Connection conn = null;
+            int tries = 1;
+            while (conn == null && tries <= 20) {
+                try {
+                    conn = DriverManager.getConnection(connectionString);
+                    conn.close();
+                } catch (SQLException ignored) {
+                    logger.debug("Retrying ({}/20)...", tries);
+                    tries++;
+                    Thread.sleep(500);
+                }
+            }
+            if (tries > 20) {
+                throw new SQLException("Could not connect to SQL Server container");
+            }
+        } catch (InterruptedException | DockerException e) {
+            e.printStackTrace();
+        }
     }
 
     @TestWith({
@@ -678,7 +744,8 @@ public class Mapper_RDBs_Test extends TestCore {
             "RMLTC0010c-SQLServer, ttl",
             "RMLTC0011b-SQLServer, ttl",
             "RMLTC0012a-SQLServer, ttl",
-            "RMLTC0012b-SQLServer, ttl"})
+            "RMLTC0012b-SQLServer, ttl"
+    })
     public void evaluate_XXXX_RDBs_SQLServer(String resourceDir, String outputExtension) throws Exception {
         String resourcePath = "test-cases/" + resourceDir + "/resource.sql";
         String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
@@ -687,8 +754,11 @@ public class Mapper_RDBs_Test extends TestCore {
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
+        String[] statements = sql.split(";");
         final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
-        conn.createStatement().execute(sql);
+        for (String statement: statements) {
+            conn.createStatement().execute(statement + ";");
+        }
         conn.close();
 
         doMapping(mappingPath, outputPath);
