@@ -80,7 +80,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
             }
             postgreSQLDB = new DockerDBInfo("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
-            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://" + ip.getHostAddress() + ";user=sa;password=YourSTRONG!Passw0rd;");
+            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://" + "127.0.0.1" + ";user=sa;password=YourSTRONG!Passw0rd;");
         }
     }
 
