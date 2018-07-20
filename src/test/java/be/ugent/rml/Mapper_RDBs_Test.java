@@ -63,7 +63,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     @BeforeClass
     public static void startDBs() throws Exception {
-        //startMySQLDB();
+        startMySQLDB();
         if (LOCAL_TESTING) {
             //startPostgreSQLLocal();
             //startSQLServerLocal();
