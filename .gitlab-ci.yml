@@ -19,6 +19,10 @@ services:
   - postgres:10.4
   - microsoft/mssql-server-linux:latest
 
+job1:
+  script:
+    - docker ps
+
 variables:
     # Postgres
   POSTGRES_DB: postgres
