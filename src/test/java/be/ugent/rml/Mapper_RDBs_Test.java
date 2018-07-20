@@ -8,7 +8,7 @@ import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.*;
-import org.graalvm.compiler.nodes.NodeView;
+
 import org.junit.*;
 import org.junit.Test;
 
