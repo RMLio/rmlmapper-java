@@ -46,9 +46,13 @@ public class Mapper_RDBs_Test extends TestCore {
     private static final String CONNECTIONSTRING_POSTGRESQL_LOCAL = String.format("jdbc:postgresql://0.0.0.0:%d/postgres?user=postgres", PORTNUMBER_POSTGRESQL);
     private static final String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;databaseName=TestDB;user=sa;password=$uP3RC0mpl3Xp@$$w0rD!;";
 
+    private static final String CONNECTIONSTRING_POSTGRESQL = "jdbc:postgresql://postgres/postgres?user=postgres";
+    private static final String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;";
+
+
     private static DB mysqlDB;
     private static DockerDBInfo postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_POSTGRESQL_LOCAL);
-    private static DockerDBInfo sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER_LOCAL);
+    private static DockerDBInfo sqlServerDB = new DockerDBInfo();
 
     private static class DockerDBInfo {
         protected String connectionString;
@@ -466,12 +470,12 @@ public class Mapper_RDBs_Test extends TestCore {
     // PostgreSQL ------------------------------------------------------------------------------------------------------
 
     private static void startPostgreSQL() {
-        postgreSQLDB = new DockerDBInfo("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
+        postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_POSTGRESQL); // see .gitlab-ci.yml file
     }
 
     /*
       USED FOR LOCAL TESTING
-      Change   d2rq:jdbcDSN "jdbc:postgresql://postgres/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:5432/postgres";
+      Change    d2rq:jdbcDSN "jdbc:postgresql://postgres/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:5432/postgres";
       in the mapping files before executing
   */
     private static void startPostgreSQLLocal() {
@@ -612,7 +616,7 @@ public class Mapper_RDBs_Test extends TestCore {
     // SQL Server ------------------------------------------------------------------------------------------------------
 
     private static void startSQLServer() {
-        sqlServerDB = new DockerDBInfo("jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;");
+        sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER);
         // Creates testing db
         try {
             final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
@@ -623,12 +627,15 @@ public class Mapper_RDBs_Test extends TestCore {
         }
     }
 
-    // Todo: Add 'ACCEPT_EULA=Y' & 'SA_PASSWORD=yourStrong(!)Password' to container config
+    /*
+     USED FOR LOCAL TESTING
+     Change     jdbc:sqlserver://localhost;databaseName=TestDB;   to   d2rq:jdbcDSN "jdbc:sqlserver://sqlserver;databaseName=TestDB";
+     in the mapping files before executing
+ */
     private static void startSQLServerLocal()  {
         final String address = "0.0.0.0";
         final String exportedPort = "1433";
         final String image = "microsoft/mssql-server-linux:latest";
-
 
         // Map exported port to our static PORTNUMBER_SQLSERVER
         final Map<String, List<PortBinding>> portBindings = new HashMap<>();
@@ -640,8 +647,13 @@ public class Mapper_RDBs_Test extends TestCore {
                 .portBindings(portBindings)
                 .build();
 
+        final Map<String, String> configLabels = new HashMap<>();
+        configLabels.put("ACCEPT_EULA", "Y");
+        configLabels.put("SA_PASSWORD", "$uP3RC0mpl3Xp@$$w0rD!");
+
         final ContainerConfig config = ContainerConfig.builder()
                 .hostConfig(hostConfig)
+                .labels(configLabels)
                 .image(image).exposedPorts(exportedPort)
                 .build();
 
@@ -687,15 +699,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
         String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
 
-        // Execute SQL
-        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
-        sql = sql.replaceAll("\n", "");
-        String[] statements = sql.split(";");
-        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
-        for (String statement: statements) {
-            conn.createStatement().execute(statement + ";");
-        }
-        conn.close();
+        executeSQL(sqlServerDB.connectionString, resourcePath);
 
         doMapping(mappingPath, outputPath);
     }
@@ -706,12 +710,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0002c-SQLServer/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002c-SQLServer/output.ttl";
 
-        // Execute SQL
-        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
-        sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
-        conn.createStatement().execute(sql);
-        conn.close();
+        executeSQL(sqlServerDB.connectionString, resourcePath);
 
         doMapping(mappingPath, outputPath);
     }
@@ -722,12 +721,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0002e-SQLServer/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002e-SQLServer/output.ttl";
 
-        // Execute SQL
-        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
-        sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
-        conn.createStatement().execute(sql);
-        conn.close();
+        executeSQL(sqlServerDB.connectionString, resourcePath);
 
         doMapping(mappingPath, outputPath);
     }
@@ -738,12 +732,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0002i-SQLServer/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002i-SQLServer/output.ttl";
 
-        // Execute SQL
-        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
-        sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
-        conn.createStatement().execute(sql);
-        conn.close();
+        executeSQL(sqlServerDB.connectionString, resourcePath);
 
         doMapping(mappingPath, outputPath);
     }
@@ -754,12 +743,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0003a-SQLServer/mapping.ttl";
         String outputPath = "test-cases/RMLTC0003a-SQLServer/output.ttl";
 
-        // Execute SQL
-        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
-        sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
-        conn.createStatement().execute(sql);
-        conn.close();
+        executeSQL(sqlServerDB.connectionString, resourcePath);
 
         doMapping(mappingPath, outputPath);
     }
@@ -808,5 +792,17 @@ public class Mapper_RDBs_Test extends TestCore {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private static void executeSQL(String connectionString, String sqlFile)  throws Exception {
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(sqlFile, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        String[] statements = sql.split(";");
+        final Connection conn = DriverManager.getConnection(connectionString);
+        for (String statement: statements) {
+            conn.createStatement().execute(statement + ";");
+        }
+        conn.close();
     }
 }
