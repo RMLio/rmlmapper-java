@@ -31,19 +31,24 @@ import java.util.Map;
 
 @RunWith(ZohhakRunner.class)
 public class Mapper_RDBs_Test extends TestCore {
-
     // Change this if needed
     private static final Boolean LOCAL_TESTING = false;
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_RDBs_Test.class);
 
+
+    private static final String DOCKER_HOST = "unix:///var/run/docker.sock";
+
     private static final int PORTNUMBER_MYSQL = 50898;
     private static final int PORTNUMBER_POSTGRESQL = 5432;
     private static final int PORTNUMBER_SQLSERVER = 50899;
 
+    private static final String CONNECTIONSTRING_POSTGRESQL_LOCAL = String.format("jdbc:postgresql://0.0.0.0:%d/postgres?user=postgres", PORTNUMBER_POSTGRESQL);
+    private static final String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;databaseName=TestDB;user=sa;password=$uP3RC0mpl3Xp@$$w0rD!;";
+
     private static DB mysqlDB;
-    private static DockerDBInfo postgreSQLDB;
-    private static DockerDBInfo sqlServerDB;
+    private static DockerDBInfo postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_POSTGRESQL_LOCAL);
+    private static DockerDBInfo sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER_LOCAL);
 
     private static class DockerDBInfo {
         protected String connectionString;
@@ -64,24 +69,13 @@ public class Mapper_RDBs_Test extends TestCore {
     @BeforeClass
     public static void startDBs() throws Exception {
         startMySQLDB();
+
         if (LOCAL_TESTING) {
-            //startPostgreSQLLocal();
-            //startSQLServerLocal();
-            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://localhost;databaseName=TestDB;user=sa;password=$uP3RC0mpl3Xp@$$w0rD!;");
+            startPostgreSQLLocal();
+            startSQLServerLocal();
         } else {
-            postgreSQLDB = new DockerDBInfo("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
-            sqlServerDB = new DockerDBInfo("jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;");
-
-            // TODO: cleanup
-            // Creates testing db
-            try {
-                final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
-                conn.createStatement().execute("CREATE DATABASE TestDB");
-                conn.close();
-            } catch (SQLException ex) {
-                // Doesn't matter
-            }
-
+            startPostgreSQL();
+            startSQLServer();
         }
     }
 
@@ -471,77 +465,36 @@ public class Mapper_RDBs_Test extends TestCore {
 
     // PostgreSQL ------------------------------------------------------------------------------------------------------
 
-    /*
-        USED FOR LOCAL TESTING
-        Change   d2rq:jdbcDSN "jdbc:postgresql://postgres/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:5432/postgres";
-        in the mapping files before executing
-        -----
-        Start postgres docker container and check connection
-        https://github.com/spotify/docker-client
-     */
+    private static void startPostgreSQL() {
+        postgreSQLDB = new DockerDBInfo("jdbc:postgresql://postgres/postgres?user=postgres"); // see .gitlab-ci.yml file
+    }
 
-    private static void startPostgreSQLLocal() throws SQLException {
+    /*
+      USED FOR LOCAL TESTING
+      Change   d2rq:jdbcDSN "jdbc:postgresql://postgres/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:5432/postgres";
+      in the mapping files before executing
+  */
+    private static void startPostgreSQLLocal() {
         final String address = "0.0.0.0";
-        final String dockerHost = "unix:///var/run/docker.sock";
         final String exportedPort = "5432";
         final String image = "postgres:10.4";
 
-        try {
-            final DockerClient docker = new DefaultDockerClient(dockerHost);
+        // Map exported port to our static PORTNUMBER_POSTGRESQL
+        final Map<String, List<PortBinding>> portBindings = new HashMap<>();
+        List<PortBinding> staticPorts = new ArrayList<>();
+        staticPorts.add(PortBinding.create(address, Integer.toString(PORTNUMBER_POSTGRESQL)));
+        portBindings.put(exportedPort, staticPorts);
 
-            docker.pull(image);
+        final HostConfig hostConfig = HostConfig.builder()
+                .portBindings(portBindings)
+                .build();
 
-            // Map exported port to our static PORTNUMBER_POSTGRESQL
-            final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-            List<PortBinding> staticPorts = new ArrayList<>();
-            staticPorts.add(PortBinding.create(address, Integer.toString(PORTNUMBER_POSTGRESQL)));
-            portBindings.put(exportedPort, staticPorts);
+        final ContainerConfig config = ContainerConfig.builder()
+                .hostConfig(hostConfig)
+                .image(image).exposedPorts(exportedPort)
+                .build();
 
-            final HostConfig hostConfig = HostConfig.builder()
-                    .portBindings(portBindings)
-                    .build();
-
-            final ContainerConfig config = ContainerConfig.builder()
-                    .hostConfig(hostConfig)
-                    .image(image).exposedPorts(exportedPort)
-                    .build();
-            final ContainerCreation creation = docker.createContainer(config);
-            final String id = creation.id();
-
-            // Container is now created, let's start it up
-            docker.startContainer(id);
-
-            // startContainer swallows errors, so check if the container is in the running state
-            final ContainerInfo info = docker.inspectContainer(id);
-            if (!info.state().running()) {
-                throw new IllegalStateException("Could not start Postgres container");
-            }
-
-            // We need to build the connection string to connect to Postgres
-            // Find the random port in the network settings
-            final String connectionString = String.format("jdbc:postgresql://%s:%d/postgres?user=postgres", address, PORTNUMBER_POSTGRESQL);
-
-            postgreSQLDB = new DockerDBInfo(docker, connectionString, id);
-
-            // It takes a while for the Postgres application to start up inside the container. Time limit: 10 seconds
-            Connection conn = null;
-            int tries = 1;
-            while (conn == null && tries <= 20) {
-                try {
-                    conn = DriverManager.getConnection(connectionString);
-                    conn.close();
-                } catch (SQLException ignored) {
-                    logger.debug("Retrying ({}/20)...", tries);
-                    tries++;
-                    Thread.sleep(500);
-                }
-            }
-            if (tries > 20) {
-                throw new SQLException("Could not connect to Postgres container");
-            }
-        } catch (InterruptedException | DockerException e) {
-            e.printStackTrace();
-        }
+        startDockerContainer(image, config, postgreSQLDB);
     }
 
     @TestWith({
@@ -658,69 +611,41 @@ public class Mapper_RDBs_Test extends TestCore {
 
     // SQL Server ------------------------------------------------------------------------------------------------------
 
+    private static void startSQLServer() {
+        sqlServerDB = new DockerDBInfo("jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;");
+        // Creates testing db
+        try {
+            final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
+            conn.createStatement().execute("CREATE DATABASE TestDB");
+            conn.close();
+        } catch (SQLException ex) {
+            // Doesn't matter
+        }
+    }
+
     // Todo: Add 'ACCEPT_EULA=Y' & 'SA_PASSWORD=yourStrong(!)Password' to container config
-    private static void startSQLServerLocal() throws Exception {
+    private static void startSQLServerLocal()  {
         final String address = "0.0.0.0";
-        final String dockerHost = "unix:///var/run/docker.sock";
         final String exportedPort = "1433";
         final String image = "microsoft/mssql-server-linux:latest";
 
-        try {
-            final DockerClient docker = new DefaultDockerClient(dockerHost);
 
-            docker.pull(image);
+        // Map exported port to our static PORTNUMBER_SQLSERVER
+        final Map<String, List<PortBinding>> portBindings = new HashMap<>();
+        List<PortBinding> staticPorts = new ArrayList<>();
+        staticPorts.add(PortBinding.create(address, Integer.toString(PORTNUMBER_SQLSERVER)));
+        portBindings.put(exportedPort, staticPorts);
 
-            // Map exported port to our static PORTNUMBER_SQLSERVER
-            final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-            List<PortBinding> staticPorts = new ArrayList<>();
-            staticPorts.add(PortBinding.create(address, Integer.toString(PORTNUMBER_SQLSERVER)));
-            portBindings.put(exportedPort, staticPorts);
+        final HostConfig hostConfig = HostConfig.builder()
+                .portBindings(portBindings)
+                .build();
 
-            final HostConfig hostConfig = HostConfig.builder()
-                    .portBindings(portBindings)
-                    .build();
+        final ContainerConfig config = ContainerConfig.builder()
+                .hostConfig(hostConfig)
+                .image(image).exposedPorts(exportedPort)
+                .build();
 
-            final ContainerConfig config = ContainerConfig.builder()
-                    .hostConfig(hostConfig)
-                    .image(image).exposedPorts(exportedPort)
-                    .build();
-            final ContainerCreation creation = docker.createContainer(config);
-            final String id = creation.id();
-
-            // Container is now created, let's start it up
-            docker.startContainer(id);
-
-            // startContainer swallows errors, so check if the container is in the running state
-            final ContainerInfo info = docker.inspectContainer(id);
-            if (!info.state().running()) {
-                throw new IllegalStateException("Could not start SQL Server container");
-            }
-
-            // We need to build the connection string to connect to Postgres
-            // Find the random port in the network settings
-            final String connectionString = String.format("jdbc:sqlserver://localhost;databaseName=TestDB:1433;user=sa;password=$uP3RC0mpl3Xp@$$w0rD$uP3RC0mpl3Xp@$$w0rD;");
-
-            sqlServerDB = new DockerDBInfo(docker, connectionString, id);
-
-            // It takes a while for the Postgres application to start up inside the container. Time limit: 10 seconds
-            Connection conn = null;
-            int tries = 1;
-            while (conn == null && tries <= 20) {
-                try {
-                    conn = DriverManager.getConnection(connectionString);
-                    conn.close();
-                } catch (SQLException ignored) {
-                    logger.debug("Retrying ({}/20)...", tries);
-                    tries++;
-                    Thread.sleep(500);
-                }
-            }
-            if (tries > 20) {
-                throw new SQLException("Could not connect to SQL Server container");
-            }
-        } catch (InterruptedException | DockerException e) {
-            e.printStackTrace();
-        }
+        startDockerContainer(image, config, sqlServerDB);
     }
 
     @TestWith({
@@ -837,5 +762,51 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.close();
 
         doMapping(mappingPath, outputPath);
+    }
+
+
+    // Utils -----------------------------------------------------------------------------------------------------------
+
+    private static void startDockerContainer(String image, ContainerConfig containerConfig, DockerDBInfo dockerDBInfo) {
+        try {
+            final DockerClient docker = new DefaultDockerClient(DOCKER_HOST);
+
+            docker.pull(image);
+
+            final ContainerCreation creation = docker.createContainer(containerConfig);
+            final String id = creation.id();
+
+            // Container is now created, let's start it up
+            docker.startContainer(id);
+
+            // startContainer swallows errors, so check if the container is in the running state
+            final ContainerInfo info = docker.inspectContainer(id);
+            if (!info.state().running()) {
+                throw new IllegalStateException("Could not start the container of: " + image);
+            }
+
+            dockerDBInfo.docker = docker;
+            dockerDBInfo.containerID = id;
+
+            // It takes a while for the application to start up inside the container. Time limit: 10 seconds
+            Connection conn = null;
+            int tries = 1;
+            while (conn == null && tries <= 20) {
+                try {
+                    conn = DriverManager.getConnection(dockerDBInfo.connectionString);
+                    conn.close();
+                } catch (SQLException ignored) {
+                    logger.debug("Retrying ({}/20)...", tries);
+                    tries++;
+                    Thread.sleep(500);
+                }
+            }
+            if (tries > 20) {
+                throw new SQLException("Could not connect to the container of: " + image);
+            }
+        } catch (InterruptedException | DockerException | SQLException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
