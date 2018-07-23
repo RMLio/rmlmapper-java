@@ -51,8 +51,8 @@ public class Mapper_RDBs_Test extends TestCore {
 
 
     private static DB mysqlDB;
-    private static DockerDBInfo postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_POSTGRESQL_LOCAL);
-    private static DockerDBInfo sqlServerDB = new DockerDBInfo();
+    private static DockerDBInfo postgreSQLDB;
+    private static DockerDBInfo sqlServerDB;
 
     private static class DockerDBInfo {
         protected String connectionString;
@@ -479,6 +479,8 @@ public class Mapper_RDBs_Test extends TestCore {
       in the mapping files before executing
   */
     private static void startPostgreSQLLocal() {
+        postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         final String address = "0.0.0.0";
         final String exportedPort = "5432";
         final String image = "postgres:10.4";
@@ -633,6 +635,8 @@ public class Mapper_RDBs_Test extends TestCore {
      in the mapping files before executing
  */
     private static void startSQLServerLocal()  {
+        sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER_LOCAL);
+
         final String address = "0.0.0.0";
         final String exportedPort = "1433";
         final String image = "microsoft/mssql-server-linux:latest";
