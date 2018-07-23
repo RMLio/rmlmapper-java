@@ -8,7 +8,7 @@ import java.util.List;
 
 public class JSON extends IteratorFormat {
 
-    protected List<Record> _get(InputStream stream, String iterator) throws IOException {
+    protected List<Record> _get(InputStream stream, String iterator) {
         List<Record> records = new ArrayList<>();
 
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(stream, "utf-8");

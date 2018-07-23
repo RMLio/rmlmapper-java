@@ -20,6 +20,7 @@ public class RecordsFactory {
     private Map<String, Map<String, List<Record>>> allJSONRecords;
     private Map<String, Map<String, List<Record>>> allXMLRecords;
     private Map<String, Map<Integer, List<Record>>> allRDBsRecords;
+    private Map<String, Map<String, List<Record>>> allSPARQLRecords;
 
     public RecordsFactory(DataFetcher dataFetcher) {
         this.dataFetcher = dataFetcher;
@@ -27,6 +28,7 @@ public class RecordsFactory {
         allJSONRecords = new HashMap<>();
         allXMLRecords = new HashMap<>();
         allRDBsRecords = new HashMap<>();
+        allSPARQLRecords = new HashMap<>();
     }
 
     public List<Record> createRecords(String triplesMap, QuadStore rmlStore) throws IOException {
@@ -81,6 +83,13 @@ public class RecordsFactory {
                                 throw new Error("No SQL version identifier detected.");
                             }
                             return rdbsRecords(rmlStore, source, logicalSource, triplesMap, table);
+                        case NAMESPACES.SD + "Service":  // SPARQL
+                            // Check if SPARQL Endpoint is given
+                            List<String> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.SD + "endpoint", null));
+                            if (endpoint.isEmpty()) {
+                                throw new Error("No SPARQL endpoint detected.");
+                            }
+                            return sparqlRecords(rmlStore, source, logicalSource, triplesMap, endpoint.get(0), iterators);
                         default:
                             throw new NotImplementedException();
 
@@ -143,22 +152,18 @@ public class RecordsFactory {
             if (allJSONRecords.containsKey(source) && allJSONRecords.get(source).containsKey(iterator)) {
                 return allJSONRecords.get(source).get(iterator);
             } else {
-                try {
-                    JSON json = new JSON();
-                    List<Record> records = json.get(source, iterator, dataFetcher.getCwd());
+                JSON json = new JSON();
+                List<Record> records = json.get(source, iterator, dataFetcher.getCwd());
 
-                    if (allJSONRecords.containsKey(source)) {
-                        allJSONRecords.get(source).put(iterator, records);
-                    } else {
-                        Map<String, List<Record>> temp = new HashMap<>();
-                        temp.put(iterator, records);
-                        allJSONRecords.put(source, temp);
-                    }
-
-                    return records;
-                } catch (IOException e) {
-                    throw e;
+                if (allJSONRecords.containsKey(source)) {
+                    allJSONRecords.get(source).put(iterator, records);
+                } else {
+                    Map<String, List<Record>> temp = new HashMap<>();
+                    temp.put(iterator, records);
+                    allJSONRecords.put(source, temp);
                 }
+
+                return records;
             }
         } else {
             throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for JSONPath.");
@@ -219,6 +224,40 @@ public class RecordsFactory {
         } else {
             RDBs rdbs = new RDBs();
             return rdbs.get(dsn, database, username, password, query);
+        }
+    }
+
+    private List<Record> sparqlRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap, String endpoint, List<String> iterators) {
+        if (!iterators.isEmpty()) {
+
+            // Get query
+            List<String> query = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "query", null));
+            if (query.isEmpty()) {
+                throw new Error("No SPARQL query detected");
+            }
+            String qs = query.get(0).replaceAll("\n", " ").trim();
+            qs = Utils.getLiteral(qs);
+
+            String iterator = Utils.getLiteral(iterators.get(0));
+
+            // TODO: choose a better key
+            if (allSPARQLRecords.containsKey(source) && allSPARQLRecords.get(source).containsKey(iterator)) {
+                return allSPARQLRecords.get(source).get(iterator);
+            } else {
+                SPARQL sparql = new SPARQL();
+                List<Record> records = sparql.get(endpoint, qs, iterator);
+
+                if (allSPARQLRecords.containsKey(source)) {
+                    allJSONRecords.get(source).put(iterator, records);
+                } else {
+                    Map<String, List<Record>> temp = new HashMap<>();
+                    temp.put(iterator, records);
+                    allSPARQLRecords.put(source, temp);
+                }
+                return records;
+            }
+        } else {
+            throw new Error("The Logical Source of " + triplesMap + " does not have iterator, while this is expected for SPARQL.");
         }
     }
 }
