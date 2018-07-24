@@ -6,7 +6,6 @@ import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import org.apache.jena.fuseki.embedded.FusekiServer;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.RDFDataMgr;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -52,7 +51,7 @@ public class Mapper_SPARQL_Test extends TestCore {
         String resourcePath = "test-cases/" + resourceDir + "/resource.ttl";
         String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
         String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
-        
+
         logger.info("TESTING MAPPING FILE: " + mappingPath);
 
         Dataset ds = RDFDataMgr.loadDataset(resourcePath);
