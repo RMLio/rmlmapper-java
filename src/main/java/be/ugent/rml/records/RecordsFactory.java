@@ -20,7 +20,7 @@ public class RecordsFactory {
     private Map<String, Map<String, List<Record>>> allJSONRecords;
     private Map<String, Map<String, List<Record>>> allXMLRecords;
     private Map<String, Map<Integer, List<Record>>> allRDBsRecords;
-    private Map<String, Map<String, List<Record>>> allSPARQLRecords;
+    private Map<String, Map<Integer, List<Record>>> allSPARQLRecords;
 
     public RecordsFactory(DataFetcher dataFetcher) {
         this.dataFetcher = dataFetcher;
@@ -240,18 +240,21 @@ public class RecordsFactory {
 
             String iterator = Utils.getLiteral(iterators.get(0));
 
+            // Create key to save in records map
             // TODO: choose a better key
-            if (allSPARQLRecords.containsKey(source) && allSPARQLRecords.get(source).containsKey(iterator)) {
-                return allSPARQLRecords.get(source).get(iterator);
+            int key = Utils.getHash(qs);
+
+            if (allSPARQLRecords.containsKey(source) && allSPARQLRecords.get(source).containsKey(key)) {
+                return allSPARQLRecords.get(source).get(key);
             } else {
                 SPARQL sparql = new SPARQL();
                 List<Record> records = sparql.get(endpoint, qs, iterator);
 
                 if (allSPARQLRecords.containsKey(source)) {
-                    allJSONRecords.get(source).put(iterator, records);
+                    allSPARQLRecords.get(source).put(key, records);
                 } else {
-                    Map<String, List<Record>> temp = new HashMap<>();
-                    temp.put(iterator, records);
+                    Map<Integer, List<Record>> temp = new HashMap<>();
+                    temp.put(key, records);
                     allSPARQLRecords.put(source, temp);
                 }
                 return records;

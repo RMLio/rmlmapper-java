@@ -440,6 +440,11 @@ public class Utils {
         throw new Error("Invalid query: " + query);
     }
 
+    // Simpler version of above method. Hashes the whole query.
+    public static int getHash(String query) {
+        return query.hashCode();
+    }
+
     public static String readFile(String path, Charset encoding) throws IOException
     {
         if (encoding == null) {

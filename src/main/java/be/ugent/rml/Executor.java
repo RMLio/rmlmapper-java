@@ -48,7 +48,6 @@ public class Executor {
         //we execute every mapping
         for (String triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
-
             List<Record> records = this.getRecords(triplesMap);
 
             for (int j = 0; j < records.size(); j++) {

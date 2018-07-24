@@ -12,14 +12,27 @@ public class SPARQL extends IteratorFormat {
     @Override
     public List<Record> get(String endpoint, String qs, String iterator) {
         // Query the endpoint
-        Query query = QueryFactory.create(qs);
-        System.out.println(qs);
-        QueryExecution exec = QueryExecutionFactory.sparqlService( endpoint, qs);
+        try {
+            Query query = QueryFactory.create(qs);
+        } catch (Exception ex) {
+            throw new Error("Could not parse the following SPARQL query: " + qs);
+        }
+        QueryExecution exec = QueryExecutionFactory.sparqlService(endpoint, qs);
+
         ResultSet results = exec.execSelect();
+        ResultSet resultsC = ResultSetFactory.copyResults( exec.execSelect() );
+
 
         // Convert ResultSet to JSON
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
         ResultSetFormatter.outputAsJSON(outputStream, results);
+
+        System.out.println("---------------------------------------");
+        System.out.println("QUERY: " + qs);
+        System.out.println("RESULTS: ");
+        ResultSetFormatter.outputAsJSON(resultsC);
+        System.out.println("---------------------------------------");
 
         return _get(new ByteArrayInputStream(outputStream.toByteArray()), iterator);
     }

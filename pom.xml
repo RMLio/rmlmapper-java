@@ -110,6 +110,11 @@
             <type>pom</type>
             <version>3.8.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-fuseki-embedded</artifactId>
+            <version>3.8.0</version>
+        </dependency>
     </dependencies>
 
     <build>

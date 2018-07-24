@@ -11,7 +11,7 @@
 
 <#InputSPARQL>
     a sd:Service ;
-    sd:endpoint <http://dbpedia.org/sparql> ;
+    sd:endpoint <http://localhost:50900/dataset/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query ;
     sd:resultFormat <http://www.w3.org/ns/formats/data/SPARQL_Results_XML> .
 
@@ -22,24 +22,19 @@
         rml:iterator "$.results.bindings[*]";
         rml:query """
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-            SELECT ?resource_uri ?fr_label
+            SELECT ?name
             WHERE {
-                ?resource_uri a <http://dbpedia.org/ontology/Country> ;
-                rdfs:label ?fr_label .
-                FILTER(lang(?fr_label) = "fr")
+                ?name a rdfs:Literal .
             } """
     ];
 
     rr:subjectMap [
-        rml:reference "resource_uri.value";
-        rr:termType rr:IRI;
-        rr:class ex:Country
+        rr:template "http://example.com/{name.value}"
     ];
 
     rr:predicateObjectMap [
-        rr:predicate ex:name;
-
+        rr:predicate foaf:name ;
         rr:objectMap [
-            rml:reference "fr_label.value" ;
+            rml:reference "name.value" ;
             ]
     ].
