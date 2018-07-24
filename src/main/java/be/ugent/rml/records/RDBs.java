@@ -1,7 +1,6 @@
 package be.ugent.rml.records;
 
-import be.ugent.rml.Database_Utils;
-import be.ugent.rml.Utils;
+import be.ugent.rml.DatabaseType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,14 +13,14 @@ public class RDBs  {
         This method adds the "jdbc:XXX://" prefix to the given dsn. This way the caller of this function doesn't need
         to take JDBC specific details into account.
      */
-    public List<Record> get(String dsn, Database_Utils.Database database, String username, String password, String query) {
+    public List<Record> get(String dsn, DatabaseType.Database database, String username, String password, String query) {
         // List containing generated records
         List<Record> records = new ArrayList<>();
 
         // JDBC objects
         Connection connection = null;
         Statement statement = null;
-        String jdbcDriver = Database_Utils.getDriver(database);
+        String jdbcDriver = DatabaseType.getDriver(database);
         String jdbcDSN = "jdbc:" + database.toString() + "://" + dsn;
 
         try {
@@ -30,10 +29,10 @@ public class RDBs  {
 
             // Open connection
             String connectionString = jdbcDSN + "?user=" + username + "&password=" + password;
-            if (database == Database_Utils.Database.MYSQL) {
+            if (database == DatabaseType.Database.MYSQL) {
                 connectionString += "&serverTimezone=UTC&useSSL=false";
             }
-            if (database == Database_Utils.Database.SQL_SERVER) {
+            if (database == DatabaseType.Database.SQL_SERVER) {
                 connectionString = connectionString.replaceAll("\\?|&", ";");
                 if (!connectionString.endsWith(";")) {
                     connectionString += ";";
