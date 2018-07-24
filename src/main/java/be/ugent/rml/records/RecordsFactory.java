@@ -82,7 +82,7 @@ public class RecordsFactory {
                             if (sqlVersion.isEmpty()) {
                                 throw new Error("No SQL version identifier detected.");
                             }
-                            return getRDBSRecords(rmlStore, source, logicalSource, triplesMap, table);
+                            return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, table);
                         case NAMESPACES.SD + "Service":  // SPARQL
                             // Check if SPARQL Endpoint is given
                             List<String> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.SD + "endpoint", null));
