@@ -1,6 +1,6 @@
 package be.ugent.rml.records;
 
-import be.ugent.rml.Database_Utils;
+import be.ugent.rml.DatabaseType;
 import be.ugent.rml.DataFetcher;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
@@ -59,11 +59,11 @@ public class RecordsFactory {
 
                     switch(referenceFormulations.get(0)) {
                         case NAMESPACES.QL + "CSV":
-                            return csvRecords(source);
+                            return getCSVRecords(source);
                         case NAMESPACES.QL + "XPath":
-                            return xmlRecords(source, iterators, triplesMap);
+                            return getXMLRecords(source, iterators, triplesMap);
                         case NAMESPACES.QL + "JSONPath":
-                            return jsonRecords(source, iterators, triplesMap);
+                            return getJSONRecords(source, iterators, triplesMap);
                         default:
                             throw new NotImplementedException();
 
@@ -80,7 +80,7 @@ public class RecordsFactory {
                             if (sqlVersion.isEmpty()) {
                                 throw new Error("No SQL version identifier detected.");
                             }
-                            return rdbsRecords(rmlStore, source, logicalSource, triplesMap, table);
+                            return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, table);
                         default:
                             throw new NotImplementedException();
 
@@ -92,7 +92,7 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> csvRecords(String source) throws IOException {
+    private List<Record> getCSVRecords(String source) throws IOException {
         if (allCSVRecords.containsKey(source)){
             return allCSVRecords.get(source);
         } else {
@@ -107,7 +107,7 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> xmlRecords(String source, List<String> iterators, String triplesMap) throws IOException {
+    private List<Record> getXMLRecords(String source, List<String> iterators, String triplesMap) throws IOException {
         if (!iterators.isEmpty()) {
             String iterator = Utils.getLiteral(iterators.get(0));
 
@@ -136,7 +136,7 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> jsonRecords(String source, List<String> iterators, String triplesMap) throws IOException {
+    private List<Record> getJSONRecords(String source, List<String> iterators, String triplesMap) throws IOException {
         if (!iterators.isEmpty()) {
             String iterator = Utils.getLiteral(iterators.get(0));
 
@@ -165,7 +165,7 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> rdbsRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap, List<String> table) {
+    private List<Record> getRDBsRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap, List<String> table) {
         // Retrieve database information from source object
 
         // - Driver URL
@@ -173,7 +173,7 @@ public class RecordsFactory {
         if (driverObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a driver.");
         }
-        Database_Utils.Database database = Database_Utils.getDBtype(driverObject.get(0));
+        DatabaseType.Database database = DatabaseType.getDBtype(driverObject.get(0));
 
         // - DSN
         List<String> dsnObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "jdbcDSN", null));

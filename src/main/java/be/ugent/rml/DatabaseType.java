@@ -5,7 +5,7 @@ package be.ugent.rml;
 
  */
 
-public class Database_Utils {
+public class DatabaseType {
 
     public static final String MYSQL = "com.mysql.cj.jdbc.Driver";
     public static final String POSTGRES = "org.postgresql.Driver";
