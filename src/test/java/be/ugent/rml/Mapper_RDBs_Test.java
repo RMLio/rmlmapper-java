@@ -49,7 +49,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static final String CONNECTIONSTRING_MYSQL = String.format("jdbc:mysql://localhost:%d/test", PORTNUMBER_MYSQL);
     private static final String CONNECTIONSTRING_POSTGRESQL = "jdbc:postgresql://postgres/postgres?user=postgres";
-    private static final String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;";
+    private static final String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB";
 
     private static HashSet<String> tempFiles = new HashSet<>();
 
@@ -59,6 +59,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static class DockerDBInfo {
         protected String connectionString;
+        protected String connectionStringLocal;
         protected String containerID;
         protected DockerClient docker;
 
@@ -732,7 +733,8 @@ public class Mapper_RDBs_Test extends TestCore {
         sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER);
         // Creates testing db
         try {
-            final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
+            // Can't set DB yet in connection string --> remove here
+            final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString.substring(0, sqlServerDB.connectionString.lastIndexOf("databaseName=")));
             conn.createStatement().execute("CREATE DATABASE TestDB");
             conn.close();
         } catch (SQLException ex) {
