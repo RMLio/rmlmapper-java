@@ -47,7 +47,11 @@ public class RDBs  {
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
-            records = getResultSetRecords(rs);
+            if (query.contains("FOR XML")) {
+                records = getRecordsFromXML(rs);
+            } else {
+                records = getRecordsFromResultSet(rs);
+            }
 
             // Clean-up environment
             rs.close();
@@ -81,7 +85,7 @@ public class RDBs  {
     }
 
 
-    private List<Record> getResultSetRecords(ResultSet rs) throws SQLException {
+    private List<Record> getRecordsFromResultSet(ResultSet rs) throws SQLException {
         List<Record> records = new ArrayList<>();
         // Get number of requested columns
         ResultSetMetaData rsmd = rs.getMetaData();
@@ -103,5 +107,9 @@ public class RDBs  {
             records.add(new RDBsRecord(values));
         }
         return records;
+    }
+
+    private List<Record> getRecordsFromXML(ResultSet rs) throws SQLException {
+        return null;
     }
 }
