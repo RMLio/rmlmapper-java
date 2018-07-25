@@ -28,7 +28,10 @@ public class RDBs  {
             Class.forName(jdbcDriver);
 
             // Open connection
-            String connectionString = jdbcDSN + "?user=" + username + "&password=" + password;
+            String connectionString = jdbcDSN;
+            if (!connectionString.contains("user=")) {
+                connectionString += "?user=" + username + "&password=" + password;
+            }
             if (database == DatabaseType.Database.MYSQL) {
                 connectionString += "&serverTimezone=UTC&useSSL=false";
             }

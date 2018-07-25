@@ -9,6 +9,7 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.*;
 
+import org.h2.tools.Server;
 import org.junit.*;
 import org.junit.Test;
 
@@ -17,20 +18,22 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RunWith(ZohhakRunner.class)
 public class Mapper_RDBs_Test extends TestCore {
+
     // Change this if needed
     private static final Boolean LOCAL_TESTING = false;
 
@@ -39,16 +42,18 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static final String DOCKER_HOST = "unix:///var/run/docker.sock";
 
-    private static final int PORTNUMBER_MYSQL = 50898;
+    private static final int PORTNUMBER_MYSQL = 50789;
     private static final int PORTNUMBER_POSTGRESQL = 5432;
-    private static final int PORTNUMBER_SQLSERVER = 50899;
+    private static final int PORTNUMBER_SQLSERVER = 50790;
+
 
     private static final String CONNECTIONSTRING_POSTGRESQL_LOCAL = String.format("jdbc:postgresql://0.0.0.0:%d/postgres?user=postgres", PORTNUMBER_POSTGRESQL);
-    private static final String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;databaseName=TestDB;user=sa;password=$uP3RC0mpl3Xp@$$w0rD!;";
+    private static final String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;databaseName=TestDB;user=sa;password=YourSTRONG!Passw0rd;";
 
     private static final String CONNECTIONSTRING_POSTGRESQL = "jdbc:postgresql://postgres/postgres?user=postgres";
     private static final String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;";
 
+    private static HashSet<String> tempFiles = new HashSet<>();
 
     private static DB mysqlDB;
     private static DockerDBInfo postgreSQLDB;
@@ -90,6 +95,25 @@ public class Mapper_RDBs_Test extends TestCore {
         }
         closeDocker(postgreSQLDB);
         closeDocker(sqlServerDB);
+
+        // Make sure all tempFiles are removed
+        int counter = 0;
+        while (!tempFiles.isEmpty()) {
+            for (Iterator<String> i = tempFiles.iterator(); i.hasNext();) {
+                try {
+                    if (new File(i.next()).delete()) {
+                        i.remove();
+                    }
+                } catch (Exception ex) {
+                    counter++;
+                    ex.printStackTrace();
+                    // Prevent infinity loops
+                    if (counter > 100) {
+                        throw new Error("Could not remove all temp mapping files.");
+                    }
+                }
+            }
+        }
     }
 
     private static void closeDocker(DockerDBInfo dockerDBInfo) {
@@ -464,7 +488,7 @@ public class Mapper_RDBs_Test extends TestCore {
         String outputPath = "test-cases/RMLTC0012b-MySQL/output.ttl";
         mysqlDB.source(resourcePath);
         doMapping(mappingPath, outputPath);
-        
+
     }
 
     // PostgreSQL ------------------------------------------------------------------------------------------------------
@@ -473,11 +497,6 @@ public class Mapper_RDBs_Test extends TestCore {
         postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_POSTGRESQL); // see .gitlab-ci.yml file
     }
 
-    /*
-      USED FOR LOCAL TESTING
-      Change    d2rq:jdbcDSN "jdbc:postgresql://postgres/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:5432/postgres";
-      in the mapping files before executing
-  */
     private static void startPostgreSQLLocal() {
         postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_POSTGRESQL_LOCAL);
 
@@ -541,6 +560,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
         String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -548,7 +569,9 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -557,6 +580,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0002c-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002c-PostgreSQL/output.ttl";
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -564,7 +589,9 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -573,6 +600,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0002e-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002e-PostgreSQL/output.ttl";
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -580,7 +609,9 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -589,6 +620,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0002i-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002i-PostgreSQL/output.ttl";
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -596,7 +629,9 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -605,6 +640,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0003a-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0003a-PostgreSQL/output.ttl";
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -612,7 +649,9 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     // SQL Server ------------------------------------------------------------------------------------------------------
@@ -629,11 +668,7 @@ public class Mapper_RDBs_Test extends TestCore {
         }
     }
 
-    /*
-     USED FOR LOCAL TESTING
-     Change     jdbc:sqlserver://localhost;databaseName=TestDB;   to   d2rq:jdbcDSN "jdbc:sqlserver://sqlserver;databaseName=TestDB";
-     in the mapping files before executing
- */
+    // TODO: FIX LOCAL TESTING
     private static void startSQLServerLocal()  {
         sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER_LOCAL);
 
@@ -652,17 +687,18 @@ public class Mapper_RDBs_Test extends TestCore {
                 .build();
 
         final Map<String, String> configLabels = new HashMap<>();
-        configLabels.put("ACCEPT_EULA", "Y");
-        configLabels.put("SA_PASSWORD", "$uP3RC0mpl3Xp@$$w0rD!");
 
         final ContainerConfig config = ContainerConfig.builder()
                 .hostConfig(hostConfig)
                 .labels(configLabels)
                 .image(image).exposedPorts(exportedPort)
+                .env("ACCEPT_EULA=Y")
+                .env("SA_PASSWORD=YourStrong!Passw0rd")
                 .build();
 
         startDockerContainer(image, config, sqlServerDB);
     }
+
 
     @TestWith({
             "RMLTC0000-SQLServer, ttl",
@@ -705,7 +741,11 @@ public class Mapper_RDBs_Test extends TestCore {
 
         executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -716,7 +756,11 @@ public class Mapper_RDBs_Test extends TestCore {
 
         executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -727,7 +771,11 @@ public class Mapper_RDBs_Test extends TestCore {
 
         executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -738,7 +786,11 @@ public class Mapper_RDBs_Test extends TestCore {
 
         executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -749,8 +801,13 @@ public class Mapper_RDBs_Test extends TestCore {
 
         executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
+
 
 
     // Utils -----------------------------------------------------------------------------------------------------------
@@ -808,5 +865,38 @@ public class Mapper_RDBs_Test extends TestCore {
             conn.createStatement().execute(statement + ";");
         }
         conn.close();
+    }
+
+    private static String replaceDSNInMappingFile(String path, String connectionString, String connectionStringLocal) {
+        try {
+            // Read mapping file
+            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
+
+            String dsn = LOCAL_TESTING ? connectionStringLocal: connectionString;
+
+            // Replace "PORT" in mapping file by new port
+            mapping = mapping.replace("CONNECTIONDSN", dsn);
+
+            // Write to temp mapping file
+
+            String fileName = Integer.toString(Math.abs(path.hashCode())) + "tempMapping.ttl";
+            Path file = Paths.get(fileName);
+            Files.write(file, Arrays.asList(mapping.split("\n")));
+
+            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
+            tempFiles.add(absolutePath);
+
+            return absolutePath;
+
+        } catch (IOException ex) {
+            throw new Error(ex.getMessage());
+        }
+    }
+
+    private static void deleteTempMappingFile(String absolutePath) {
+        File file = new File(absolutePath);
+        if (file.delete()) {
+            tempFiles.remove(absolutePath);
+        }
     }
 }
