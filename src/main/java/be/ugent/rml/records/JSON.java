@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JSON extends IteratorFormat {
-
+    
     protected String getContentType() {
         return "application/json";
     }

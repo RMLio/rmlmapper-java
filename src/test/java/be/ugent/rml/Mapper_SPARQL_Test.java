@@ -49,6 +49,7 @@ public class Mapper_SPARQL_Test extends TestCore {
         Returns the absolute path to the temp mapping file
      */
     private String replacePortInMappingFile(String path) {
+        logger.info("REPLACING PORT IN: " + path);
         try {
             // Read mapping file
             String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
@@ -69,6 +70,8 @@ public class Mapper_SPARQL_Test extends TestCore {
 
             openPorts.put(absolutePath, openPort);
 
+            logger.info("REPLACED WITH: " + port);
+
             return absolutePath;
 
         } catch (IOException ex) {
@@ -81,6 +84,8 @@ public class Mapper_SPARQL_Test extends TestCore {
         Deletes the temp mapping file.
      */
     private static void closePort(String absolutePath) {
+        String portNumber = absolutePath.substring(absolutePath.lastIndexOf('/'), absolutePath.lastIndexOf('.'));
+        System.out.println("CLOSING PORT: " + portNumber);
         if (openPorts.containsKey(absolutePath)) {
             try {
                 // Close port and remove from map
@@ -91,8 +96,7 @@ public class Mapper_SPARQL_Test extends TestCore {
                 File file = new File(absolutePath);
                 file.delete();
             } catch (IOException ex) {
-                String withoutExtension = absolutePath.substring(0, absolutePath.lastIndexOf('.'));
-                throw new Error("Couldn't close port " + withoutExtension + " for the SPARQL tests.");
+                throw new Error("Couldn't close port " + portNumber + " for the SPARQL tests.");
             }
         }
     }
