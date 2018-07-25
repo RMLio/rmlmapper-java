@@ -3,22 +3,73 @@ package be.ugent.rml;
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.fuseki.embedded.FusekiServer;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.RDFDataMgr;
+import org.h2.tools.Server;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashMap;
 
 @RunWith(ZohhakRunner.class)
 public class Mapper_SPARQL_Test extends TestCore {
 
     FusekiServer server;
+    HashMap<String, ServerSocket> openPorts = new HashMap<>();
 
     private static final int PORT = 3332;
 
     private void stopServer() {
         if (server != null) {
             server.stop();
+        }
+    }
+
+    private ServerSocket findRandomOpenPortOnAllLocalInterfaces() {
+        try ( ServerSocket socket = new ServerSocket(0) ) {
+            return socket;
+        } catch (IOException ex) {
+            throw new Error("Couldn't find an available port for the SPARQL tests.");
+        }
+    }
+
+    private String replacePortInMappingFile(String path) {
+        try {
+            String mapping = Utils.readFile(path, null);
+
+            ServerSocket openPort = findRandomOpenPortOnAllLocalInterfaces();
+            String port = Integer.toString(openPort.getLocalPort());
+            mapping.replace("PORT", port);
+
+            String fileName = port + ".txt";
+            Path file = Paths.get(port + ".txt");
+            Files.write(file, Arrays.asList(mapping.split("\n")));
+
+            openPorts.put(fileName, openPort);
+            return fileName;
+
+        } catch (IOException ex) {
+            throw new Error(ex.getMessage());
+        }
+    }
+
+    private void closePort(String fileName) {
+        if (openPorts.containsKey(fileName)) {
+            try {
+                openPorts.get(fileName).close();
+            } catch (IOException ex) {
+                String withoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+                throw new Error("Couldn't close port " + withoutExtension + " for the SPARQL tests.");
+            }
         }
     }
 
