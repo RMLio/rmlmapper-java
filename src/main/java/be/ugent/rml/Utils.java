@@ -17,6 +17,7 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -33,13 +34,13 @@ public class Utils {
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static Reader getReaderFromLocation(String location) throws IOException {
-        return getReaderFromLocation(location, null);
+        return getReaderFromLocation(location, null, "");
     }
 
-    public static Reader getReaderFromLocation(String location, File basePath) throws IOException {
+    public static Reader getReaderFromLocation(String location, File basePath, String contentType) throws IOException {
         if (isRemoteFile(location)) {
             try {
-                return getReaderFromURL(new URL(location));
+                return getReaderFromURL(new URL(location), contentType);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -50,13 +51,13 @@ public class Utils {
     }
 
     public static InputStream getInputStreamFromLocation(String location) throws IOException {
-        return getInputStreamFromLocation(location,null);
+        return getInputStreamFromLocation(location,null,"");
     }
 
-    public static InputStream getInputStreamFromLocation(String location, File basePath) throws IOException {
+    public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
         if (isRemoteFile(location)) {
             try {
-                return getInputStreamFromURL(new URL(location));
+                return getInputStreamFromURL(new URL(location), contentType);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -127,12 +128,33 @@ public class Utils {
         return new BufferedReader(new InputStreamReader(url.openStream()));
     }
 
+    public static Reader getReaderFromURL(URL url, String contentType) throws IOException {
+        return new BufferedReader(new InputStreamReader(getInputStreamFromURL(url, contentType)));
+    }
+
     public static Reader getReaderFromFile(File file) throws FileNotFoundException {
         return new FileReader(file);
     }
 
     public static InputStream getInputStreamFromURL(URL url) throws IOException {
         return url.openStream();
+    }
+
+    public static InputStream getInputStreamFromURL(URL url, String contentType) {
+        InputStream inputStream = null;
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(false);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", contentType);
+            connection.setRequestProperty("charset", "utf-8");
+            connection.connect();
+            inputStream = connection.getInputStream();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return inputStream;
     }
 
     public static InputStream getInputStreamFromFile(File file) throws FileNotFoundException {

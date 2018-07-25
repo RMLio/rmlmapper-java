@@ -18,10 +18,12 @@ public abstract class IteratorFormat {
     }
 
     public List<Record> get(String location, String iterator, String cwd) throws IOException {
-        InputStream stream = Utils.getInputStreamFromLocation(location, new File(cwd));
+        InputStream stream = Utils.getInputStreamFromLocation(location, new File(cwd), getContentType());
 
         return _get(stream, iterator);
     }
 
     abstract List<Record> _get(InputStream stream, String iterator) throws IOException;
+
+    abstract String getContentType();
 }

@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.rml.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,6 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XML extends IteratorFormat {
+
+    protected String getContentType() {
+        return "application/xml";
+    }
 
     @Override
     List<Record> _get(InputStream stream, String iterator) throws IOException {

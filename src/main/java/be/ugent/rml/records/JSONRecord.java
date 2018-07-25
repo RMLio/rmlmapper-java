@@ -39,7 +39,9 @@ public class JSONRecord implements Record {
                     results.add(array.get(i).toString());
                 }
             } else {
-                results.add(t.toString());
+                if (t != null) {
+                    results.add(t.toString());
+                }
             }
         } catch(PathNotFoundException e) {
             logger.warn(e.getMessage(), e);
