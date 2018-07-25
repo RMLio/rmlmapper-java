@@ -47,25 +47,7 @@ public class RDBs  {
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
-            // Get number of requested columns
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnCount = rsmd.getColumnCount();
-
-            // Extract data from result set
-            while(rs.next()){
-                HashMap<String, List<String>> values = new HashMap<>();
-
-                // Iterate over column names
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnName = rsmd.getColumnName(i);
-
-                    List<String> temp = new ArrayList<String>();
-                    temp.add(rs.getString(columnName));
-                    values.put(columnName, temp);
-                }
-
-                records.add(new RDBsRecord(values));
-            }
+            records = getResultSetRecords(rs);
 
             // Clean-up environment
             rs.close();
@@ -95,6 +77,31 @@ public class RDBs  {
             }
         }
 
+        return records;
+    }
+
+
+    private List<Record> getResultSetRecords(ResultSet rs) throws SQLException {
+        List<Record> records = new ArrayList<>();
+        // Get number of requested columns
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+
+        // Extract data from result set
+        while(rs.next()){
+            HashMap<String, List<String>> values = new HashMap<>();
+
+            // Iterate over column names
+            for (int i = 1; i <= columnCount; i++) {
+                String columnName = rsmd.getColumnName(i);
+
+                List<String> temp = new ArrayList<String>();
+                temp.add(rs.getString(columnName));
+                values.put(columnName, temp);
+            }
+
+            records.add(new RDBsRecord(values));
+        }
         return records;
     }
 }
