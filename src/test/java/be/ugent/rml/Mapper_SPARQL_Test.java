@@ -59,8 +59,8 @@ public class Mapper_SPARQL_Test extends TestCore {
             mapping = mapping.replace("PORT", port);
 
             // Write to temp mapping file
-            String fileName = port + ".txt";
-            Path file = Paths.get(port + ".txt");
+            String fileName = port + ".ttl";
+            Path file = Paths.get(fileName);
             Files.write(file, Arrays.asList(mapping.split("\n")));
 
             String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
