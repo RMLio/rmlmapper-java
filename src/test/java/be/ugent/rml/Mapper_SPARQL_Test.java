@@ -8,12 +8,14 @@ import org.apache.jena.fuseki.embedded.FusekiServer;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.RDFDataMgr;
 import org.h2.tools.Server;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +26,7 @@ import java.util.HashMap;
 public class Mapper_SPARQL_Test extends TestCore {
 
     FusekiServer server;
-    HashMap<String, ServerSocket> openPorts = new HashMap<>();
+    static HashMap<String, ServerSocket> openPorts = new HashMap<>();
 
     private static final int PORT = 3332;
 
@@ -42,34 +44,66 @@ public class Mapper_SPARQL_Test extends TestCore {
         }
     }
 
+    /*
+        Replaces the "PORT" in the given mapping file to an available port and saves this in a new temp file
+        Returns the absolute path to the temp mapping file
+     */
     private String replacePortInMappingFile(String path) {
         try {
-            String mapping = Utils.readFile(path, null);
+            // Read mapping file
+            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
 
+            // Open a new port
             ServerSocket openPort = findRandomOpenPortOnAllLocalInterfaces();
             String port = Integer.toString(openPort.getLocalPort());
-            mapping.replace("PORT", port);
 
+            // Replace "PORT" in mapping file by new port
+            mapping = mapping.replace("PORT", port);
+
+            // Write to temp mapping file
             String fileName = port + ".txt";
             Path file = Paths.get(port + ".txt");
             Files.write(file, Arrays.asList(mapping.split("\n")));
 
-            openPorts.put(fileName, openPort);
-            return fileName;
+            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
+
+            openPorts.put(absolutePath, openPort);
+
+            return absolutePath;
 
         } catch (IOException ex) {
             throw new Error(ex.getMessage());
         }
     }
 
-    private void closePort(String fileName) {
-        if (openPorts.containsKey(fileName)) {
+    /*
+        Closes the port used by the given temp mapping file.
+        Deletes the temp mapping file.
+     */
+    private static void closePort(String absolutePath) {
+        if (openPorts.containsKey(absolutePath)) {
             try {
-                openPorts.get(fileName).close();
+                // Close port and remove from map
+                openPorts.get(absolutePath).close();
+                openPorts.remove(absolutePath);
+
+                // Delete the file
+                File file = new File(absolutePath);
+                file.delete();
             } catch (IOException ex) {
-                String withoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+                String withoutExtension = absolutePath.substring(0, absolutePath.lastIndexOf('.'));
                 throw new Error("Couldn't close port " + withoutExtension + " for the SPARQL tests.");
             }
+        }
+    }
+
+    /*
+        Makes sure that every opened port is closed and every temp mapping file is deleted.
+     */
+    @AfterClass
+    public static void deleteRemainingFiles() {
+        for (String filePath: openPorts.keySet()) {
+            closePort(filePath);
         }
     }
 
@@ -99,38 +133,44 @@ public class Mapper_SPARQL_Test extends TestCore {
     })
     public void evaluate_XXXX_SPARQL(String resourceDir, String outputExtension) throws Exception {
         stopServer();
+
         String resourcePath = "test-cases/" + resourceDir + "/resource.ttl";
         String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
         String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
 
-        logger.info("TESTING MAPPING FILE: " + mappingPath);
-
         Dataset ds = RDFDataMgr.loadDataset(resourcePath);
 
+        String tempMapping = replacePortInMappingFile(mappingPath);
+
         server = FusekiServer.create()
-                .setPort(PORT)
+                .setPort(openPorts.get(tempMapping).getLocalPort())
                 .add("/ds", ds, true)
                 .build();
         server.start();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMapping, outputPath);
 
+        closePort(tempMapping);
         stopServer();
     }
 
     @Test(expected = Error.class)
     public void evaluate_0002g_SPARQL() {
         stopServer();
+
         Dataset ds = RDFDataMgr.loadDataset("test-cases/RMLTC0002g-SPARQL/resource.ttl");
 
+        String tempMapping = replacePortInMappingFile("test-cases/RMLTC0002g-SPARQL/mapping.ttl");
+
         server = FusekiServer.create()
-                .setPort(PORT)
+                .setPort(openPorts.get(tempMapping).getLocalPort())
                 .add("/ds", ds, true)
                 .build();
         server.start();
 
-        doMapping("test-cases/RMLTC0002g-SPARQL/mapping.ttl", "test-cases/RMLTC0002g-SPARQL/output.ttl");
+        doMapping(tempMapping, "test-cases/RMLTC0002g-SPARQL/output.ttl");
 
+        closePort(tempMapping);
         stopServer();
     }
 
@@ -140,15 +180,19 @@ public class Mapper_SPARQL_Test extends TestCore {
 
         Dataset ds1 = RDFDataMgr.loadDataset("test-cases/RMLTC0009a-SPARQL/resource1.ttl");
         Dataset ds2 = RDFDataMgr.loadDataset("test-cases/RMLTC0009a-SPARQL/resource2.ttl");
+
+        String tempMapping = replacePortInMappingFile("test-cases/RMLTC0009a-SPARQL/mapping.ttl");
+
         server = FusekiServer.create()
-                .setPort(PORT)
+                .setPort(openPorts.get(tempMapping).getLocalPort())
                 .add("/ds1", ds1, true)
                 .add("/ds2", ds2, true)
                 .build();
         server.start();
 
-        doMapping("test-cases/RMLTC0009a-SPARQL/mapping.ttl", "test-cases/RMLTC0009a-SPARQL/output.ttl");
+        doMapping(tempMapping, "test-cases/RMLTC0009a-SPARQL/output.ttl");
 
+        closePort(tempMapping);
         stopServer();
     }
 
@@ -158,15 +202,19 @@ public class Mapper_SPARQL_Test extends TestCore {
 
         Dataset ds1 = RDFDataMgr.loadDataset("test-cases/RMLTC0009b-SPARQL/resource1.ttl");
         Dataset ds2 = RDFDataMgr.loadDataset("test-cases/RMLTC0009b-SPARQL/resource2.ttl");
+
+        String tempMapping = replacePortInMappingFile("test-cases/RMLTC0009b-SPARQL/mapping.ttl");
+
         server = FusekiServer.create()
-                .setPort(PORT - 1) // STRANGE ERROR: THIS CASE KEEPS RUNNING INTO "BindException: Address already in use"
+                .setPort(openPorts.get(tempMapping).getLocalPort())
                 .add("/ds1", ds1, true)
                 .add("/ds2", ds2, true)
                 .build();
         server.start();
 
-        doMapping("test-cases/RMLTC0009b-SPARQL/mapping.ttl", "test-cases/RMLTC0009b-SPARQL/output.nq");
+        doMapping(tempMapping, "test-cases/RMLTC0009b-SPARQL/output.nq");
 
+        closePort(tempMapping);
         stopServer();
     }
 
@@ -176,15 +224,19 @@ public class Mapper_SPARQL_Test extends TestCore {
 
         Dataset ds1 = RDFDataMgr.loadDataset("test-cases/RMLTC0012b-SPARQL/resource1.ttl");
         Dataset ds2 = RDFDataMgr.loadDataset("test-cases/RMLTC0012b-SPARQL/resource2.ttl");
+
+        String tempMapping = replacePortInMappingFile("test-cases/RMLTC0012b-SPARQL/mapping.ttl");
+
         server = FusekiServer.create()
-                .setPort(PORT)
+                .setPort(openPorts.get(tempMapping).getLocalPort())
                 .add("/ds1", ds1, true)
                 .add("/ds2", ds2, true)
                 .build();
         server.start();
 
-        doMapping("test-cases/RMLTC0012b-SPARQL/mapping.ttl", "test-cases/RMLTC0012b-SPARQL/output.ttl");
+        doMapping(tempMapping, "test-cases/RMLTC0012b-SPARQL/output.ttl");
 
+        closePort(tempMapping);
         stopServer();
     }
 }

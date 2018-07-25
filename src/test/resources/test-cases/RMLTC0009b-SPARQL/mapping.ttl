@@ -10,13 +10,13 @@
 
 <#InputSPARQL1>
     a sd:Service ;
-    sd:endpoint <http://localhost:3331/ds1/sparql> ;
+    sd:endpoint <http://localhost:PORT/ds1/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query ;
     sd:resultFormat <http://www.w3.org/ns/formats/data/SPARQL_Results_XML> .
 
 <#InputSPARQL2>
     a sd:Service ;
-    sd:endpoint <http://localhost:3331/ds2/sparql> ;
+    sd:endpoint <http://localhost:PORT/ds2/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query ;
     sd:resultFormat <http://www.w3.org/ns/formats/data/SPARQL_Results_XML> .
 
