@@ -14,3 +14,17 @@ cache:
 verify:
   script:
     - mvn test --batch-mode
+
+services:
+  - postgres:10.4
+  - name: microsoft/mssql-server-linux:latest
+    alias: sqlserver
+
+variables:
+    # Postgres
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: ""
+    # SQLServer
+  ACCEPT_EULA: Y
+  SA_PASSWORD: "YourSTRONG!Passw0rd"
