@@ -27,9 +27,7 @@ public class Mapper_SPARQL_Test extends TestCore {
 
     FusekiServer server;
     static HashMap<String, ServerSocket> openPorts = new HashMap<>();
-
-    private static final int PORT = 3332;
-
+    
     private void stopServer() {
         if (server != null) {
             server.stop();
@@ -49,7 +47,6 @@ public class Mapper_SPARQL_Test extends TestCore {
         Returns the absolute path to the temp mapping file
      */
     private String replacePortInMappingFile(String path) {
-        logger.info("REPLACING PORT IN: " + path);
         try {
             // Read mapping file
             String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
@@ -70,8 +67,6 @@ public class Mapper_SPARQL_Test extends TestCore {
 
             openPorts.put(absolutePath, openPort);
 
-            logger.info("REPLACED WITH: " + port);
-
             return absolutePath;
 
         } catch (IOException ex) {
@@ -85,12 +80,10 @@ public class Mapper_SPARQL_Test extends TestCore {
      */
     private static void closePort(String absolutePath) {
         String portNumber = absolutePath.substring(absolutePath.lastIndexOf('/'), absolutePath.lastIndexOf('.'));
-        System.out.println("CLOSING PORT: " + portNumber);
         if (openPorts.containsKey(absolutePath)) {
             try {
                 // Close port and remove from map
-                openPorts.get(absolutePath).close();
-                openPorts.remove(absolutePath);
+                openPorts.remove(absolutePath).close();
 
                 // Delete the file
                 File file = new File(absolutePath);

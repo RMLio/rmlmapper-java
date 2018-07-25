@@ -20,36 +20,28 @@ public class SPARQL extends IteratorFormat {
     @Override
     public List<Record> get(String endpoint, String qs, String iterator) {
         List<Record> records = new ArrayList<>();
+
         // Query the endpoint
         try {
             Query query = QueryFactory.create(qs);
+            QueryExecution exec = QueryExecutionFactory.sparqlService(endpoint, query);
+
+            ResultSet results = exec.execSelect();
+
+            // Convert ResultSet to JSON
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ResultSetFormatter.outputAsJSON(outputStream, results);
+
+            try {
+                records = _get(new ByteArrayInputStream(outputStream.toByteArray()), iterator);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+            return records;
         } catch (Exception ex) {
             throw new Error("Could not parse the following SPARQL query: " + qs);
         }
-        QueryExecution exec = QueryExecutionFactory.sparqlService(endpoint, qs);
-
-        ResultSet results = exec.execSelect();
-        ResultSet resultsC = ResultSetFactory.copyResults( exec.execSelect() );
-
-
-        // Convert ResultSet to JSON
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        ResultSetFormatter.outputAsJSON(outputStream, results);
-
-        // todo: remove this before merging to develop
-        System.out.println("---------------------------------------");
-        System.out.println("QUERY: " + qs);
-        System.out.println("RESULTS: ");
-        ResultSetFormatter.outputAsJSON(resultsC);
-        System.out.println("---------------------------------------");
-
-        try {
-            records = _get(new ByteArrayInputStream(outputStream.toByteArray()), iterator);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return records;
     }
 
     @Override
