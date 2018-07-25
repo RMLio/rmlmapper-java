@@ -24,23 +24,6 @@ public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String [] args) {
-        // TODO: remove this -------------------------------------------------------------------------------------------
-        SPARQL sparql = new SPARQL();
-        String query = ""
-                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
-                + "SELECT ?resource_uri ?fr_label\n"
-                + "WHERE {\n"
-                +        "?resource_uri a <http://dbpedia.org/ontology/Country> ;\n"
-                +    "rdfs:label ?fr_label .\n"
-                +            "FILTER(lang(?fr_label) = \"fr\")\n"
-                + "}";
-
-        try {
-            sparql.get("http://dbpedia.org/sparql", query, "$.results.bindings[*]");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        // -------------------------------------------------------------------------------------------------------------
         Options options = new Options();
         Option mappingdoc = Option.builder("m")
                 .longOpt( "mapping" )
