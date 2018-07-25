@@ -41,6 +41,7 @@ public class RDBs  {
                     connectionString += ";";
                 }
             }
+            System.out.println("CONNECTIONSTRINGS OF DATABASE TYPE " + database.toString() + " --> " + connectionString);
             connection = DriverManager.getConnection(connectionString);
 
             // Execute query
