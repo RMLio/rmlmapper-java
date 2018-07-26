@@ -27,7 +27,7 @@ public class CSV {
         return _get(reader);
     }
 
-    private List<Record> _get(Reader reader) throws IOException {
+    public List<Record> _get(Reader reader) throws IOException {
         CSVReader csvReader = new CSVReader(reader);
 
         List<String[]> myEntries = csvReader.readAll();

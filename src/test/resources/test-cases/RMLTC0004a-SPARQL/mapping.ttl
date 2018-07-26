@@ -13,14 +13,13 @@
     a sd:Service ;
     sd:endpoint <http://localhost:PORT/ds/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query ;
-    sd:resultFormat <http://www.w3.org/ns/formats/data/SPARQL_Results_XML> .
+    sd:resultFormat <http://www.w3.org/ns/formats/SPARQL_Results_XML> .
 
 <TriplesMap1> a rr:TriplesMap;
 
     rml:logicalSource [
         rml:source <#InputSPARQL>;
-        rml:referenceFormulation ql:JSONPath;
-        rml:iterator "$.results.bindings[*]";
+        rml:iterator "/sparql/results/result";
         rml:query """
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -33,14 +32,14 @@
     ];
 
     rr:subjectMap [
-        rr:template "http://example.com/{Student.value}";
+        rr:template "http://example.com/{Student}";
         rr:class ex:Student
       ];
 
       rr:predicateObjectMap [
         rr:predicate foaf:name ;
         rr:objectMap [
-          rml:reference "Student.value"
+          rml:reference "Student"
         ]
       ].
 
@@ -48,8 +47,7 @@
 
     rml:logicalSource [
             rml:source <#InputSPARQL>;
-            rml:referenceFormulation ql:JSONPath;
-            rml:iterator "$.results.bindings[*]";
+            rml:iterator "/sparql/results/result";
             rml:query """
                 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -63,13 +61,13 @@
         ];
 
     rr:subjectMap [
-        rr:template "http://example.com/{Sport.value}";
+        rr:template "http://example.com/{Sport}";
         rr:class ex:Sport
       ];
 
       rr:predicateObjectMap [
         rr:predicate foaf:name ;
         rr:objectMap [
-          rml:reference "Sport.value"
+          rml:reference "Sport"
         ]
       ].

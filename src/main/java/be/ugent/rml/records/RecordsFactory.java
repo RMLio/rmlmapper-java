@@ -44,58 +44,70 @@ public class RecordsFactory {
             List<String> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "iterator", null));
             List<String> table = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "tableName", null));
 
-            // If no rml:referenceFormulation is given, but a table is given --> CSV
-            if (referenceFormulations.isEmpty() && !table.isEmpty()) {
-                referenceFormulations = new ArrayList<>();
-                referenceFormulations.add(0, NAMESPACES.QL + "CSV");
-            }
-
-            if (referenceFormulations.isEmpty()) {
-                throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
-            } else if (sources.isEmpty()) {
+            SPARQL.ResultFormat sparqlResultFormat = null;
+            if (sources.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a source.");
-            } else {
-                String source;
-                if (Utils.isLiteral(sources.get(0))) {
-                    source = Utils.getLiteral(sources.get(0));
-
-                    switch(referenceFormulations.get(0)) {
-                        case NAMESPACES.QL + "CSV":
-                            return getCSVRecords(source);
-                        case NAMESPACES.QL + "XPath":
-                            return getXMLRecords(source, iterators, triplesMap);
-                        case NAMESPACES.QL + "JSONPath":
-                            return getJSONRecords(source, iterators, triplesMap);
-                        default:
-                            throw new NotImplementedException();
-
-                    }
-
+            } else if (referenceFormulations.isEmpty()) {
+                if (!table.isEmpty()) {  // If no rml:referenceFormulation is given, but a table is given --> CSV
+                    referenceFormulations = new ArrayList<>();
+                    referenceFormulations.add(0, NAMESPACES.QL + "CSV");
                 } else {
-                    source = sources.get(0);
+                    // If no rml:referenceFormulation is given, but a sd:resultFormat is given --> same type
+                    List<String> resultFormat;
+                    if (! Utils.isLiteral(sources.get(0)) && !(resultFormat =
+                             Utils.getObjectsFromQuads(rmlStore.getQuads(sources.get(0), NAMESPACES.SD + "resultFormat", null))).isEmpty()) {
 
-                    List<String> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.RDF + "type", null));
-                    switch(sourceType.get(0)) {
-                        case NAMESPACES.D2RQ + "Database":  // RDBs
-                            // Check if SQL version is given
-                            List<String> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "sqlVersion", null));
-                            if (sqlVersion.isEmpty()) {
-                                throw new Error("No SQL version identifier detected.");
-                            }
-                            return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, table);
-                        case NAMESPACES.SD + "Service":  // SPARQL
-                            // Check if SPARQL Endpoint is given
-                            List<String> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.SD + "endpoint", null));
-                            if (endpoint.isEmpty()) {
-                                throw new Error("No SPARQL endpoint detected.");
-                            }
-                            return sparqlRecords(rmlStore, source, logicalSource, triplesMap, endpoint.get(0), iterators);
-                        default:
-                            throw new NotImplementedException();
+                        sparqlResultFormat = getSPARQLResultFormat(resultFormat, referenceFormulations);
 
+                        referenceFormulations = new ArrayList<>();
+                        referenceFormulations.add(0, sparqlResultFormat.getReferenceFormulation());
+                    } else {
+                        throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
                     }
                 }
             }
+
+            String source;
+            if (Utils.isLiteral(sources.get(0))) {
+                source = Utils.getLiteral(sources.get(0));
+
+                switch(referenceFormulations.get(0)) {
+                    case NAMESPACES.QL + "CSV":
+                        return getCSVRecords(source);
+                    case NAMESPACES.QL + "XPath":
+                        return getXMLRecords(source, iterators, triplesMap);
+                    case NAMESPACES.QL + "JSONPath":
+                        return getJSONRecords(source, iterators, triplesMap);
+                    default:
+                        throw new NotImplementedException();
+
+                }
+
+            } else {
+                source = sources.get(0);
+
+                List<String> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.RDF + "type", null));
+                switch(sourceType.get(0)) {
+                    case NAMESPACES.D2RQ + "Database":  // RDBs
+                        // Check if SQL version is given
+                        List<String> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "sqlVersion", null));
+                        if (sqlVersion.isEmpty()) {
+                            throw new Error("No SQL version identifier detected.");
+                        }
+                        return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, table);
+                    case NAMESPACES.SD + "Service":  // SPARQL
+                        // Check if SPARQL Endpoint is given
+                        List<String> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.SD + "endpoint", null));
+                        if (endpoint.isEmpty()) {
+                            throw new Error("No SPARQL endpoint detected.");
+                        }
+                        return sparqlRecords(rmlStore, source, logicalSource, triplesMap, endpoint.get(0), iterators, referenceFormulations, sparqlResultFormat);
+                    default:
+                        throw new NotImplementedException();
+
+                }
+            }
+
         } else {
             throw new Error("No Logical Source is found for " + triplesMap + ". Exact one Logical Source is required per Triples Map.");
         }
@@ -227,7 +239,8 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> sparqlRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap, String endpoint, List<String> iterators) {
+    private List<Record> sparqlRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap,
+                                       String endpoint, List<String> iterators, List<String> referenceFormulations, SPARQL.ResultFormat resultFormat) {
         if (!iterators.isEmpty()) {
 
             // Get query
@@ -238,17 +251,24 @@ public class RecordsFactory {
             String qs = query.get(0).replaceAll("\n", " ").trim();
             qs = Utils.getLiteral(qs);
 
+            // Get result format if not received
+            if (resultFormat == null) {
+                List<String> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.SD + "resultFormat", null));
+                resultFormat = getSPARQLResultFormat(resultFormatObject, referenceFormulations);
+            }
+
+            // Get iterator
             String iterator = Utils.getLiteral(iterators.get(0));
 
             // Create key to save in records map
-            // TODO: choose a better key
+            // TODO: choose/discuss a better key
             int key = Utils.getHash(qs);
 
             if (allSPARQLRecords.containsKey(source) && allSPARQLRecords.get(source).containsKey(key)) {
                 return allSPARQLRecords.get(source).get(key);
             } else {
                 SPARQL sparql = new SPARQL();
-                List<Record> records = sparql.get(endpoint, qs, iterator);
+                List<Record> records = sparql.get(endpoint, qs, iterator, resultFormat);
 
                 if (allSPARQLRecords.containsKey(source)) {
                     allSPARQLRecords.get(source).put(key, records);
@@ -261,6 +281,38 @@ public class RecordsFactory {
             }
         } else {
             throw new Error("The Logical Source of " + triplesMap + " does not have iterator, while this is expected for SPARQL.");
+        }
+    }
+
+    private SPARQL.ResultFormat getSPARQLResultFormat(List<String> resultFormat, List<String> referenceFormulation) {
+        if (resultFormat.isEmpty() && referenceFormulation.isEmpty()) {     // This will never be called atm but may come in handy later
+            return SPARQL.ResultFormat.NOT_SPECIFIED;
+            //throw new Error("Please specify the sd:resultFormat of the SPARQL endpoint or a rml:referenceFormulation.");
+        } else if (referenceFormulation.isEmpty()) {
+            for (SPARQL.ResultFormat format: SPARQL.ResultFormat.values()) {
+                if (resultFormat.get(0).equals(format.getUri())) {
+                    return format;
+                }
+            }
+
+            // No matching SPARQL.ResultFormat found
+            throw new Error("Unsupported sd:resultFormat: " + resultFormat.get(0));
+        } else if (resultFormat.isEmpty()) {
+            for (SPARQL.ResultFormat format: SPARQL.ResultFormat.values()) {
+                if (referenceFormulation.get(0).equals(format.getReferenceFormulation())) {
+                    return format;
+                }
+            }
+
+            // No matching SPARQL.ResultFormat found
+            throw new Error("Unsupported rml:referenceFormulation for a SPARQL source.");
+        } else {
+            for (SPARQL.ResultFormat format : SPARQL.ResultFormat.values()) {
+                if (resultFormat.get(0).equals(format.getUri()) && referenceFormulation.get(0).equals(format.getReferenceFormulation())) {
+                    return format;
+                }
+            }
+            throw new Error("Format specified in sd:resultFormat doesn't match the format specified in rml:referenceFormulation.");
         }
     }
 }

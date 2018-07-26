@@ -12,21 +12,20 @@
     a sd:Service ;
     sd:endpoint <http://localhost:PORT/ds1/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query ;
-    sd:resultFormat <http://www.w3.org/ns/formats/data/SPARQL_Results_XML> .
+    sd:resultFormat <http://www.w3.org/ns/formats/SPARQL_Results_XML> .
 
 <#InputSPARQL2>
     a sd:Service ;
     sd:endpoint <http://localhost:PORT/ds2/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query ;
-    sd:resultFormat <http://www.w3.org/ns/formats/data/SPARQL_Results_XML> .
+    sd:resultFormat <http://www.w3.org/ns/formats/SPARQL_Results_XML> .
 
 <TriplesMap1>
   a rr:TriplesMap;
 
   rml:logicalSource [
           rml:source <#InputSPARQL1>;
-          rml:referenceFormulation ql:JSONPath;
-          rml:iterator "$.results.bindings[*]";
+          rml:iterator "/sparql/results/result";
           rml:query """
               PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
               PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -42,11 +41,11 @@
       ];
 
 
-  rr:subjectMap [ rr:template "http://example.com/resource/student_{ID.value}" ];
+  rr:subjectMap [ rr:template "http://example.com/resource/student_{ID}" ];
 
     rr:predicateObjectMap [
       rr:predicate foaf:name ;
-      rr:objectMap [ rml:reference "Name.value" ]
+      rr:objectMap [ rml:reference "Name" ]
     ] ;
 
     rr:predicateObjectMap [
@@ -55,8 +54,8 @@
         a rr:RefObjectMap ;
         rr:parentTriplesMap <TriplesMap2>;
         rr:joinCondition [
-          rr:child "Sport.value" ;
-          rr:parent "ID.value" ;
+          rr:child "Sport" ;
+          rr:parent "ID" ;
         ]
       ]
     ] .
@@ -66,8 +65,7 @@
 
   rml:logicalSource [
             rml:source <#InputSPARQL2>;
-            rml:referenceFormulation ql:JSONPath;
-            rml:iterator "$.results.bindings[*]";
+            rml:iterator "/sparql/results/result";
             rml:query """
                 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -79,9 +77,9 @@
                 } """
         ];
 
-  rr:subjectMap [ rr:template "http://example.com/resource/sport_{ID.value}" ];
+  rr:subjectMap [ rr:template "http://example.com/resource/sport_{ID}" ];
 
     rr:predicateObjectMap [
       rr:predicate rdfs:label ;
-      rr:objectMap [ rml:reference "Name.value" ];
+      rr:objectMap [ rml:reference "Name" ];
     ].
