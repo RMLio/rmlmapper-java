@@ -30,12 +30,13 @@ public class XMLRecord implements Record {
         try {
             NodeList result = (NodeList) xPath.compile(value).evaluate(node, XPathConstants.NODESET);
 
-            if (result.getLength() == 0) {  // try with attributes
+            if (result.getLength() == 0) {  // try with attributes (e.g. SPARQL works like this)
                 NodeList childNodes = node.getChildNodes();
                 Node bindingNode = null;
                 int i = 0;
                 while (bindingNode == null && i < childNodes.getLength()) {
                     if (childNodes.item(i).getNodeName().equals("binding")) {
+
                         // Check if "name" attribute matches with required value
                         NamedNodeMap attributes = childNodes.item(i).getAttributes();
                         Node nameAttribute = attributes.getNamedItem("name");
@@ -53,9 +54,7 @@ public class XMLRecord implements Record {
                 }
             }
 
-
             for (int i = 0; i < result.getLength(); i ++) {
-                Node item = result.item(i);
                 results.add(result.item(i).getTextContent());
             }
         } catch (XPathExpressionException e) {
