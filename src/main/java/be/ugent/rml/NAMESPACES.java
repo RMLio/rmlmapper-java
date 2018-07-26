@@ -1,6 +1,6 @@
 package be.ugent.rml;
 
-public class    NAMESPACES {
+public class NAMESPACES {
 
     public static final String RML = "http://semweb.mmlab.be/ns/rml#";
     public static final String RR = "http://www.w3.org/ns/r2rml#";
