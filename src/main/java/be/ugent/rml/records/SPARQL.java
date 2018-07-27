@@ -2,62 +2,70 @@ package be.ugent.rml.records;
 
 import be.ugent.rml.Utils;
 import org.apache.jena.query.*;
+import org.eclipse.rdf4j.query.resultio.UnsupportedQueryResultFormatException;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SPARQL {
 
+    // The first referenceFormulation is seen as default
     public enum ResultFormat {
-        NOT_SPECIFIED ("Not specified", "", "", ""),
-        XML ("XML", "http://www.w3.org/ns/formats/SPARQL_Results_XML", "application/sparql-results+xml", "http://semweb.mmlab.be/ns/ql#XPath"),
-        JSON ("JSON", "http://www.w3.org/ns/formats/SPARQL_Results_JSON", "application/sparql-results+json", "http://semweb.mmlab.be/ns/ql#JSONPath"),
-        CSV ("CSV", "http://www.w3.org/ns/formats/SPARQL_Results_CSV", "text/csv", "http://semweb.mmlab.be/ns/ql#CSV");
+        XML ("XML", "http://www.w3.org/ns/formats/SPARQL_Results_XML", "application/sparql-results+xml",
+                // referenceFormulations:
+                "http://semweb.mmlab.be/ns/ql#XPath"
+        ),
+        JSON ("JSON", "http://www.w3.org/ns/formats/SPARQL_Results_JSON", "application/sparql-results+json",
+                // referenceFormulations:
+                "http://semweb.mmlab.be/ns/ql#JSONPath"
+        ),
+        CSV ("CSV", "http://www.w3.org/ns/formats/SPARQL_Results_CSV", "text/csv",
+                // referenceFormulations:
+                "http://semweb.mmlab.be/ns/ql#CSV"
+        );
 
         private final String name;
         private final String uri;
         private final String mediaType;
-        private final String referenceFormulation;
+        private final String[] referenceFormulations;
 
 
-        private ResultFormat(String name, String uri, String mediaType, String referenceFormulation) {
+        private ResultFormat(String name, String uri, String mediaType, String... referenceFormulations) {
             this.name = name;
             this.uri = uri;
             this.mediaType = mediaType;
-            this.referenceFormulation = referenceFormulation;
+            this.referenceFormulations = referenceFormulations;
         }
 
         public String getUri() { return uri; }
 
         public String getMediaType() { return mediaType; }
 
-        public String getReferenceFormulation() { return referenceFormulation; }
+        public String[] getReferenceFormulations() { return referenceFormulations; }
 
         public String toString() {
             return this.name;
         }
     }
 
-    public List<Record> get(String endpoint, String qs, String iterator, ResultFormat resultFormat) {
+    // referenceFormulation given because we might it them later for referenceFormulation specific implementations
+    public List<Record> get(String endpoint, String qs, String iterator, ResultFormat resultFormat, String referenceFormulation) {
         switch(resultFormat) {
             case XML:
-                return getXMLRecords(endpoint, qs, iterator);
+                return getXMLRecords(endpoint, qs, iterator, referenceFormulation);
             case JSON:
-                return getJSONRecords(endpoint, qs, iterator);
+                return getJSONRecords(endpoint, qs, iterator, referenceFormulation);
             case CSV:
-                return getCSVRecords(endpoint, qs, iterator);
+                return getCSVRecords(endpoint, qs, iterator, referenceFormulation);
             default:
-                return getNotSpecifiedRecords(endpoint, qs, iterator);
+                throw new UnsupportedQueryResultFormatException("Format with URI: " + resultFormat.getUri() + " not recognised.");
         }
     }
 
-    private List<Record> getXMLRecords(String endpoint, String qs, String iterator) {
+    private List<Record> getXMLRecords(String endpoint, String qs, String iterator, String referenceFormulation) {
         String content = getSPARQLResults(endpoint, qs, ResultFormat.XML);
         XML xml = new XML();
         try {
@@ -67,7 +75,7 @@ public class SPARQL {
         }
     }
 
-    private List<Record> getJSONRecords(String endpoint, String qs, String iterator) {
+    private List<Record> getJSONRecords(String endpoint, String qs, String iterator, String referenceFormulation) {
         String content = getSPARQLResults(endpoint, qs, ResultFormat.JSON);
         JSON json = new JSON();
         try {
@@ -77,7 +85,7 @@ public class SPARQL {
         }
     }
 
-    private List<Record> getCSVRecords(String endpoint, String qs, String iterator) {
+    private List<Record> getCSVRecords(String endpoint, String qs, String iterator, String referenceFormulation) {
         String content = getSPARQLResults(endpoint, qs, ResultFormat.CSV);
         CSV csv = new CSV();
         try {
@@ -85,33 +93,6 @@ public class SPARQL {
         } catch (IOException ex) {
             throw new Error("Could not convert XML into XMLRecords. Error message: " + ex.getMessage());
         }
-    }
-
-    // NS = Not Specified
-    private List<Record> getNotSpecifiedRecords(String endpoint, String qs, String iterator) {
-        List<Record> records = new ArrayList<>();
-        try {
-            Query query = QueryFactory.create(qs);
-            QueryExecution exec = QueryExecutionFactory.sparqlService(endpoint, query);
-
-            ResultSet results = exec.execSelect();
-
-            // Convert ResultSet to JSON
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ResultSetFormatter.outputAsJSON(outputStream, results);
-
-            try {
-                JSON json = new JSON();
-                records = json._get(new ByteArrayInputStream(outputStream.toByteArray()), iterator);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-
-            return records;
-        } catch (Exception ex) {
-            throw new Error("Could not get SPARQL records. Error message: " + ex.getMessage());
-        }
-
     }
 
     private String getSPARQLResults(String endpoint, String qs, ResultFormat resultFormat) {

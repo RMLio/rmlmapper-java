@@ -8,10 +8,7 @@ import be.ugent.rml.store.QuadStore;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RecordsFactory {
 
@@ -52,7 +49,7 @@ public class RecordsFactory {
                     referenceFormulations = new ArrayList<>();
                     referenceFormulations.add(0, NAMESPACES.QL + "CSV");
                 } else {
-                    // If no rml:referenceFormulation is given, but a sd:resultFormat is given --> same type
+                    // If no rml:referenceFormulation is given, but a sd:resultFormat is given --> use default rml:referenceFormulation for that format
                     List<String> resultFormat;
                     if (! Utils.isLiteral(sources.get(0)) && !(resultFormat =
                              Utils.getObjectsFromQuads(rmlStore.getQuads(sources.get(0), NAMESPACES.SD + "resultFormat", null))).isEmpty()) {
@@ -60,7 +57,7 @@ public class RecordsFactory {
                         sparqlResultFormat = getSPARQLResultFormat(resultFormat, referenceFormulations);
 
                         referenceFormulations = new ArrayList<>();
-                        referenceFormulations.add(0, sparqlResultFormat.getReferenceFormulation());
+                        referenceFormulations.add(0, sparqlResultFormat.getReferenceFormulations()[0]);
                     } else {
                         throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
                     }
@@ -268,7 +265,7 @@ public class RecordsFactory {
                 return allSPARQLRecords.get(source).get(key);
             } else {
                 SPARQL sparql = new SPARQL();
-                List<Record> records = sparql.get(endpoint, qs, iterator, resultFormat);
+                List<Record> records = sparql.get(endpoint, qs, iterator, resultFormat, referenceFormulations.get(0));
 
                 if (allSPARQLRecords.containsKey(source)) {
                     allSPARQLRecords.get(source).put(key, records);
@@ -286,29 +283,29 @@ public class RecordsFactory {
 
     private SPARQL.ResultFormat getSPARQLResultFormat(List<String> resultFormat, List<String> referenceFormulation) {
         if (resultFormat.isEmpty() && referenceFormulation.isEmpty()) {     // This will never be called atm but may come in handy later
-            return SPARQL.ResultFormat.NOT_SPECIFIED;
-            //throw new Error("Please specify the sd:resultFormat of the SPARQL endpoint or a rml:referenceFormulation.");
+            throw new Error("Please specify the sd:resultFormat of the SPARQL endpoint or a rml:referenceFormulation.");
         } else if (referenceFormulation.isEmpty()) {
             for (SPARQL.ResultFormat format: SPARQL.ResultFormat.values()) {
                 if (resultFormat.get(0).equals(format.getUri())) {
                     return format;
                 }
             }
-
             // No matching SPARQL.ResultFormat found
             throw new Error("Unsupported sd:resultFormat: " + resultFormat.get(0));
+
         } else if (resultFormat.isEmpty()) {
             for (SPARQL.ResultFormat format: SPARQL.ResultFormat.values()) {
-                if (referenceFormulation.get(0).equals(format.getReferenceFormulation())) {
+                if (Arrays.asList(format.getReferenceFormulations()).contains(referenceFormulation.get(0))) {
                     return format;
                 }
             }
-
             // No matching SPARQL.ResultFormat found
             throw new Error("Unsupported rml:referenceFormulation for a SPARQL source.");
+
         } else {
             for (SPARQL.ResultFormat format : SPARQL.ResultFormat.values()) {
-                if (resultFormat.get(0).equals(format.getUri()) && referenceFormulation.get(0).equals(format.getReferenceFormulation())) {
+                if (resultFormat.get(0).equals(format.getUri())
+                        && Arrays.asList(format.getReferenceFormulations()).contains(referenceFormulation.get(0))) {
                     return format;
                 }
             }
