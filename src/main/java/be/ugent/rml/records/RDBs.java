@@ -1,6 +1,7 @@
 package be.ugent.rml.records;
 
 import be.ugent.rml.DatabaseType;
+import be.ugent.rml.NAMESPACES;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,8 @@ public class RDBs  {
         This method adds the "jdbc:XXX://" prefix to the given dsn. This way the caller of this function doesn't need
         to take JDBC specific details into account.
      */
-    public List<Record> get(String dsn, DatabaseType.Database database, String username, String password, String query) {
+    public List<Record> get(String dsn, DatabaseType.Database database, String username, String password, String query,
+                            String referenceFormulation) {
         // List containing generated records
         List<Record> records = new ArrayList<>();
 
@@ -47,10 +49,15 @@ public class RDBs  {
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
-            if (query.contains("FOR XML")) {
-                records = getRecordsFromXML(rs);
-            } else {
-                records = getRecordsFromResultSet(rs);
+            switch(referenceFormulation) {
+                case NAMESPACES.QL + "CSV":
+                    records = getCSVRecords(rs);
+                    break;
+                case NAMESPACES.QL + "XPath":
+                    records = getXMLRecords(rs);
+                    break;
+                default:
+                    throw new Error("Unsupported rml:referenceFormulation for RDB source.");
             }
 
             // Clean-up environment
@@ -85,7 +92,7 @@ public class RDBs  {
     }
 
 
-    private List<Record> getRecordsFromResultSet(ResultSet rs) throws SQLException {
+    private List<Record> getCSVRecords(ResultSet rs) throws SQLException {
         List<Record> records = new ArrayList<>();
         // Get number of requested columns
         ResultSetMetaData rsmd = rs.getMetaData();
@@ -104,12 +111,13 @@ public class RDBs  {
                 values.put(columnName, temp);
             }
 
-            records.add(new RDBsRecord(values));
+            records.add(new CSVRecord(values));
         }
         return records;
     }
 
-    private List<Record> getRecordsFromXML(ResultSet rs) throws SQLException {
-        return null;
+    private List<Record> getXMLRecords(ResultSet rs) throws SQLException {
+        // todo: implement this
+        return getCSVRecords(rs);
     }
 }

@@ -80,7 +80,7 @@ public class RecordsFactory {
                             if (sqlVersion.isEmpty()) {
                                 throw new Error("No SQL version identifier detected.");
                             }
-                            return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, table);
+                            return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, table, referenceFormulations);
                         default:
                             throw new NotImplementedException();
 
@@ -165,7 +165,8 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> getRDBsRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap, List<String> table) {
+    private List<Record> getRDBsRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap,
+                                        List<String> table, List<String> referenceFormulations) {
         // Retrieve database information from source object
 
         // - Driver URL
@@ -218,7 +219,7 @@ public class RecordsFactory {
             return allRDBsRecords.get(source).get(queryHash);
         } else {
             RDBs rdbs = new RDBs();
-            return rdbs.get(dsn, database, username, password, query);
+            return rdbs.get(dsn, database, username, password, query, referenceFormulations.get(0));
         }
     }
 }
