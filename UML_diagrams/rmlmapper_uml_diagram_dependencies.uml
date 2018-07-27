@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>be.ugent.rml</OriginalElement>
+  <nodes>
+    <node x="145.375" y="447.0">be.ugent.rml.ValuedJoinCondition</node>
+    <node x="1452.2041937229433" y="447.0">be.ugent.rml.store.Quad</node>
+    <node x="2423.831097432425" y="834.0">be.ugent.rml.records.XML</node>
+    <node x="1317.4169135857387" y="685.0">be.ugent.rml.store.RDF4JStore</node>
+    <node x="772.0972202519126" y="993.0">be.ugent.rml.MappingFactory</node>
+    <node x="750.5" y="1365.0">be.ugent.rml.functions.lib.GrelProcessor</node>
+    <node x="917.7823593073591" y="546.0">be.ugent.rml.functions.ApplyTemplateFunction</node>
+    <node x="526.4731660971903" y="546.0">be.ugent.rml.TripleElement</node>
+    <node x="2153.541623748214" y="834.0">be.ugent.rml.records.SPARQL.ResultFormat</node>
+    <node x="309.5" y="1523.0">be.ugent.rml.MyFileUtils</node>
+    <node x="2775.831097432425" y="447.0">be.ugent.rml.records.RDBsRecord</node>
+    <node x="844.0283609023851" y="447.0">be.ugent.rml.functions.Function</node>
+    <node x="2340.3232076037993" y="158.0">be.ugent.rml.records.Record</node>
+    <node x="2242.488958995625" y="447.0">be.ugent.rml.records.CSVRecord</node>
+    <node x="2471.831097432425" y="685.0">be.ugent.rml.records.IteratorFormat</node>
+    <node x="2802.673169521941" y="993.0">be.ugent.rml.records.RDBs</node>
+    <node x="411.5583333333334" y="79.0">be.ugent.rml.TemplateElement</node>
+    <node x="1647.0876763797933" y="834.0">be.ugent.rml.NAMESPACES</node>
+    <node x="2895.831097432425" y="685.0">be.ugent.rml.DatabaseType.Database</node>
+    <node x="2402.331097432425" y="447.0">be.ugent.rml.records.XMLRecord</node>
+    <node x="1462.065780857973" y="685.0">be.ugent.rml.functions.lib.UtilFunctions</node>
+    <node x="2302.541623748214" y="834.0">be.ugent.rml.records.CSV</node>
+    <node x="2867.673169521941" y="834.0">be.ugent.rml.DatabaseType</node>
+    <node x="1665.0350116272039" y="1291.0">be.ugent.rml.Executor</node>
+    <node x="1492.8503962425884" y="1142.0">be.ugent.rml.Initializer</node>
+    <node x="624.48455427838" y="685.0">be.ugent.rml.PredicateObject</node>
+    <node x="2628.831097432425" y="447.0">be.ugent.rml.records.JSONRecord</node>
+    <node x="1810.5251763797933" y="685.0">be.ugent.rml.store.SimpleQuadStore</node>
+    <node x="304.0" y="1365.0">be.ugent.rml.MyFileUtils.FileResource</node>
+    <node x="1465.3541937229434" y="834.0">be.ugent.rml.functions.FunctionLoader</node>
+    <node x="2010.5416237482143" y="685.0">be.ugent.rml.DataFetcher</node>
+    <node x="349.3083333333334" y="447.0">be.ugent.rml.JoinCondition</node>
+    <node x="543.5" y="1365.0">be.ugent.rml.functions.lib.GrelTestProcessor</node>
+    <node x="689.4731660971903" y="546.0">be.ugent.rml.functions.JoinConditionFunction</node>
+    <node x="479.5583333333334" y="158.0">be.ugent.rml.Template</node>
+    <node x="1222.8035725529903" y="546.0">be.ugent.rml.store.TriplesQuads</node>
+    <node x="0.0" y="1444.0">be.ugent.rml.MyFileUtils.URLClassLoaderFileResource</node>
+    <node x="2345.5086958377306" y="1142.0">be.ugent.rml.records.RecordsFactory</node>
+    <node x="23.375" y="834.0">be.ugent.rml.Mapping</node>
+    <node x="951.6414502164502" y="158.0">be.ugent.rml.functions.FunctionModel</node>
+    <node x="2344.166623748214" y="993.0">be.ugent.rml.records.SPARQL</node>
+    <node x="244.99999999999997" y="1444.0">be.ugent.rml.MyFileUtils.ClasspathResourceFileResource</node>
+    <node x="476.6833333333334" y="0.0">be.ugent.rml.TEMPLATETYPE</node>
+    <node x="2578.6166478347513" y="834.0">be.ugent.rml.records.JSON</node>
+    <node x="1589.724523393273" y="546.0">be.ugent.rml.store.QuadStore</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="be.ugent.rml.functions.JoinConditionFunction" target="be.ugent.rml.Template">
+      <point x="-70.5" y="-14.5" />
+      <point x="712.9731660971903" y="496.0" />
+      <point x="735.338125706951" y="496.0" />
+      <point x="735.338125706951" y="387.0" />
+      <point x="559.2916666666665" y="387.0" />
+      <point x="27.73333333333312" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.records.CSV">
+      <point x="-22.736842105263236" y="-14.5" />
+      <point x="2394.771853732467" y="1062.0" />
+      <point x="2311.4455187646736" y="1062.0" />
+      <point x="-27.75" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.TripleElement" target="be.ugent.rml.Template">
+      <point x="-49.125" y="-14.5" />
+      <point x="542.8481660971903" y="526.0" />
+      <point x="553.7231660971903" y="526.0" />
+      <point x="553.7231660971903" y="427.0" />
+      <point x="531.5583333333334" y="427.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.FunctionLoader" target="be.ugent.rml.functions.lib.UtilFunctions">
+      <point x="20.57142857142867" y="-14.5" />
+      <point x="1557.9256222943718" y="774.0" />
+      <point x="1527.065780857973" y="774.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.functions.Function">
+      <point x="10.02272727272748" y="-14.5" />
+      <point x="855.6199475246401" y="883.0" />
+      <point x="900.6005411255411" y="883.0" />
+      <point x="900.6005411255411" y="516.0" />
+      <point x="895.0283609023851" y="516.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.JoinConditionFunction" target="be.ugent.rml.functions.FunctionModel">
+      <point x="-23.5" y="-14.5" />
+      <point x="759.9731660971903" y="277.0" />
+      <point x="960.3289502164502" y="277.0" />
+      <point x="-60.8125" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.NAMESPACES">
+      <point x="3.21875" y="-14.5" />
+      <point x="1719.7537616272039" y="1201.0" />
+      <point x="1732.0876763797933" y="1201.0" />
+      <point x="17.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.records.Record">
+      <point x="28.96875" y="-14.5" />
+      <point x="1745.5037616272039" y="1241.0" />
+      <point x="1975.0251763797933" y="1241.0" />
+      <point x="1975.0251763797933" y="347.0" />
+      <point x="2357.0863654985365" y="347.0" />
+      <point x="-28.736842105263122" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.functions.FunctionModel">
+      <point x="30.068181818181984" y="-14.5" />
+      <point x="875.6654020700946" y="913.0" />
+      <point x="1129.044567612342" y="913.0" />
+      <point x="1129.044567612342" y="237.0" />
+      <point x="1029.8289502164503" y="237.0" />
+      <point x="8.6875" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.records.XML">
+      <point x="7.578947368421041" y="-14.5" />
+      <point x="2425.0876432061514" y="1042.0" />
+      <point x="2476.291623748214" y="1042.0" />
+      <point x="2476.291623748214" y="953.0" />
+      <point x="2470.706097432425" y="953.0" />
+      <point x="9.375" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.ValuedJoinCondition" target="be.ugent.rml.Template">
+      <point x="-44.0" y="-14.5" />
+      <point x="189.375" y="367.0" />
+      <point x="483.0250000000001" y="367.0" />
+      <point x="-48.5333333333333" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.JSONRecord" target="be.ugent.rml.records.Record">
+      <point x="0.0" y="-14.5" />
+      <point x="2691.831097432425" y="387.0" />
+      <point x="2414.5600497090627" y="387.0" />
+      <point x="28.736842105263122" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RDBs" target="be.ugent.rml.DatabaseType.Database">
+      <point x="10.125" y="-14.5" />
+      <point x="2853.298169521941" y="973.0" />
+      <point x="2857.173169521941" y="973.0" />
+      <point x="2857.173169521941" y="814.0" />
+      <point x="2913.331097432425" y="814.0" />
+      <point x="-35.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.functions.JoinConditionFunction">
+      <point x="3.3409090909090082" y="-14.5" />
+      <point x="848.9381293428216" y="973.0" />
+      <point x="850.416913585739" y="973.0" />
+      <point x="850.416913585739" y="655.0" />
+      <point x="858.6731660971901" y="655.0" />
+      <point x="75.19999999999982" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Template" target="be.ugent.rml.TemplateElement">
+      <point x="0.0" y="-14.5" />
+      <point x="531.5583333333334" y="133.0" />
+      <point x="539.0583333333334" y="133.0" />
+      <point x="51.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.DataFetcher" target="be.ugent.rml.store.QuadStore">
+      <point x="-45.75" y="-14.5" />
+      <point x="2025.7916237482143" y="625.0" />
+      <point x="1690.570677239427" y="625.0" />
+      <point x="43.84615384615381" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.XML" target="be.ugent.rml.records.XMLRecord">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RDBs" target="be.ugent.rml.records.RDBsRecord">
+      <point x="-10.125" y="-14.5" />
+      <point x="2833.048169521941" y="973.0" />
+      <point x="2837.831097432425" y="973.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.NAMESPACES">
+      <point x="-68.21052631578948" y="-14.5" />
+      <point x="2349.298169521941" y="1122.0" />
+      <point x="1992.4626763797933" y="1122.0" />
+      <point x="1992.4626763797933" y="973.0" />
+      <point x="1766.0876763797933" y="973.0" />
+      <point x="51.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.SPARQL" target="be.ugent.rml.records.SPARQL.ResultFormat">
+      <point x="-42.875" y="-14.5" />
+      <point x="2350.291623748214" y="973.0" />
+      <point x="2250.291623748214" y="973.0" />
+      <point x="32.25" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Initializer" target="be.ugent.rml.store.QuadStore">
+      <point x="25.5" y="-14.5" />
+      <point x="1569.3503962425884" y="1102.0" />
+      <point x="1626.3876763797932" y="1102.0" />
+      <point x="1626.3876763797932" y="655.0" />
+      <point x="1637.9552926240422" y="655.0" />
+      <point x="-8.769230769230717" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.TemplateElement" target="be.ugent.rml.TEMPLATETYPE">
+      <point x="38.25" y="-14.5" />
+      <point x="526.3083333333334" y="54.0" />
+      <point x="532.1833333333334" y="54.0" />
+      <point x="-18.5" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.functions.FunctionLoader">
+      <point x="-3.21875" y="-14.5" />
+      <point x="1713.3162616272039" y="1191.0" />
+      <point x="1725.6501763797933" y="1191.0" />
+      <point x="1725.6501763797933" y="963.0" />
+      <point x="1597.3541937229434" y="963.0" />
+      <point x="60.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.PredicateObject">
+      <point x="-41.84375" y="-14.5" />
+      <point x="1674.6912616272039" y="1261.0" />
+      <point x="6.4375" y="1261.0" />
+      <point x="6.4375" y="754.0" />
+      <point x="636.5678876117134" y="754.0" />
+      <point x="-60.416666666666515" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MyFileUtils.ClasspathResourceFileResource" target="be.ugent.rml.MyFileUtils.FileResource">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MyFileUtils" target="be.ugent.rml.MyFileUtils.FileResource">
+      <point x="37.99999999999999" y="-14.5" />
+      <point x="404.5" y="1498.0" />
+      <point x="498.5" y="1498.0" />
+      <point x="498.5" y="1419.0" />
+      <point x="408.16666666666663" y="1419.0" />
+      <point x="41.66666666666663" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.CSV" target="be.ugent.rml.records.Record">
+      <point x="18.5" y="-14.5" />
+      <point x="2358.041623748214" y="814.0" />
+      <point x="2369.988958995625" y="814.0" />
+      <point x="2369.988958995625" y="407.0" />
+      <point x="2385.8232076037993" y="407.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.XML" target="be.ugent.rml.records.Record">
+      <point x="-25.0" y="-14.5" />
+      <point x="2436.331097432425" y="814.0" />
+      <point x="2391.831097432425" y="814.0" />
+      <point x="2391.831097432425" y="427.0" />
+      <point x="2395.4021549722206" y="427.0" />
+      <point x="9.57894736842104" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Template" target="be.ugent.rml.TEMPLATETYPE">
+      <point x="34.666666666666515" y="-14.5" />
+      <point x="566.2249999999999" y="133.0" />
+      <point x="575.0583333333333" y="133.0" />
+      <point x="575.0583333333333" y="54.0" />
+      <point x="569.1833333333334" y="54.0" />
+      <point x="18.5" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.JSON" target="be.ugent.rml.records.IteratorFormat">
+      <point x="-31.125" y="-14.5" />
+      <point x="2588.9916478347513" y="814.0" />
+      <point x="2539.831097432425" y="814.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.records.JSON">
+      <point x="30.315789473684163" y="-14.5" />
+      <point x="2447.8244853114147" y="1072.0" />
+      <point x="2644.6561215189618" y="1072.0" />
+      <point x="2644.6561215189618" y="973.0" />
+      <point x="2651.2416478347513" y="973.0" />
+      <point x="31.125" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Initializer" target="be.ugent.rml.Mapping">
+      <point x="-35.700000000000045" y="-14.5" />
+      <point x="1508.1503962425886" y="1112.0" />
+      <point x="78.97499999999991" y="1112.0" />
+      <point x="78.97499999999991" y="973.0" />
+      <point x="82.29166666666652" y="973.0" />
+      <point x="8.416666666666515" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.ApplyTemplateFunction" target="be.ugent.rml.functions.Function">
+      <point x="-72.37499999999977" y="-14.5" />
+      <point x="941.9073593073593" y="516.0" />
+      <point x="924.1712180452424" y="516.0" />
+      <point x="29.142857142857338" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.DatabaseType">
+      <point x="53.0526315789474" y="-14.5" />
+      <point x="2470.5613274166776" y="1102.0" />
+      <point x="2968.923169521941" y="1102.0" />
+      <point x="33.75" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.store.TriplesQuads" target="be.ugent.rml.store.Quad">
+      <point x="-32.25" y="-14.5" />
+      <point x="1255.0535725529903" y="496.0" />
+      <point x="1457.2666937229433" y="496.0" />
+      <point x="-35.4375" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.Template">
+      <point x="-48.28125" y="-14.5" />
+      <point x="1668.2537616272039" y="1271.0" />
+      <point x="0.0" y="1271.0" />
+      <point x="0.0" y="526.0" />
+      <point x="331.875" y="526.0" />
+      <point x="331.875" y="387.0" />
+      <point x="496.8916666666669" y="387.0" />
+      <point x="-34.666666666666515" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MyFileUtils.URLClassLoaderFileResource" target="be.ugent.rml.MyFileUtils.FileResource">
+      <point x="0.0" y="-14.5" />
+      <point x="112.5" y="1419.0" />
+      <point x="324.83333333333326" y="1419.0" />
+      <point x="-41.666666666666686" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.DataFetcher">
+      <point x="-45.47368421052636" y="-14.5" />
+      <point x="2372.035011627204" y="1092.0" />
+      <point x="2087.1126812880098" y="1092.0" />
+      <point x="2087.1126812880098" y="814.0" />
+      <point x="2102.041623748214" y="814.0" />
+      <point x="30.5" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.ApplyTemplateFunction" target="be.ugent.rml.Template">
+      <point x="24.125000000000227" y="-14.5" />
+      <point x="1038.4073593073595" y="526.0" />
+      <point x="1057.0323593073595" y="526.0" />
+      <point x="1057.0323593073595" y="247.0" />
+      <point x="580.0916666666667" y="247.0" />
+      <point x="48.5333333333333" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.FunctionLoader" target="be.ugent.rml.store.RDF4JStore">
+      <point x="0.0" y="-14.5" />
+      <point x="1537.3541937229434" y="784.0" />
+      <point x="1377.4169135857387" y="784.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.CSV" target="be.ugent.rml.records.CSVRecord">
+      <point x="-18.5" y="-14.5" />
+      <point x="2321.041623748214" y="814.0" />
+      <point x="2300.988958995625" y="814.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.functions.ApplyTemplateFunction">
+      <point x="23.386363636363512" y="-14.5" />
+      <point x="868.9835838882761" y="903.0" />
+      <point x="1014.2823593073591" y="903.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.store.SimpleQuadStore" target="be.ugent.rml.store.Quad">
+      <point x="-19.25" y="-14.5" />
+      <point x="1868.2751763797933" y="665.0" />
+      <point x="1893.9159899400142" y="665.0" />
+      <point x="1893.9159899400142" y="516.0" />
+      <point x="1507.8916937229433" y="516.0" />
+      <point x="15.1875" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.XMLRecord" target="be.ugent.rml.records.Record">
+      <point x="0.0" y="-14.5" />
+      <point x="2461.331097432425" y="417.0" />
+      <point x="2400.191628656431" y="417.0" />
+      <point x="14.368421052631561" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.IteratorFormat" target="be.ugent.rml.records.Record">
+      <point x="0.0" y="-14.5" />
+      <point x="2539.831097432425" y="407.0" />
+      <point x="2404.9811023406414" y="407.0" />
+      <point x="19.15789473684208" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.TemplateElement">
+      <point x="-56.795454545454504" y="-14.5" />
+      <point x="788.8017657064581" y="953.0" />
+      <point x="134.875" y="953.0" />
+      <point x="134.875" y="133.0" />
+      <point x="437.0583333333334" y="133.0" />
+      <point x="-51.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.Initializer">
+      <point x="-16.09375" y="-14.5" />
+      <point x="1700.4412616272039" y="1221.0" />
+      <point x="1518.3503962425884" y="1221.0" />
+      <point x="-25.5" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.PredicateObject" target="be.ugent.rml.TripleElement">
+      <point x="-41.42857142857156" y="-14.5" />
+      <point x="655.5559828498084" y="655.0" />
+      <point x="602.8898327638568" y="655.0" />
+      <point x="10.916666666666515" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.Function" target="be.ugent.rml.records.Record">
+      <point x="40.80000000000018" y="-14.5" />
+      <point x="935.8283609023853" y="317.0" />
+      <point x="2342.717944445905" y="317.0" />
+      <point x="-43.1052631578948" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.records.RDBs">
+      <point x="37.8947368421052" y="-14.5" />
+      <point x="2455.4034326798355" y="1082.0" />
+      <point x="2822.923169521941" y="1082.0" />
+      <point x="-20.25" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.store.RDF4JStore" target="be.ugent.rml.store.Quad">
+      <point x="0.0" y="-14.5" />
+      <point x="1377.4169135857387" y="595.0" />
+      <point x="1373.3035725529903" y="595.0" />
+      <point x="1373.3035725529903" y="526.0" />
+      <point x="1487.6416937229433" y="526.0" />
+      <point x="-5.0625" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RDBs" target="be.ugent.rml.records.Record">
+      <point x="-30.375" y="-14.5" />
+      <point x="2812.798169521941" y="973.0" />
+      <point x="2765.331097432425" y="973.0" />
+      <point x="2765.331097432425" y="377.0" />
+      <point x="2419.349523393273" y="377.0" />
+      <point x="33.52631578947364" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.TripleElement">
+      <point x="-16.704545454545496" y="-14.5" />
+      <point x="828.8926747973671" y="973.0" />
+      <point x="830.3714590402845" y="973.0" />
+      <point x="830.3714590402845" y="645.0" />
+      <point x="624.7231660971903" y="645.0" />
+      <point x="32.75" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.store.QuadStore">
+      <point x="16.09375" y="-14.5" />
+      <point x="1732.6287616272039" y="1221.0" />
+      <point x="1800.0251763797933" y="1221.0" />
+      <point x="1800.0251763797933" y="655.0" />
+      <point x="1664.2629849317345" y="655.0" />
+      <point x="17.538461538461434" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.DatabaseType.Database">
+      <point x="60.63157894736844" y="-14.5" />
+      <point x="2478.140274785099" y="1112.0" />
+      <point x="3013.173169521941" y="1112.0" />
+      <point x="3013.173169521941" y="814.0" />
+      <point x="2983.331097432425" y="814.0" />
+      <point x="35.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.PredicateObject" target="be.ugent.rml.Template">
+      <point x="-20.71428571428578" y="-14.5" />
+      <point x="676.2702685640942" y="665.0" />
+      <point x="667.9731660971903" y="665.0" />
+      <point x="667.9731660971903" y="407.0" />
+      <point x="545.4250000000002" y="407.0" />
+      <point x="13.866666666666788" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.store.QuadStore" target="be.ugent.rml.store.Quad">
+      <point x="0.0" y="-14.5" />
+      <point x="1646.724523393273" y="526.0" />
+      <point x="1497.7666937229433" y="526.0" />
+      <point x="5.0625" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.SPARQL" target="be.ugent.rml.records.JSON">
+      <point x="42.875" y="-14.5" />
+      <point x="2436.041623748214" y="973.0" />
+      <point x="2609.7416478347513" y="973.0" />
+      <point x="-10.375" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.Mapping">
+      <point x="-22.53125" y="-14.5" />
+      <point x="1694.0037616272039" y="1231.0" />
+      <point x="43.42083333333312" y="1231.0" />
+      <point x="43.42083333333312" y="973.0" />
+      <point x="48.625" y="973.0" />
+      <point x="-25.25" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RDBsRecord" target="be.ugent.rml.records.Record">
+      <point x="0.0" y="-14.5" />
+      <point x="2837.831097432425" y="367.0" />
+      <point x="2424.1389970774835" y="367.0" />
+      <point x="38.31578947368416" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.records.SPARQL.ResultFormat">
+      <point x="-30.315789473684276" y="-14.5" />
+      <point x="2387.192906364046" y="1072.0" />
+      <point x="2185.791623748214" y="1072.0" />
+      <point x="-32.25" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.ApplyTemplateFunction" target="be.ugent.rml.records.Record">
+      <point x="72.37500000000023" y="-14.5" />
+      <point x="1086.6573593073595" y="526.0" />
+      <point x="1083.6782772221027" y="526.0" />
+      <point x="1083.6782772221027" y="337.0" />
+      <point x="2352.296891814326" y="337.0" />
+      <point x="-33.52631578947364" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.CSVRecord" target="be.ugent.rml.records.Record">
+      <point x="0.0" y="-14.5" />
+      <point x="2300.988958995625" y="397.0" />
+      <point x="2381.033733919589" y="397.0" />
+      <point x="-4.78947368421052" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.SPARQL" target="be.ugent.rml.records.Record">
+      <point x="-6.125" y="-14.5" />
+      <point x="2387.041623748214" y="417.0" />
+      <point x="2390.61268128801" y="417.0" />
+      <point x="4.78947368421052" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.JSON" target="be.ugent.rml.records.JSONRecord">
+      <point x="31.125" y="-14.5" />
+      <point x="2651.2416478347513" y="814.0" />
+      <point x="2691.831097432425" y="814.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.Function" target="be.ugent.rml.functions.FunctionModel">
+      <point x="20.40000000000009" y="-14.5" />
+      <point x="915.4283609023852" y="307.0" />
+      <point x="1012.4539502164502" y="307.0" />
+      <point x="-8.6875" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.DataFetcher" target="be.ugent.rml.records.Record">
+      <point x="15.25" y="-14.5" />
+      <point x="2086.791623748214" y="665.0" />
+      <point x="2096.541623748214" y="665.0" />
+      <point x="2096.541623748214" y="367.0" />
+      <point x="2366.6653128669573" y="367.0" />
+      <point x="-19.15789473684208" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Mapping" target="be.ugent.rml.TripleElement">
+      <point x="-12.625" y="-14.5" />
+      <point x="61.25" y="744.0" />
+      <point x="250.29949297918552" y="744.0" />
+      <point x="250.29949297918552" y="665.0" />
+      <point x="559.2231660971903" y="665.0" />
+      <point x="-32.75" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.FunctionLoader" target="be.ugent.rml.store.QuadStore">
+      <point x="41.14285714285711" y="-14.5" />
+      <point x="1578.4970508658002" y="804.0" />
+      <point x="1602.565780857973" y="804.0" />
+      <point x="1602.565780857973" y="635.0" />
+      <point x="1620.4168310855807" y="635.0" />
+      <point x="-26.307692307692378" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MyFileUtils" target="be.ugent.rml.MyFileUtils.URLClassLoaderFileResource">
+      <point x="-38.0" y="-14.5" />
+      <point x="328.5" y="1498.0" />
+      <point x="112.5" y="1498.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.SPARQL" target="be.ugent.rml.records.XML">
+      <point x="6.125" y="-14.5" />
+      <point x="2399.291623748214" y="943.0" />
+      <point x="2433.206097432425" y="943.0" />
+      <point x="-28.125" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.TEMPLATETYPE">
+      <point x="36.75" y="-14.5" />
+      <point x="882.3472202519126" y="923.0" />
+      <point x="1172.6217543711723" y="923.0" />
+      <point x="1172.6217543711723" y="54.0" />
+      <point x="606.1833333333334" y="54.0" />
+      <point x="55.5" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.PredicateObject" target="be.ugent.rml.functions.Function">
+      <point x="62.14285714285734" y="-14.5" />
+      <point x="759.1274114212373" y="665.0" />
+      <point x="887.9731660971903" y="665.0" />
+      <point x="887.9731660971903" y="516.0" />
+      <point x="880.4569323309566" y="516.0" />
+      <point x="-14.571428571428442" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.functions.FunctionLoader">
+      <point x="56.795454545454504" y="-14.5" />
+      <point x="902.3926747973671" y="953.0" />
+      <point x="1477.3541937229434" y="953.0" />
+      <point x="-60.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.store.QuadStore">
+      <point x="-60.63157894736844" y="-14.5" />
+      <point x="2356.877116890362" y="1112.0" />
+      <point x="2000.0416237482143" y="1112.0" />
+      <point x="2000.0416237482143" y="635.0" />
+      <point x="1681.801446470196" y="635.0" />
+      <point x="35.076923076923094" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.PredicateObject">
+      <point x="-30.068181818181984" y="-14.5" />
+      <point x="815.5290384337306" y="913.0" />
+      <point x="590.266159645852" y="913.0" />
+      <point x="590.266159645852" y="794.0" />
+      <point x="733.23455427838" y="794.0" />
+      <point x="36.25" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.DatabaseType" target="be.ugent.rml.DatabaseType.Database">
+      <point x="0.0" y="-14.5" />
+      <point x="2935.173169521941" y="814.0" />
+      <point x="2948.331097432425" y="814.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.Function" target="be.ugent.rml.Template">
+      <point x="-20.40000000000009" y="-14.5" />
+      <point x="874.628360902385" y="257.0" />
+      <point x="573.1583333333333" y="257.0" />
+      <point x="41.59999999999991" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.Mapping">
+      <point x="-70.15909090909099" y="-14.5" />
+      <point x="775.4381293428216" y="973.0" />
+      <point x="99.125" y="973.0" />
+      <point x="25.25" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.FunctionLoader" target="be.ugent.rml.functions.FunctionModel">
+      <point x="-41.14285714285711" y="-14.5" />
+      <point x="1496.211336580086" y="804.0" />
+      <point x="1201.3035725529903" y="804.0" />
+      <point x="1201.3035725529903" y="217.0" />
+      <point x="1064.5789502164503" y="217.0" />
+      <point x="43.43750000000023" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Initializer" target="be.ugent.rml.MappingFactory">
+      <point x="-15.299999999999955" y="-14.5" />
+      <point x="1528.5503962425887" y="1092.0" />
+      <point x="882.3472202519126" y="1092.0" />
+      <point x="36.75" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.store.QuadStore">
+      <point x="43.43181818181802" y="-14.5" />
+      <point x="889.0290384337306" y="933.0" />
+      <point x="1179.3035725529903" y="933.0" />
+      <point x="1179.3035725529903" y="605.0" />
+      <point x="1594.1091387778883" y="605.0" />
+      <point x="-52.61538461538453" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Initializer" target="be.ugent.rml.functions.FunctionLoader">
+      <point x="5.099999999999909" y="-14.5" />
+      <point x="1548.9503962425883" y="1072.0" />
+      <point x="1542.4541937229433" y="1072.0" />
+      <point x="1542.4541937229433" y="963.0" />
+      <point x="1549.3541937229434" y="963.0" />
+      <point x="12.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.store.RDF4JStore" target="be.ugent.rml.store.QuadStore">
+      <point x="40.0" y="-14.5" />
+      <point x="1417.4169135857387" y="615.0" />
+      <point x="1602.8783695471193" y="615.0" />
+      <point x="-43.84615384615381" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.functions.JoinConditionFunction" target="be.ugent.rml.records.Record">
+      <point x="70.5" y="-14.5" />
+      <point x="853.9731660971903" y="526.0" />
+      <point x="993.1265751880995" y="526.0" />
+      <point x="993.1265751880995" y="327.0" />
+      <point x="2347.507418130115" y="327.0" />
+      <point x="-38.31578947368416" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.SPARQL" target="be.ugent.rml.records.CSV">
+      <point x="-30.625" y="-14.5" />
+      <point x="2362.541623748214" y="963.0" />
+      <point x="2348.791623748214" y="963.0" />
+      <point x="9.25" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.store.SimpleQuadStore" target="be.ugent.rml.store.QuadStore">
+      <point x="-57.75" y="-14.5" />
+      <point x="1829.7751763797933" y="645.0" />
+      <point x="1673.0322157009655" y="645.0" />
+      <point x="26.307692307692378" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.records.RecordsFactory">
+      <point x="48.28125" y="-14.5" />
+      <point x="1764.8162616272039" y="1271.0" />
+      <point x="2453.5086958377306" y="1271.0" />
+      <point x="36.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Initializer" target="be.ugent.rml.NAMESPACES">
+      <point x="45.90000000000009" y="-14.5" />
+      <point x="1589.7503962425885" y="1122.0" />
+      <point x="1712.3501763797933" y="1122.0" />
+      <point x="1712.3501763797933" y="973.0" />
+      <point x="1698.0876763797933" y="973.0" />
+      <point x="-17.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.XML" target="be.ugent.rml.records.IteratorFormat">
+      <point x="25.0" y="-14.5" />
+      <point x="2486.331097432425" y="814.0" />
+      <point x="2494.4977640990915" y="814.0" />
+      <point x="-45.33333333333337" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RDBs" target="be.ugent.rml.DatabaseType">
+      <point x="30.375" y="-14.5" />
+      <point x="2873.548169521941" y="973.0" />
+      <point x="2901.423169521941" y="973.0" />
+      <point x="-33.75" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Mapping" target="be.ugent.rml.PredicateObject">
+      <point x="37.875" y="-14.5" />
+      <point x="111.75" y="774.0" />
+      <point x="684.9012209450465" y="774.0" />
+      <point x="-12.083333333333485" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.records.Record">
+      <point x="-37.89473684210532" y="-14.5" />
+      <point x="2379.613958995625" y="1082.0" />
+      <point x="2143.041623748214" y="1082.0" />
+      <point x="2143.041623748214" y="387.0" />
+      <point x="2376.2442602353785" y="387.0" />
+      <point x="-9.57894736842104" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.JSON" target="be.ugent.rml.records.Record">
+      <point x="10.375" y="-14.5" />
+      <point x="2630.4916478347513" y="814.0" />
+      <point x="2618.331097432425" y="814.0" />
+      <point x="2618.331097432425" y="397.0" />
+      <point x="2409.770576024852" y="397.0" />
+      <point x="23.9473684210526" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.records.RecordsFactory" target="be.ugent.rml.records.SPARQL">
+      <point x="-7.578947368421041" y="-14.5" />
+      <point x="2409.9297484693093" y="1042.0" />
+      <point x="2368.666623748214" y="1042.0" />
+      <point x="-24.5" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.TripleElement" target="be.ugent.rml.functions.Function">
+      <point x="16.375" y="-14.5" />
+      <point x="608.3481660971903" y="506.0" />
+      <point x="851.3140751880993" y="506.0" />
+      <point x="-43.71428571428578" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.Template">
+      <point x="-43.43181818181802" y="-14.5" />
+      <point x="802.1654020700946" y="933.0" />
+      <point x="493.8083333333333" y="933.0" />
+      <point x="493.8083333333333" y="427.0" />
+      <point x="524.625" y="427.0" />
+      <point x="-6.933333333333394" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.functions.JoinConditionFunction">
+      <point x="-35.40625" y="-14.5" />
+      <point x="1681.1287616272039" y="1251.0" />
+      <point x="12.875" y="1251.0" />
+      <point x="12.875" y="814.0" />
+      <point x="819.3714590402845" y="814.0" />
+      <point x="819.3714590402845" y="655.0" />
+      <point x="783.4731660971903" y="655.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.JoinCondition" target="be.ugent.rml.Template">
+      <point x="-33.5" y="-14.5" />
+      <point x="382.8083333333334" y="407.0" />
+      <point x="510.7583333333332" y="407.0" />
+      <point x="-20.800000000000182" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MappingFactory" target="be.ugent.rml.NAMESPACES">
+      <point x="70.15909090909099" y="-14.5" />
+      <point x="915.7563111610036" y="973.0" />
+      <point x="1664.0876763797933" y="973.0" />
+      <point x="-51.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.PredicateObject" target="be.ugent.rml.functions.JoinConditionFunction">
+      <point x="20.71428571428578" y="-14.5" />
+      <point x="717.6988399926657" y="665.0" />
+      <point x="708.2731660971905" y="665.0" />
+      <point x="-75.19999999999982" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.MyFileUtils" target="be.ugent.rml.MyFileUtils.ClasspathResourceFileResource">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="be.ugent.rml.Executor" target="be.ugent.rml.store.SimpleQuadStore">
+      <point x="22.53125" y="-14.5" />
+      <point x="1739.0662616272039" y="1231.0" />
+      <point x="1887.5251763797933" y="1231.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.30000000000000016" x="1676.6666666666658" y="1306.666666666666" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
