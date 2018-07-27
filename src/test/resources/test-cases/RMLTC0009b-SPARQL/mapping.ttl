@@ -25,6 +25,7 @@
 
   rml:logicalSource [
           rml:source <#InputSPARQL1>;
+          rml:referenceFormulation ql:XPath;
           rml:iterator "/sparql/results/result";
           rml:query """
               PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -71,6 +72,7 @@
 
   rml:logicalSource [
             rml:source <#InputSPARQL2>;
+            rml:referenceFormulation ql:XPath;
             rml:iterator "/sparql/results/result";
             rml:query """
                 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

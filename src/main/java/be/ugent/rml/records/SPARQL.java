@@ -30,21 +30,22 @@ public class SPARQL {
         private final String name;
         private final String uri;
         private final String mediaType;
-        private final String[] referenceFormulations;
+        private final Set<String> referenceFormulations;
 
 
         private ResultFormat(String name, String uri, String mediaType, String... referenceFormulations) {
             this.name = name;
             this.uri = uri;
             this.mediaType = mediaType;
-            this.referenceFormulations = referenceFormulations;
+            this.referenceFormulations = new HashSet<>(Arrays.asList(referenceFormulations));
+            ;
         }
 
         public String getUri() { return uri; }
 
         public String getMediaType() { return mediaType; }
 
-        public String[] getReferenceFormulations() { return referenceFormulations; }
+        public Set<String> getReferenceFormulations() { return referenceFormulations; }
 
         public String toString() {
             return this.name;

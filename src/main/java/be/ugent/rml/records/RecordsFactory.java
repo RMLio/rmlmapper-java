@@ -49,18 +49,7 @@ public class RecordsFactory {
                     referenceFormulations = new ArrayList<>();
                     referenceFormulations.add(0, NAMESPACES.QL + "CSV");
                 } else {
-                    // If no rml:referenceFormulation is given, but a sd:resultFormat is given --> use default rml:referenceFormulation for that format
-                    List<String> resultFormat;
-                    if (! Utils.isLiteral(sources.get(0)) && !(resultFormat =
-                             Utils.getObjectsFromQuads(rmlStore.getQuads(sources.get(0), NAMESPACES.SD + "resultFormat", null))).isEmpty()) {
-
-                        sparqlResultFormat = getSPARQLResultFormat(resultFormat, referenceFormulations);
-
-                        referenceFormulations = new ArrayList<>();
-                        referenceFormulations.add(0, sparqlResultFormat.getReferenceFormulations()[0]);
-                    } else {
-                        throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
-                    }
+                    throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
                 }
             }
 
@@ -295,7 +284,7 @@ public class RecordsFactory {
 
         } else if (resultFormat.isEmpty()) {
             for (SPARQL.ResultFormat format: SPARQL.ResultFormat.values()) {
-                if (Arrays.asList(format.getReferenceFormulations()).contains(referenceFormulation.get(0))) {
+                if (format.getReferenceFormulations().contains(referenceFormulation.get(0))) {
                     return format;
                 }
             }
@@ -305,7 +294,7 @@ public class RecordsFactory {
         } else {
             for (SPARQL.ResultFormat format : SPARQL.ResultFormat.values()) {
                 if (resultFormat.get(0).equals(format.getUri())
-                        && Arrays.asList(format.getReferenceFormulations()).contains(referenceFormulation.get(0))) {
+                        && format.getReferenceFormulations().contains(referenceFormulation.get(0))) {
                     return format;
                 }
             }
