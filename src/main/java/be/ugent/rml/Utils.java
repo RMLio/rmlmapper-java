@@ -391,6 +391,7 @@ public class Utils {
 
     private static String getNQuadOfQuad(Quad q) {
         String s = q.getSubject();
+        String p = "<" + q.getPredicate() + ">";
 
         if (!Utils.isBlankNode(s)) {
             s = "<" + s + ">";
@@ -408,7 +409,7 @@ public class Utils {
             g = "<" + g + ">";
         }
 
-        return s + " " + s + " " + o + " " + g + ".";
+        return s + " " + p + " " + o + " " + g + ".";
     }
 
     public static String encodeURI(String url) {
