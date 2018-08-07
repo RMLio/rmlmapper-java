@@ -122,6 +122,14 @@ try {
 }
 ```
 
+### Testing
+#### RDBs
+Set constant ```LOCAL_TESTING``` to ```true``` for testing locally. 
+This causes the creation of the required Docker containers and adds the right connection string to the mapping files.
+
+Set constant ```LOCAL_TESTING``` to ```false``` for testing on / pushing to GitLab. 
+
+
 # Dependencies
 
 |             Dependency             | License                                                            |

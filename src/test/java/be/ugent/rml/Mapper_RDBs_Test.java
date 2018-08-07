@@ -33,7 +33,7 @@ import java.util.*;
 public class Mapper_RDBs_Test extends TestCore {
 
     // Change this if needed
-    private static final Boolean LOCAL_TESTING = true;
+    private static final Boolean LOCAL_TESTING = false;
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_RDBs_Test.class);
 
@@ -42,14 +42,14 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static final int PORTNUMBER_MYSQL = 50789;
     private static final int PORTNUMBER_POSTGRESQL = 5432;
-    private static final int PORTNUMBER_SQLSERVER = 50790;
+    private static final int PORTNUMBER_SQLSERVER = 1433;
 
     private static final String CONNECTIONSTRING_POSTGRESQL_LOCAL = String.format("jdbc:postgresql://0.0.0.0:%d/postgres?user=postgres", PORTNUMBER_POSTGRESQL);
-    private static final String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;databaseName=TestDB;user=sa;password=YourSTRONG!Passw0rd;";
+    private static final String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
 
     private static final String CONNECTIONSTRING_MYSQL = String.format("jdbc:mysql://localhost:%d/test", PORTNUMBER_MYSQL);
     private static final String CONNECTIONSTRING_POSTGRESQL = "jdbc:postgresql://postgres/postgres?user=postgres";
-    private static final String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB";
+    private static final String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
 
     private static HashSet<String> tempFiles = new HashSet<>();
 
@@ -59,7 +59,6 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static class DockerDBInfo {
         protected String connectionString;
-        protected String connectionStringLocal;
         protected String containerID;
         protected DockerClient docker;
 
@@ -93,7 +92,8 @@ public class Mapper_RDBs_Test extends TestCore {
             mysqlDB.stop();
         }
         closeDocker(postgreSQLDB);
-        closeDocker(sqlServerDB);
+        //closeDocker(sqlServerDB);
+
 
         // Make sure all tempFiles are removed
         int counter = 0;
@@ -731,6 +731,10 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static void startSQLServer() {
         sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER);
+        createSQLServerTestDB();
+    }
+
+    private static void createSQLServerTestDB() {
         // Creates testing db
         try {
             // Can't set DB yet in connection string --> remove here
@@ -741,8 +745,7 @@ public class Mapper_RDBs_Test extends TestCore {
             // Doesn't matter
         }
     }
-
-    // TODO: FIX LOCAL TESTING
+    // TODO: fix this
     private static void startSQLServerLocal()  {
         sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER_LOCAL);
 
@@ -760,19 +763,16 @@ public class Mapper_RDBs_Test extends TestCore {
                 .portBindings(portBindings)
                 .build();
 
-        final Map<String, String> configLabels = new HashMap<>();
-
         final ContainerConfig config = ContainerConfig.builder()
                 .hostConfig(hostConfig)
-                .labels(configLabels)
                 .image(image).exposedPorts(exportedPort)
                 .env("ACCEPT_EULA=Y")
                 .env("SA_PASSWORD=YourStrong!Passw0rd")
                 .build();
 
         startDockerContainer(image, config, sqlServerDB);
+        createSQLServerTestDB();
     }
-
 
     @TestWith({
             "RMLTC0000-SQLServer, ttl",
@@ -915,7 +915,7 @@ public class Mapper_RDBs_Test extends TestCore {
                     conn = DriverManager.getConnection(dockerDBInfo.connectionString);
                     conn.close();
                 } catch (SQLException ignored) {
-                    logger.debug("Retrying ({}/20)...", tries);
+                    logger.debug("Retrying ({}/20) with connection string: {}", tries, dockerDBInfo.connectionString);
                     tries++;
                     Thread.sleep(500);
                 }
