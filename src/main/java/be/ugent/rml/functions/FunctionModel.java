@@ -125,8 +125,8 @@ public class FunctionModel {
         Object[] args = new Object[this.parameters.size()];
         Class[] paramTypes = this.method.getParameterTypes();
         for (int i = 0; i < this.parameters.size(); i++) {
-            if (parameters.get(this.parameters.get(i)) != null) {
-                args[i] = parseParameter(parameters.get(this.parameters.get(i)), paramTypes[i]);
+            if (parameters.get(this.parameters.get(i).getValue()) != null) {
+                args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i]);
             } else {
                 args[i] = null;
             }

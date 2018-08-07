@@ -67,14 +67,10 @@ public class Executor {
                         }
                     }
 
-                    List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record);
+                    List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
                     pogs.forEach(pog -> {
                         generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
-
-                        subjectGraphs.forEach(graph -> {
-                            generateQuad(subject, pog.getPredicate(), pog.getObject(), graph);
-                        });
                     });
                 }
             }
@@ -91,7 +87,7 @@ public class Executor {
         return this.execute(triplesMaps, false);
     }
 
-    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record) throws IOException {
+    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record,  List<ProvenancedTerm> alreadyNeededGraphs) throws IOException {
         ArrayList<PredicateObjectGraph> results = new ArrayList<>();
 
         List<PredicateObjectGenerator> predicateObjectGenerators = mapping.getPredicateObjectGenerators();
@@ -99,6 +95,7 @@ public class Executor {
         for (PredicateObjectGenerator po : predicateObjectGenerators) {
             ArrayList<ProvenancedTerm> predicates = new ArrayList<>();
             ArrayList<ProvenancedTerm> poGraphs = new ArrayList<>();
+            poGraphs.addAll(alreadyNeededGraphs);
 
             for (Template graph : po.getGraphs()) {
                 String g = Utils.applyTemplate(graph, record, true).get(0);
@@ -143,7 +140,6 @@ public class Executor {
                         });
                     }
 
-
                     //add pogs
                     results.addAll(combineMultiplePOGs(predicates, objects, poGraphs));
                 }
@@ -155,7 +151,6 @@ public class Executor {
                 //check if need to apply a join condition
                 if (!po.getJoinConditions().isEmpty()) {
                     objects = this.getIRIsWithConditions(record, po.getParentTriplesMap(), po.getJoinConditions());
-                    results.addAll(combineMultiplePOGs(predicates, objects, poGraphs));
                     //this.generateTriples(subject, po.getPredicates(), objects, record, combinedGraphs);
                 } else {
                     objects = this.getAllIRIs(po.getParentTriplesMap());

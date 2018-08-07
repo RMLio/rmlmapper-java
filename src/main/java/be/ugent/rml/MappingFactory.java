@@ -142,7 +142,7 @@ public class MappingFactory {
 
                 //check if we need to apply a language to the object
                 if (!languages.isEmpty()) {
-                    language = ((Literal) languages.get(0)).getValue();
+                    language = languages.get(0).getValue();
                 }
 
                 if (functionValues.isEmpty()) {
@@ -222,11 +222,9 @@ public class MappingFactory {
 
             for (Term o : objectsConstants) {
                 String termType = NAMESPACES.RR + "Literal";
-                String oStr = null;
+                String oStr = o.getValue();
 
-                if (o instanceof Literal) {
-                    oStr = ((Literal) o).getValue();
-                } else {
+                if (!(o instanceof Literal)) {
                     termType = NAMESPACES.RR + "IRI";
                 }
 
