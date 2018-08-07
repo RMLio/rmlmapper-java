@@ -33,7 +33,7 @@ import java.util.*;
 public class Mapper_RDBs_Test extends TestCore {
 
     // Change this if needed
-    private static final Boolean LOCAL_TESTING = false;
+    private static final Boolean LOCAL_TESTING = true;
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_RDBs_Test.class);
 
@@ -79,7 +79,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
         if (LOCAL_TESTING) {
             startPostgreSQLLocal();
-            startSQLServerLocal();
+            //startSQLServerLocal();
         } else {
             startPostgreSQL();
             startSQLServer();
@@ -92,7 +92,7 @@ public class Mapper_RDBs_Test extends TestCore {
             mysqlDB.stop();
         }
         closeDocker(postgreSQLDB);
-        //closeDocker(sqlServerDB);
+        closeDocker(sqlServerDB);
 
 
         // Make sure all tempFiles are removed
@@ -575,7 +575,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
         final String address = "0.0.0.0";
         final String exportedPort = "5432";
-        final String image = "postgres:10.4";
+        final String image = "postgres:latest";
 
         // Map exported port to our static PORTNUMBER_POSTGRESQL
         final Map<String, List<PortBinding>> portBindings = new HashMap<>();
@@ -727,6 +727,7 @@ public class Mapper_RDBs_Test extends TestCore {
         deleteTempMappingFile(tempMappingPath);
     }
 
+
     // SQL Server ------------------------------------------------------------------------------------------------------
 
     private static void startSQLServer() {
@@ -809,77 +810,95 @@ public class Mapper_RDBs_Test extends TestCore {
             "RMLTC0012b-SQLServer, ttl"
     })
     public void evaluate_XXXX_RDBs_SQLServer(String resourceDir, String outputExtension) throws Exception {
-        String resourcePath = "test-cases/" + resourceDir + "/resource.sql";
-        String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
-        String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/" + resourceDir + "/resource.sql";
+            String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
+            String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
 
-        doMapping(tempMappingPath, outputPath);
+            doMapping(tempMappingPath, outputPath);
 
-        deleteTempMappingFile(tempMappingPath);
+            deleteTempMappingFile(tempMappingPath);
+        }
     }
 
     @Test(expected = Error.class)
     public void evaluate_0002c_RDBs_SQLServer() throws Exception {
-        String resourcePath = "test-cases/RMLTC0002c-SQLServer/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0002c-SQLServer/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002c-SQLServer/output.ttl";
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/RMLTC0002c-SQLServer/resource.sql";
+            String mappingPath = "./test-cases/RMLTC0002c-SQLServer/mapping.ttl";
+            String outputPath = "test-cases/RMLTC0002c-SQLServer/output.ttl";
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
 
-        doMapping(tempMappingPath, outputPath);
+            doMapping(tempMappingPath, outputPath);
 
-        deleteTempMappingFile(tempMappingPath);
+            deleteTempMappingFile(tempMappingPath);
+        } else {
+            throw new Error();
+        }
     }
 
     @Test(expected = Error.class)
     public void evaluate_0002e_RDBs_SQLServer() throws Exception {
-        String resourcePath = "test-cases/RMLTC0002e-SQLServer/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0002e-SQLServer/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002e-SQLServer/output.ttl";
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/RMLTC0002e-SQLServer/resource.sql";
+            String mappingPath = "./test-cases/RMLTC0002e-SQLServer/mapping.ttl";
+            String outputPath = "test-cases/RMLTC0002e-SQLServer/output.ttl";
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
 
-        doMapping(tempMappingPath, outputPath);
+            doMapping(tempMappingPath, outputPath);
 
-        deleteTempMappingFile(tempMappingPath);
+            deleteTempMappingFile(tempMappingPath);
+        } else {
+            throw new Error();
+        }
     }
 
     @Test(expected = Error.class)
     public void evaluate_0002i_RDBs_SQLServer() throws Exception {
-        String resourcePath = "test-cases/RMLTC0002i-SQLServer/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0002i-SQLServer/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002i-SQLServer/output.ttl";
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/RMLTC0002i-SQLServer/resource.sql";
+            String mappingPath = "./test-cases/RMLTC0002i-SQLServer/mapping.ttl";
+            String outputPath = "test-cases/RMLTC0002i-SQLServer/output.ttl";
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
 
-        doMapping(tempMappingPath, outputPath);
+            doMapping(tempMappingPath, outputPath);
 
-        deleteTempMappingFile(tempMappingPath);
+            deleteTempMappingFile(tempMappingPath);
+        } else {
+            throw new Error();
+        }
     }
 
     @Test(expected = Error.class)
     public void evaluate_0003a_RDBs_SQLServer() throws Exception {
-        String resourcePath = "test-cases/RMLTC0003a-SQLServer/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0003a-SQLServer/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0003a-SQLServer/output.ttl";
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/RMLTC0003a-SQLServer/resource.sql";
+            String mappingPath = "./test-cases/RMLTC0003a-SQLServer/mapping.ttl";
+            String outputPath = "test-cases/RMLTC0003a-SQLServer/output.ttl";
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
 
-        doMapping(tempMappingPath, outputPath);
+            doMapping(tempMappingPath, outputPath);
 
-        deleteTempMappingFile(tempMappingPath);
+            deleteTempMappingFile(tempMappingPath);
+        } else {
+            throw new Error();
+        }
     }
 
 
