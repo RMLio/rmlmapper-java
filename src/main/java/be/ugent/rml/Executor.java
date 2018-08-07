@@ -77,10 +77,10 @@ public class Executor {
         ArrayList<String> subjectGraphs = new ArrayList<String>();
 
         for (Template graph: mapping.getSubject().getGraphs()) {
-            String g = Utils.applyTemplate(graph, record, true).get(0);
+            List<String> strings = Utils.applyTemplate(graph, record, true);
 
-            if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                subjectGraphs.add(g);
+            if (!strings.isEmpty() && !strings.get(0).equals(NAMESPACES.RR + "defaultGraph")) {
+                subjectGraphs.add(strings.get(0));
             }
         }
 
