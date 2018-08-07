@@ -40,16 +40,16 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static final String DOCKER_HOST = "unix:///var/run/docker.sock";
 
-    private static final int PORTNUMBER_MYSQL = 50789;
-    private static final int PORTNUMBER_POSTGRESQL = 5432;
-    private static final int PORTNUMBER_SQLSERVER = 1433;
+    private static int PORTNUMBER_MYSQL;
+    private static int PORTNUMBER_POSTGRESQL;
+    private static int PORTNUMBER_SQLSERVER;
 
-    private static final String CONNECTIONSTRING_POSTGRESQL_LOCAL = String.format("jdbc:postgresql://0.0.0.0:%d/postgres?user=postgres", PORTNUMBER_POSTGRESQL);
-    private static final String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
+    private static String CONNECTIONSTRING_POSTGRESQL_LOCAL = "jdbc:postgresql://0.0.0.0:%d/postgres?user=postgres";
+    private static String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
 
-    private static final String CONNECTIONSTRING_MYSQL = String.format("jdbc:mysql://localhost:%d/test", PORTNUMBER_MYSQL);
-    private static final String CONNECTIONSTRING_POSTGRESQL = "jdbc:postgresql://postgres/postgres?user=postgres";
-    private static final String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
+    private static String CONNECTIONSTRING_MYSQL = "jdbc:mysql://localhost:%d/test";
+    private static String CONNECTIONSTRING_POSTGRESQL = "jdbc:postgresql://postgres/postgres?user=postgres";
+    private static String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
 
     private static HashSet<String> tempFiles = new HashSet<>();
 
@@ -75,6 +75,19 @@ public class Mapper_RDBs_Test extends TestCore {
 
     @BeforeClass
     public static void startDBs() throws Exception {
+        try {
+            PORTNUMBER_MYSQL = Utils.getFreePortNumber();
+            PORTNUMBER_POSTGRESQL = Utils.getFreePortNumber();
+            PORTNUMBER_SQLSERVER = Utils.getFreePortNumber();
+        } catch (Exception ex) {
+            throw new Error("Could not find a free port number for RDBs testing.");
+        }
+
+        CONNECTIONSTRING_POSTGRESQL_LOCAL = String.format(CONNECTIONSTRING_POSTGRESQL_LOCAL, PORTNUMBER_POSTGRESQL);
+        CONNECTIONSTRING_MYSQL = String.format(CONNECTIONSTRING_MYSQL, PORTNUMBER_MYSQL);
+
+
+
         startMySQLDB();
 
         if (LOCAL_TESTING) {

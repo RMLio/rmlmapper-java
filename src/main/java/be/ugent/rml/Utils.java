@@ -18,6 +18,7 @@ import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -469,5 +470,13 @@ public class Utils {
         }
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
+    }
+
+    public static int getFreePortNumber() throws IOException {
+        ServerSocket temp = new ServerSocket(0);
+        temp.setReuseAddress(true);
+        int portNumber = temp.getLocalPort();
+        temp.close();
+        return portNumber;
     }
 }
