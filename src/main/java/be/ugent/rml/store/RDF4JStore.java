@@ -1,11 +1,18 @@
 package be.ugent.rml.store;
 
+import be.ugent.rml.BlankNode;
+import be.ugent.rml.Literal;
+import be.ugent.rml.NamedNode;
+import be.ugent.rml.Term;
 import be.ugent.rml.Utils;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RDF4JStore extends QuadStore {
 
@@ -21,47 +28,48 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public void addTriple(String subject, String predicate, String object) {
+    public void addTriple(Term subject, Term predicate, Term object) {
 
     }
 
     @Override
-    public void addQuad(String subject, String predicate, String object, String graph) {
+    public void addQuad(Term subject, Term predicate, Term object, Term graph) {
 
     }
 
     @Override
-    public List<Quad> getQuads(String subject, String predicate, String object, String graph) {
-        return null;
+    public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public List<Quad> getQuads(String subject, String predicate, String object) {
+    public List<Quad> getQuads(Term subject, Term predicate, Term object) {
         ValueFactory vf = SimpleValueFactory.getInstance();
         Model result;
 
         Object filterSubject = null;
         Object filterPredicate = null;
         Object filterObject = null;
+
         if (subject != null) {
-            if (Utils.isBlankNode(subject)) {
-                filterSubject= vf.createBNode(subject.replaceFirst("_:", ""));
+            if (subject instanceof BlankNode) {
+                filterSubject= vf.createBNode(subject.getValue());
             } else {
-                filterSubject = vf.createIRI(subject);
+                filterSubject = vf.createIRI(subject.getValue());
             }
         }
 
         if (predicate != null) {
-            filterPredicate = vf.createIRI(predicate);
+            filterPredicate = vf.createIRI(predicate.getValue());
         }
 
         if (object != null) {
-            if (Utils.isBlankNode(object)) {
-                filterObject = vf.createBNode(object.replaceFirst("_:", ""));
-            } else if (object.startsWith("\"")) {
-                filterObject = vf.createLiteral(object);
+            if (object instanceof BlankNode) {
+                filterObject = vf.createBNode(object.getValue());
+            } else if (object instanceof Literal) {
+                filterObject = vf.createLiteral(object.getValue());
             } else {
-                filterObject = vf.createIRI(object);
+                filterObject = vf.createIRI(object.getValue());
             }
         }
 
@@ -70,17 +78,34 @@ public class RDF4JStore extends QuadStore {
         List<Quad> quads = new ArrayList<>();
 
         for (Statement st: result) {
-            String s = st.getSubject().toString();
-            String p = st.getPredicate().toString();
-            String o = st.getObject().toString();
+            Term s = convertStringToTerm(st.getSubject().toString());
+            Term p = convertStringToTerm(st.getPredicate().toString());
+            Term o = convertStringToTerm(st.getObject().toString());
 
             if (st.getContext() == null) {
                 quads.add(new Quad(s, p, o));
             } else {
-                quads.add(new Quad(s, p, o, st.getContext().toString()));
+                quads.add(new Quad(s, p, o, convertStringToTerm(st.getContext().toString())));
             }
         }
 
         return quads;
+    }
+
+    private Term convertStringToTerm(String str) {
+        if (str.startsWith("_:")) {
+            return new BlankNode(str.replace("_:", ""));
+        } else if (str.startsWith("\"")) {
+            Pattern pattern = Pattern.compile("^\"(.*)\"");
+            Matcher matcher = pattern.matcher(str);
+
+            if (matcher.find()) {
+                return new Literal(matcher.group(1));
+            } else {
+                throw new Error("Invalid Literal: " + str);
+            }
+        } else {
+            return new NamedNode(str);
+        }
     }
 }

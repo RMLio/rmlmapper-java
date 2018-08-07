@@ -5,18 +5,17 @@ import be.ugent.rml.functions.JoinConditionFunction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class PredicateObject extends TripleElement {
+public class PredicateObjectGenerator extends TripleElement {
 
 
     private final List<Template> predicates;
     private final List<JoinConditionFunction> joinConditions;
     private final String language;
-    private final String datatype;
-    private String parentTriplesMap;
+    private final Term datatype;
+    private Term parentTriplesMap;
 
-    public PredicateObject(List<Template> predicates, List<Template> graphs, String termType, Function function, String language, String datatype) {
+    public PredicateObjectGenerator(List<Template> predicates, List<Template> graphs, Term termType, Function function, String language, Term datatype) {
         super(graphs, termType, function);
         this.language = language;
         this.datatype = datatype;
@@ -24,7 +23,7 @@ public class PredicateObject extends TripleElement {
         this.joinConditions = new ArrayList<JoinConditionFunction>();
     }
 
-    public PredicateObject(List<Template> predicates, List<Template> graphs, String termType, Function function) {
+    public PredicateObjectGenerator(List<Template> predicates, List<Template> graphs, Term termType, Function function) {
         this(predicates, graphs, termType, function, null, null);
     }
 
@@ -32,7 +31,7 @@ public class PredicateObject extends TripleElement {
         return this.language;
     }
 
-    public String getDataType() {
+    public Term getDataType() {
         if (this.language == null) {
             return this.datatype;
         }
@@ -43,7 +42,7 @@ public class PredicateObject extends TripleElement {
         return predicates;
     }
 
-    public String getParentTriplesMap() {
+    public Term getParentTriplesMap() {
         return parentTriplesMap;
     }
 
@@ -51,7 +50,7 @@ public class PredicateObject extends TripleElement {
         return joinConditions;
     }
 
-    public void setParentTriplesMap(String parentTriplesMap) {
+    public void setParentTriplesMap(Term parentTriplesMap) {
         this.parentTriplesMap = parentTriplesMap;
     }
 

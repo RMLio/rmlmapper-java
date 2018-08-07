@@ -1,8 +1,6 @@
 package be.ugent.rml.records;
 
-import be.ugent.rml.DataFetcher;
-import be.ugent.rml.NAMESPACES;
-import be.ugent.rml.Utils;
+import be.ugent.rml.*;
 import be.ugent.rml.store.QuadStore;
 import org.apache.commons.lang.NotImplementedException;
 
@@ -25,25 +23,25 @@ public class RecordsFactory {
         allXMLRecords = new HashMap<>();
     }
 
-    public List<Record> createRecords(String triplesMap, QuadStore rmlStore) throws IOException {
+    public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
         //get logical source
-        List<String> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, NAMESPACES.RML + "logicalSource", null));
+        List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
         if (!logicalSources.isEmpty()) {
-            String logicalSource = logicalSources.get(0);
+            Term logicalSource = logicalSources.get(0);
             //get referenceformulation
-            List<String> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "referenceFormulation", null));
-            List<String> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "source", null));
-            List<String> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "iterator", null));
+            List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
+            List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+            List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "iterator"), null));
 
             if (referenceFormulations.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
             } else if (sources.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a source.");
             } else {
-                String source = Utils.getLiteral(sources.get(0));
+                String source = sources.get(0).getValue();
 
-                if (referenceFormulations.get(0).equals(NAMESPACES.QL + "CSV")) {
+                if (referenceFormulations.get(0).getValue().equals(NAMESPACES.QL + "CSV")) {
                     if (allCSVRecords.containsKey(source)){
                         return allCSVRecords.get(source);
                     } else {
@@ -56,9 +54,9 @@ public class RecordsFactory {
 
                         return allCSVRecords.get(source);
                     }
-                } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "XPath")) {
+                } else if (referenceFormulations.get(0).getValue().equals(NAMESPACES.QL + "XPath")) {
                     if (!iterators.isEmpty()) {
-                        String iterator = Utils.getLiteral(iterators.get(0));
+                        String iterator = iterators.get(0).getValue();
 
                         if (allXMLRecords.containsKey(source) && allXMLRecords.get(source).containsKey(iterator)) {
                             return allXMLRecords.get(source).get(iterator);
@@ -83,9 +81,9 @@ public class RecordsFactory {
                     } else {
                         throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for XPath.");
                     }
-                } else if (referenceFormulations.get(0).equals(NAMESPACES.QL + "JSONPath")) {
+                } else if (referenceFormulations.get(0).getValue().equals(NAMESPACES.QL + "JSONPath")) {
                     if (!iterators.isEmpty()) {
-                        String iterator = Utils.getLiteral(iterators.get(0));
+                        String iterator = iterators.get(0).getValue();
 
                         if (allJSONRecords.containsKey(source) && allJSONRecords.get(source).containsKey(iterator)) {
                             return allJSONRecords.get(source).get(iterator);

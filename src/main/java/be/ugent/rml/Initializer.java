@@ -13,14 +13,14 @@ public class Initializer {
     private final MappingFactory factory;
     private QuadStore rmlStore;
     private FunctionLoader functionLoader;
-    private List<String> triplesMaps;
-    private HashMap<String, Mapping> mappings;
+    private List<Term> triplesMaps;
+    private HashMap<Term, Mapping> mappings;
 
     public Initializer(QuadStore rmlStore, FunctionLoader functionLoader) throws IOException {
         this.rmlStore = rmlStore;
         //we get all the TriplesMaps from the mapping
         this.triplesMaps = this.getAllTriplesMaps();
-        this.mappings = new HashMap<String, Mapping>();
+        this.mappings = new HashMap<Term, Mapping>();
 
         if (functionLoader == null) {
             this.functionLoader = new FunctionLoader();
@@ -33,19 +33,19 @@ public class Initializer {
     }
 
     private void extractMappings() throws IOException {
-        for (String triplesMap : triplesMaps) {
+        for (Term triplesMap : triplesMaps) {
             this.mappings.put(triplesMap, factory.createMapping(triplesMap, rmlStore));
         }
     }
 
-    private List<String> getAllTriplesMaps() {
-        List<String> maps = Utils.getSubjectsFromQuads(this.rmlStore.getQuads(null, NAMESPACES.RML + "logicalSource", null));
+    private List<Term> getAllTriplesMaps() {
+        List<Term> maps = Utils.getSubjectsFromQuads(this.rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
         //filter outer Triples Maps that are used for functions
-        ArrayList<String> temp = new ArrayList<String>();
+        ArrayList<Term> temp = new ArrayList<>();
 
-        for(String map: maps) {
-            if (this.rmlStore.getQuads(null, NAMESPACES.FNML + "functionValue", map).isEmpty()) {
+        for(Term map: maps) {
+            if (this.rmlStore.getQuads(null, new NamedNode(NAMESPACES.FNML + "functionValue"), map).isEmpty()) {
                 temp.add(map);
             }
         }
@@ -59,11 +59,11 @@ public class Initializer {
         }
     }
 
-    public HashMap<String, Mapping> getMappings() {
+    public HashMap<Term, Mapping> getMappings() {
         return this.mappings;
     }
 
-    public List<String> getTriplesMaps() {
+    public List<Term> getTriplesMaps() {
         return this.triplesMaps;
     }
 

@@ -9,10 +9,10 @@ import java.util.Map;
 public class TripleElement {
 
     private List<Template> graphs;
-    private String termType;
+    private Term termType;
     private Function function;
 
-    public TripleElement(List<Template> graphs, String termType, Function function) {
+    public TripleElement(List<Template> graphs, Term termType, Function function) {
         this.graphs = graphs;
         this.termType = termType;
         this.function = function;
@@ -26,7 +26,7 @@ public class TripleElement {
         }
     }
 
-    public String getTermType() {
+    public Term getTermType() {
         return termType;
     }
 

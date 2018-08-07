@@ -1,17 +1,19 @@
 package be.ugent.rml.store;
 
+import be.ugent.rml.Term;
+
 import java.util.Collections;
 import java.util.List;
 
 public abstract class QuadStore {
     public abstract void removeDuplicates();
 
-    public abstract void addTriple(String subject, String predicate, String object);
+    public abstract void addTriple(Term subject, Term predicate, Term object);
 
-    public abstract void addQuad(String subject, String predicate, String object, String graph);
+    public abstract void addQuad(Term subject, Term predicate, Term object, Term graph);
 
-    public abstract List<Quad> getQuads(String subject, String predicate, String object, String graph);
-    public abstract List<Quad> getQuads(String subject, String predicate, String object);
+    public abstract List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph);
+    public abstract List<Quad> getQuads(Term subject, Term predicate, Term object);
 
     public String toString() {
         StringBuilder output = new StringBuilder();

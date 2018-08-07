@@ -5,18 +5,18 @@ import java.util.List;
 public class Mapping {
 
     private TripleElement subject;
-    private List<PredicateObject> predicateObjects;
+    private List<PredicateObjectGenerator> predicateObjectGenerators;
 
-    public Mapping(TripleElement subject, List<PredicateObject> predicateObjects) {
+    public Mapping(TripleElement subject, List<PredicateObjectGenerator> predicateObjectGenerators) {
         this.subject = subject;
-        this.predicateObjects = predicateObjects;
+        this.predicateObjectGenerators = predicateObjectGenerators;
     }
 
     public TripleElement getSubject() {
         return subject;
     }
 
-    public List<PredicateObject> getPredicateObjects() {
-        return predicateObjects;
+    public List<PredicateObjectGenerator> getPredicateObjectGenerators() {
+        return predicateObjectGenerators;
     }
 }

@@ -230,8 +230,8 @@ public class Utils {
         return output;
     }
 
-    public static List<String> getSubjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> subjects = new ArrayList<String>();
+    public static List<Term> getSubjectsFromQuads(List<Quad> quads) {
+        ArrayList<Term> subjects = new ArrayList<>();
 
         for (Quad quad : quads) {
             subjects.add(quad.getSubject());
@@ -240,8 +240,8 @@ public class Utils {
         return subjects;
     }
 
-    public static List<String> getObjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> objects = new ArrayList<String>();
+    public static List<Term> getObjectsFromQuads(List<Quad> quads) {
+        ArrayList<Term> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
             objects.add(quad.getObject());
@@ -251,10 +251,10 @@ public class Utils {
     }
 
     public static List<String> getLiteralObjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> objects = new ArrayList<String>();
+        ArrayList<String> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
-            objects.add(getLiteral(quad.getObject()));
+            objects.add(((Literal) quad.getObject()).getValue());
         }
 
         return objects;
@@ -280,19 +280,22 @@ public class Utils {
         }
     }
 
-    public static List<String> getList(QuadStore store, String first) {
-        List<String> list = new ArrayList<>();
+    public static List<Term> getList(QuadStore store, Term first) {
+        List<Term> list = new ArrayList<>();
+
         return getList(store, first, list);
     }
 
-    public static List<String> getList(QuadStore store, String first, List<String> list) {
-        if (first.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+    public static List<Term> getList(QuadStore store, Term first, List<Term> list) {
+        if (first.getValue().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
             return list;
         }
-        String value = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#first", null)).get(0);
-        String next = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest", null)).get(0);
+
+        Term value = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"), null)).get(0);
+        Term next = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest"), null)).get(0);
         list.add(value);
-        if (next.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+
+        if (next.getValue().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
             return list;
         } else {
             list = getList(store, next, list);
@@ -373,43 +376,11 @@ public class Utils {
     }
 
     private static String getNTripleOfQuad(Quad q) {
-        String s = q.getSubject();
-
-        if (!Utils.isBlankNode(s)) {
-            s = "<" + s + ">";
-        }
-
-        String p = "<" + q.getPredicate() + ">";
-        String o = q.getObject();
-
-        if (!Utils.isBlankNode(o) && !Utils.isLiteral(o)) {
-            o = "<" + o + ">";
-        }
-
-        return s + " " + p + " " + o + ".";
+        return q.getSubject() + " " + q.getPredicate() + " " + q.getObject() + ".";
     }
 
     private static String getNQuadOfQuad(Quad q) {
-        String s = q.getSubject();
-        String p = "<" + q.getPredicate() + ">";
-
-        if (!Utils.isBlankNode(s)) {
-            s = "<" + s + ">";
-        }
-
-        String o = q.getObject();
-
-        if (!Utils.isBlankNode(o) && !Utils.isLiteral(o)) {
-            o = "<" + o + ">";
-        }
-
-        String g = q.getGraph();
-
-        if (!Utils.isBlankNode(g)) {
-            g = "<" + g + ">";
-        }
-
-        return s + " " + p + " " + o + " " + g + ".";
+        return q.getSubject() + " " + q.getPredicate() + " " + q.getObject() + "" + q.getGraph() + ".";
     }
 
     public static String encodeURI(String url) {

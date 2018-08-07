@@ -1,8 +1,6 @@
 package be.ugent.rml.cli;
 
-import be.ugent.rml.DataFetcher;
-import be.ugent.rml.Executor;
-import be.ugent.rml.Utils;
+import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
@@ -87,10 +85,14 @@ public class Main {
                     executor = new Executor(rmlStore, factory);
                 }
 
-                List<String> triplesMaps = new ArrayList<>();
+                List<Term> triplesMaps = new ArrayList<>();
 
                 if (line.hasOption("t")) {
-                    triplesMaps = Arrays.asList(line.getOptionValue("t").split(","));
+                    List<String> triplesMapsIRI = Arrays.asList(line.getOptionValue("t").split(","));
+
+                    triplesMapsIRI.forEach(iri -> {
+                        triplesMaps.add(new NamedNode(iri));
+                    });
                 }
 
                 QuadStore result = executor.execute(triplesMaps, line.hasOption("d"));
