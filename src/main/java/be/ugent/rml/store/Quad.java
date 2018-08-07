@@ -1,6 +1,6 @@
 package be.ugent.rml.store;
 
-import be.ugent.rml.Term;
+import be.ugent.rml.term.Term;
 
 public class Quad implements Comparable<Quad> {
 

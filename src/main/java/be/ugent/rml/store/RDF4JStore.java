@@ -1,10 +1,9 @@
 package be.ugent.rml.store;
 
-import be.ugent.rml.BlankNode;
-import be.ugent.rml.Literal;
-import be.ugent.rml.NamedNode;
-import be.ugent.rml.Term;
-import be.ugent.rml.Utils;
+import be.ugent.rml.term.BlankNode;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;

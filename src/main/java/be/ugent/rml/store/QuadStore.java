@@ -1,6 +1,6 @@
 package be.ugent.rml.store;
 
-import be.ugent.rml.Term;
+import be.ugent.rml.term.Term;
 
 import java.util.Collections;
 import java.util.List;

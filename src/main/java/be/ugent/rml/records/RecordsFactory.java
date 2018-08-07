@@ -2,6 +2,8 @@ package be.ugent.rml.records;
 
 import be.ugent.rml.*;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package be.ugent.rml;
+package be.ugent.rml.term;
 
 public class AbstractTerm implements Term {
 

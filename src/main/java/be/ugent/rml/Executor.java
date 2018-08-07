@@ -6,6 +6,10 @@ import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.SimpleQuadStore;
+import be.ugent.rml.term.BlankNode;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 
 import java.io.IOException;
 import java.util.ArrayList;

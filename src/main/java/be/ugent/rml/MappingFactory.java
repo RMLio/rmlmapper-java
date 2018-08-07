@@ -2,6 +2,9 @@ package be.ugent.rml;
 
 import be.ugent.rml.functions.*;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,19 +1,19 @@
-package be.ugent.rml;
+package be.ugent.rml.term;
 
-public class BlankNode extends AbstractTerm {
+public class NamedNode extends AbstractTerm {
 
-    public BlankNode(String suffix) {
-        super(suffix);
+    public NamedNode(String iri) {
+        super(iri);
     }
 
     @Override
     public String toString() {
-        return "_:" + this.getValue();
+        return "<" + this.getValue() + ">";
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof BlankNode) {
+        if (o instanceof NamedNode) {
             return o.toString().equals(toString());
         } else {
             return false;

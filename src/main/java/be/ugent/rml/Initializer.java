@@ -2,6 +2,8 @@ package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 
 import java.io.IOException;
 import java.util.ArrayList;

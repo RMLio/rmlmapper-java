@@ -6,6 +6,8 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.TriplesQuads;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;

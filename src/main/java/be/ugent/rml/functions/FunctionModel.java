@@ -1,6 +1,6 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.Term;
+import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;

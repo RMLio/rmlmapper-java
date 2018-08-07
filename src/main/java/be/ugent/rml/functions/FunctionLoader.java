@@ -1,7 +1,7 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.NamedNode;
-import be.ugent.rml.Term;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import be.ugent.rml.Utils;
 import be.ugent.rml.functions.lib.UtilFunctions;
 import be.ugent.rml.store.QuadStore;

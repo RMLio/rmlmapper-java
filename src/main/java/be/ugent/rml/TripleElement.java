@@ -1,10 +1,10 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.Function;
+import be.ugent.rml.term.Term;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class TripleElement {
 

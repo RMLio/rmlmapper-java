@@ -1,5 +1,7 @@
 package be.ugent.rml;
 
+import be.ugent.rml.term.Term;
+
 public class ProvenancedTerm {
 
     private Term term;

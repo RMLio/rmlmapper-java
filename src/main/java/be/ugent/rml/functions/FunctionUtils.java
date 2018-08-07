@@ -1,17 +1,15 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.NamedNode;
-import be.ugent.rml.Term;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
-import com.google.common.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
