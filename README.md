@@ -124,6 +124,8 @@ try {
 
 ### Testing
 #### RDBs
+Make sure you have [Docker](https://www.docker.com) running.
+
 Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```true``` for testing locally. 
 This causes the creation of the required Docker containers and adds the right connection string to the mapping files.
 
