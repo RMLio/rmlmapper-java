@@ -124,11 +124,11 @@ try {
 
 ### Testing
 #### RDBs
-Set constant ```LOCAL_TESTING``` to ```true``` for testing locally. 
+Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```true``` for testing locally. 
 This causes the creation of the required Docker containers and adds the right connection string to the mapping files.
 
-Set constant ```LOCAL_TESTING``` to ```false``` for testing on / pushing to GitLab. 
-
+Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```false``` for testing on / pushing to GitLab. 
+This makes sure that the containers running on GitLab are used and adds the right connection strings to the mapping files.
 
 # Dependencies
 
