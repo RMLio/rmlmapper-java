@@ -3,6 +3,7 @@ package be.ugent.rml.records;
 import be.ugent.rml.DatabaseType;
 import be.ugent.rml.NAMESPACES;
 
+import javax.activation.UnsupportedDataTypeException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +58,7 @@ public class RDBs  {
                     records = getXMLRecords(rs);
                     break;
                 default:
-                    throw new Error("Unsupported rml:referenceFormulation for RDB source.");
+                    throw new Error("Unsupported rml:referenceFormulation for RDB source: " + referenceFormulation);
             }
 
             // Clean-up environment
@@ -117,7 +118,6 @@ public class RDBs  {
     }
 
     private List<Record> getXMLRecords(ResultSet rs) throws SQLException {
-        // todo: implement this
-        return getCSVRecords(rs);
+        throw new Error("Unsupported rml:referenceFormulation for RDB source: XPath");
     }
 }
