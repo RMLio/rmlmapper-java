@@ -127,9 +127,6 @@ public class Main {
                     writeOutput("quad", tq.getQuads(), "nq", outputFile);
                 }
             }
-
-
-
         } catch( ParseException exp ) {
             // oops, something went wrong
             logger.error("Parsing failed. Reason: " + exp.getMessage());
@@ -149,7 +146,6 @@ public class Main {
             return null;
         }
     }
-
 
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
