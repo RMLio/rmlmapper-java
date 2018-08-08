@@ -87,7 +87,7 @@ public class Main {
                 setLoggerLevel(Level.ERROR);
             }
 
-            String mOptionValue = getPriorityOptionValue("m", lineArgs, fileArgs;
+            String mOptionValue = getPriorityOptionValue("m", lineArgs, fileArgs);
             if (mOptionValue == null) {
                 printHelp(options);
             } else {
