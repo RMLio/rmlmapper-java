@@ -48,19 +48,88 @@ public class Main {
                 .longOpt( "duplicates" )
                 .desc(  "remove duplicates" )
                 .build();
+        Option configfile = Option.builder("c")
+                .longOpt( "configfile" )
+                .hasArg()
+                .desc( "path to configuration file" )
+                .build();
         options.addOption(mappingdoc);
         options.addOption(outputfile);
         options.addOption(functionfile);
         options.addOption(removeduplicates);
         options.addOption(triplesmaps);
+        options.addOption(configfile);
         options.addOption("v", "verbose", false, "verbose");
         options.addOption("h", "help", false, "get help info");
 
+        CommandLineParser parser = new DefaultParser();
+
+        try {
+            // parse the command line arguments
+            CommandLine lineArgs = parser.parse(options, args);
+            String[] configFileArgs = null;
+
+            // Check if config file is given
+            if (lineArgs.hasOption("c")) {
+                File configFile = Utils.getFile(lineArgs.getOptionValue("c"));
+                configFileArgs = Utils.fileToString(configFile).split(" ");
+            }
+            CommandLine fileArgs = parser.parse(options, configFileArgs);
+
+            if (lineArgs.hasOption("h") || fileArgs.hasOption("h")) {
+                printHelp(options);
+                return;
+            }
+
+            if (lineArgs.hasOption("v") || fileArgs.hasOption("v")) {
+                setLoggerLevel(Level.DEBUG);
+            } else {
+                setLoggerLevel(Level.ERROR);
+            }
+
+            if (!lineArgs.hasOption("m") && !lineArgs.hasOption("m")) {
+                printHelp(options);
+            } else {
+                File mappingFile = Utils.getFile(getPriorityOptionValue("m", lineArgs, fileArgs));
+                QuadStore rmlStore = Utils.readTurtle(mappingFile);
+                RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
+                Executor executor;
+
+                if (!lineArgs.hasOption("f") && !fileArgs.hasOption("f")) {
+                    executor = new Executor(rmlStore, factory);
+                } else {
+                    File functionFile = Utils.getFile(getPriorityOptionValue("f", lineArgs, fileArgs));
+                    FunctionLoader functionLoader = new FunctionLoader(functionFile);
+                    executor = new Executor(rmlStore, factory, functionLoader);
+                }
+            }
+
+
+
+        } catch( ParseException exp ) {
+            // oops, something went wrong
+            logger.error("Parsing failed. Reason: " + exp.getMessage());
+            printHelp(options);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+    }
+
+    private static String getPriorityOptionValue(String option, CommandLine args1, CommandLine args2) {
+        if (args1.hasOption(option)) {
+            return args1.getOptionValue(option);
+        } else {
+            return args2.getOptionValue(option);
+        }
+    }
+
+    private static void parseArguments(String[] args, Options options) {
         // create the parser
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
-            CommandLine line = parser.parse( options, args );
+            CommandLine line = parser.parse(options, args);
 
             if (line.hasOption("h")) {
                 printHelp(options);
@@ -73,7 +142,7 @@ public class Main {
                 setLoggerLevel(Level.ERROR);
             }
 
-            if (line.hasOption("m")){// Let's map!
+            if (line.hasOption("m")) {// Let's map!
                 File mappingFile = Utils.getFile(line.getOptionValue("m"));
                 QuadStore rmlStore = Utils.readTurtle(mappingFile);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
@@ -109,8 +178,7 @@ public class Main {
             } else {
                 printHelp(options);
             }
-        }
-        catch( ParseException exp ) {
+        } catch( ParseException exp ) {
             // oops, something went wrong
             logger.error("Parsing failed. Reason: " + exp.getMessage());
             printHelp(options);
