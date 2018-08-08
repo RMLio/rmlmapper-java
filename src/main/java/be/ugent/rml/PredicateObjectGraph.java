@@ -1,5 +1,7 @@
 package be.ugent.rml;
 
+import be.ugent.rml.term.ProvenancedTerm;
+
 public class PredicateObjectGraph {
 
     private ProvenancedTerm predicate;

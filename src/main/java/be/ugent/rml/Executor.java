@@ -7,6 +7,7 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.ProvenancedTerm;
 import be.ugent.rml.term.Term;
 
 import java.io.IOException;
@@ -18,7 +19,9 @@ public class Executor {
 
     private Initializer initializer;
     private HashMap<Term, List<Record>> recordsHolders;
-    private HashMap<Term, HashMap<Integer, ProvenancedTerm>> subjects;
+    // this map stores for every Triples Map, which is a Term, a map with the record index and the record's corresponding subject,
+    // which is a ProvenancedTerm.
+    private HashMap<Term, HashMap<Integer, ProvenancedTerm>> subjectCache;
     private QuadStore resultingTriples;
     private QuadStore rmlStore;
     private RecordsFactory recordsFactory;
@@ -36,7 +39,7 @@ public class Executor {
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
         this.recordsHolders = new HashMap<Term, List<Record>>();
-        this.subjects = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
+        this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
     }
 
     public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates) throws IOException {
@@ -200,17 +203,17 @@ public class Executor {
     }
 
     private ProvenancedTerm getSubject(Term triplesMap, Mapping mapping, Record record, int i) {
-        if (!this.subjects.containsKey(triplesMap)) {
-            this.subjects.put(triplesMap, new HashMap<Integer, ProvenancedTerm>());
+        if (!this.subjectCache.containsKey(triplesMap)) {
+            this.subjectCache.put(triplesMap, new HashMap<Integer, ProvenancedTerm>());
         }
 
-        if (!this.subjects.get(triplesMap).containsKey(i)) {
+        if (!this.subjectCache.get(triplesMap).containsKey(i)) {
             List<Term> nodes = mapping.getSubject().generate(record);
 
-            this.subjects.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0)));
+            this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0)));
         }
 
-        return this.subjects.get(triplesMap).get(i);
+        return this.subjectCache.get(triplesMap).get(i);
     }
 
     private List<ProvenancedTerm> getAllIRIs(Term triplesMap) throws IOException {

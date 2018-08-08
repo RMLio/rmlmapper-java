@@ -1,5 +1,6 @@
-package be.ugent.rml;
+package be.ugent.rml.term;
 
+import be.ugent.rml.Metadata;
 import be.ugent.rml.term.Term;
 
 public class ProvenancedTerm {
