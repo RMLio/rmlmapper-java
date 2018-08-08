@@ -6,9 +6,6 @@ import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.SimpleQuadStore;
-import be.ugent.rml.term.BlankNode;
-import be.ugent.rml.term.Literal;
-import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
 import java.io.IOException;
@@ -24,7 +21,7 @@ public class Executor {
     private QuadStore resultingTriples;
     private QuadStore rmlStore;
     private RecordsFactory recordsFactory;
-    private int blankNodeCounter;
+    private static int blankNodeCounter;
     private HashMap<Term, Mapping> mappings;
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
@@ -63,13 +60,15 @@ public class Executor {
                 if (subject != null) {
                     List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
 
-                    for (Template graph: mapping.getSubject().getGraphs()) {
-                        String g = Utils.applyTemplate(graph, record, true).get(0);
+                    mapping.getGraphs().forEach(gen -> {
+                        List<Term> terms = gen.generate(record);
 
-                        if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                            subjectGraphs.add(new ProvenancedTerm(new NamedNode(g)));
-                        }
-                    }
+                        terms.forEach(term -> {
+                            if (!term.getValue().equals(NAMESPACES.RR + "defaultGraph")) {
+                                subjectGraphs.add(new ProvenancedTerm(term));
+                            }
+                        });
+                    });
 
                     List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
@@ -94,58 +93,36 @@ public class Executor {
     private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record,  List<ProvenancedTerm> alreadyNeededGraphs) throws IOException {
         ArrayList<PredicateObjectGraph> results = new ArrayList<>();
 
-        List<PredicateObjectGenerator> predicateObjectGenerators = mapping.getPredicateObjectGenerators();
+        List<PredicateObjectGraphGenerator> predicateObjectGraphGenerators = mapping.getPredicateObjectGraphGenerators();
 
-        for (PredicateObjectGenerator po : predicateObjectGenerators) {
+        for (PredicateObjectGraphGenerator po : predicateObjectGraphGenerators) {
             ArrayList<ProvenancedTerm> predicates = new ArrayList<>();
             ArrayList<ProvenancedTerm> poGraphs = new ArrayList<>();
             poGraphs.addAll(alreadyNeededGraphs);
 
-            for (Template graph : po.getGraphs()) {
-                String g = Utils.applyTemplate(graph, record, true).get(0);
-
-                if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                    poGraphs.add(new ProvenancedTerm(new NamedNode(g)));
-                }
+            if (po.getGraphGenerator() != null) {
+                po.getGraphGenerator().generate(record).forEach(term -> {
+                    if (!term.getValue().equals(NAMESPACES.RR + "defaultGraph")) {
+                        poGraphs.add(new ProvenancedTerm(term));
+                    }
+                });
             }
 
-            List<Template> predicateRules = po.getPredicates();
-
-            predicateRules.forEach(predicateRule -> {
-                List<String> terms = Utils.applyTemplate(predicateRule, record);
-
-                terms.forEach(term -> {
-                    predicates.add(new ProvenancedTerm(new NamedNode(term)));
-                });
+            po.getPredicateGenerator().generate(record).forEach(p -> {
+                predicates.add(new ProvenancedTerm(p));
             });
 
-            if (po.getFunction() != null) {
-                ArrayList<ProvenancedTerm> objects = new ArrayList<>();
-                List<String> objectStrings = (List<String>) po.getFunction().execute(record);
+            if (po.getObjectGenerator() != null) {
+                List<Term> objects = po.getObjectGenerator().generate(record);
+                ArrayList<ProvenancedTerm> provenancedObjects = new ArrayList<>();
 
-                if (objectStrings.size() > 0) {
-                    if (po.getTermType().getValue().equals(NAMESPACES.RR + "IRI")) {
-                        for (String object : objectStrings) {
-                            //todo check valid IRI
-                            objects.add(new ProvenancedTerm(new NamedNode(object)));
-                        }
-                    } else {
-                        //is Literal
-                        //add language tag if present
-                        objectStrings.forEach(objectString -> {
-                            if (po.getLanguage() != null) {
-                                objects.add(new ProvenancedTerm(new Literal(objectString, po.getLanguage())));
-                            } else if (po.getDataType() != null) {
-                                //add datatype if present; language and datatype can't be combined because the language tag implies langString as datatype
-                                objects.add(new ProvenancedTerm(new Literal(objectString, po.getDataType())));
-                            } else {
-                                objects.add(new ProvenancedTerm(new Literal(objectString)));
-                            }
-                        });
-                    }
+                objects.forEach(object -> {
+                    provenancedObjects.add(new ProvenancedTerm(object));
+                });
 
+                if (objects.size() > 0) {
                     //add pogs
-                    results.addAll(combineMultiplePOGs(predicates, objects, poGraphs));
+                    results.addAll(combineMultiplePOGs(predicates, provenancedObjects, poGraphs));
                 }
 
                 //check if we are dealing with a parentTriplesMap (RefObjMap)
@@ -155,7 +132,7 @@ public class Executor {
                 //check if need to apply a join condition
                 if (!po.getJoinConditions().isEmpty()) {
                     objects = this.getIRIsWithConditions(record, po.getParentTriplesMap(), po.getJoinConditions());
-                    //this.generateTriples(subject, po.getPredicates(), objects, record, combinedGraphs);
+                    //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
                 } else {
                     objects = this.getAllIRIs(po.getParentTriplesMap());
                 }
@@ -228,26 +205,9 @@ public class Executor {
         }
 
         if (!this.subjects.get(triplesMap).containsKey(i)) {
-            //we want a IRI and not a Blank Node
-            if (mapping.getSubject().getTermType().getValue().equals(NAMESPACES.RR + "IRI")) {
-                List<String> subjects = (List<String>) mapping.getSubject().getFunction().execute(record);
-                String subject = null;
+            List<Term> nodes = mapping.getSubject().generate(record);
 
-                if (!subjects.isEmpty()) {
-                    subject = subjects.get(0);
-                }
-
-                this.subjects.get(triplesMap).put(i,new ProvenancedTerm(new NamedNode(subject)));
-            } else {
-                //we want a Blank Node
-
-                if (mapping.getSubject().getFunction() != null) {
-                    this.subjects.get(triplesMap).put(i, new ProvenancedTerm(new BlankNode(mapping.getSubject().getFunction().execute(record).get(0).toString())));
-                } else {
-                    this.subjects.get(triplesMap).put(i, new ProvenancedTerm(new BlankNode("" + this.blankNodeCounter)));
-                    this.blankNodeCounter++;
-                }
-            }
+            this.subjects.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0)));
         }
 
         return this.subjects.get(triplesMap).get(i);
@@ -297,5 +257,12 @@ public class Executor {
         });
 
         return results;
+    }
+
+    public static String getNewBlankNodeID() {
+        String temp = "" + Executor.blankNodeCounter;
+        Executor.blankNodeCounter++;
+
+        return temp;
     }
 }

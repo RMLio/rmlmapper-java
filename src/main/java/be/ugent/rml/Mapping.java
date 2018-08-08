@@ -1,22 +1,30 @@
 package be.ugent.rml;
 
+import be.ugent.rml.termgenerator.TermGenerator;
+
 import java.util.List;
 
 public class Mapping {
 
-    private TripleElement subject;
-    private List<PredicateObjectGenerator> predicateObjectGenerators;
+    private TermGenerator subject;
+    private List<PredicateObjectGraphGenerator> predicateObjectGraphGenerators;
+    private List<TermGenerator> graphs;
 
-    public Mapping(TripleElement subject, List<PredicateObjectGenerator> predicateObjectGenerators) {
+    public Mapping(TermGenerator subject, List<PredicateObjectGraphGenerator> predicateObjectGraphGenerators, List<TermGenerator> graphs) {
         this.subject = subject;
-        this.predicateObjectGenerators = predicateObjectGenerators;
+        this.predicateObjectGraphGenerators = predicateObjectGraphGenerators;
+        this.graphs = graphs;
     }
 
-    public TripleElement getSubject() {
+    public TermGenerator getSubject() {
         return subject;
     }
 
-    public List<PredicateObjectGenerator> getPredicateObjectGenerators() {
-        return predicateObjectGenerators;
+    public List<PredicateObjectGraphGenerator> getPredicateObjectGraphGenerators() {
+        return predicateObjectGraphGenerators;
+    }
+
+    public List<TermGenerator> getGraphs() {
+        return graphs;
     }
 }

@@ -5,6 +5,10 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import be.ugent.rml.termgenerator.BlankNodeGenerator;
+import be.ugent.rml.termgenerator.LiteralGenerator;
+import be.ugent.rml.termgenerator.NamedNodeGenerator;
+import be.ugent.rml.termgenerator.TermGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +21,11 @@ import java.util.stream.Collectors;
 
 public class MappingFactory {
     private final FunctionLoader functionLoader;
-    private TripleElement subject;
+    private TermGenerator subject;
+    private List<TermGenerator> graphs;
     private Term triplesMap;
     private QuadStore store;
-    private ArrayList<PredicateObjectGenerator> predicateObjectGenerators;
+    private ArrayList<PredicateObjectGraphGenerator> predicateObjectGraphGenerators;
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public MappingFactory(FunctionLoader functionLoader) {
@@ -31,13 +36,14 @@ public class MappingFactory {
         this.triplesMap = triplesMap;
         this.store = store;
         this.subject = null;
-        this.predicateObjectGenerators = new ArrayList<>();
+        this.predicateObjectGraphGenerators = new ArrayList<>();
+        this.graphs = null;
 
         parseSubjectMap();
         parsePredicateObjectMaps();
 
         //return the mapping
-        return new Mapping(subject, predicateObjectGenerators);
+        return new Mapping(subject, predicateObjectGraphGenerators, graphs);
     }
 
     private void parseSubjectMap() throws IOException {
@@ -57,7 +63,6 @@ public class MappingFactory {
 
                     //checking if we are dealing with a Blank Node as subject
                     if (!termTypes.isEmpty() && termTypes.get(0).equals(new NamedNode(NAMESPACES.RR  + "BlankNode"))) {
-                        this.subject = new TripleElement(null, new NamedNode(NAMESPACES.RR  + "BlankNode"), null);
                         String template = getGenericTemplate(subjectmap);
 
                         if (template != null) {
@@ -65,7 +70,10 @@ public class MappingFactory {
                             ArrayList<Template> temp = new ArrayList<>();
                             temp.add(parseTemplate(getGenericTemplate(subjectmap)));
                             parameters.put("_TEMPLATE", temp);
-                            this.subject.setFunction(new ApplyTemplateFunction(parameters, true));
+
+                            this.subject = new BlankNodeGenerator(new ApplyTemplateFunction(parameters, true));
+                        } else {
+                            this.subject = new BlankNodeGenerator();
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
@@ -73,36 +81,44 @@ public class MappingFactory {
                         ArrayList<Template> temp = new ArrayList<>();
                         temp.add(parseTemplate(getGenericTemplate(subjectmap)));
                         parameters.put("_TEMPLATE", temp);
-                        this.subject = new TripleElement(null, new NamedNode(NAMESPACES.RR + "IRI"), new ApplyTemplateFunction(parameters, true));
+
+                        this.subject = new NamedNodeGenerator(new ApplyTemplateFunction(parameters, true));
                     }
                 } else {
                     Function function = parseFunctionTermMap(functionValues.get(0));
 
-                    this.subject = new TripleElement(null, new NamedNode(NAMESPACES.RR + "IRI"), function);
+                    this.subject = new NamedNodeGenerator(function);
                 }
 
-                this.subject.setGraphs(parseGraphMaps(subjectmap));
+                this.graphs = parseGraphMaps(subjectmap);
 
                 //get classes
                 List<Term> classes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR  + "class"), null));
 
                 //we create predicateobjects for the classes
                 for (Term c: classes) {
-                    List<Template> predicates = new ArrayList<>();
-                    Template temp = new Template();
-                    temp.addElement(new TemplateElement(NAMESPACES.RDF + "type", TEMPLATETYPE.CONSTANT));
-                    predicates.add(temp);
-
+                    // configure predicategenerator
                     HashMap<String, List<Template>> parameters = new HashMap<>();
                     List<Template> temp2 = new ArrayList<>();
                     Template temp3 = new Template();
-                    temp3.addElement(new TemplateElement(c.getValue(), TEMPLATETYPE.CONSTANT));
+                    temp3.addElement(new TemplateElement(NAMESPACES.RDF + "type", TEMPLATETYPE.CONSTANT));
                     temp2.add(temp3);
 
                     parameters.put("_TEMPLATE", temp2);
 
+                    // configure objectgenerator
+                    HashMap<String, List<Template>> parameters2 = new HashMap<>();
+                    temp2 = new ArrayList<>();
+                    temp3 = new Template();
+                    temp3.addElement(new TemplateElement(c.getValue(), TEMPLATETYPE.CONSTANT));
+                    temp2.add(temp3);
+
+                    parameters2.put("_TEMPLATE", temp2);
+
                     // Don't put in graph for rr:class, subject is already put in graph, otherwise double export
-                    predicateObjectGenerators.add(new PredicateObjectGenerator(predicates, null, new NamedNode(NAMESPACES.RR + "IRI"), new ApplyTemplateFunction(parameters)));
+                    NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(new ApplyTemplateFunction(parameters));
+                    NamedNodeGenerator objectGenerator = new NamedNodeGenerator(new ApplyTemplateFunction(parameters2));
+                    predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(predicateGenerator, objectGenerator, null));
                 }
             } else {
                 throw new Error(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");
@@ -126,27 +142,26 @@ public class MappingFactory {
                 predicates.add(parseTemplate(getGenericTemplate(pm)));
             }
 
-            List<Template> graphs = parseGraphMaps(pom);
+            ArrayList<TermGenerator> predicateGenerators = new ArrayList<>();
+
+            predicates.forEach(predicate -> {
+                HashMap<String, List<Template>> parameters = new HashMap<>();
+                ArrayList<Template> temp = new ArrayList<>();
+                temp.add(predicate);
+                parameters.put("_TEMPLATE", temp);
+
+                predicateGenerators.add(new NamedNodeGenerator(new ApplyTemplateFunction(parameters, true)));
+            });
+
+            List<TermGenerator> graphGenerators = parseGraphMaps(pom);
             List<Term> objectmaps = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "objectMap"), null));
 
             for (Term objectmap : objectmaps) {
                 List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
                 Term termType = getTermType(objectmap);
-                Term datatype = null;
-                String language = null;
 
                 List<Term> datatypes = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "datatype"), null));
                 List<Term> languages = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "language"), null));
-
-                //check if we need to apply a datatype to the object
-                if (!datatypes.isEmpty()) {
-                    datatype = datatypes.get(0);
-                }
-
-                //check if we need to apply a language to the object
-                if (!languages.isEmpty()) {
-                    language = languages.get(0).getValue();
-                }
 
                 if (functionValues.isEmpty()) {
                     String genericTemplate = getGenericTemplate(objectmap);
@@ -156,7 +171,33 @@ public class MappingFactory {
                         ArrayList<Template> temp = new ArrayList<>();
                         temp.add(parseTemplate(genericTemplate));
                         parameters.put("_TEMPLATE", temp);
-                        predicateObjectGenerators.add(new PredicateObjectGenerator(predicates, graphs, termType, new ApplyTemplateFunction(parameters, termType.equals(NAMESPACES.RR + "IRI")), language, datatype));
+                        Function fn = new ApplyTemplateFunction(parameters, termType.getValue().equals(NAMESPACES.RR + "IRI"));
+                        TermGenerator oGen;
+
+                        if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
+                            //check if we need to apply a datatype to the object
+                            if (!datatypes.isEmpty()) {
+                                oGen = new LiteralGenerator(fn, datatypes.get(0));
+                                //check if we need to apply a language to the object
+                            } else if (!languages.isEmpty()) {
+                                oGen = new LiteralGenerator(fn, languages.get(0).getValue());
+                            } else {
+                                oGen = new LiteralGenerator(fn);
+                            }
+                        } else {
+                            oGen = new NamedNodeGenerator(fn);
+                        }
+
+                        predicateGenerators.forEach(pGen -> {
+                            if (graphGenerators.isEmpty()) {
+                                predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, null));
+                            } else {
+                                graphGenerators.forEach(gGen -> {
+                                    predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, gGen));
+                                });
+                            }
+
+                        });
                     } else {
                         //look for parenttriplesmap
                         List<Term> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), null));
@@ -167,10 +208,9 @@ public class MappingFactory {
                             }
 
                             Term parentTriplesMap = parentTriplesMaps.get(0);
-                            PredicateObjectGenerator po = new PredicateObjectGenerator(predicates, graphs, new NamedNode(NAMESPACES.RR + "IRI"), null);
-                            po.setParentTriplesMap(parentTriplesMap);
 
                             List<Term> joinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "joinCondition"), null));
+                            ArrayList<JoinConditionFunction> joinConditionFunctions = new ArrayList<>();
 
                             for (Term joinCondition : joinConditions) {
 
@@ -199,24 +239,48 @@ public class MappingFactory {
                                     Object[] detailsChild = {"child", childsList};
                                     parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
-                                    JoinConditionFunction joinConditionFunction = new JoinConditionFunction(equal, parameters);
-
-                                    po.addJoinCondition(joinConditionFunction);
+                                    joinConditionFunctions.add(new JoinConditionFunction(equal, parameters));
                                 }
                             }
 
-                            predicateObjectGenerators.add(po);
+                            predicateGenerators.forEach(pGen -> {
+                                List<PredicateObjectGraphGenerator> pos = getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(pGen, null, graphGenerators);
+
+                                pos.forEach(pogGen -> {
+                                    pogGen.setParentTriplesMap(parentTriplesMap);
+
+                                    joinConditionFunctions.forEach(jcf -> {
+                                        pogGen.addJoinCondition(jcf);
+                                    });
+
+                                    predicateObjectGraphGenerators.add(pogGen);
+                                });
+                            });
                         }
                     }
                 } else {
-                    Function function = parseFunctionTermMap(functionValues.get(0));
+                    Function fn = parseFunctionTermMap(functionValues.get(0));
+                    TermGenerator gen;
 
-                    if (termType == null) {
-                        // TODO be smarter than this
-                        termType = new NamedNode(NAMESPACES.RR + "Literal");
+                    //TODO is literal the default?
+                    if (termType == null || termType.equals( new NamedNode(NAMESPACES.RR + "Literal"))) {
+                        //check if we need to apply a datatype to the object
+                        if (!datatypes.isEmpty()) {
+                            gen = new LiteralGenerator(fn, datatypes.get(0));
+                            //check if we need to apply a language to the object
+                        } else if (!languages.isEmpty()) {
+                            gen = new LiteralGenerator(fn, languages.get(0).getValue());
+                        } else {
+                            gen = new LiteralGenerator(fn);
+                        }
+                    } else {
+                        gen = new NamedNodeGenerator(fn);
                     }
 
-                    predicateObjectGenerators.add(new PredicateObjectGenerator(predicates, graphs, termType, function, language, datatype));
+                    predicateGenerators.forEach(pGen -> {
+                        List<PredicateObjectGraphGenerator> pogGens = getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(pGen, gen, graphGenerators);
+                        predicateObjectGraphGenerators.addAll(pogGens);
+                    });
                 }
             }
 
@@ -224,12 +288,8 @@ public class MappingFactory {
             List<Term> objectsConstants = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "object"), null));
 
             for (Term o : objectsConstants) {
-                String termType = NAMESPACES.RR + "Literal";
+                TermGenerator gen;
                 String oStr = o.getValue();
-
-                if (!(o instanceof Literal)) {
-                    termType = NAMESPACES.RR + "IRI";
-                }
 
                 HashMap<String, List<Template>> parameters = new HashMap<>();
                 List<Template> temp2 = new ArrayList<>();
@@ -238,26 +298,53 @@ public class MappingFactory {
                 temp2.add(temp3);
 
                 parameters.put("_TEMPLATE", temp2);
-                predicateObjectGenerators.add(new PredicateObjectGenerator(predicates, graphs, new NamedNode(termType), new ApplyTemplateFunction(parameters)));
+
+                Function fn = new ApplyTemplateFunction(parameters);
+
+                if (o instanceof Literal) {
+                    gen = new LiteralGenerator(fn);
+                } else {
+                    gen = new NamedNodeGenerator(fn);
+                }
+
+                predicateGenerators.forEach(pGen -> {
+                    List<PredicateObjectGraphGenerator> pogGens = getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(pGen, gen, graphGenerators);
+                    predicateObjectGraphGenerators.addAll(pogGens);
+                });
             }
         }
     }
 
-    private List<Template> parseGraphMaps(Term termMap) {
-        ArrayList<Template> graphs = new ArrayList<>();
+    private List<TermGenerator> parseGraphMaps(Term termMap) {
+        ArrayList<TermGenerator> graphs = new ArrayList<>();
 
         List<Term> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graphMap"), null));
 
         for (Term graphMap : graphMaps) {
-            graphs.add(parseTemplate(getGenericTemplate(graphMap)));
+            String genericTemplate = getGenericTemplate(graphMap);
+
+            HashMap<String, List<Template>> parameters = new HashMap<>();
+            ArrayList<Template> temp = new ArrayList<>();
+            temp.add(parseTemplate(genericTemplate));
+            parameters.put("_TEMPLATE", temp);
+
+            graphs.add(new NamedNodeGenerator(new ApplyTemplateFunction(parameters, true)));
         }
 
         List<Term> graphShortCuts = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graph"), null));
 
         for (Term graph : graphShortCuts) {
-            Template temp = new Template();
-            temp.addElement(new TemplateElement(graph.getValue(), TEMPLATETYPE.CONSTANT));
-            graphs.add(temp);
+            String gStr = graph.getValue();
+
+            HashMap<String, List<Template>> parameters = new HashMap<>();
+            List<Template> temp2 = new ArrayList<>();
+            Template temp3 = new Template();
+            temp3.addElement(new TemplateElement(gStr, TEMPLATETYPE.CONSTANT));
+            temp2.add(temp3);
+
+            parameters.put("_TEMPLATE", temp2);
+
+            graphs.add(new NamedNodeGenerator(new ApplyTemplateFunction(parameters)));
         }
 
         return graphs;
@@ -411,6 +498,20 @@ public class MappingFactory {
         }
 
         return result;
+    }
+
+    private List<PredicateObjectGraphGenerator> getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(TermGenerator pGen, TermGenerator oGen, List<TermGenerator> gGens) {
+        ArrayList<PredicateObjectGraphGenerator> list = new ArrayList<>();
+
+        gGens.forEach(gGen -> {
+            list.add(new PredicateObjectGraphGenerator(pGen, oGen, gGen));
+        });
+
+        if (gGens.isEmpty()) {
+            list.add(new PredicateObjectGraphGenerator(pGen, oGen, null));
+        }
+
+        return list;
     }
 
 }
