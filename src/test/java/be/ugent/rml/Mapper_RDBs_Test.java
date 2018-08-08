@@ -7,8 +7,8 @@ import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.*;
 
+import com.spotify.docker.client.messages.*;
 import org.junit.*;
 import org.junit.Test;
 
@@ -17,20 +17,21 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RunWith(ZohhakRunner.class)
 public class Mapper_RDBs_Test extends TestCore {
+
     // Change this if needed
     private static final Boolean LOCAL_TESTING = false;
 
@@ -39,16 +40,18 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static final String DOCKER_HOST = "unix:///var/run/docker.sock";
 
-    private static final int PORTNUMBER_MYSQL = 50898;
-    private static final int PORTNUMBER_POSTGRESQL = 5432;
-    private static final int PORTNUMBER_SQLSERVER = 50899;
+    private static int PORTNUMBER_MYSQL;
+    private static int PORTNUMBER_POSTGRESQL;
+    private static int PORTNUMBER_SQLSERVER;
 
-    private static final String CONNECTIONSTRING_POSTGRESQL_LOCAL = String.format("jdbc:postgresql://0.0.0.0:%d/postgres?user=postgres", PORTNUMBER_POSTGRESQL);
-    private static final String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;databaseName=TestDB;user=sa;password=$uP3RC0mpl3Xp@$$w0rD!;";
+    private static String CONNECTIONSTRING_POSTGRESQL_LOCAL = "jdbc:postgresql://0.0.0.0:%d/postgres?user=postgres";
+    private static String CONNECTIONSTRING_SQLSERVER_LOCAL = "jdbc:sqlserver://localhost;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
 
-    private static final String CONNECTIONSTRING_POSTGRESQL = "jdbc:postgresql://postgres/postgres?user=postgres";
-    private static final String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;";
+    private static String CONNECTIONSTRING_MYSQL = "jdbc:mysql://localhost:%d/test";
+    private static String CONNECTIONSTRING_POSTGRESQL = "jdbc:postgresql://postgres/postgres?user=postgres";
+    private static String CONNECTIONSTRING_SQLSERVER = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
 
+    private static HashSet<String> tempFiles = new HashSet<>();
 
     private static DB mysqlDB;
     private static DockerDBInfo postgreSQLDB;
@@ -72,11 +75,24 @@ public class Mapper_RDBs_Test extends TestCore {
 
     @BeforeClass
     public static void startDBs() throws Exception {
+        try {
+            PORTNUMBER_MYSQL = Utils.getFreePortNumber();
+            PORTNUMBER_POSTGRESQL = Utils.getFreePortNumber();
+            PORTNUMBER_SQLSERVER = Utils.getFreePortNumber();
+        } catch (Exception ex) {
+            throw new Error("Could not find a free port number for RDBs testing.");
+        }
+
+        CONNECTIONSTRING_POSTGRESQL_LOCAL = String.format(CONNECTIONSTRING_POSTGRESQL_LOCAL, PORTNUMBER_POSTGRESQL);
+        CONNECTIONSTRING_MYSQL = String.format(CONNECTIONSTRING_MYSQL, PORTNUMBER_MYSQL);
+
+
+
         startMySQLDB();
 
         if (LOCAL_TESTING) {
             startPostgreSQLLocal();
-            startSQLServerLocal();
+            //startSQLServerLocal();
         } else {
             startPostgreSQL();
             startSQLServer();
@@ -90,10 +106,30 @@ public class Mapper_RDBs_Test extends TestCore {
         }
         closeDocker(postgreSQLDB);
         closeDocker(sqlServerDB);
+
+
+        // Make sure all tempFiles are removed
+        int counter = 0;
+        while (!tempFiles.isEmpty()) {
+            for (Iterator<String> i = tempFiles.iterator(); i.hasNext();) {
+                try {
+                    if (new File(i.next()).delete()) {
+                        i.remove();
+                    }
+                } catch (Exception ex) {
+                    counter++;
+                    ex.printStackTrace();
+                    // Prevent infinity loops
+                    if (counter > 100) {
+                        throw new Error("Could not remove all temp mapping files.");
+                    }
+                }
+            }
+        }
     }
 
     private static void closeDocker(DockerDBInfo dockerDBInfo) {
-        if (dockerDBInfo.docker != null) {
+        if (dockerDBInfo != null && dockerDBInfo.docker != null) {
             try {
                 // Kill container
                 dockerDBInfo.docker.killContainer(dockerDBInfo.containerID);
@@ -125,8 +161,11 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0000-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0000-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0000-MySQL/output.ttl";
+
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
 
@@ -135,8 +174,11 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0001a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0001a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0001a-MySQL/output.ttl";
+
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test
@@ -144,8 +186,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0001b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0001b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0001b-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test
@@ -153,8 +197,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002a-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test
@@ -162,8 +208,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002b-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -171,8 +219,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002c-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -180,8 +230,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002e-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002e-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002e-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test
@@ -189,8 +241,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002g-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002g-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002g-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test
@@ -198,8 +252,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002h-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002h-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002h-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -207,8 +263,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002i-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002i-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002i-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test
@@ -216,8 +274,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0002j-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002j-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002j-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -225,8 +285,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0003a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0003a-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test
@@ -234,8 +296,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0003b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0003b-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test
@@ -243,8 +307,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0003c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0003c-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -253,8 +319,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0004a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0004a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0004a-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -263,8 +331,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0004b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0004b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0004b-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -273,8 +343,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0006a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0006a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0006a-MySQL/output.nq";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -283,8 +355,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007a-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -293,8 +367,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007b-MySQL/output.nq";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -303,8 +379,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007c-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -313,8 +391,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007d-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007d-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007d-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -323,8 +403,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007e-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007e-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007e-MySQL/output.nq";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -333,8 +415,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007f-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007f-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007f-MySQL/output.nq";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -343,8 +427,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007g-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007g-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007g-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -353,8 +439,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0007h-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007h-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0007h-MySQL/output.nq";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -363,8 +451,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0008a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0008a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0008a-MySQL/output.nq";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -373,8 +463,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0008b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0008b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0008b-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -383,8 +475,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0008c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0008c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0008c-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -393,8 +487,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0009a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0009a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0009a-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -403,8 +499,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0009b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0009b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0009b-MySQL/output.nq";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test
@@ -412,8 +510,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0010a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0010a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0010a-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -422,8 +522,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0010b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0010b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0010b-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -432,8 +534,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0010c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0010c-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0010c-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -442,8 +546,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0011b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0011b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0011b-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -452,8 +558,10 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0012a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0012a-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0012a-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
 
     }
 
@@ -462,9 +570,11 @@ public class Mapper_RDBs_Test extends TestCore {
         String resourcePath = "./test-cases/RMLTC0012b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0012b-MySQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0012b-MySQL/output.ttl";
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
-        doMapping(mappingPath, outputPath);
-        
+        doMapping(tempMappingPath, outputPath);
+        deleteTempMappingFile(tempMappingPath);
+
     }
 
     // PostgreSQL ------------------------------------------------------------------------------------------------------
@@ -473,17 +583,12 @@ public class Mapper_RDBs_Test extends TestCore {
         postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_POSTGRESQL); // see .gitlab-ci.yml file
     }
 
-    /*
-      USED FOR LOCAL TESTING
-      Change    d2rq:jdbcDSN "jdbc:postgresql://postgres/postgres"; to   d2rq:jdbcDSN "jdbc:postgresql://localhost:5432/postgres";
-      in the mapping files before executing
-  */
     private static void startPostgreSQLLocal() {
         postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_POSTGRESQL_LOCAL);
 
         final String address = "0.0.0.0";
         final String exportedPort = "5432";
-        final String image = "postgres:10.4";
+        final String image = "postgres:latest";
 
         // Map exported port to our static PORTNUMBER_POSTGRESQL
         final Map<String, List<PortBinding>> portBindings = new HashMap<>();
@@ -541,6 +646,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
         String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -548,7 +655,9 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -557,6 +666,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0002c-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002c-PostgreSQL/output.ttl";
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -564,7 +675,9 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -573,6 +686,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0002e-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002e-PostgreSQL/output.ttl";
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -580,7 +695,9 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -589,6 +706,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0002i-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0002i-PostgreSQL/output.ttl";
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -596,7 +715,9 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
 
     @Test(expected = Error.class)
@@ -605,6 +726,8 @@ public class Mapper_RDBs_Test extends TestCore {
         String mappingPath = "./test-cases/RMLTC0003a-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/RMLTC0003a-PostgreSQL/output.ttl";
 
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
+
         // Execute SQL
         String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
         sql = sql.replaceAll("\n", "");
@@ -612,28 +735,31 @@ public class Mapper_RDBs_Test extends TestCore {
         conn.createStatement().execute(sql);
         conn.close();
 
-        doMapping(mappingPath, outputPath);
+        doMapping(tempMappingPath, outputPath);
+
+        deleteTempMappingFile(tempMappingPath);
     }
+
 
     // SQL Server ------------------------------------------------------------------------------------------------------
 
     private static void startSQLServer() {
         sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER);
+        createSQLServerTestDB();
+    }
+
+    private static void createSQLServerTestDB() {
         // Creates testing db
         try {
-            final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString);
+            // Can't set DB yet in connection string --> remove here
+            final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString.substring(0, sqlServerDB.connectionString.lastIndexOf("databaseName=")));
             conn.createStatement().execute("CREATE DATABASE TestDB");
             conn.close();
         } catch (SQLException ex) {
             // Doesn't matter
         }
     }
-
-    /*
-     USED FOR LOCAL TESTING
-     Change     jdbc:sqlserver://localhost;databaseName=TestDB;   to   d2rq:jdbcDSN "jdbc:sqlserver://sqlserver;databaseName=TestDB";
-     in the mapping files before executing
- */
+    // TODO: fix this
     private static void startSQLServerLocal()  {
         sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_SQLSERVER_LOCAL);
 
@@ -651,17 +777,15 @@ public class Mapper_RDBs_Test extends TestCore {
                 .portBindings(portBindings)
                 .build();
 
-        final Map<String, String> configLabels = new HashMap<>();
-        configLabels.put("ACCEPT_EULA", "Y");
-        configLabels.put("SA_PASSWORD", "$uP3RC0mpl3Xp@$$w0rD!");
-
         final ContainerConfig config = ContainerConfig.builder()
                 .hostConfig(hostConfig)
-                .labels(configLabels)
                 .image(image).exposedPorts(exportedPort)
+                .env("ACCEPT_EULA=Y")
+                .env("SA_PASSWORD=YourStrong!Passw0rd")
                 .build();
 
         startDockerContainer(image, config, sqlServerDB);
+        createSQLServerTestDB();
     }
 
     @TestWith({
@@ -699,58 +823,97 @@ public class Mapper_RDBs_Test extends TestCore {
             "RMLTC0012b-SQLServer, ttl"
     })
     public void evaluate_XXXX_RDBs_SQLServer(String resourceDir, String outputExtension) throws Exception {
-        String resourcePath = "test-cases/" + resourceDir + "/resource.sql";
-        String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
-        String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/" + resourceDir + "/resource.sql";
+            String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
+            String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+            doMapping(tempMappingPath, outputPath);
+
+            deleteTempMappingFile(tempMappingPath);
+        }
     }
 
     @Test(expected = Error.class)
     public void evaluate_0002c_RDBs_SQLServer() throws Exception {
-        String resourcePath = "test-cases/RMLTC0002c-SQLServer/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0002c-SQLServer/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002c-SQLServer/output.ttl";
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/RMLTC0002c-SQLServer/resource.sql";
+            String mappingPath = "./test-cases/RMLTC0002c-SQLServer/mapping.ttl";
+            String outputPath = "test-cases/RMLTC0002c-SQLServer/output.ttl";
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+            doMapping(tempMappingPath, outputPath);
+
+            deleteTempMappingFile(tempMappingPath);
+        } else {
+            throw new Error();
+        }
     }
 
     @Test(expected = Error.class)
     public void evaluate_0002e_RDBs_SQLServer() throws Exception {
-        String resourcePath = "test-cases/RMLTC0002e-SQLServer/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0002e-SQLServer/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002e-SQLServer/output.ttl";
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/RMLTC0002e-SQLServer/resource.sql";
+            String mappingPath = "./test-cases/RMLTC0002e-SQLServer/mapping.ttl";
+            String outputPath = "test-cases/RMLTC0002e-SQLServer/output.ttl";
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+            doMapping(tempMappingPath, outputPath);
+
+            deleteTempMappingFile(tempMappingPath);
+        } else {
+            throw new Error();
+        }
     }
 
     @Test(expected = Error.class)
     public void evaluate_0002i_RDBs_SQLServer() throws Exception {
-        String resourcePath = "test-cases/RMLTC0002i-SQLServer/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0002i-SQLServer/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002i-SQLServer/output.ttl";
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/RMLTC0002i-SQLServer/resource.sql";
+            String mappingPath = "./test-cases/RMLTC0002i-SQLServer/mapping.ttl";
+            String outputPath = "test-cases/RMLTC0002i-SQLServer/output.ttl";
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+            doMapping(tempMappingPath, outputPath);
+
+            deleteTempMappingFile(tempMappingPath);
+        } else {
+            throw new Error();
+        }
     }
 
     @Test(expected = Error.class)
     public void evaluate_0003a_RDBs_SQLServer() throws Exception {
-        String resourcePath = "test-cases/RMLTC0003a-SQLServer/resource.sql";
-        String mappingPath = "./test-cases/RMLTC0003a-SQLServer/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0003a-SQLServer/output.ttl";
+        if (!LOCAL_TESTING) {
+            String resourcePath = "test-cases/RMLTC0003a-SQLServer/resource.sql";
+            String mappingPath = "./test-cases/RMLTC0003a-SQLServer/mapping.ttl";
+            String outputPath = "test-cases/RMLTC0003a-SQLServer/output.ttl";
 
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+            executeSQL(sqlServerDB.connectionString, resourcePath);
 
-        doMapping(mappingPath, outputPath);
+            String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_SQLSERVER, CONNECTIONSTRING_SQLSERVER_LOCAL);
+
+            doMapping(tempMappingPath, outputPath);
+
+            deleteTempMappingFile(tempMappingPath);
+        } else {
+            throw new Error();
+        }
     }
+
 
 
     // Utils -----------------------------------------------------------------------------------------------------------
@@ -784,7 +947,7 @@ public class Mapper_RDBs_Test extends TestCore {
                     conn = DriverManager.getConnection(dockerDBInfo.connectionString);
                     conn.close();
                 } catch (SQLException ignored) {
-                    logger.debug("Retrying ({}/20)...", tries);
+                    logger.debug("Retrying ({}/20) with connection string: {}", tries, dockerDBInfo.connectionString);
                     tries++;
                     Thread.sleep(500);
                 }
@@ -809,4 +972,38 @@ public class Mapper_RDBs_Test extends TestCore {
         }
         conn.close();
     }
+
+    private static String replaceDSNInMappingFile(String path, String connectionString, String connectionStringLocal) {
+        try {
+            // Read mapping file
+            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
+
+            String dsn = LOCAL_TESTING ? connectionStringLocal: connectionString;
+
+            // Replace "PORT" in mapping file by new port
+            mapping = mapping.replace("CONNECTIONDSN", dsn);
+
+            // Write to temp mapping file
+
+            String fileName = Integer.toString(Math.abs(path.hashCode())) + "tempMapping.ttl";
+            Path file = Paths.get(fileName);
+            Files.write(file, Arrays.asList(mapping.split("\n")));
+
+            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
+            tempFiles.add(absolutePath);
+
+            return absolutePath;
+
+        } catch (IOException ex) {
+            throw new Error(ex.getMessage());
+        }
+    }
+
+    private static void deleteTempMappingFile(String absolutePath) {
+        File file = new File(absolutePath);
+        if (file.delete()) {
+            tempFiles.remove(absolutePath);
+        }
+    }
+
 }
