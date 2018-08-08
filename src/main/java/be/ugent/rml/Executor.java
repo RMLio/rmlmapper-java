@@ -21,7 +21,7 @@ public class Executor {
     private QuadStore resultingTriples;
     private QuadStore rmlStore;
     private RecordsFactory recordsFactory;
-    private static int blankNodeCounter;
+    private static int blankNodeCounter = 0;
     private HashMap<Term, Mapping> mappings;
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
@@ -34,7 +34,6 @@ public class Executor {
         this.resultingTriples = new SimpleQuadStore();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
-        this.blankNodeCounter = 0;
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjects = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
     }
