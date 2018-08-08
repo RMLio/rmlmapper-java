@@ -6,6 +6,7 @@ import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 
 import com.spotify.docker.client.messages.*;
@@ -36,9 +37,6 @@ public class Mapper_RDBs_Test extends TestCore {
     private static final Boolean LOCAL_TESTING = false;
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_RDBs_Test.class);
-
-
-    private static final String DOCKER_HOST = "unix:///var/run/docker.sock";
 
     private static int PORTNUMBER_MYSQL;
     private static int PORTNUMBER_POSTGRESQL;
@@ -920,7 +918,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     private static void startDockerContainer(String image, ContainerConfig containerConfig, DockerDBInfo dockerDBInfo) {
         try {
-            final DockerClient docker = new DefaultDockerClient(DOCKER_HOST);
+            final DockerClient docker = DefaultDockerClient.fromEnv().build();
 
             docker.pull(image);
 
@@ -955,7 +953,7 @@ public class Mapper_RDBs_Test extends TestCore {
             if (tries > 20) {
                 throw new SQLException("Could not connect to the container of: " + image);
             }
-        } catch (InterruptedException | DockerException | SQLException e) {
+        } catch (InterruptedException | DockerException | DockerCertificateException | SQLException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
