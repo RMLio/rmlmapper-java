@@ -6,6 +6,7 @@ import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.SimpleQuadStore;
+import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class Executor {
                         List<Term> terms = gen.generate(record);
 
                         terms.forEach(term -> {
-                            if (!term.getValue().equals(NAMESPACES.RR + "defaultGraph")) {
+                            if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
                                 subjectGraphs.add(new ProvenancedTerm(term));
                             }
                         });
@@ -101,7 +102,7 @@ public class Executor {
 
             if (po.getGraphGenerator() != null) {
                 po.getGraphGenerator().generate(record).forEach(term -> {
-                    if (!term.getValue().equals(NAMESPACES.RR + "defaultGraph")) {
+                    if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
                         poGraphs.add(new ProvenancedTerm(term));
                     }
                 });

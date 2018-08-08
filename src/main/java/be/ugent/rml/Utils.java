@@ -290,15 +290,15 @@ public class Utils {
     }
 
     public static List<Term> getList(QuadStore store, Term first, List<Term> list) {
-        if (first.getValue().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+        if (first.equals(new NamedNode(NAMESPACES.RDF + "nil"))) {
             return list;
         }
 
-        Term value = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"), null)).get(0);
-        Term next = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest"), null)).get(0);
+        Term value = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode(NAMESPACES.RDF + "first"), null)).get(0);
+        Term next = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode(NAMESPACES.RDF + "rest"), null)).get(0);
         list.add(value);
 
-        if (next.getValue().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+        if (next.equals(new NamedNode(NAMESPACES.RDF + "nil"))) {
             return list;
         } else {
             list = getList(store, next, list);

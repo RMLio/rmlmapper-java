@@ -171,7 +171,7 @@ public class MappingFactory {
                         ArrayList<Template> temp = new ArrayList<>();
                         temp.add(parseTemplate(genericTemplate));
                         parameters.put("_TEMPLATE", temp);
-                        Function fn = new ApplyTemplateFunction(parameters, termType.getValue().equals(NAMESPACES.RR + "IRI"));
+                        Function fn = new ApplyTemplateFunction(parameters, termType.equals(new NamedNode(NAMESPACES.RR + "IRI")));
                         TermGenerator oGen;
 
                         if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {

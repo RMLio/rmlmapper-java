@@ -43,7 +43,7 @@ public class RecordsFactory {
             } else {
                 String source = sources.get(0).getValue();
 
-                if (referenceFormulations.get(0).getValue().equals(NAMESPACES.QL + "CSV")) {
+                if (referenceFormulations.get(0).equals(new NamedNode(NAMESPACES.QL + "CSV"))) {
                     if (allCSVRecords.containsKey(source)){
                         return allCSVRecords.get(source);
                     } else {
@@ -56,7 +56,7 @@ public class RecordsFactory {
 
                         return allCSVRecords.get(source);
                     }
-                } else if (referenceFormulations.get(0).getValue().equals(NAMESPACES.QL + "XPath")) {
+                } else if (referenceFormulations.get(0).equals(new NamedNode(NAMESPACES.QL + "XPath"))) {
                     if (!iterators.isEmpty()) {
                         String iterator = iterators.get(0).getValue();
 
@@ -83,7 +83,7 @@ public class RecordsFactory {
                     } else {
                         throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for XPath.");
                     }
-                } else if (referenceFormulations.get(0).getValue().equals(NAMESPACES.QL + "JSONPath")) {
+                } else if (referenceFormulations.get(0).equals(new NamedNode(NAMESPACES.QL + "JSONPath"))) {
                     if (!iterators.isEmpty()) {
                         String iterator = iterators.get(0).getValue();
 
