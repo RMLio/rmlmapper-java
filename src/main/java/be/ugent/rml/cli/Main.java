@@ -87,20 +87,44 @@ public class Main {
                 setLoggerLevel(Level.ERROR);
             }
 
-            if (!lineArgs.hasOption("m") && !lineArgs.hasOption("m")) {
+            String mOptionValue = getPriorityOptionValue("m", lineArgs, fileArgs;
+            if (mOptionValue == null) {
                 printHelp(options);
             } else {
-                File mappingFile = Utils.getFile(getPriorityOptionValue("m", lineArgs, fileArgs));
+                File mappingFile = Utils.getFile(mOptionValue);
                 QuadStore rmlStore = Utils.readTurtle(mappingFile);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
                 Executor executor;
 
-                if (!lineArgs.hasOption("f") && !fileArgs.hasOption("f")) {
+                String fOptionValue = getPriorityOptionValue("f", lineArgs, fileArgs);
+                if (fOptionValue == null) {
                     executor = new Executor(rmlStore, factory);
                 } else {
-                    File functionFile = Utils.getFile(getPriorityOptionValue("f", lineArgs, fileArgs));
+                    File functionFile = Utils.getFile(fOptionValue);
                     FunctionLoader functionLoader = new FunctionLoader(functionFile);
                     executor = new Executor(rmlStore, factory, functionLoader);
+                }
+
+                List<String> triplesMaps = new ArrayList<>();
+
+                String tOptionValue = getPriorityOptionValue("t", lineArgs, fileArgs);
+                if (tOptionValue != null) {
+                    triplesMaps = Arrays.asList(tOptionValue.split(","));
+                }
+
+                QuadStore result = executor.execute(triplesMaps, lineArgs.hasOption("d") || fileArgs.hasOption("d"));
+
+                TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
+
+                String outputFile = getPriorityOptionValue("o", lineArgs, fileArgs);
+                if (!tq.getTriples().isEmpty()) {
+                    //write triples
+                    writeOutput("triple", tq.getTriples(), "nt", outputFile);
+                }
+
+                if (!tq.getQuads().isEmpty()) {
+                    //write quads
+                    writeOutput("quad", tq.getQuads(), "nq", outputFile);
                 }
             }
 
@@ -119,73 +143,13 @@ public class Main {
     private static String getPriorityOptionValue(String option, CommandLine args1, CommandLine args2) {
         if (args1.hasOption(option)) {
             return args1.getOptionValue(option);
-        } else {
+        } else if (args2.hasOption(option)) {
             return args2.getOptionValue(option);
+        } else {
+            return null;
         }
     }
 
-    private static void parseArguments(String[] args, Options options) {
-        // create the parser
-        CommandLineParser parser = new DefaultParser();
-        try {
-            // parse the command line arguments
-            CommandLine line = parser.parse(options, args);
-
-            if (line.hasOption("h")) {
-                printHelp(options);
-                return;
-            }
-
-            if (line.hasOption("v")) {
-                setLoggerLevel(Level.DEBUG);
-            } else {
-                setLoggerLevel(Level.ERROR);
-            }
-
-            if (line.hasOption("m")) {// Let's map!
-                File mappingFile = Utils.getFile(line.getOptionValue("m"));
-                QuadStore rmlStore = Utils.readTurtle(mappingFile);
-                RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
-                Executor executor;
-
-                if (line.hasOption("f")) {
-                    File functionFile = Utils.getFile(line.getOptionValue("f"));
-                    FunctionLoader functionLoader = new FunctionLoader(functionFile);
-                    executor = new Executor(rmlStore, factory, functionLoader);
-                } else {
-                    executor = new Executor(rmlStore, factory);
-                }
-
-                List<String> triplesMaps = new ArrayList<>();
-
-                if (line.hasOption("t")) {
-                    triplesMaps = Arrays.asList(line.getOptionValue("t").split(","));
-                }
-
-                QuadStore result = executor.execute(triplesMaps, line.hasOption("d"));
-
-                TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
-
-                if (!tq.getTriples().isEmpty()) {
-                    //write triples
-                    writeOutput("triple", tq.getTriples(), "nt", line);
-                }
-
-                if (!tq.getQuads().isEmpty()) {
-                    //write quads
-                    writeOutput("quad", tq.getQuads(), "nq", line);
-                }
-            } else {
-                printHelp(options);
-            }
-        } catch( ParseException exp ) {
-            // oops, something went wrong
-            logger.error("Parsing failed. Reason: " + exp.getMessage());
-            printHelp(options);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
 
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
@@ -197,7 +161,7 @@ public class Main {
         ((ch.qos.logback.classic.Logger) root).setLevel(level);
     }
 
-    private static void writeOutput(String what, List<Quad> output, String extension, CommandLine line) {
+    private static void writeOutput(String what, List<Quad> output, String extension, String outputFile) {
         if (output.size() > 1) {
             logger.info(output.size() + " " + what + "s were generated");
         } else {
@@ -205,12 +169,12 @@ public class Main {
         }
 
         //if output file provided, write to triples output file
-        if (line.hasOption("o")) {
-            File outputFile = new File(line.getOptionValue("o") + "." + extension);
-            logger.info("Writing " + what + " to " + outputFile.getPath() + "...");
+        if (outputFile != null) {
+            File targetFile = new File(outputFile + "." + extension);
+            logger.info("Writing " + what + " to " + targetFile.getPath() + "...");
 
-            if (!outputFile.isAbsolute()) {
-                outputFile = new File(System.getProperty("user.dir") + "/" + line.getOptionValue("o") + "." +  extension);
+            if (!targetFile.isAbsolute()) {
+                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile + "." +  extension);
             }
 
             try {
@@ -223,7 +187,7 @@ public class Main {
                 }
 
                 out.close();
-                logger.info("Writing to " + outputFile.getPath() + " is done.");
+                logger.info("Writing to " + targetFile.getPath() + " is done.");
             } catch(IOException e) {
                 System.err.println( "Writing output to file failed. Reason: " + e.getMessage() );
             }
