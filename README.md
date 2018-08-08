@@ -133,7 +133,7 @@ Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to `
 This makes sure that the containers running on GitLab are used and adds the right connection strings to the mapping files.
 
 ##### Problems
-* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally.
+* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests have been turned off.
 * A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on windows 7 machines.
 
 # Dependencies
