@@ -411,4 +411,64 @@ public class Utils {
 
         return result;
     }
+
+    /**
+     * This method parse the generic template and returns an array
+     * that can later be used by the executor (via applyTemplate)
+     * to get the data values from the records.
+     **/
+    public static Template parseTemplate(String template) {
+        Template result = new Template();
+        String current = "";
+        boolean previousWasBackslash = false;
+        boolean variableBusy = false;
+
+        if (template != null) {
+            for (Character c : template.toCharArray()) {
+
+                if (c == '{') {
+                    if (previousWasBackslash) {
+                        current += c;
+                        previousWasBackslash = false;
+                    } else if(variableBusy) {
+                        throw new Error("Parsing of template failed. Probably a { was followed by a second { without first closing the first {. Make sure that you use { and } correctly.");
+                    } else {
+                        variableBusy = true;
+
+                        if (!current.equals("")) {
+                            result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
+                        }
+
+                        current = "";
+                    }
+                } else if (c == '}') {
+                    if (previousWasBackslash) {
+                        current += c;
+                        previousWasBackslash = false;
+                    } else if (variableBusy){
+                        result.addElement(new TemplateElement(current, TEMPLATETYPE.VARIABLE));
+                        current = "";
+                        variableBusy = false;
+                    } else {
+                        throw new Error("Parsing of template failed. Probably a } as used before a { was used. Make sure that you use { and } correctly.");
+                    }
+                } else if (c == '\\') {
+                    if (previousWasBackslash) {
+                        previousWasBackslash = false;
+                        current += c;
+                    } else {
+                        previousWasBackslash = true;
+                    }
+                } else {
+                    current += c;
+                }
+            }
+
+            if (!current.equals("")) {
+                result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
+            }
+        }
+
+        return result;
+    }
 }

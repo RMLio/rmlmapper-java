@@ -66,23 +66,13 @@ public class MappingFactory {
                         String template = getGenericTemplate(subjectmap);
 
                         if (template != null) {
-                            HashMap<String, List<Template>> parameters = new HashMap<>();
-                            ArrayList<Template> temp = new ArrayList<>();
-                            temp.add(parseTemplate(getGenericTemplate(subjectmap)));
-                            parameters.put("_TEMPLATE", temp);
-
-                            this.subject = new BlankNodeGenerator(new ApplyTemplateFunction(parameters, true));
+                            this.subject = new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(template, true));
                         } else {
                             this.subject = new BlankNodeGenerator();
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
-                        HashMap<String, List<Template>> parameters = new HashMap<>();
-                        ArrayList<Template> temp = new ArrayList<>();
-                        temp.add(parseTemplate(getGenericTemplate(subjectmap)));
-                        parameters.put("_TEMPLATE", temp);
-
-                        this.subject = new NamedNodeGenerator(new ApplyTemplateFunction(parameters, true));
+                        this.subject = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(getGenericTemplate(subjectmap), true));
                     }
                 } else {
                     Function function = parseFunctionTermMap(functionValues.get(0));
@@ -97,27 +87,9 @@ public class MappingFactory {
 
                 //we create predicateobjects for the classes
                 for (Term c: classes) {
-                    // configure predicategenerator
-                    HashMap<String, List<Template>> parameters = new HashMap<>();
-                    List<Template> temp2 = new ArrayList<>();
-                    Template temp3 = new Template();
-                    temp3.addElement(new TemplateElement(NAMESPACES.RDF + "type", TEMPLATETYPE.CONSTANT));
-                    temp2.add(temp3);
-
-                    parameters.put("_TEMPLATE", temp2);
-
-                    // configure objectgenerator
-                    HashMap<String, List<Template>> parameters2 = new HashMap<>();
-                    temp2 = new ArrayList<>();
-                    temp3 = new Template();
-                    temp3.addElement(new TemplateElement(c.getValue(), TEMPLATETYPE.CONSTANT));
-                    temp2.add(temp3);
-
-                    parameters2.put("_TEMPLATE", temp2);
-
                     // Don't put in graph for rr:class, subject is already put in graph, otherwise double export
-                    NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(new ApplyTemplateFunction(parameters));
-                    NamedNodeGenerator objectGenerator = new NamedNodeGenerator(new ApplyTemplateFunction(parameters2));
+                    NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(NAMESPACES.RDF + "type"));
+                    NamedNodeGenerator objectGenerator = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(c.getValue()));
                     predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(predicateGenerator, objectGenerator, null));
                 }
             } else {
@@ -130,27 +102,19 @@ public class MappingFactory {
         List<Term> predicateobjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "predicateObjectMap"), null));
 
         for (Term pom : predicateobjectmaps) {
-            List<Template> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR  + "predicate"), null)).stream().map(i -> {
-                Template temp = new Template();
-                temp.addElement(new TemplateElement(i.getValue(), TEMPLATETYPE.CONSTANT));
-                return temp;
-            }).collect(Collectors.toList());
+            List<String> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR  + "predicate"), null))
+                    .stream().map(i -> { return i.getValue(); }).collect(Collectors.toList());
 
             List<Term> predicatemaps = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "predicateMap"), null));
 
             for(Term pm : predicatemaps) {
-                predicates.add(parseTemplate(getGenericTemplate(pm)));
+                predicates.add(getGenericTemplate(pm));
             }
 
             ArrayList<TermGenerator> predicateGenerators = new ArrayList<>();
 
             predicates.forEach(predicate -> {
-                HashMap<String, List<Template>> parameters = new HashMap<>();
-                ArrayList<Template> temp = new ArrayList<>();
-                temp.add(predicate);
-                parameters.put("_TEMPLATE", temp);
-
-                predicateGenerators.add(new NamedNodeGenerator(new ApplyTemplateFunction(parameters, true)));
+                predicateGenerators.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(predicate, true)));
             });
 
             List<TermGenerator> graphGenerators = parseGraphMaps(pom);
@@ -167,11 +131,7 @@ public class MappingFactory {
                     String genericTemplate = getGenericTemplate(objectmap);
 
                     if (genericTemplate != null) {
-                        HashMap<String, List<Template>> parameters = new HashMap<>();
-                        ArrayList<Template> temp = new ArrayList<>();
-                        temp.add(parseTemplate(genericTemplate));
-                        parameters.put("_TEMPLATE", temp);
-                        Function fn = new ApplyTemplateFunction(parameters, termType.equals(new NamedNode(NAMESPACES.RR + "IRI")));
+                        Function fn = ApplyTemplateFunctionFactory.generate(genericTemplate, termType);
                         TermGenerator oGen;
 
                         if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
@@ -289,17 +249,7 @@ public class MappingFactory {
 
             for (Term o : objectsConstants) {
                 TermGenerator gen;
-                String oStr = o.getValue();
-
-                HashMap<String, List<Template>> parameters = new HashMap<>();
-                List<Template> temp2 = new ArrayList<>();
-                Template temp3 = new Template();
-                temp3.addElement(new TemplateElement(oStr, TEMPLATETYPE.CONSTANT));
-                temp2.add(temp3);
-
-                parameters.put("_TEMPLATE", temp2);
-
-                Function fn = new ApplyTemplateFunction(parameters);
+                Function fn = ApplyTemplateFunctionFactory.generateWithConstantValue(o.getValue());
 
                 if (o instanceof Literal) {
                     gen = new LiteralGenerator(fn);
@@ -322,29 +272,14 @@ public class MappingFactory {
 
         for (Term graphMap : graphMaps) {
             String genericTemplate = getGenericTemplate(graphMap);
-
-            HashMap<String, List<Template>> parameters = new HashMap<>();
-            ArrayList<Template> temp = new ArrayList<>();
-            temp.add(parseTemplate(genericTemplate));
-            parameters.put("_TEMPLATE", temp);
-
-            graphs.add(new NamedNodeGenerator(new ApplyTemplateFunction(parameters, true)));
+            graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
         }
 
         List<Term> graphShortCuts = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graph"), null));
 
         for (Term graph : graphShortCuts) {
             String gStr = graph.getValue();
-
-            HashMap<String, List<Template>> parameters = new HashMap<>();
-            List<Template> temp2 = new ArrayList<>();
-            Template temp3 = new Template();
-            temp3.addElement(new TemplateElement(gStr, TEMPLATETYPE.CONSTANT));
-            temp2.add(temp3);
-
-            parameters.put("_TEMPLATE", temp2);
-
-            graphs.add(new NamedNodeGenerator(new ApplyTemplateFunction(parameters)));
+            graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(gStr)));
         }
 
         return graphs;
@@ -356,19 +291,19 @@ public class MappingFactory {
 
         for (Term pom : functionPOMs) {
             //process predicates
-            List<Template> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "predicate"), null)).stream().map(i -> parseTemplate(i.getValue())).collect(Collectors.toList());
+            List<Template> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "predicate"), null)).stream().map(i -> Utils.parseTemplate(i.getValue())).collect(Collectors.toList());
             List<Term> pms = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "predicateMap"), null));
 
             for (Term pm : pms) {
-                predicates.add(parseTemplate(getGenericTemplate(pm)));
+                predicates.add(Utils.parseTemplate(getGenericTemplate(pm)));
             }
 
             //process objects
-            List<Template> objects = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "object"), null)).stream().map(i -> parseTemplate(i.getValue())).collect(Collectors.toList());
+            List<Template> objects = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "object"), null)).stream().map(i -> Utils.parseTemplate(i.getValue())).collect(Collectors.toList());
             List<Term> oms = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "objectMap"), null));
 
             for (Term om : oms) {
-                objects.add(parseTemplate(getGenericTemplate(om)));
+                objects.add(Utils.parseTemplate(getGenericTemplate(om)));
             }
 
             if (!objects.isEmpty()) {
@@ -386,8 +321,8 @@ public class MappingFactory {
             }
         }
 
-        String fn = Utils.applyTemplate(params.get("http://w3id.org/function/ontology#executes").get(0), null).get(0);
-        params.remove("http://w3id.org/function/ontology#executes");
+        String fn = Utils.applyTemplate(params.get(NAMESPACES.FNO + "executes").get(0), null).get(0);
+        params.remove(NAMESPACES.FNO + "executes");
 
         return new Function(functionLoader.getFunction(new NamedNode(fn)), params);
     }
@@ -438,66 +373,6 @@ public class MappingFactory {
         }
 
         return termType;
-    }
-
-    /**
-     * This method parse the generic template and returns an array
-     * that can later be used by the executor (via applyTemplate)
-     * to get the data values from the records.
-     **/
-    private Template parseTemplate(String template) {
-        Template result = new Template();
-        String current = "";
-        boolean previousWasBackslash = false;
-        boolean variableBusy = false;
-
-        if (template != null) {
-            for (Character c : template.toCharArray()) {
-
-                if (c == '{') {
-                    if (previousWasBackslash) {
-                        current += c;
-                        previousWasBackslash = false;
-                    } else if(variableBusy) {
-                        throw new Error("Parsing of template failed. Probably a { was followed by a second { without first closing the first {. Make sure that you use { and } correctly.");
-                    } else {
-                        variableBusy = true;
-
-                        if (!current.equals("")) {
-                            result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
-                        }
-
-                        current = "";
-                    }
-                } else if (c == '}') {
-                    if (previousWasBackslash) {
-                        current += c;
-                        previousWasBackslash = false;
-                    } else if (variableBusy){
-                        result.addElement(new TemplateElement(current, TEMPLATETYPE.VARIABLE));
-                        current = "";
-                        variableBusy = false;
-                    } else {
-                        throw new Error("Parsing of template failed. Probably a } as used before a { was used. Make sure that you use { and } correctly.");
-                    }
-                } else if (c == '\\') {
-                    if (previousWasBackslash) {
-                        previousWasBackslash = false;
-                        current += c;
-                    } else {
-                        previousWasBackslash = true;
-                    }
-                } else {
-                    current += c;
-                }
-            }
-
-            if (!current.equals("")) {
-                result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
-            }
-        }
-
-        return result;
     }
 
     private List<PredicateObjectGraphGenerator> getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(TermGenerator pGen, TermGenerator oGen, List<TermGenerator> gGens) {
