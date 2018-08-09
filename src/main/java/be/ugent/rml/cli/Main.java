@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 public class Main {
 
@@ -53,41 +54,48 @@ public class Main {
                 .hasArg()
                 .desc( "path to configuration file" )
                 .build();
+        Option help = Option.builder("h")
+                .longOpt( "help" )
+                .desc( "get help info" )
+                .build();
+        Option verbose = Option.builder("v")
+                .longOpt( "verbose" )
+                .desc( "verbose" )
+                .build();
         options.addOption(mappingdoc);
         options.addOption(outputfile);
         options.addOption(functionfile);
         options.addOption(removeduplicates);
         options.addOption(triplesmaps);
         options.addOption(configfile);
-        options.addOption("v", "verbose", false, "verbose");
-        options.addOption("h", "help", false, "get help info");
+        options.addOption(help);
+        options.addOption(verbose);
 
         CommandLineParser parser = new DefaultParser();
-
         try {
             // parse the command line arguments
             CommandLine lineArgs = parser.parse(options, args);
             String[] configFileArgs = null;
 
             // Check if config file is given
+            Properties configFile = null;
             if (lineArgs.hasOption("c")) {
-                File configFile = Utils.getFile(lineArgs.getOptionValue("c"));
-                configFileArgs = Utils.fileToString(configFile).split(" ");
+                configFile = new Properties();
+                configFile.load(Utils.getReaderFromLocation(lineArgs.getOptionValue("c")));
             }
-            CommandLine fileArgs = parser.parse(options, configFileArgs);
 
-            if (lineArgs.hasOption("h") || fileArgs.hasOption("h")) {
+            if (checkOptionPresence(help, lineArgs, configFile)) {
                 printHelp(options);
                 return;
             }
 
-            if (lineArgs.hasOption("v") || fileArgs.hasOption("v")) {
+            if (checkOptionPresence(verbose, lineArgs, configFile)) {
                 setLoggerLevel(Level.DEBUG);
             } else {
                 setLoggerLevel(Level.ERROR);
             }
 
-            String mOptionValue = getPriorityOptionValue("m", lineArgs, fileArgs);
+            String mOptionValue = getPriorityOptionValue(mappingdoc, lineArgs, configFile);
             if (mOptionValue == null) {
                 printHelp(options);
             } else {
@@ -96,7 +104,7 @@ public class Main {
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
                 Executor executor;
 
-                String fOptionValue = getPriorityOptionValue("f", lineArgs, fileArgs);
+                String fOptionValue = getPriorityOptionValue(functionfile, lineArgs, configFile);
                 if (fOptionValue == null) {
                     executor = new Executor(rmlStore, factory);
                 } else {
@@ -107,16 +115,16 @@ public class Main {
 
                 List<String> triplesMaps = new ArrayList<>();
 
-                String tOptionValue = getPriorityOptionValue("t", lineArgs, fileArgs);
+                String tOptionValue = getPriorityOptionValue(triplesmaps, lineArgs, configFile);
                 if (tOptionValue != null) {
                     triplesMaps = Arrays.asList(tOptionValue.split(","));
                 }
 
-                QuadStore result = executor.execute(triplesMaps, lineArgs.hasOption("d") || fileArgs.hasOption("d"));
+                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicates, lineArgs, configFile));
 
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 
-                String outputFile = getPriorityOptionValue("o", lineArgs, fileArgs);
+                String outputFile = getPriorityOptionValue(outputfile, lineArgs, configFile);
                 if (!tq.getTriples().isEmpty()) {
                     //write triples
                     writeOutput("triple", tq.getTriples(), "nt", outputFile);
@@ -137,11 +145,16 @@ public class Main {
 
     }
 
-    private static String getPriorityOptionValue(String option, CommandLine args1, CommandLine args2) {
-        if (args1.hasOption(option)) {
-            return args1.getOptionValue(option);
-        } else if (args2.hasOption(option)) {
-            return args2.getOptionValue(option);
+    private static boolean checkOptionPresence(Option option, CommandLine lineArgs, Properties properties) {
+        return lineArgs.hasOption(option.getOpt()) || (properties != null
+                && properties.getProperty(option.getLongOpt()) != null
+                && !properties.getProperty(option.getLongOpt()).equals("false"));  // ex: 'help = false' in the config file shouldn't return the help text
+    }
+    private static String getPriorityOptionValue(Option option, CommandLine lineArgs, Properties properties) {
+        if (lineArgs.hasOption(option.getOpt())) {
+            return lineArgs.getOptionValue(option.getOpt());
+        } else if (properties.getProperty(option.getLongOpt()) != null) {
+            return properties.getProperty(option.getLongOpt());
         } else {
             return null;
         }
