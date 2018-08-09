@@ -40,6 +40,7 @@ The following options are available.
 - `-m, --mapping <arg>`: path to mapping document
 - `-o, --output <arg>`: path to output file
 - `-d, --duplicates`: remove duplicates in the output
+- `-f, --functionfile <arg>`: path to functions.ttl file (dynamic functions are found relative to functions.ttl)
 - `-v, --verbose`: show more details
 - `-h, --help`: show help
 
