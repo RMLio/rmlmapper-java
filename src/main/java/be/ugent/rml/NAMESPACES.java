@@ -8,4 +8,5 @@ public class NAMESPACES {
     public static final String FNML = "http://semweb.mmlab.be/ns/fnml#";
     public static final String QL = "http://semweb.mmlab.be/ns/ql#";
     public static final String D2RQ = "http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#";
+    public static final String FNO = "http://w3id.org/function/ontology#";
 }

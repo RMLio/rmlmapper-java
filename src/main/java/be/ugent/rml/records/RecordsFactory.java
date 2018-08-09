@@ -5,6 +5,9 @@ import be.ugent.rml.DataFetcher;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
@@ -29,23 +32,23 @@ public class RecordsFactory {
         allRDBsRecords = new HashMap<>();
     }
 
-    public List<Record> createRecords(String triplesMap, QuadStore rmlStore) throws IOException {
+    public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
         //get logical source
-        List<String> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, NAMESPACES.RML + "logicalSource", null));
+        List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
         if (!logicalSources.isEmpty()) {
-            String logicalSource = logicalSources.get(0);
+            Term logicalSource = logicalSources.get(0);
 
             // Get logicalSource information
-            List<String> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "referenceFormulation", null));
-            List<String> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "source", null));
-            List<String> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "iterator", null));
-            List<String> table = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "tableName", null));
+            List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
+            List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+            List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "iterator"), null));
+            List<Term> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "tableName"), null));
 
             // If no rml:referenceFormulation is given, but a table is given --> CSV
-            if (referenceFormulations.isEmpty() && !table.isEmpty()) {
+            if (referenceFormulations.isEmpty() && !tables.isEmpty()) {
                 referenceFormulations = new ArrayList<>();
-                referenceFormulations.add(0, NAMESPACES.QL + "CSV");
+                referenceFormulations.add(0, new NamedNode(NAMESPACES.QL + "CSV"));
             }
 
             if (referenceFormulations.isEmpty()) {
@@ -53,11 +56,10 @@ public class RecordsFactory {
             } else if (sources.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a source.");
             } else {
-                String source;
-                if (Utils.isLiteral(sources.get(0))) {
-                    source = Utils.getLiteral(sources.get(0));
+                if (sources.get(0) instanceof Literal) {
+                    String source = sources.get(0).getValue();
 
-                    switch(referenceFormulations.get(0)) {
+                    switch(referenceFormulations.get(0).getValue()) {
                         case NAMESPACES.QL + "CSV":
                             return getCSVRecords(source);
                         case NAMESPACES.QL + "XPath":
@@ -66,21 +68,23 @@ public class RecordsFactory {
                             return getJSONRecords(source, iterators, triplesMap);
                         default:
                             throw new NotImplementedException();
-
                     }
 
                 } else {
-                    source = sources.get(0);
+                    Term source = sources.get(0);
 
-                    List<String> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.RDF + "type", null));
-                    switch(sourceType.get(0)) {
+                    List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
+
+                    switch(sourceType.get(0).getValue()) {
                         case NAMESPACES.D2RQ + "Database":  // RDBs
                             // Check if SQL version is given
-                            List<String> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "sqlVersion", null));
+                            List<Term> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "sqlVersion"), null));
+
                             if (sqlVersion.isEmpty()) {
                                 throw new Error("No SQL version identifier detected.");
                             }
-                            return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, table);
+
+                            return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, tables, referenceFormulations);
                         default:
                             throw new NotImplementedException();
 
@@ -107,9 +111,9 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> getXMLRecords(String source, List<String> iterators, String triplesMap) throws IOException {
+    private List<Record> getXMLRecords(String source, List<Term> iterators, Term triplesMap) throws IOException {
         if (!iterators.isEmpty()) {
-            String iterator = Utils.getLiteral(iterators.get(0));
+            String iterator = iterators.get(0).getValue();
 
             if (allXMLRecords.containsKey(source) && allXMLRecords.get(source).containsKey(iterator)) {
                 return allXMLRecords.get(source).get(iterator);
@@ -136,9 +140,9 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> getJSONRecords(String source, List<String> iterators, String triplesMap) throws IOException {
+    private List<Record> getJSONRecords(String source, List<Term> iterators, Term triplesMap) throws IOException {
         if (!iterators.isEmpty()) {
-            String iterator = Utils.getLiteral(iterators.get(0));
+            String iterator = iterators.get(0).getValue();
 
             if (allJSONRecords.containsKey(source) && allJSONRecords.get(source).containsKey(iterator)) {
                 return allJSONRecords.get(source).get(iterator);
@@ -165,50 +169,60 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> getRDBsRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap, List<String> table) {
+    private List<Record> getRDBsRecords(QuadStore rmlStore, Term source, Term logicalSource, Term triplesMap,
+                                        List<Term> table, List<Term> referenceFormulations) {
         // Retrieve database information from source object
 
         // - Driver URL
-        List<String> driverObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "jdbcDriver", null));
+        List<Term> driverObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "jdbcDriver"), null));
+
         if (driverObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a driver.");
         }
-        DatabaseType.Database database = DatabaseType.getDBtype(driverObject.get(0));
+
+        DatabaseType.Database database = DatabaseType.getDBtype(driverObject.get(0).getValue());
 
         // - DSN
-        List<String> dsnObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "jdbcDSN", null));
+        List<Term> dsnObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "jdbcDSN"), null));
+
         if(dsnObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a Data Source Name.");
         }
-        String dsn = Utils.getLiteral(dsnObject.get(0));
+
+        String dsn = dsnObject.get(0).getValue();
         dsn = dsn.substring(dsn.indexOf("//") + 2);
 
         // - SQL query
         String query;
-        List<String> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "query", null));
+        List<Term> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "query"), null));
+
         if (queryObject.isEmpty()) {
             if (table.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not include a SQL query nor a target table.");
             } else {
-                query = "SELECT * FROM " + Utils.getLiteral(table.get(0));
+                query = "SELECT * FROM " + table.get(0).getValue();
             }
         } else {
-            query = Utils.getLiteral(queryObject.get(0));
+            query = queryObject.get(0).getValue();
         }
 
         // - Username
-        List<String> usernameObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "username", null));
+        List<Term> usernameObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "username"), null));
+
         if (usernameObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a username.");
         }
-        String username = Utils.getLiteral(usernameObject.get(0));
+
+        String username = usernameObject.get(0).getValue();
 
         // - Password
-        List<String> passwordObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "password", null));
+        List<Term> passwordObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "password"), null));
+
         if (usernameObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a password.");
         }
-        String password = Utils.getLiteral(passwordObject.get(0));
+
+        String password = passwordObject.get(0).getValue();
 
 
         // Get records
@@ -218,7 +232,7 @@ public class RecordsFactory {
             return allRDBsRecords.get(source).get(queryHash);
         } else {
             RDBs rdbs = new RDBs();
-            return rdbs.get(dsn, database, username, password, query);
+            return rdbs.get(dsn, database, username, password, query, referenceFormulations.get(0).getValue());
         }
     }
 }

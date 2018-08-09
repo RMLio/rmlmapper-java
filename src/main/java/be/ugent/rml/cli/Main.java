@@ -1,13 +1,13 @@
 package be.ugent.rml.cli;
 
-import be.ugent.rml.DataFetcher;
-import be.ugent.rml.Executor;
-import be.ugent.rml.Utils;
+import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.TriplesQuads;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
@@ -87,10 +87,14 @@ public class Main {
                     executor = new Executor(rmlStore, factory);
                 }
 
-                List<String> triplesMaps = new ArrayList<>();
+                List<Term> triplesMaps = new ArrayList<>();
 
                 if (line.hasOption("t")) {
-                    triplesMaps = Arrays.asList(line.getOptionValue("t").split(","));
+                    List<String> triplesMapsIRI = Arrays.asList(line.getOptionValue("t").split(","));
+
+                    triplesMapsIRI.forEach(iri -> {
+                        triplesMaps.add(new NamedNode(iri));
+                    });
                 }
 
                 QuadStore result = executor.execute(triplesMaps, line.hasOption("d"));

@@ -122,6 +122,20 @@ try {
 }
 ```
 
+### Testing
+#### RDBs
+Make sure you have [Docker](https://www.docker.com) running.
+
+Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```true``` for testing locally. 
+This causes the creation of the required Docker containers and adds the right connection string to the mapping files.
+
+Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```false``` for testing on / pushing to GitLab. 
+This makes sure that the containers running on GitLab are used and adds the right connection strings to the mapping files.
+
+##### Problems
+* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests have been turned off.
+* A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on windows 7 machines.
+
 # Dependencies
 
 |             Dependency             | License                                                            |

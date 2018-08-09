@@ -1,15 +1,15 @@
 package be.ugent.rml.functions;
 
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
-import com.google.common.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,19 +32,23 @@ public class FunctionUtils {
         throw new IOException("Not a valid path for a JAVA implementation: " + path);
     }
 
-    public static List<String> getFunctionParameterUris(QuadStore store, List<String> parameterResources) {
-        List<String> parameterPredicates = new ArrayList<>();
-        for (String subject : parameterResources) {
-            parameterPredicates.add(Utils.getObjectsFromQuads(store.getQuads(subject, "http://semweb.datasciencelab.be/ns/function#predicate", null)).get(0));
+    public static List<Term> getFunctionParameterUris(QuadStore store, List<Term> parameterResources) {
+        List<Term> parameterPredicates = new ArrayList<>();
+
+        for (Term subject : parameterResources) {
+            parameterPredicates.add(Utils.getObjectsFromQuads(store.getQuads(subject, new NamedNode("http://semweb.datasciencelab.be/ns/function#predicate"), null)).get(0));
         }
+
         return parameterPredicates;
     }
 
-    public static Class<?>[] parseFunctionParameters(QuadStore store, List<String> parameterResources) {
+    public static Class<?>[] parseFunctionParameters(QuadStore store, List<Term> parameterResources) {
         Class<?>[] args = new Class<?>[parameterResources.size()];
+
         for (int i = 0; i < parameterResources.size(); i++) {
-            String subject = parameterResources.get(i);
-            String type = Utils.getObjectsFromQuads(store.getQuads(subject, "http://semweb.datasciencelab.be/ns/function#type", null)).get(0);
+            Term subject = parameterResources.get(i);
+            Term type = Utils.getObjectsFromQuads(store.getQuads(subject, new NamedNode("http://semweb.datasciencelab.be/ns/function#type"), null)).get(0);
+
             try {
                 args[i] = FunctionUtils.getParamType(type);
             } catch (Exception e) {
@@ -54,8 +58,10 @@ public class FunctionUtils {
         return args;
     }
 
-    private static Class getParamType(String type) {
-        switch (type) {
+    private static Class getParamType(Term type) {
+        String typeStr = type.getValue();
+
+        switch (typeStr) {
             case "http://www.w3.org/2001/XMLSchema#string":
                 return String.class;
             case "http://www.w3.org/2001/XMLSchema#integer":
