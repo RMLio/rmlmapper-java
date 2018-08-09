@@ -48,11 +48,22 @@ public class Main {
                 .longOpt( "duplicates" )
                 .desc(  "remove duplicates" )
                 .build();
+        Option metadatafile = Option.builder("md")
+                .longOpt( "metadatafile" )
+                .hasArg()
+                .desc( "path to metadata output file" )
+                .build();
+        Option metadataDatasetLevel = Option.builder("ds")
+                .longOpt( "datasetlevel" )
+                .desc( "generate metadata on dataset level" )
+                .build();
         options.addOption(mappingdoc);
         options.addOption(outputfile);
         options.addOption(functionfile);
         options.addOption(removeduplicates);
         options.addOption(triplesmaps);
+        options.addOption(metadatafile);
+        options.addOption(metadataDatasetLevel);
         options.addOption("v", "verbose", false, "verbose");
         options.addOption("h", "help", false, "get help info");
 
