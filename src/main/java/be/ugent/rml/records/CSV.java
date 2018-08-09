@@ -36,7 +36,7 @@ public class CSV {
         String[] headers = myEntries.get(0);
 
         for (int i = 1; i < myEntries.size(); i ++) {
-            HashMap<String, List<String>> values= new HashMap<String, List<String>>();
+            HashMap<String, List<String>> values = new HashMap<String, List<String>>();
 
             for (int j = 0; j < headers.length; j ++) {
                 List<String> temp = new ArrayList<String>();

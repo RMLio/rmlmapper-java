@@ -27,7 +27,7 @@
     rr:object ex:Student; 
   ];
 
-  rr:predicateObjectMap [ 
+  rr:predicateObjectMap [
     rr:predicate foaf:name;
     rr:objectMap [ rml:reference "FirstName" ]
   ].

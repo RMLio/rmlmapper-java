@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 import java.io.*;
+import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -19,7 +20,11 @@ abstract class TestCore {
     Executor createExecutor(String mapPath) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
-        File mappingFile = new File(classLoader.getResource(mapPath).getFile());
+        URL url = classLoader.getResource(mapPath);
+        if (url != null) {
+            mapPath = url.getFile();
+        }
+        File mappingFile = new File(mapPath);
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
         return new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
