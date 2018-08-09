@@ -80,7 +80,7 @@ public class MappingFactory {
                     this.subject = new NamedNodeGenerator(function);
                 }
 
-                this.graphs = parseGraphMaps(subjectmap);
+                this.graphs = parseGraphMapsAndShortcuts(subjectmap);
 
                 //get classes
                 List<Term> classes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR  + "class"), null));
@@ -102,157 +102,128 @@ public class MappingFactory {
         List<Term> predicateobjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "predicateObjectMap"), null));
 
         for (Term pom : predicateobjectmaps) {
-            List<String> predicates = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR  + "predicate"), null))
-                    .stream().map(i -> { return i.getValue(); }).collect(Collectors.toList());
+            List<TermGenerator> predicateGenerators = parsePredicateMapsAndShortcuts(pom);
+            List<TermGenerator> graphGenerators = parseGraphMapsAndShortcuts(pom);
 
-            List<Term> predicatemaps = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "predicateMap"), null));
+            parseObjectMapsAndShortcutsAndGeneratePOGGenerators(pom, predicateGenerators, graphGenerators);
+        }
+    }
 
-            for(Term pm : predicatemaps) {
-                predicates.add(getGenericTemplate(pm));
-            }
+    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<TermGenerator> predicateGenerators, List<TermGenerator> graphGenerators) throws IOException {
+        List<Term> objectmaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "objectMap"), null));
 
-            ArrayList<TermGenerator> predicateGenerators = new ArrayList<>();
+        for (Term objectmap : objectmaps) {
+            List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+            Term termType = getTermType(objectmap);
 
-            predicates.forEach(predicate -> {
-                predicateGenerators.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(predicate, true)));
-            });
+            List<Term> datatypes = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "datatype"), null));
+            List<Term> languages = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "language"), null));
 
-            List<TermGenerator> graphGenerators = parseGraphMaps(pom);
-            List<Term> objectmaps = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "objectMap"), null));
+            if (functionValues.isEmpty()) {
+                String genericTemplate = getGenericTemplate(objectmap);
 
-            for (Term objectmap : objectmaps) {
-                List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
-                Term termType = getTermType(objectmap);
+                if (genericTemplate != null) {
+                    Function fn = ApplyTemplateFunctionFactory.generate(genericTemplate, termType);
+                    TermGenerator oGen;
 
-                List<Term> datatypes = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "datatype"), null));
-                List<Term> languages = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "language"), null));
-
-                if (functionValues.isEmpty()) {
-                    String genericTemplate = getGenericTemplate(objectmap);
-
-                    if (genericTemplate != null) {
-                        Function fn = ApplyTemplateFunctionFactory.generate(genericTemplate, termType);
-                        TermGenerator oGen;
-
-                        if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
-                            //check if we need to apply a datatype to the object
-                            if (!datatypes.isEmpty()) {
-                                oGen = new LiteralGenerator(fn, datatypes.get(0));
-                                //check if we need to apply a language to the object
-                            } else if (!languages.isEmpty()) {
-                                oGen = new LiteralGenerator(fn, languages.get(0).getValue());
-                            } else {
-                                oGen = new LiteralGenerator(fn);
-                            }
-                        } else {
-                            oGen = new NamedNodeGenerator(fn);
-                        }
-
-                        predicateGenerators.forEach(pGen -> {
-                            if (graphGenerators.isEmpty()) {
-                                predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, null));
-                            } else {
-                                graphGenerators.forEach(gGen -> {
-                                    predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, gGen));
-                                });
-                            }
-
-                        });
-                    } else {
-                        //look for parenttriplesmap
-                        List<Term> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), null));
-
-                        if (! parentTriplesMaps.isEmpty()) {
-                            if (parentTriplesMaps.size() > 1) {
-                                logger.warn(triplesMap + " has " + parentTriplesMaps.size() + " Parent Triples Maps. You can only have one. A random one is taken.");
-                            }
-
-                            Term parentTriplesMap = parentTriplesMaps.get(0);
-
-                            List<Term> joinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "joinCondition"), null));
-                            ArrayList<JoinConditionFunction> joinConditionFunctions = new ArrayList<>();
-
-                            for (Term joinCondition : joinConditions) {
-
-                                List<String> parents = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.RR + "parent"), null));
-                                List<String> childs = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.RR + "child"), null));
-
-                                if (parents.isEmpty()) {
-                                    throw new Error("One of the join conditions of " + triplesMap + " is missing rr:parent.");
-                                } else if (childs.isEmpty()) {
-                                    throw new Error("One of the join conditions of " + triplesMap + " is missing rr:child.");
-                                } else {
-                                    FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
-                                    Map<String, Object[]> parameters = new HashMap<>();
-
-                                    Template parent = new Template();
-                                    parent.addElement(new TemplateElement(parents.get(0), TEMPLATETYPE.VARIABLE));
-                                    List<Template> parentsList = new ArrayList<>();
-                                    parentsList.add(parent);
-                                    Object[] detailsParent = {"parent", parentsList};
-                                    parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
-
-                                    Template child = new Template();
-                                    child.addElement(new TemplateElement(childs.get(0), TEMPLATETYPE.VARIABLE));
-                                    List<Template> childsList = new ArrayList<>();
-                                    childsList.add(child);
-                                    Object[] detailsChild = {"child", childsList};
-                                    parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
-
-                                    joinConditionFunctions.add(new JoinConditionFunction(equal, parameters));
-                                }
-                            }
-
-                            predicateGenerators.forEach(pGen -> {
-                                List<PredicateObjectGraphGenerator> pos = getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(pGen, null, graphGenerators);
-
-                                pos.forEach(pogGen -> {
-                                    pogGen.setParentTriplesMap(parentTriplesMap);
-
-                                    joinConditionFunctions.forEach(jcf -> {
-                                        pogGen.addJoinCondition(jcf);
-                                    });
-
-                                    predicateObjectGraphGenerators.add(pogGen);
-                                });
-                            });
-                        }
-                    }
-                } else {
-                    Function fn = parseFunctionTermMap(functionValues.get(0));
-                    TermGenerator gen;
-
-                    //TODO is literal the default?
-                    if (termType == null || termType.equals( new NamedNode(NAMESPACES.RR + "Literal"))) {
+                    if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
                         //check if we need to apply a datatype to the object
                         if (!datatypes.isEmpty()) {
-                            gen = new LiteralGenerator(fn, datatypes.get(0));
+                            oGen = new LiteralGenerator(fn, datatypes.get(0));
                             //check if we need to apply a language to the object
                         } else if (!languages.isEmpty()) {
-                            gen = new LiteralGenerator(fn, languages.get(0).getValue());
+                            oGen = new LiteralGenerator(fn, languages.get(0).getValue());
                         } else {
-                            gen = new LiteralGenerator(fn);
+                            oGen = new LiteralGenerator(fn);
                         }
                     } else {
-                        gen = new NamedNodeGenerator(fn);
+                        oGen = new NamedNodeGenerator(fn);
                     }
 
                     predicateGenerators.forEach(pGen -> {
-                        List<PredicateObjectGraphGenerator> pogGens = getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(pGen, gen, graphGenerators);
-                        predicateObjectGraphGenerators.addAll(pogGens);
+                        if (graphGenerators.isEmpty()) {
+                            predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, null));
+                        } else {
+                            graphGenerators.forEach(gGen -> {
+                                predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, gGen));
+                            });
+                        }
                     });
+                } else {
+                    //look for parenttriplesmap
+                    List<Term> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), null));
+
+                    if (! parentTriplesMaps.isEmpty()) {
+                        if (parentTriplesMaps.size() > 1) {
+                            logger.warn(triplesMap + " has " + parentTriplesMaps.size() + " Parent Triples Maps. You can only have one. A random one is taken.");
+                        }
+
+                        Term parentTriplesMap = parentTriplesMaps.get(0);
+
+                        List<Term> joinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "joinCondition"), null));
+                        ArrayList<JoinConditionFunction> joinConditionFunctions = new ArrayList<>();
+
+                        for (Term joinCondition : joinConditions) {
+
+                            List<String> parents = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.RR + "parent"), null));
+                            List<String> childs = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.RR + "child"), null));
+
+                            if (parents.isEmpty()) {
+                                throw new Error("One of the join conditions of " + triplesMap + " is missing rr:parent.");
+                            } else if (childs.isEmpty()) {
+                                throw new Error("One of the join conditions of " + triplesMap + " is missing rr:child.");
+                            } else {
+                                FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
+                                Map<String, Object[]> parameters = new HashMap<>();
+
+                                Template parent = new Template();
+                                parent.addElement(new TemplateElement(parents.get(0), TEMPLATETYPE.VARIABLE));
+                                List<Template> parentsList = new ArrayList<>();
+                                parentsList.add(parent);
+                                Object[] detailsParent = {"parent", parentsList};
+                                parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
+
+                                Template child = new Template();
+                                child.addElement(new TemplateElement(childs.get(0), TEMPLATETYPE.VARIABLE));
+                                List<Template> childsList = new ArrayList<>();
+                                childsList.add(child);
+                                Object[] detailsChild = {"child", childsList};
+                                parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
+
+                                joinConditionFunctions.add(new JoinConditionFunction(equal, parameters));
+                            }
+                        }
+
+                        predicateGenerators.forEach(pGen -> {
+                            List<PredicateObjectGraphGenerator> pos = getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(pGen, null, graphGenerators);
+
+                            pos.forEach(pogGen -> {
+                                pogGen.setParentTriplesMap(parentTriplesMap);
+
+                                joinConditionFunctions.forEach(jcf -> {
+                                    pogGen.addJoinCondition(jcf);
+                                });
+
+                                predicateObjectGraphGenerators.add(pogGen);
+                            });
+                        });
+                    }
                 }
-            }
-
-            //dealing with rr:object
-            List<Term> objectsConstants = Utils.getObjectsFromQuads(store.getQuads(pom, new NamedNode(NAMESPACES.RR + "object"), null));
-
-            for (Term o : objectsConstants) {
+            } else {
+                Function fn = parseFunctionTermMap(functionValues.get(0));
                 TermGenerator gen;
-                Function fn = ApplyTemplateFunctionFactory.generateWithConstantValue(o.getValue());
 
-                if (o instanceof Literal) {
-                    gen = new LiteralGenerator(fn);
+                //TODO is literal the default?
+                if (termType == null || termType.equals( new NamedNode(NAMESPACES.RR + "Literal"))) {
+                    //check if we need to apply a datatype to the object
+                    if (!datatypes.isEmpty()) {
+                        gen = new LiteralGenerator(fn, datatypes.get(0));
+                        //check if we need to apply a language to the object
+                    } else if (!languages.isEmpty()) {
+                        gen = new LiteralGenerator(fn, languages.get(0).getValue());
+                    } else {
+                        gen = new LiteralGenerator(fn);
+                    }
                 } else {
                     gen = new NamedNodeGenerator(fn);
                 }
@@ -263,26 +234,101 @@ public class MappingFactory {
                 });
             }
         }
+
+        //dealing with rr:object
+        List<Term> objectsConstants = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "object"), null));
+
+        for (Term o : objectsConstants) {
+            TermGenerator gen;
+            Function fn = ApplyTemplateFunctionFactory.generateWithConstantValue(o.getValue());
+
+            if (o instanceof Literal) {
+                gen = new LiteralGenerator(fn);
+            } else {
+                gen = new NamedNodeGenerator(fn);
+            }
+
+            predicateGenerators.forEach(pGen -> {
+                List<PredicateObjectGraphGenerator> pogGens = getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(pGen, gen, graphGenerators);
+                predicateObjectGraphGenerators.addAll(pogGens);
+            });
+        }
     }
 
-    private List<TermGenerator> parseGraphMaps(Term termMap) {
+    private List<TermGenerator> parseGraphMapsAndShortcuts(Term termMap) throws IOException {
         ArrayList<TermGenerator> graphs = new ArrayList<>();
 
         List<Term> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graphMap"), null));
 
         for (Term graphMap : graphMaps) {
-            String genericTemplate = getGenericTemplate(graphMap);
-            graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+            List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(graphMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+            List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(graphMap, new NamedNode(NAMESPACES.RR + "termType"), null));
+            Term termType = null;
+
+            if (!termTypes.isEmpty()) {
+                termType = termTypes.get(0);
+            }
+
+            if (functionValues.isEmpty()) {
+                String genericTemplate = getGenericTemplate(graphMap);
+
+                if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
+                    graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                } else {
+                    if (genericTemplate == null) {
+                        graphs.add(new BlankNodeGenerator());
+                    } else {
+                        graphs.add(new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                    }
+                }
+            } else {
+                Function fn = parseFunctionTermMap(functionValues.get(0));
+
+                if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
+                    graphs.add(new NamedNodeGenerator(fn));
+                } else {
+                    graphs.add(new BlankNodeGenerator(fn));
+                }
+            }
         }
 
-        List<Term> graphShortCuts = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graph"), null));
+        List<Term> graphShortcuts = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graph"), null));
 
-        for (Term graph : graphShortCuts) {
+        for (Term graph : graphShortcuts) {
             String gStr = graph.getValue();
             graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(gStr)));
         }
 
         return graphs;
+    }
+
+    private List<TermGenerator> parsePredicateMapsAndShortcuts(Term termMap) throws IOException {
+        ArrayList<TermGenerator> predicates = new ArrayList<>();
+
+        List<Term> predicateMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "predicateMap"), null));
+
+        for (Term predicateMap : predicateMaps) {
+            List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(predicateMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+
+            if (functionValues.isEmpty()) {
+                String genericTemplate = getGenericTemplate(predicateMap);
+
+                predicates.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+            } else {
+                Function fn = parseFunctionTermMap(functionValues.get(0));
+
+                predicates.add(new NamedNodeGenerator(fn));
+            }
+        }
+
+        List<Term> predicateShortcuts = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "predicate"), null));
+
+        for (Term predicate : predicateShortcuts) {
+            String pStr = predicate.getValue();
+            predicates.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(pStr)));
+        }
+
+        return predicates;
     }
 
     private Function parseFunctionTermMap(Term functionValue) throws IOException {
