@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Function {
+public class StaticFunctionExecutor implements FunctionExecutor{
 
     private final FunctionModel functionModel;
     protected final Map<String, List<Template>> parameters;
 
-    public Function(FunctionModel model, Map<String, List<Template>> parameters) {
+    public StaticFunctionExecutor(FunctionModel model, Map<String, List<Template>> parameters) {
         this.functionModel = model;
         this.parameters = parameters;
     }
