@@ -1,6 +1,5 @@
 package be.ugent.rml.records;
 
-import be.ugent.rml.Utils;
 import com.jayway.jsonpath.*;
 
 import java.io.*;

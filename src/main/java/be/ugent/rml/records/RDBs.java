@@ -3,7 +3,6 @@ package be.ugent.rml.records;
 import be.ugent.rml.DatabaseType;
 import be.ugent.rml.NAMESPACES;
 
-import javax.activation.UnsupportedDataTypeException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
