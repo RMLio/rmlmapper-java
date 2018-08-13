@@ -1,23 +1,24 @@
 package be.ugent.rml.termgenerator;
 
-import be.ugent.rml.functions.Function;
+import be.ugent.rml.functions.FunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NamedNodeGenerator extends TermGenerator {
 
-    public NamedNodeGenerator(Function fn) {
-        super(fn);
+    public NamedNodeGenerator(FunctionExecutor functionExecutor) {
+        super(functionExecutor);
     }
 
     @Override
-    public List<Term> generate(Record record) {
+    public List<Term> generate(Record record) throws IOException {
+        List<String> objectStrings = (List<String>) functionExecutor.execute(record);
         ArrayList<Term> objects = new ArrayList<>();
-        List<String> objectStrings = (List<String>) this.fn.execute(record);
 
         if (objectStrings.size() > 0) {
             for (String object : objectStrings) {

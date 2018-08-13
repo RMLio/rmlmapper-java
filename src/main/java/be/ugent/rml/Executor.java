@@ -64,7 +64,13 @@ public class Executor {
                     List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
 
                     mapping.getGraphs().forEach(gen -> {
-                        List<Term> terms = gen.generate(record);
+                        List<Term> terms = null;
+                        try {
+                            terms = gen.generate(record);
+                        } catch (IOException e) {
+                            //todo be more nice and gentle
+                            e.printStackTrace();
+                        }
 
                         terms.forEach(term -> {
                             if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
@@ -203,7 +209,7 @@ public class Executor {
         return iris;
     }
 
-    private ProvenancedTerm getSubject(Term triplesMap, Mapping mapping, Record record, int i) {
+    private ProvenancedTerm getSubject(Term triplesMap, Mapping mapping, Record record, int i) throws IOException {
         if (!this.subjectCache.containsKey(triplesMap)) {
             this.subjectCache.put(triplesMap, new HashMap<Integer, ProvenancedTerm>());
         }
