@@ -39,6 +39,8 @@ The following options are available.
 
 - `-m, --mapping <arg>`: path to mapping document
 - `-o, --output <arg>`: path to output file
+- `-t, --functionfile <arg>`: path to functions.ttl file
+- `-c, --configfile <arg>`: path to config file
 - `-d, --duplicates`: remove duplicates in the output
 - `-f, --functionfile <arg>`: path to functions.ttl file (dynamic functions are found relative to functions.ttl)
 - `-v, --verbose`: show more details
@@ -161,3 +163,12 @@ This makes sure that the containers running on GitLab are used and adds the righ
 | com.opencsv opencsv                | Apache License 2.0                                                 |
 | commons-lang                       | Apache License 2.0                                                 |
 | ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
+
+# UML Diagrams
+## How to generate with IntelliJ IDEA
+(Requires Ultimate edition)
+
+* Right click on package: "be.ugent.rml"
+* Diagrams > Show Diagram > Java Class Diagrams
+* Choose what properties of the classes you want to show in the upper left corner
+* Export to file > .png  | Save diagram > .uml
