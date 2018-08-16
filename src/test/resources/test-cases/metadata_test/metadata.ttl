@@ -1,0 +1,14 @@
+<#RDF_Dataset> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset>.
+<#RDF_Dataset> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity>.
+<#RDF_Dataset> <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-16T14:25:20.415777Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+<#RDF_Dataset> <http://www.w3.org/ns/prov#wasAssociatedWith> <#RMLProcessor>.
+<#RDF_Dataset> <http://www.w3.org/ns/prov#wasDerivedFrom> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/student.json>.
+<#RDF_Dataset> <http://www.w3.org/ns/prov#wasGeneratedBy> <#RDFdataset_Generation>.
+<#RDFdataset_Generation> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Activity>.
+<#RDFdataset_Generation> <http://www.w3.org/ns/prov#endedAtTime> "2018-08-16T14:25:20.412452Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+<#RDFdataset_Generation> <http://www.w3.org/ns/prov#generated> <#RDF_Dataset>.
+<#RDFdataset_Generation> <http://www.w3.org/ns/prov#startedAtTime> "2018-08-16T14:25:20.336646Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+<#RDFdataset_Generation> <http://www.w3.org/ns/prov#used> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/mapping.ttl>.
+<#RDFdataset_Generation> <http://www.w3.org/ns/prov#used> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/student.json>.
+<#RMLProcessor> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Agent>.
+<#RMLProcessor> <http://www.w3.org/ns/prov#type> <http://www.w3.org/ns/prov#SoftwareAgent>.

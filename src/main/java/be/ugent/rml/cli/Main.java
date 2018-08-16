@@ -14,10 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.time.Instant;
+import java.util.*;
 
 public class Main {
 
@@ -62,13 +60,9 @@ public class Main {
                 .longOpt( "verbose" )
                 .desc( "verbose" )
                 .build();
-        Option metadatafileOption = Option.builder("md")
-                .longOpt( "metadatafile" )
-                .hasArg()
-                .desc( "path to metadata output file" )
-                .build();
         Option metadataDatasetLevelOption = Option.builder("ds")
                 .longOpt( "datasetlevel" )
+                .hasArg()
                 .desc( "generate metadata on dataset level" )
                 .build();
         options.addOption(mappingdocOption);
@@ -79,7 +73,6 @@ public class Main {
         options.addOption(configfileOption);
         options.addOption(helpOption);
         options.addOption(verboseOption);
-        options.addOption(metadatafileOption);
         options.addOption(metadataDatasetLevelOption);
 
         CommandLineParser parser = new DefaultParser();
@@ -133,19 +126,31 @@ public class Main {
                     });
                 }
 
+                // Get start timestamp for metadatafile
+                String startTimeStamp = Instant.now().toString();
+
                 QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile));
+
+                // Get stop timestamp for metadatafile
+                String stopTimestamp = Instant.now().toString();
+
+                String DatasetLevelMetadataFile = getPriorityOptionValue(metadataDatasetLevelOption, lineArgs, configFile);
+                if (DatasetLevelMetadataFile != null) {
+                    DatasetLevelMetadataGenerator.createMetadata(DatasetLevelMetadataFile,
+                            rmlStore, triplesMaps.isEmpty() ? executor.getInitializer().getTriplesMaps(): triplesMaps, startTimeStamp, stopTimestamp, mOptionValue);
+                }
 
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
                 if (!tq.getTriples().isEmpty()) {
                     //write triples
-                    writeOutput("triple", tq.getTriples(), "nt", outputFile);
+                    Utils.writeOutput("triple", tq.getTriples(), "nt", outputFile);
                 }
 
                 if (!tq.getQuads().isEmpty()) {
                     //write quads
-                    writeOutput("quad", tq.getQuads(), "nq", outputFile);
+                    Utils.writeOutput("quad", tq.getQuads(), "nq", outputFile);
                 }
             }
         } catch( ParseException exp ) {
@@ -155,7 +160,6 @@ public class Main {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-
     }
 
     private static boolean checkOptionPresence(Option option, CommandLine lineArgs, Properties properties) {
@@ -181,44 +185,5 @@ public class Main {
     private static void setLoggerLevel(Level level) {
         Logger root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         ((ch.qos.logback.classic.Logger) root).setLevel(level);
-    }
-
-    private static void writeOutput(String what, List<Quad> output, String extension, String outputFile) {
-        if (output.size() > 1) {
-            logger.info(output.size() + " " + what + "s were generated");
-        } else {
-            logger.info(output.size() + " " + what + " was generated");
-        }
-
-        //if output file provided, write to triples output file
-        if (outputFile != null) {
-            File targetFile = new File(outputFile + "." + extension);
-            logger.info("Writing " + what + " to " + targetFile.getPath() + "...");
-
-            if (!targetFile.isAbsolute()) {
-                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile + "." +  extension);
-            }
-
-            try {
-                BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
-
-                if (what.equals("triple")) {
-                    Utils.toNTriples(output, out);
-                } else {
-                    Utils.toNQuads(output, out);
-                }
-
-                out.close();
-                logger.info("Writing to " + targetFile.getPath() + " is done.");
-            } catch(IOException e) {
-                System.err.println( "Writing output to file failed. Reason: " + e.getMessage() );
-            }
-        } else {
-            if (what.equals("triple")) {
-                System.out.println(Utils.toNTriples(output));
-            } else {
-                System.out.println(Utils.toNQuads(output));
-            }
-        }
     }
 }

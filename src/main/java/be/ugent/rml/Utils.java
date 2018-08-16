@@ -525,4 +525,43 @@ public class Utils {
 
         return result;
     }
+
+    public static void writeOutput(String what, List<Quad> output, String extension, String outputFile) {
+        if (output.size() > 1) {
+            logger.info(output.size() + " " + what + "s were generated");
+        } else {
+            logger.info(output.size() + " " + what + " was generated");
+        }
+
+        //if output file provided, write to triples output file
+        if (outputFile != null) {
+            File targetFile = new File(outputFile + "." + extension);
+            logger.info("Writing " + what + " to " + targetFile.getPath() + "...");
+
+            if (!targetFile.isAbsolute()) {
+                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile + "." +  extension);
+            }
+
+            try {
+                BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
+
+                if (what.equals("triple")) {
+                    Utils.toNTriples(output, out);
+                } else {
+                    Utils.toNQuads(output, out);
+                }
+
+                out.close();
+                logger.info("Writing to " + targetFile.getPath() + " is done.");
+            } catch(IOException e) {
+                System.err.println( "Writing output to file failed. Reason: " + e.getMessage() );
+            }
+        } else {
+            if (what.equals("triple")) {
+                System.out.println(Utils.toNTriples(output));
+            } else {
+                System.out.println(Utils.toNQuads(output));
+            }
+        }
+    }
 }

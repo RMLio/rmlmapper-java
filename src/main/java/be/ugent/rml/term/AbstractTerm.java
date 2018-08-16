@@ -16,4 +16,7 @@ public class AbstractTerm implements Term {
     public int hashCode() {
         return value.hashCode();
     }
+
+    @Override
+    public String toString() { return this.value; }
 }

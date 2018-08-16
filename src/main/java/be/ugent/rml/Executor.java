@@ -42,8 +42,8 @@ public class Executor {
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
     }
 
-    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates) throws IOException {
 
+    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates) throws IOException {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
@@ -276,5 +276,9 @@ public class Executor {
         Executor.blankNodeCounter++;
 
         return temp;
+    }
+
+    public Initializer getInitializer() {
+        return initializer;
     }
 }
