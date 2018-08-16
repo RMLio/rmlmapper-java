@@ -1,5 +1,6 @@
 package be.ugent.rml.functions;
 
+import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -18,12 +19,12 @@ import java.util.Map;
  */
 public class FunctionModel {
 
-    private final List<String> parameters; // parameters urls
-    private final List<String> outputs; // output types
-    private String URI;
+    private final List<Term> parameters; // parameters urls
+    private final List<Term> outputs; // output types
+    private Term URI;
     private Method method;
 
-    public FunctionModel(String URI, Method m, List<String> parameters, List<String> outputs) {
+    public FunctionModel(Term URI, Method m, List<Term> parameters, List<Term> outputs) {
         this.URI = URI;
         this.method = m;
         this.parameters = parameters;
@@ -48,7 +49,7 @@ public class FunctionModel {
         return new ArrayList<>();
     }
 
-    public String getURI() {
+    public Term getURI() {
         return URI;
     }
 
@@ -95,11 +96,11 @@ public class FunctionModel {
         SimpleValueFactory vf = SimpleValueFactory.getInstance();
         String type = null;
         if (this.outputs.size() > 0) {
-            if (this.outputs.get(0).startsWith("xsd:")) {
-                type = this.outputs.get(0).replace("xsd:", "http://www.w3.org/2001/XMLSchema#");
+            if (this.outputs.get(0).getValue().startsWith("xsd:")) {
+                type = this.outputs.get(0).getValue().replace("xsd:", "http://www.w3.org/2001/XMLSchema#");
             }
-            if (this.outputs.get(0).startsWith("owl:")) {
-                type = this.outputs.get(0).replace("owl:", "http://www.w3.org/2002/07/owl#");
+            if (this.outputs.get(0).getValue().startsWith("owl:")) {
+                type = this.outputs.get(0).getValue().replace("owl:", "http://www.w3.org/2002/07/owl#");
             }
         }
         if ((type == null) && args.containsKey("http://dbpedia.org/function/unitParameter")) {
@@ -124,8 +125,8 @@ public class FunctionModel {
         Object[] args = new Object[this.parameters.size()];
         Class[] paramTypes = this.method.getParameterTypes();
         for (int i = 0; i < this.parameters.size(); i++) {
-            if (parameters.get(this.parameters.get(i)) != null) {
-                args[i] = parseParameter(parameters.get(this.parameters.get(i)), paramTypes[i]);
+            if (parameters.get(this.parameters.get(i).getValue()) != null) {
+                args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i]);
             } else {
                 args[i] = null;
             }

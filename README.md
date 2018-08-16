@@ -123,3 +123,46 @@ try {
     logger.error(e.getMessage(), e);
 }
 ```
+
+### Testing
+#### RDBs
+Make sure you have [Docker](https://www.docker.com) running.
+
+Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```true``` for testing locally. 
+This causes the creation of the required Docker containers and adds the right connection string to the mapping files.
+
+Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```false``` for testing on / pushing to GitLab. 
+This makes sure that the containers running on GitLab are used and adds the right connection strings to the mapping files.
+
+##### Problems
+* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests have been turned off.
+* A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on windows 7 machines.
+
+# Dependencies
+
+|             Dependency             | License                                                            |
+|:----------------------------------:|--------------------------------------------------------------------|
+| com.spotify docker client          | Apache License 2.0                                                 |
+| com.h2database h2                  | Eclipse Public License 1.0 & Mozilla Public License 2.0            |
+| com.googlecode.zohhak              | GNU Lesser General Public License v3.0                             |
+| com.microsoft.sqlserver mssql-jdbc | MIT                                                                |
+| ch.vorbuger.mariaDB4j              | Apache License 2.0                                                 |
+| mysql-connector-java               | GNU General Public License v2.0                                    |
+| com.google.guava                   | Apache License 2.0                                                 |
+| javax.xml.parsers jaxp-api         | Apache License 2.0                                                 |
+| com.jayway.jsonpath                | Apache License 2.0                                                 |
+| junit                              | Eclipse Public License 1.0                                         |
+| org.eclipse.rdf4j rdf4j-runtime    | Eclipse Public License 1.0                                         |
+| commons-cli                        | Apache License 2.0                                                 |
+| com.opencsv opencsv                | Apache License 2.0                                                 |
+| commons-lang                       | Apache License 2.0                                                 |
+| ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
+
+# UML Diagrams
+## How to generate with IntelliJ IDEA
+(Requires Ultimate edition)
+
+* Right click on package: "be.ugent.rml"
+* Diagrams > Show Diagram > Java Class Diagrams
+* Choose what properties of the classes you want to show in the upper left corner
+* Export to file > .png  | Save diagram > .uml

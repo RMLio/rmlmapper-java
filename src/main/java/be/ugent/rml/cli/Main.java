@@ -1,13 +1,13 @@
 package be.ugent.rml.cli;
 
-import be.ugent.rml.DataFetcher;
-import be.ugent.rml.Executor;
-import be.ugent.rml.Utils;
+import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.TriplesQuads;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
@@ -25,57 +25,56 @@ public class Main {
 
     public static void main(String [] args) {
         Options options = new Options();
-        Option mappingdoc = Option.builder("m")
-                .longOpt( "mapping" )
+        Option mappingdocOption = Option.builder("m")
+                .longOpt( "mappingfile" )
                 .hasArg()
                 .desc(  "path to mapping document" )
                 .build();
-        Option outputfile = Option.builder("o")
+        Option outputfileOption = Option.builder("o")
                 .longOpt( "outputfile" )
                 .hasArg()
                 .desc(  "path to output file" )
                 .build();
-        Option functionfile = Option.builder("f")
+        Option functionfileOption = Option.builder("f")
                 .longOpt("functionfile")
                 .hasArg()
                 .desc("path to functions.ttl file (dynamic functions are found relative to functions.ttl)")
                 .build();
-        Option triplesmaps = Option.builder("t")
+        Option triplesmapsOption = Option.builder("t")
                 .longOpt( "triplesmaps" )
                 .hasArg()
                 .desc(  "IRIs of the triplesmaps that should be executed (default is all triplesmaps)" )
                 .build();
-        Option removeduplicates = Option.builder("d")
+        Option removeduplicatesOption = Option.builder("d")
                 .longOpt( "duplicates" )
                 .desc(  "remove duplicates" )
                 .build();
-        Option configfile = Option.builder("c")
+        Option configfileOption = Option.builder("c")
                 .longOpt( "configfile" )
                 .hasArg()
                 .desc( "path to configuration file" )
                 .build();
-        Option help = Option.builder("h")
+        Option helpOption = Option.builder("h")
                 .longOpt( "help" )
                 .desc( "get help info" )
                 .build();
-        Option verbose = Option.builder("v")
+        Option verboseOption = Option.builder("v")
                 .longOpt( "verbose" )
                 .desc( "verbose" )
                 .build();
-        options.addOption(mappingdoc);
-        options.addOption(outputfile);
-        options.addOption(functionfile);
-        options.addOption(removeduplicates);
-        options.addOption(triplesmaps);
-        options.addOption(configfile);
-        options.addOption(help);
-        options.addOption(verbose);
+        options.addOption(mappingdocOption);
+        options.addOption(outputfileOption);
+        options.addOption(functionfileOption);
+        options.addOption(removeduplicatesOption);
+        options.addOption(triplesmapsOption);
+        options.addOption(configfileOption);
+        options.addOption(helpOption);
+        options.addOption(verboseOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
             CommandLine lineArgs = parser.parse(options, args);
-            String[] configFileArgs = null;
 
             // Check if config file is given
             Properties configFile = null;
@@ -84,18 +83,18 @@ public class Main {
                 configFile.load(Utils.getReaderFromLocation(lineArgs.getOptionValue("c")));
             }
 
-            if (checkOptionPresence(help, lineArgs, configFile)) {
+            if (checkOptionPresence(helpOption, lineArgs, configFile)) {
                 printHelp(options);
                 return;
             }
 
-            if (checkOptionPresence(verbose, lineArgs, configFile)) {
+            if (checkOptionPresence(verboseOption, lineArgs, configFile)) {
                 setLoggerLevel(Level.DEBUG);
             } else {
                 setLoggerLevel(Level.ERROR);
             }
 
-            String mOptionValue = getPriorityOptionValue(mappingdoc, lineArgs, configFile);
+            String mOptionValue = getPriorityOptionValue(mappingdocOption, lineArgs, configFile);
             if (mOptionValue == null) {
                 printHelp(options);
             } else {
@@ -104,7 +103,7 @@ public class Main {
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
                 Executor executor;
 
-                String fOptionValue = getPriorityOptionValue(functionfile, lineArgs, configFile);
+                String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
                 if (fOptionValue == null) {
                     executor = new Executor(rmlStore, factory);
                 } else {
@@ -113,18 +112,21 @@ public class Main {
                     executor = new Executor(rmlStore, factory, functionLoader);
                 }
 
-                List<String> triplesMaps = new ArrayList<>();
+                List<Term> triplesMaps = new ArrayList<>();
 
-                String tOptionValue = getPriorityOptionValue(triplesmaps, lineArgs, configFile);
+                String tOptionValue = getPriorityOptionValue(triplesmapsOption, lineArgs, configFile);
                 if (tOptionValue != null) {
-                    triplesMaps = Arrays.asList(tOptionValue.split(","));
+                    List<String> triplesMapsIRI = Arrays.asList(tOptionValue.split(","));
+                    triplesMapsIRI.forEach(iri -> {
+                        triplesMaps.add(new NamedNode(iri));
+                    });
                 }
 
-                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicates, lineArgs, configFile));
+                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile));
 
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 
-                String outputFile = getPriorityOptionValue(outputfile, lineArgs, configFile);
+                String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
                 if (!tq.getTriples().isEmpty()) {
                     //write triples
                     writeOutput("triple", tq.getTriples(), "nt", outputFile);
@@ -153,7 +155,7 @@ public class Main {
     private static String getPriorityOptionValue(Option option, CommandLine lineArgs, Properties properties) {
         if (lineArgs.hasOption(option.getOpt())) {
             return lineArgs.getOptionValue(option.getOpt());
-        } else if (properties.getProperty(option.getLongOpt()) != null) {
+        } else if (properties != null && properties.getProperty(option.getLongOpt()) != null) {
             return properties.getProperty(option.getLongOpt());
         } else {
             return null;
