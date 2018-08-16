@@ -8,9 +8,15 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 
 ### Supported
 - local data sources:
- - CSV
- - JSON (JSONPath)
- - XML (XPath)
+ - CSV files
+ - JSON files (JSONPath)
+ - XML files (XPath)
+- remote data sources:
+ - relational databases (MySQL, PostgreSQL, and SQLServer)
+ - files via HTTP urls (via GET)
+  - CSV files
+  - JSON files (JSONPath)
+  - XML files (XPath)
 - functions (most cases)
 - output formats: ntriples and nquads
 
@@ -18,9 +24,8 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 - functions (all cases)
 - conditions
 - data sources:
- - databases
+ - NoSQL databases
  - web APIs
- - remote data sources: CSV, JSON, XML
 - output formats: turtle, trig
 
 ## Build
@@ -34,7 +39,10 @@ The following options are available.
 
 - `-m, --mapping <arg>`: path to mapping document
 - `-o, --output <arg>`: path to output file
+- `-t, --functionfile <arg>`: path to functions.ttl file
+- `-c, --configfile <arg>`: path to config file
 - `-d, --duplicates`: remove duplicates in the output
+- `-f, --functionfile <arg>`: path to functions.ttl file (dynamic functions are found relative to functions.ttl)
 - `-v, --verbose`: show more details
 - `-h, --help`: show help
 

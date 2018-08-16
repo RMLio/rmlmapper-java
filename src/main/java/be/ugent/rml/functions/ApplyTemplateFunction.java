@@ -7,7 +7,7 @@ import be.ugent.rml.records.Record;
 import java.util.List;
 import java.util.Map;
 
-public class ApplyTemplateFunction extends Function{
+public class ApplyTemplateFunction extends StaticFunctionExecutor {
 
     private boolean encodeURI;
 

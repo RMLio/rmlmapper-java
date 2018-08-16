@@ -7,11 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-- support for relational databases
 - support for NoSQL databases
 - support for Web APIs
 - support for SPARQL endpoints
 - support for TPF servers
+
+## [0.2.0] - 2018-08-09
+
+### Added
+
+- support for functions on Predicate Maps
+- support for functions on Graph Maps
+- support for relational databases (MySQL, PostgreSQL, and SQLServer)
 
 ## [0.1.6] - 2018-08-07
 
@@ -60,6 +67,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[0.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.6...v0.2.0
 [0.1.6]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.3...v0.1.4

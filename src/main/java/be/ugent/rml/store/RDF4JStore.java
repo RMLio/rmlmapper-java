@@ -6,7 +6,6 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,7 @@ public class RDF4JStore extends QuadStore {
 
     @Override
     public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {
-        throw new NotImplementedException();
+        throw new Error("Method getQuads() not implemented.");
     }
 
     @Override

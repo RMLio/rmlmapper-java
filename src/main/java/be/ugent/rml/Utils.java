@@ -418,6 +418,16 @@ public class Utils {
         return result;
     }
 
+    public static String fileToString(File file) throws IOException {
+        Reader reader = getReaderFromFile(file);
+        int intValueOfChar;
+        String targetString = "";
+        while ((intValueOfChar = reader.read()) != -1) {
+            targetString += (char) intValueOfChar;
+        }
+        reader.close();
+        return targetString;
+    }
     /*
         Extracts the selected columns from the SQL query
         Orders them alphabetically
