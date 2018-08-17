@@ -2,6 +2,7 @@ package be.ugent.rml.cli;
 
 import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
+import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Main {
 
@@ -107,8 +110,9 @@ public class Main {
                 if (fOptionValue == null) {
                     executor = new Executor(rmlStore, factory);
                 } else {
-                    File functionFile = Utils.getFile(fOptionValue);
-                    FunctionLoader functionLoader = new FunctionLoader(functionFile);
+                    Map<String, Class> libraryMap = new HashMap<>();
+                    libraryMap.put("GrelFunctions", GrelProcessor.class);
+                    FunctionLoader functionLoader = new FunctionLoader(null, null, libraryMap);
                     executor = new Executor(rmlStore, factory, functionLoader);
                 }
 
