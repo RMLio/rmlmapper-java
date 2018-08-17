@@ -15,49 +15,13 @@ import java.time.Instant;
  */
 public class DatasetLevelMetadataGenerator {
 
-    public static void createMetadata(String outputFile, QuadStore rmlStore, List<Term> triplesMaps, String startTimeStamp,
-                                String stopTimeStamp, String mappingFile) {
-        QuadStore result = new SimpleQuadStore();
-        List<Term> logicalSources = new ArrayList();
-
-        for(Term triplesMap: triplesMaps) {
-            List<Term> logicalSourcesObjects = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap,
-                    new NamedNode(NAMESPACES.RML + "logicalSource"), null));
-
-            if (logicalSourcesObjects.isEmpty()) {
-                throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
-            }
-
-            Term logicalSource = logicalSourcesObjects.get(0);
-
-            if (Utils.isBlankNode(logicalSource.toString())) {
-                List<Term> sourceObjects = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource,
-                        new NamedNode(NAMESPACES.RML + "source"), null));
-
-                if (sourceObjects.isEmpty()) {
-                    throw new Error("No Source is found for " + triplesMap + ". Exactly one Source is required per Logical Source.");
-                }
-
-                Term source = sourceObjects.get(0);
-                Term sourceNode;
-
-                // Literal -- encapsulate source in blank node
-                if (Utils.isLiteral(source.toString())) {
-                    sourceNode = new NamedNode(String.format("file:%s",sourceObjects.get(0).getValue()));
-                } else {    // todo: what with blank nodes?
-                    sourceNode = source;
-                }
-                logicalSources.add(sourceNode);
-            } else {
-                logicalSources.add(logicalSource);
-            }
-        }
+    public static QuadStore createMetadata(QuadStore result, String outputFile, List<Term> logicalSources, String startTimestamp,
+                                String stopTimestamp, String mappingFile) {
 
         // Create the metadata and add to QuadStore
-
-        Term rdfDataset = new NamedNode("#RDF_Dataset");
-        Term rdfDatasetGeneration = new NamedNode("#RDFdataset_Generation");
-        Term rmlProcessor = new NamedNode("#RMLProcessor");
+        Term rdfDataset = new NamedNode(String.format("file:%s", outputFile));
+        Term rdfDatasetGeneration = new BlankNode("#RDFdataset_Generation");
+        Term rmlProcessor = new BlankNode("#RMLProcessor");
 
         // <#RDF_Dataset>
         result.addTriple(rdfDataset, new NamedNode(NAMESPACES.RDF + "type"),
@@ -84,9 +48,9 @@ public class DatasetLevelMetadataGenerator {
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "generated"),
                 rdfDataset);
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "startedAtTime"),
-                new Literal(startTimeStamp, new AbstractTerm(NAMESPACES.XSD + "dateTime")));
+                new Literal(startTimestamp, new AbstractTerm(NAMESPACES.XSD + "dateTime")));
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "endedAtTime"),
-                new Literal(stopTimeStamp, new AbstractTerm(NAMESPACES.XSD + "dateTime")));
+                new Literal(stopTimestamp, new AbstractTerm(NAMESPACES.XSD + "dateTime")));
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
                 new NamedNode(String.format("file:%s", mappingFile)));
 
@@ -100,6 +64,6 @@ public class DatasetLevelMetadataGenerator {
 
         TriplesQuads tq = Utils.getTriplesAndQuads(result.toSimpleSortedQuadStore().getQuads(null, null, null, null));
 
-        Utils.writeOutput("triple", tq.getTriples(), "nt", outputFile);
+        return result;
     }
 }

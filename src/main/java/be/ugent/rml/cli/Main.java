@@ -3,8 +3,8 @@ package be.ugent.rml.cli;
 import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
@@ -20,6 +20,7 @@ import java.util.*;
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final QuadStore metadataStore = new SimpleQuadStore();
 
     public static void main(String [] args) {
         Options options = new Options();
@@ -60,10 +61,18 @@ public class Main {
                 .longOpt( "verbose" )
                 .desc( "verbose" )
                 .build();
+        Option metadataOption = Option.builder( "md")
+                .longOpt( "metadatafile" )
+                .hasArg()
+                .desc( "path to metadata file" )
+                .build();
         Option metadataDatasetLevelOption = Option.builder("ds")
                 .longOpt( "datasetlevel" )
-                .hasArg()
                 .desc( "generate metadata on dataset level" )
+                .build();
+        Option metadataTripleLevelOption = Option.builder("tr")
+                .longOpt( "tripleLevel" )
+                .desc( "generate metadata on triple level" )
                 .build();
         options.addOption(mappingdocOption);
         options.addOption(outputfileOption);
@@ -73,7 +82,9 @@ public class Main {
         options.addOption(configfileOption);
         options.addOption(helpOption);
         options.addOption(verboseOption);
+        options.addOption(metadataOption);
         options.addOption(metadataDatasetLevelOption);
+        options.addOption(metadataTripleLevelOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -107,6 +118,21 @@ public class Main {
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
                 Executor executor;
 
+                // Extract required information and create the MetadataGenerator
+                Set<MetadataGenerator.DETAIL_LEVEL> detailLevels = new HashSet<>();
+                if (checkOptionPresence(metadataDatasetLevelOption, lineArgs, configFile)) {
+                    detailLevels.add(MetadataGenerator.DETAIL_LEVEL.DATASET);
+                }
+                if (checkOptionPresence(metadataTripleLevelOption, lineArgs, configFile)) {
+                    detailLevels.add(MetadataGenerator.DETAIL_LEVEL.TRIPLE);
+                }
+                MetadataGenerator metadataGenerator = new MetadataGenerator(
+                        detailLevels,
+                        getPriorityOptionValue(metadataOption, lineArgs, configFile),
+                        mOptionValue,
+                        rmlStore
+                );
+
                 String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
                 if (fOptionValue == null) {
                     executor = new Executor(rmlStore, factory);
@@ -127,31 +153,34 @@ public class Main {
                 }
 
                 // Get start timestamp for metadatafile
-                String startTimeStamp = Instant.now().toString();
+                String startTimestamp = Instant.now().toString();
 
-                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile));
+                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                        metadataGenerator, detailLevels);
 
                 // Get stop timestamp for metadatafile
                 String stopTimestamp = Instant.now().toString();
 
-                String DatasetLevelMetadataFile = getPriorityOptionValue(metadataDatasetLevelOption, lineArgs, configFile);
-                if (DatasetLevelMetadataFile != null) {
-                    DatasetLevelMetadataGenerator.createMetadata(DatasetLevelMetadataFile,
-                            rmlStore, triplesMaps.isEmpty() ? executor.getInitializer().getTriplesMaps(): triplesMaps, startTimeStamp, stopTimestamp, mOptionValue);
-                }
-
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
+
+                Set<String> extensions = new HashSet<>();
 
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
                 if (!tq.getTriples().isEmpty()) {
                     //write triples
                     Utils.writeOutput("triple", tq.getTriples(), "nt", outputFile);
+                    extensions.add("nt");
                 }
 
                 if (!tq.getQuads().isEmpty()) {
                     //write quads
                     Utils.writeOutput("quad", tq.getQuads(), "nq", outputFile);
+                    extensions.add("nq");
                 }
+
+                // Generate post mapping metadata
+                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, executor.getInitializer().getTriplesMaps(),
+                        result);
             }
         } catch( ParseException exp ) {
             // oops, something went wrong
