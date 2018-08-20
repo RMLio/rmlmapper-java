@@ -66,7 +66,7 @@ public class Main {
                 .desc( "path to metadata file" )
                 .build();
         Option metadataDatasetLevelOption = Option.builder("ds")
-                .longOpt( "datasetlevel" )
+                .longOpt( "datasetLevel" )
                 .desc( "generate metadata on dataset level" )
                 .build();
         Option metadataTripleLevelOption = Option.builder("tr")

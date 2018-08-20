@@ -11,6 +11,7 @@ import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import org.apache.commons.codec.binary.Hex;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -327,6 +328,8 @@ public class Utils {
             is.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (RDFParseException ex) {
+            ex.printStackTrace();
         }
         return new RDF4JStore(model);
     }
