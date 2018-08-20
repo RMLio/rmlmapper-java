@@ -1,9 +1,6 @@
 package be.ugent.rml;
 
-import be.ugent.rml.store.ProvenancedQuad;
-import be.ugent.rml.store.Quad;
-import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.SimpleQuadStore;
+import be.ugent.rml.store.*;
 import be.ugent.rml.term.*;
 
 import java.time.Instant;
@@ -36,12 +33,17 @@ public class MetadataGenerator {
     private Set<String> distinctClasses;     // Used for counting number of distinct classes
     private Set<String> distinctProperties;  // Used for counting number of distinct properties
 
+    Term rdfDataset;
+    Term rdfDatasetGeneration;
+    Term rmlProcessor;
+
     public MetadataGenerator(Set<DETAIL_LEVEL> detailLevels, String outputFile, String mappingFile, QuadStore inputData) {
         mdStore = new SimpleQuadStore();
         this.detailLevels = detailLevels;
         this.outputFile = outputFile;
         this.inputData = inputData;
         this.mappingFile = mappingFile;
+
         distinctSubjects = new HashSet<>();
         distinctObjects = new HashSet<>();
         distinctClasses = new HashSet<>();
@@ -93,8 +95,8 @@ public class MetadataGenerator {
 
     public void postMappingGeneration(String startTimestamp, String stopTimestamp, List<Term> triplesMaps, QuadStore result) {
         if (detailLevels.contains(DETAIL_LEVEL.DATASET)) {
-            DatasetLevelMetadataGenerator.createMetadata(mdStore, outputFile, getLogicalSources(triplesMaps, inputData), startTimestamp, stopTimestamp,
-                    mappingFile);
+            DatasetLevelMetadataGenerator.createMetadata(getRdfDataset(), getRdfDatasetGeneration(), getRmlProcessor(),
+                    mdStore, getLogicalSources(triplesMaps, inputData), startTimestamp, stopTimestamp, mappingFile);
         }
         if (detailLevels.contains(DETAIL_LEVEL.TRIPLE)) {
             // Describe triplesMaps
@@ -105,13 +107,15 @@ public class MetadataGenerator {
             }
 
             // Describe result
-            Term resultNode = new NamedNode(String.format("file:%s", outputFile));
+            Term resultNode = getRdfDataset();
             mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
             mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
 
             getLogicalSources(triplesMaps, inputData).forEach(inputSource -> {
                 mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), inputSource);
             });
+
+            mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), getRdfDatasetGeneration());
 
             mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "triples"),
                     new Literal(Integer.toString(result.getQuads(null, null, null, null).size())
@@ -132,6 +136,9 @@ public class MetadataGenerator {
             mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "documents"),
                     new Literal("1"     // todo: change this when multiple output files are possible
                             , new AbstractTerm(NAMESPACES.XSD + "integer")));
+
+            mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "feature"),
+                    new NamedNode("http://www.w3.org/ns/formats/N-Quads")); // todo: change this when output file format changes
 
         }
     }
@@ -173,5 +180,31 @@ public class MetadataGenerator {
             }
         }
         return logicalSources;
+    }
+
+    public void writeMetadata() {
+        TriplesQuads tq = Utils.getTriplesAndQuads(mdStore.toSimpleSortedQuadStore().getQuads(null, null, null, null));
+        Utils.writeOutput("triple", tq.getTriples(), "nt", outputFile);
+    }
+
+    public Term getRdfDataset() {
+        if (rdfDataset == null) {
+            rdfDataset = new NamedNode(String.format("file:%s", outputFile));
+        }
+        return rdfDataset;
+    }
+
+    public Term getRdfDatasetGeneration() {
+        if (rdfDatasetGeneration == null) {
+            rdfDatasetGeneration = new BlankNode();
+        }
+        return rdfDatasetGeneration;
+    }
+
+    public Term getRmlProcessor() {
+        if (rmlProcessor == null) {
+            rmlProcessor = new BlankNode();
+        }
+        return rmlProcessor;
     }
 }

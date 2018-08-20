@@ -15,14 +15,9 @@ import java.time.Instant;
  */
 public class DatasetLevelMetadataGenerator {
 
-    public static QuadStore createMetadata(QuadStore result, String outputFile, List<Term> logicalSources, String startTimestamp,
-                                String stopTimestamp, String mappingFile) {
-
-        // Create the metadata and add to QuadStore
-        Term rdfDataset = new NamedNode(String.format("file:%s", outputFile));
-        Term rdfDatasetGeneration = new BlankNode("#RDFdataset_Generation");
-        Term rmlProcessor = new BlankNode("#RMLProcessor");
-
+    public static void createMetadata(Term rdfDataset, Term rdfDatasetGeneration, Term rmlProcessor,
+                                           QuadStore result, List<Term> logicalSources,
+                                           String startTimestamp, String stopTimestamp, String mappingFile) {
         // <#RDF_Dataset>
         result.addTriple(rdfDataset, new NamedNode(NAMESPACES.RDF + "type"),
                 new NamedNode(NAMESPACES.PROV + "Entity"));
@@ -41,7 +36,18 @@ public class DatasetLevelMetadataGenerator {
         result.addTriple(rmlProcessor, new NamedNode(NAMESPACES.PROV + "type"),
                 new NamedNode(NAMESPACES.PROV + "SoftwareAgent"));
 
+        createRDFdataset_GenerationMetadata(rdfDataset, rdfDatasetGeneration, result, mappingFile, startTimestamp, stopTimestamp);
 
+        for (Term logicalSource: logicalSources) {
+            result.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
+                    logicalSource);
+            result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
+                    logicalSource);
+        }
+    }
+
+    public static void createRDFdataset_GenerationMetadata(Term rdfDataset, Term rdfDatasetGeneration, QuadStore result,
+                                                           String mappingFile, String startTimestamp, String stopTimestamp) {
         // <#RDFdataset_Generation>
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.RDF + "type"),
                 new NamedNode(NAMESPACES.PROV + "Activity"));
@@ -53,17 +59,5 @@ public class DatasetLevelMetadataGenerator {
                 new Literal(stopTimestamp, new AbstractTerm(NAMESPACES.XSD + "dateTime")));
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
                 new NamedNode(String.format("file:%s", mappingFile)));
-
-        for (Term logicalSource: logicalSources) {
-            result.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
-                    logicalSource);
-            result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
-                    logicalSource);
-        }
-
-
-        TriplesQuads tq = Utils.getTriplesAndQuads(result.toSimpleSortedQuadStore().getQuads(null, null, null, null));
-
-        return result;
     }
 }

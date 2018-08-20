@@ -161,26 +161,22 @@ public class Main {
                 // Get stop timestamp for metadatafile
                 String stopTimestamp = Instant.now().toString();
 
-                TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
+                // Generate post mapping metadata
+                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, executor.getInitializer().getTriplesMaps(),
+                        result);
 
-                Set<String> extensions = new HashSet<>();
+                TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
                 if (!tq.getTriples().isEmpty()) {
                     //write triples
                     Utils.writeOutput("triple", tq.getTriples(), "nt", outputFile);
-                    extensions.add("nt");
                 }
 
                 if (!tq.getQuads().isEmpty()) {
                     //write quads
                     Utils.writeOutput("quad", tq.getQuads(), "nq", outputFile);
-                    extensions.add("nq");
                 }
-
-                // Generate post mapping metadata
-                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, executor.getInitializer().getTriplesMaps(),
-                        result);
             }
         } catch( ParseException exp ) {
             // oops, something went wrong
