@@ -117,7 +117,7 @@ public class MetadataGenerator {
         if (detailLevel.getLevel() >= DETAIL_LEVEL.DATASET.getLevel()) {
             DatasetLevelMetadataGenerator.createMetadata(getRdfDataset(), getRdfDatasetGeneration(), getRmlProcessor(),
                     mdStore, getLogicalSources(triplesMaps, inputData), startTimestamp, stopTimestamp, mappingFile);
-            if (detailLevel.getLevel() > DETAIL_LEVEL.TRIPLE.getLevel()) {
+            if (detailLevel.getLevel() >= DETAIL_LEVEL.TRIPLE.getLevel()) {
                 generateTripleLevelDetailMetadata(triplesMaps, result);
             }
         }
@@ -132,7 +132,7 @@ public class MetadataGenerator {
         for (Term triplesMap: triplesMaps) {
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
-            mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.VOID + "dataDump"), new NamedNode(outputFile));
+            mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.VOID + "dataDump"), getRdfDataset());
         }
 
         // Describe result
@@ -148,26 +148,27 @@ public class MetadataGenerator {
 
         mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "triples"),
                 new Literal(Integer.toString(result.getQuads(null, null, null, null).size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
         mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "distinctSubjects"),
                 new Literal(Integer.toString(distinctSubjects.size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
         mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "distinctObjects"),
                 new Literal(Integer.toString(distinctObjects.size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
         mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "classes"),
                 new Literal(Integer.toString(distinctClasses.size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
         mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "properties"),
                 new Literal(Integer.toString(distinctProperties.size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
 
         mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "documents"),
                 new Literal("1"     // todo: change this when multiple output files are possible
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
 
         mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "feature"),
                 new NamedNode("http://www.w3.org/ns/formats/N-Quads")); // todo: change this when output file format changes
+
     }
 
     public List<Term> getLogicalSources(List<Term> triplesMaps, QuadStore rmlStore) {
