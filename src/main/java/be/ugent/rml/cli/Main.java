@@ -20,7 +20,6 @@ import java.util.*;
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    private static final QuadStore metadataStore = new SimpleQuadStore();
 
     public static void main(String [] args) {
         Options options = new Options();

@@ -10,6 +10,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -575,5 +576,13 @@ public class Utils {
             sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
         return sb.toString();
 
+    }
+
+    public static String hashCode(String s) {
+        int hash = 0;
+        for (int i = 0; i < s.toCharArray().length; i++) {
+            hash += s.toCharArray()[i] * 31^(s.toCharArray().length - 1 - i);
+        }
+        return Integer.toString(Math.abs(hash));
     }
 }

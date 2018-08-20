@@ -98,7 +98,10 @@ public class MetadataGenerator {
     }
 
     public void insertQuad(ProvenancedQuad provenancedQuad) {
-        Term node = new BlankNode();
+        // Value: hash of subject + predicate + object
+        Term node = new BlankNode(Utils.hashCode(provenancedQuad.getSubject().getTerm().getValue() +
+                                                             provenancedQuad.getPredicate().getTerm().getValue() +
+                                                             provenancedQuad.getObject().getTerm().getValue()));
 
         mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.RDF + "Statement"));
         mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "subject"), provenancedQuad.getSubject().getTerm());
@@ -223,14 +226,15 @@ public class MetadataGenerator {
 
     public Term getRdfDatasetGeneration() {
         if (rdfDatasetGeneration == null) {
-            rdfDatasetGeneration = new BlankNode();
+            // Value: hash of output file path
+            rdfDatasetGeneration = new BlankNode(Utils.hashCode(outputFile));
         }
         return rdfDatasetGeneration;
     }
 
     public Term getRmlProcessor() {
         if (rmlProcessor == null) {
-            rmlProcessor = new BlankNode();
+            rmlProcessor = new BlankNode("RMLProcessor");
         }
         return rmlProcessor;
     }
