@@ -44,7 +44,7 @@
   a rr:TriplesMap;
 		
   rml:logicalSource [ 
-    rml:source "/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/METADATA_TEST_dataset_level/sport.json";
+    rml:source "src/test/resources/test-cases/METADATA_TEST_dataset_level/sport.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.sports[*]"
   ];
