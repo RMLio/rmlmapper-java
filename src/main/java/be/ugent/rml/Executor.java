@@ -44,14 +44,11 @@ public class Executor {
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
     }
 
-    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator,
-                             Set<MetadataGenerator.DETAIL_LEVEL> mdDetailLevels) throws IOException {
+    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws IOException {
 
         BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
 
-        if (mdDetailLevels != null && (mdDetailLevels.contains(MetadataGenerator.DETAIL_LEVEL.TRIPLE) ||
-                mdDetailLevels.contains(MetadataGenerator.DETAIL_LEVEL.TERM))) {
-
+        if (metadataGenerator != null && metadataGenerator.getDetailLevel().getLevel() >= MetadataGenerator.DETAIL_LEVEL.TRIPLE.getLevel()) {
             pogFunction = (subject, pog) -> {
                 generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
                 metadataGenerator.insertQuad(new ProvenancedQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph()));
@@ -118,7 +115,7 @@ public class Executor {
     }
 
     public QuadStore execute(List<Term> triplesMaps) throws IOException {
-        return execute(triplesMaps, false, null, null);
+        return execute(triplesMaps, false, null);
     }
 
 

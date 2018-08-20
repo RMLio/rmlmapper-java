@@ -119,15 +119,17 @@ public class Main {
                 Executor executor;
 
                 // Extract required information and create the MetadataGenerator
-                Set<MetadataGenerator.DETAIL_LEVEL> detailLevels = new HashSet<>();
-                if (checkOptionPresence(metadataDatasetLevelOption, lineArgs, configFile)) {
-                    detailLevels.add(MetadataGenerator.DETAIL_LEVEL.DATASET);
-                }
+                MetadataGenerator.DETAIL_LEVEL detailLevel;
                 if (checkOptionPresence(metadataTripleLevelOption, lineArgs, configFile)) {
-                    detailLevels.add(MetadataGenerator.DETAIL_LEVEL.TRIPLE);
+                    detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
+                } else if (checkOptionPresence(metadataDatasetLevelOption, lineArgs, configFile)) {
+                    detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
+                } else {
+                    detailLevel = MetadataGenerator.DETAIL_LEVEL.PREVENT;
                 }
+
                 MetadataGenerator metadataGenerator = new MetadataGenerator(
-                        detailLevels,
+                        detailLevel,
                         getPriorityOptionValue(metadataOption, lineArgs, configFile),
                         mOptionValue,
                         rmlStore
@@ -156,7 +158,7 @@ public class Main {
                 String startTimestamp = Instant.now().toString();
 
                 QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
-                        metadataGenerator, detailLevels);
+                        metadataGenerator);
 
                 // Get stop timestamp for metadatafile
                 String stopTimestamp = Instant.now().toString();
@@ -177,6 +179,8 @@ public class Main {
                     //write quads
                     Utils.writeOutput("quad", tq.getQuads(), "nq", outputFile);
                 }
+
+                metadataGenerator.writeMetadata();
             }
         } catch( ParseException exp ) {
             // oops, something went wrong
