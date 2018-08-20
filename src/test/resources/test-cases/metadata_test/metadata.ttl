@@ -1,90 +1,94 @@
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://rdfs.org/ns/void#classes> "2"^^http://www.w3.org/2001/XMLSchema#integer.
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://rdfs.org/ns/void#distinctObjects> "6"^^http://www.w3.org/2001/XMLSchema#integer.
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://rdfs.org/ns/void#distinctSubjects> "3"^^http://www.w3.org/2001/XMLSchema#integer.
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://rdfs.org/ns/void#documents> "1"^^http://www.w3.org/2001/XMLSchema#integer.
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://rdfs.org/ns/void#feature> <http://www.w3.org/ns/formats/N-Quads>.
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://rdfs.org/ns/void#properties> "4"^^http://www.w3.org/2001/XMLSchema#integer.
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://rdfs.org/ns/void#triples> "10"^^http://www.w3.org/2001/XMLSchema#integer.
 <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset>.
 <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity>.
-<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.155617Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/ns/prov#wasAssociatedWith> _:aECUFTKQa4.
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.981506Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/ns/prov#wasAssociatedWith> _:rdrkvBWusG.
 <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/ns/prov#wasDerivedFrom> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/sport.json>.
 <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/ns/prov#wasDerivedFrom> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/student.json>.
-<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/ns/prov#wasGeneratedBy> _:ktKEnV6Gdb.
-
-_:2p9X2BNHMj <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Venus Williams".
-_:2p9X2BNHMj <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://xmlns.com/foaf/0.1/name>.
-_:2p9X2BNHMj <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
-_:2p9X2BNHMj <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:2p9X2BNHMj <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.146431Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:2p9X2BNHMj <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap1>.
-
-_:ARHulF67wP <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/resource/sport_100>.
-_:ARHulF67wP <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://example.com/ontology/practises>.
-_:ARHulF67wP <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
-_:ARHulF67wP <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:ARHulF67wP <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.149093Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:ARHulF67wP <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap1>.
-_:ARHulF67wP <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap2>.
-
-_:C8VfrTRDDu <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Venus Williams".
-_:C8VfrTRDDu <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://xmlns.com/foaf/0.1/name>.
-_:C8VfrTRDDu <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
-_:C8VfrTRDDu <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:C8VfrTRDDu <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.148844Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:C8VfrTRDDu <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap1>.
-
-_:MDz865Tmhe <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Demi Moore".
-_:MDz865Tmhe <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://xmlns.com/foaf/0.1/name>.
-_:MDz865Tmhe <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_20>.
-_:MDz865Tmhe <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:MDz865Tmhe <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.151852Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:MDz865Tmhe <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap1>.
-
-_:R1DDqitakK <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Demi Moore".
-_:R1DDqitakK <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://xmlns.com/foaf/0.1/name>.
-_:R1DDqitakK <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_20>.
-_:R1DDqitakK <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:R1DDqitakK <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.151648Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:R1DDqitakK <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap1>.
-
-_:Xpndh1pUP4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/resource/sport_100>.
-_:Xpndh1pUP4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://example.com/ontology/practises>.
-_:Xpndh1pUP4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
-_:Xpndh1pUP4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:Xpndh1pUP4 <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.149368Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:Xpndh1pUP4 <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap1>.
-_:Xpndh1pUP4 <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap2>.
-
-_:YgQCO2Q5LF <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/ontology/Student>.
-_:YgQCO2Q5LF <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>.
-_:YgQCO2Q5LF <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_20>.
-_:YgQCO2Q5LF <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:YgQCO2Q5LF <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.151463Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:YgQCO2Q5LF <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap1>.
-
-_:aECUFTKQa4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Agent>.
-_:aECUFTKQa4 <http://www.w3.org/ns/prov#type> <http://www.w3.org/ns/prov#SoftwareAgent>.
-
-_:dXbe4RXp66 <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Tennis".
-_:dXbe4RXp66 <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/2000/01/rdf-schema#label>.
-_:dXbe4RXp66 <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/sport_100>.
-_:dXbe4RXp66 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:dXbe4RXp66 <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.152526Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:dXbe4RXp66 <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap2>.
-
-_:f4IpZol4Eo <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/ontology/Student>.
-_:f4IpZol4Eo <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>.
-_:f4IpZol4Eo <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
-_:f4IpZol4Eo <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:f4IpZol4Eo <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.146111Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:f4IpZol4Eo <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap1>.
-
-_:ktKEnV6Gdb <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Activity>.
-_:ktKEnV6Gdb <http://www.w3.org/ns/prov#endedAtTime> "2018-08-20T08:37:18.152557Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:ktKEnV6Gdb <http://www.w3.org/ns/prov#generated> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl>.
-_:ktKEnV6Gdb <http://www.w3.org/ns/prov#startedAtTime> "2018-08-20T08:37:18.068021Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:ktKEnV6Gdb <http://www.w3.org/ns/prov#used> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/mapping.ttl>.
-_:ktKEnV6Gdb <http://www.w3.org/ns/prov#used> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/sport.json>.
-_:ktKEnV6Gdb <http://www.w3.org/ns/prov#used> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/student.json>.
-
-_:y6F7EP1Ojl <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/ontology/Sport>.
-_:y6F7EP1Ojl <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>.
-_:y6F7EP1Ojl <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/sport_100>.
-_:y6F7EP1Ojl <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
-_:y6F7EP1Ojl <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:37:18.152324Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
-_:y6F7EP1Ojl <http://www.w3.org/ns/prov#wasGeneratedBy> <http://example.com/base/TriplesMap2>.
+<file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl> <http://www.w3.org/ns/prov#wasGeneratedBy> _:vaaX30LPkk.
+<http://example.com/base/TriplesMap1> <http://rdfs.org/ns/void#dataDump> </Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl>.
+<http://example.com/base/TriplesMap1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset>.
+<http://example.com/base/TriplesMap1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity>.
+<http://example.com/base/TriplesMap2> <http://rdfs.org/ns/void#dataDump> </Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl>.
+<http://example.com/base/TriplesMap2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset>.
+<http://example.com/base/TriplesMap2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity>.
+<http://example.com/resource/sport_100> <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap2>.
+<http://example.com/resource/student_10> <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+<http://example.com/resource/student_20> <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+_:6DyMHHfZSU <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/ontology/Sport>.
+_:6DyMHHfZSU <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>.
+_:6DyMHHfZSU <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/sport_100>.
+_:6DyMHHfZSU <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:6DyMHHfZSU <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.978035Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:6DyMHHfZSU <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap2>.
+_:8Fj3t1GgMA <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/resource/sport_100>.
+_:8Fj3t1GgMA <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://example.com/ontology/practises>.
+_:8Fj3t1GgMA <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
+_:8Fj3t1GgMA <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:8Fj3t1GgMA <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.975611Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:8Fj3t1GgMA <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+_:8Fj3t1GgMA <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap2>.
+_:CO5SSKepEW <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Demi Moore".
+_:CO5SSKepEW <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://xmlns.com/foaf/0.1/name>.
+_:CO5SSKepEW <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_20>.
+_:CO5SSKepEW <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:CO5SSKepEW <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.977384Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:CO5SSKepEW <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+_:EL0IUSozrJ <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/resource/sport_100>.
+_:EL0IUSozrJ <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://example.com/ontology/practises>.
+_:EL0IUSozrJ <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
+_:EL0IUSozrJ <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:EL0IUSozrJ <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.975790Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:EL0IUSozrJ <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+_:EL0IUSozrJ <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap2>.
+_:GWaeEYXwdv <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Demi Moore".
+_:GWaeEYXwdv <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://xmlns.com/foaf/0.1/name>.
+_:GWaeEYXwdv <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_20>.
+_:GWaeEYXwdv <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:GWaeEYXwdv <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.977517Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:GWaeEYXwdv <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+_:MYyZUbTiln <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Tennis".
+_:MYyZUbTiln <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/2000/01/rdf-schema#label>.
+_:MYyZUbTiln <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/sport_100>.
+_:MYyZUbTiln <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:MYyZUbTiln <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.978248Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:MYyZUbTiln <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap2>.
+_:NK5w0Rv8EK <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Venus Williams".
+_:NK5w0Rv8EK <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://xmlns.com/foaf/0.1/name>.
+_:NK5w0Rv8EK <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
+_:NK5w0Rv8EK <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:NK5w0Rv8EK <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.975401Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:NK5w0Rv8EK <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+_:UsoM571hOV <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Venus Williams".
+_:UsoM571hOV <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://xmlns.com/foaf/0.1/name>.
+_:UsoM571hOV <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
+_:UsoM571hOV <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:UsoM571hOV <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.973557Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:UsoM571hOV <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+_:rdrkvBWusG <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Agent>.
+_:rdrkvBWusG <http://www.w3.org/ns/prov#type> <http://www.w3.org/ns/prov#SoftwareAgent>.
+_:skZEhbeKCe <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/ontology/Student>.
+_:skZEhbeKCe <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>.
+_:skZEhbeKCe <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_10>.
+_:skZEhbeKCe <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:skZEhbeKCe <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.973322Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:skZEhbeKCe <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+_:v1R9lizCRn <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://example.com/ontology/Student>.
+_:v1R9lizCRn <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>.
+_:v1R9lizCRn <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_20>.
+_:v1R9lizCRn <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>.
+_:v1R9lizCRn <http://www.w3.org/ns/prov#generatedAtTime> "2018-08-20T08:59:30.977220Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:v1R9lizCRn <http://www.w3.org/ns/prov#wasDerivedFrom> <http://example.com/base/TriplesMap1>.
+_:vaaX30LPkk <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Activity>.
+_:vaaX30LPkk <http://www.w3.org/ns/prov#endedAtTime> "2018-08-20T08:59:30.978274Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:vaaX30LPkk <http://www.w3.org/ns/prov#generated> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/metadata.ttl>.
+_:vaaX30LPkk <http://www.w3.org/ns/prov#startedAtTime> "2018-08-20T08:59:30.888327Z"^^http://www.w3.org/2001/XMLSchema#dateTime.
+_:vaaX30LPkk <http://www.w3.org/ns/prov#used> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/mapping.ttl>.
+_:vaaX30LPkk <http://www.w3.org/ns/prov#used> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/sport.json>.
+_:vaaX30LPkk <http://www.w3.org/ns/prov#used> <file:/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/student.json>.

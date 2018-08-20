@@ -67,9 +67,17 @@ public class MetadataGenerator {
                 Term subjectTM = pquad.getSubject().getMetdata().getTriplesMap();
                 mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
 
+                Term objectTM = null;
                 if (pquad.getObject().getMetdata() != null && pquad.getObject().getMetdata().getTriplesMap() != null) {
-                    Term objectTM = pquad.getObject().getMetdata().getTriplesMap();
+                    objectTM = pquad.getObject().getMetdata().getTriplesMap();
                     mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), objectTM);
+                }
+
+                if (detailLevel.getLevel() >= DETAIL_LEVEL.TERM.getLevel()) {
+                    mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
+                    if (objectTM != null) {
+                        mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), objectTM);
+                    }
                 }
             });
             // Add generation time info
@@ -200,6 +208,7 @@ public class MetadataGenerator {
 
     public void writeMetadata() {
         if (detailLevel != DETAIL_LEVEL.PREVENT) {
+            mdStore.removeDuplicates();
             TriplesQuads tq = Utils.getTriplesAndQuads(mdStore.toSimpleSortedQuadStore().getQuads(null, null, null, null));
             Utils.writeOutput("triple", tq.getTriples(), "nq", outputFile);
         }

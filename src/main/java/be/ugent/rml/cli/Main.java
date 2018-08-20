@@ -74,6 +74,10 @@ public class Main {
                 .longOpt( "tripleLevel" )
                 .desc( "generate metadata on triple level" )
                 .build();
+        Option metadataTermLevelOption = Option.builder("te")
+                .longOpt( "termLevel" )
+                .desc(" generate metadata on term level" )
+                .build();
         options.addOption(mappingdocOption);
         options.addOption(outputfileOption);
         options.addOption(functionfileOption);
@@ -85,6 +89,7 @@ public class Main {
         options.addOption(metadataOption);
         options.addOption(metadataDatasetLevelOption);
         options.addOption(metadataTripleLevelOption);
+        options.addOption(metadataTermLevelOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -120,7 +125,9 @@ public class Main {
 
                 // Extract required information and create the MetadataGenerator
                 MetadataGenerator.DETAIL_LEVEL detailLevel;
-                if (checkOptionPresence(metadataTripleLevelOption, lineArgs, configFile)) {
+                if (checkOptionPresence(metadataTermLevelOption, lineArgs, configFile)) {
+                    detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
+                } else if (checkOptionPresence(metadataTripleLevelOption, lineArgs, configFile)) {
                     detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
                 } else if (checkOptionPresence(metadataDatasetLevelOption, lineArgs, configFile)) {
                     detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
