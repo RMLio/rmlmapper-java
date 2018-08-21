@@ -9,9 +9,6 @@ public class Metadata {
     public Metadata(Term triplesMap) {
         this.triplesMap = triplesMap;
     }
-    public void setTripleMap(Term triplesMap) {
-        this.triplesMap = triplesMap;
-    }
 
     public Term getTriplesMap() {
         return triplesMap;
