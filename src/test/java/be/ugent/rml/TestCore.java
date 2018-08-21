@@ -94,7 +94,21 @@ abstract class TestCore {
         }
     }
 
-    void compareFiles(String path1, String path2, boolean removeTimestamps) {
+    void compareFiles(String path1, String path2) {
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        // load output file1
+        File outputFile1 = new File(classLoader.getResource(path1).getFile());
+        QuadStore outputStore1 = Utils.readTurtle(outputFile1, RDFFormat.NQUADS);
+
+        // load output file2
+        File outputFile2 = new File(classLoader.getResource(path1).getFile());
+        QuadStore outputStore2 = Utils.readTurtle(outputFile2, RDFFormat.NQUADS);
+
+        assertEquals(outputStore1.toSortedString(), outputStore2.toSortedString());
+    }
+
+    void compareFilesAsStrings(String path1, String path2, boolean removeTimestamps) {
         ClassLoader classLoader = getClass().getClassLoader();
 
         // load output file 1

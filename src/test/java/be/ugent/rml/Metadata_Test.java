@@ -12,7 +12,7 @@ public class Metadata_Test extends TestCore {
     @Test
     public void datasetLevelTest() {
         Main.main("-c ./test-cases/METADATA_TEST_dataset_level/config_example.properties".split(" "));
-        compareFiles(
+        compareFilesAsStrings(
                 "test-cases/METADATA_TEST_dataset_level/target_metadata.nq",
                 "test-cases/METADATA_TEST_dataset_level/generated_metadata.nq",
                 true
@@ -22,7 +22,7 @@ public class Metadata_Test extends TestCore {
     @Test
     public void tripleLevelTest() {
         Main.main("-c ./test-cases/METADATA_TEST_triple_level/config_example.properties".split(" "));
-        compareFiles(
+        compareFilesAsStrings(
                 "test-cases/METADATA_TEST_triple_level/target_metadata.nq",
                 "test-cases/METADATA_TEST_triple_level/generated_metadata.nq",
                 true
@@ -32,7 +32,7 @@ public class Metadata_Test extends TestCore {
     @Test
     public void termLevelTest() {
         Main.main("-c ./test-cases/METADATA_TEST_term_level/config_example.properties".split(" "));
-        compareFiles(
+        compareFilesAsStrings(
                 "test-cases/METADATA_TEST_term_level/target_metadata.nq",
                 "test-cases/METADATA_TEST_term_level/generated_metadata.nq",
                 true
