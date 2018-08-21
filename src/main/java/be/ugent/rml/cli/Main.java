@@ -128,17 +128,12 @@ public class Main {
 
                 QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile));
 
-                TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-                if (!tq.getTriples().isEmpty()) {
-                    //write triples
-                    writeOutput("triple", tq.getTriples(), "nt", outputFile);
-                }
-
-                if (!tq.getQuads().isEmpty()) {
+                if (result.getQuads(null, null, null, null).isEmpty()) {
                     //write quads
-                    writeOutput("quad", tq.getQuads(), "nq", outputFile);
+                    writeOutput("quad", result.getQuads(null, null, null, null),
+                            "nq", outputFile);
                 }
             }
         } catch( ParseException exp ) {
