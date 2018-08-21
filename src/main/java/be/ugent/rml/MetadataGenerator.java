@@ -231,7 +231,7 @@ public class MetadataGenerator {
         // Add generation time info
         generationFunctions.add((node, pquad) -> {
             mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "generatedAtTime"),
-                    new Literal(Instant.now().toString(), new AbstractTerm(NAMESPACES.XSD + "dateTime")));
+                    new Literal(Instant.now().toString(), new NamedNode(NAMESPACES.XSD + "dateTime")));
         });
         // Add counters
         generationFunctions.add((node, pquad) -> {
