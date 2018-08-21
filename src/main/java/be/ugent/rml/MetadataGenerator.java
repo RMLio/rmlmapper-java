@@ -61,6 +61,7 @@ public class MetadataGenerator {
         generationFunctions = new ArrayList<>();
 
         if (detailLevel.getLevel() >= DETAIL_LEVEL.TRIPLE.getLevel()) {
+<<<<<<< HEAD
             // Add source triplesMap info
             generationFunctions.add((node, pquad) -> {
                 // Get triplesMaps (Subject always has one, object does not always have one)
@@ -94,6 +95,9 @@ public class MetadataGenerator {
                     distinctClasses.add(pquad.getObject().getTerm().getValue());
                 }
             });
+=======
+            addTripleLevelFunctions();
+>>>>>>> metadata_generation
         }
     }
 
@@ -235,9 +239,45 @@ public class MetadataGenerator {
 
     public Term getRmlProcessor() {
         if (rmlProcessor == null) {
-            rmlProcessor = new BlankNode("RMLProcessor");
+            rmlProcessor = new BlankNode("RMLMapper");
         }
         return rmlProcessor;
+    }
+
+    private void addTripleLevelFunctions() {
+        // Add source triplesMap info
+        generationFunctions.add((node, pquad) -> {
+            // Get triplesMaps (Subject always has one, object does not always have one)
+            Term subjectTM = pquad.getSubject().getMetdata().getTriplesMap();
+            mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
+
+            Term objectTM = null;
+            if (pquad.getObject().getMetdata() != null && pquad.getObject().getMetdata().getTriplesMap() != null) {
+                objectTM = pquad.getObject().getMetdata().getTriplesMap();
+                mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), objectTM);
+            }
+
+            if (detailLevel.getLevel() >= DETAIL_LEVEL.TERM.getLevel()) {
+                mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
+                if (objectTM != null) {
+                    mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), objectTM);
+                }
+            }
+        });
+        // Add generation time info
+        generationFunctions.add((node, pquad) -> {
+            mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "generatedAtTime"),
+                    new Literal(Instant.now().toString(), new AbstractTerm(NAMESPACES.XSD + "dateTime")));
+        });
+        // Add counters
+        generationFunctions.add((node, pquad) -> {
+            distinctSubjects.add(pquad.getSubject().getTerm().getValue());
+            distinctObjects.add(pquad.getObject().getTerm().getValue());
+            distinctProperties.add(pquad.getPredicate().getTerm().getValue());
+            if (pquad.getPredicate().getTerm().getValue().equals(NAMESPACES.RDF + "type")) {
+                distinctClasses.add(pquad.getObject().getTerm().getValue());
+            }
+        });
     }
 
     public DETAIL_LEVEL getDetailLevel() {

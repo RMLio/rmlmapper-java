@@ -30,12 +30,8 @@ public class Executor {
     private static int blankNodeCounter = 0;
     private HashMap<Term, Mapping> mappings;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
-        this(rmlStore, recordsFactory, null);
-    }
-
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) throws IOException {
-        this.initializer = new Initializer(rmlStore, functionLoader);
+    public Executor(Initializer initializer, QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
+        this.initializer = initializer;
         this.mappings = this.initializer.getMappings();
         this.resultingTriples = new SimpleQuadStore();
         this.rmlStore = rmlStore;
@@ -100,9 +96,7 @@ public class Executor {
 
                     List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
-                    for (PredicateObjectGraph pog: pogs) {
-                        pogFunction.accept(subject, pog);
-                    }
+                    pogs.forEach(pog -> pogFunction.accept(subject, pog));
                 }
             }
         }
@@ -115,7 +109,7 @@ public class Executor {
     }
 
     public QuadStore execute(List<Term> triplesMaps) throws IOException {
-        return execute(triplesMaps, false, null);
+        return this.execute(triplesMaps, false, null);
     }
 
 
