@@ -323,10 +323,9 @@ public class Utils {
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (RDFParseException ex) {
-            ex.printStackTrace();
+            throw new Error("Failed to read turtle file.");
         }
         return new RDF4JStore(model);
     }
