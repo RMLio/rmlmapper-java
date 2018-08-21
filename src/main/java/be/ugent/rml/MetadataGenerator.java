@@ -44,7 +44,7 @@ public class MetadataGenerator {
 
     Term rdfDataset;
     Term rdfDatasetGeneration;
-    Term rmlProcessor;
+    Term rmlMapper;
 
     public MetadataGenerator(DETAIL_LEVEL detailLevel, String outputFile, String mappingFile, QuadStore inputData) {
         mdStore = new SimpleQuadStore();
@@ -83,7 +83,7 @@ public class MetadataGenerator {
 
     public void postMappingGeneration(String startTimestamp, String stopTimestamp, List<Term> triplesMaps, QuadStore result) {
         if (detailLevel.getLevel() >= DETAIL_LEVEL.DATASET.getLevel()) {
-            DatasetLevelMetadataGenerator.createMetadata(getRdfDataset(), getRdfDatasetGeneration(), getRmlProcessor(),
+            DatasetLevelMetadataGenerator.createMetadata(getRdfDataset(), getRdfDatasetGeneration(), getRMLMapper(),
                     mdStore, getLogicalSources(triplesMaps, inputData), startTimestamp, stopTimestamp, mappingFile);
             if (detailLevel.getLevel() > DETAIL_LEVEL.TRIPLE.getLevel()) {
                 generateTripleLevelDetailMetadata(triplesMaps, result);
@@ -200,11 +200,11 @@ public class MetadataGenerator {
         return rdfDatasetGeneration;
     }
 
-    public Term getRmlProcessor() {
-        if (rmlProcessor == null) {
-            rmlProcessor = new BlankNode("RMLMapper");
+    public Term getRMLMapper() {
+        if (rmlMapper == null) {
+            rmlMapper = new BlankNode("RMLMapper");
         }
-        return rmlProcessor;
+        return rmlMapper;
     }
 
     private void addTripleLevelFunctions() {
