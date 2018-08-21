@@ -100,9 +100,7 @@ public class Executor {
 
                     List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
-                    for (PredicateObjectGraph pog: pogs) {
-                        pogFunction.accept(subject, pog);
-                    }
+                    pogs.forEach(pog -> pogFunction.accept(subject, pog));
                 }
             }
         }
@@ -115,7 +113,7 @@ public class Executor {
     }
 
     public QuadStore execute(List<Term> triplesMaps) throws IOException {
-        return execute(triplesMaps, false, null);
+        return this.execute(triplesMaps, false, null);
     }
 
 
