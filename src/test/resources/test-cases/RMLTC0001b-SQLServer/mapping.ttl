@@ -14,18 +14,18 @@
   rml:logicalSource [ 
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rr:query "SELECT \\"Name\\" FROM student";
+    rr:query "SELECT name FROM student";
     rml:referenceFormulation ql:CSV
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/{Name}" 
+    rr:template "http://example.com/{name}"
   ]; 
 	
   rr:predicateObjectMap [ 
     rr:predicate foaf:name; 
     rr:objectMap [
-      rml:reference "Name"
+      rml:reference "name"
     ]
   ].
 
