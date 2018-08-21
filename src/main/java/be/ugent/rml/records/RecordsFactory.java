@@ -92,7 +92,7 @@ public class RecordsFactory {
                 }
             }
         } else {
-            throw new Error("No Logical Source is found for " + triplesMap + ". Exact one Logical Source is required per Triples Map.");
+            throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
         }
     }
 

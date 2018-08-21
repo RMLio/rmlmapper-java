@@ -4,6 +4,7 @@ import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.JoinConditionFunction;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.NamedNode;
@@ -11,9 +12,10 @@ import be.ugent.rml.term.ProvenancedTerm;
 import be.ugent.rml.term.Term;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Executor {
 
@@ -28,12 +30,8 @@ public class Executor {
     private static int blankNodeCounter = 0;
     private HashMap<Term, Mapping> mappings;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
-        this(rmlStore, recordsFactory, null);
-    }
-
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) throws IOException {
-        this.initializer = new Initializer(rmlStore, functionLoader);
+    public Executor(Initializer initializer, QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
+        this.initializer = initializer;
         this.mappings = this.initializer.getMappings();
         this.resultingTriples = new SimpleQuadStore();
         this.rmlStore = rmlStore;
@@ -42,8 +40,25 @@ public class Executor {
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
     }
 
-    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates) throws IOException {
+    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws IOException {
 
+        BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
+
+        if (metadataGenerator != null && metadataGenerator.getDetailLevel().getLevel() >= MetadataGenerator.DETAIL_LEVEL.TRIPLE.getLevel()) {
+            pogFunction = (subject, pog) -> {
+                generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
+                metadataGenerator.insertQuad(new ProvenancedQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph()));
+            };
+        } else {
+            pogFunction = (subject,pog) -> {
+                generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
+            };
+        }
+
+        return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
+    }
+
+    public QuadStore executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws IOException {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
@@ -81,9 +96,7 @@ public class Executor {
 
                     List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
-                    pogs.forEach(pog -> {
-                        generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
-                    });
+                    pogs.forEach(pog -> pogFunction.accept(subject, pog));
                 }
             }
         }
@@ -96,7 +109,7 @@ public class Executor {
     }
 
     public QuadStore execute(List<Term> triplesMaps) throws IOException {
-        return this.execute(triplesMaps, false);
+        return this.execute(triplesMaps, false, null);
     }
 
 
@@ -218,7 +231,8 @@ public class Executor {
             List<Term> nodes = mapping.getSubject().generate(record);
 
             if (!nodes.isEmpty()) {
-                this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0)));
+                //todo: only create metadata when it's required
+                this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0), new Metadata(triplesMap)));
             }
         }
 

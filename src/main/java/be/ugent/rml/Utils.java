@@ -10,6 +10,8 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import org.apache.commons.codec.binary.Hex;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -27,6 +29,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -321,10 +324,13 @@ public class Utils {
 
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+            System.out.println(file);
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (RDFParseException ex) {
+            ex.printStackTrace();
         }
         return new RDF4JStore(model);
     }
@@ -524,5 +530,63 @@ public class Utils {
         }
 
         return result;
+    }
+
+    public static void writeOutput(String what, List<Quad> output, String extension, String outputFile) {
+        if (output.size() > 1) {
+            logger.info(output.size() + " " + what + "s were generated");
+        } else {
+            logger.info(output.size() + " " + what + " was generated");
+        }
+
+        //if output file provided, write to triples output file
+        if (outputFile != null) {
+            File targetFile = new File(outputFile + "." + extension);
+            logger.info("Writing " + what + " to " + targetFile.getPath() + "...");
+
+            if (!targetFile.isAbsolute()) {
+                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile + "." +  extension);
+            }
+
+            try {
+                BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
+
+                if (what.equals("triple")) {
+                    Utils.toNTriples(output, out);
+                } else {
+                    Utils.toNQuads(output, out);
+                }
+
+                out.close();
+                logger.info("Writing to " + targetFile.getPath() + " is done.");
+            } catch(IOException e) {
+                System.err.println( "Writing output to file failed. Reason: " + e.getMessage() );
+            }
+        } else {
+            if (what.equals("triple")) {
+                System.out.println(Utils.toNTriples(output));
+            } else {
+                System.out.println(Utils.toNQuads(output));
+            }
+        }
+    }
+
+    public static String randomString(int len) {
+        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        SecureRandom rnd = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder( len );
+        for( int i = 0; i < len; i++ )
+            sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
+        return sb.toString();
+
+    }
+
+    public static String hashCode(String s) {
+        int hash = 0;
+        for (int i = 0; i < s.toCharArray().length; i++) {
+            hash += s.toCharArray()[i] * 31^(s.toCharArray().length - 1 - i);
+        }
+        return Integer.toString(Math.abs(hash));
     }
 }

@@ -27,7 +27,8 @@ abstract class TestCore {
         File mappingFile = new File(mapPath);
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
-        return new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
+        return new Executor(new Initializer(rmlStore, null ), rmlStore,
+                new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
     }
 
     Executor createExecutor(String mapPath, FunctionLoader functionLoader) throws IOException {
@@ -36,7 +37,8 @@ abstract class TestCore {
         File mappingFile = new File(classLoader.getResource(mapPath).getFile());
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
-        return new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)), functionLoader);
+        return new Executor(new Initializer(rmlStore, functionLoader), rmlStore,
+                new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
     }
 
     Executor doMapping(String mapPath, String outPath) {
@@ -84,10 +86,45 @@ abstract class TestCore {
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
         try {
-            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
+            Executor executor = new Executor(new Initializer(rmlStore, null), rmlStore,
+                    new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
             QuadStore result = executor.execute(null);
         } catch (IOException e) {
 
         }
+    }
+
+    void compareFiles(String path1, String path2, boolean removeTimestamps) {
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        // load output file 1
+        File outputFile1 = new File(classLoader.getResource(path1).getFile());
+        QuadStore outputStore1;
+
+        if (path1.endsWith(".nq")) {
+            outputStore1 = Utils.readTurtle(outputFile1, RDFFormat.NQUADS);
+        } else {
+            outputStore1 = Utils.readTurtle(outputFile1);
+        }
+
+        // load output file 2
+        File outputFile2 = new File(classLoader.getResource(path2).getFile());
+        QuadStore outputStore2;
+
+        if (path1.endsWith(".nq")) {
+            outputStore2 = Utils.readTurtle(outputFile2, RDFFormat.NQUADS);
+        } else {
+            outputStore2 = Utils.readTurtle(outputFile2);
+        }
+
+        String string1 = outputStore1.toSortedString();
+        String string2 = outputStore2.toSortedString();
+
+        if (removeTimestamps) {
+            string1 = string1.replaceAll("\"[^\"]*\"\\^\\^<http://www.w3\\.org/2001/XMLSchema#dateTime>", "");
+            string2 = string2.replaceAll("\"[^\"]*\"\\^\\^<http://www.w3\\.org/2001/XMLSchema#dateTime>", "");
+        }
+
+        assertEquals(string1, string2);
     }
 }
