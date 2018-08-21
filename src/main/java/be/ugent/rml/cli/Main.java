@@ -121,9 +121,10 @@ public class Main {
                 Executor executor;
 
                 // Extract required information and create the MetadataGenerator
-                MetadataGenerator.DETAIL_LEVEL detailLevel;
+                MetadataGenerator.DETAIL_LEVEL detailLevel = MetadataGenerator.DETAIL_LEVEL.PREVENT;
                 String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
-                if (requestedDetailLevel != null) {
+                String metadataOutputFile = getPriorityOptionValue(metadataOption, lineArgs, configFile);
+                if (requestedDetailLevel != null && metadataOutputFile != null) {
                     if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
                         printHelp(options);
                         throw new Error("Please fill in the metadatafile option when requesting metadata generation.");
@@ -142,18 +143,14 @@ public class Main {
                             printHelp(options);
                             throw new Error("Unknown metadata detail level option. Please choose from: dataset - triple - term.");
                     }
-                } else {
-                    if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
-                        printHelp(options);
-                        throw new Error("Please fill in the detail level option when requesting metadata generation.");
-                    } else {
-                        detailLevel = MetadataGenerator.DETAIL_LEVEL.PREVENT;
-                    }
+                } else if (requestedDetailLevel != null || metadataOutputFile != null) {
+                    printHelp(options);
+                    throw new Error("Please specify both the output file path and the detail level options when requesting metadata generation.");
                 }
 
                 MetadataGenerator metadataGenerator = new MetadataGenerator(
                         detailLevel,
-                        getPriorityOptionValue(metadataOption, lineArgs, configFile),
+                        metadataOutputFile,
                         mOptionValue,
                         rmlStore
                 );
