@@ -66,22 +66,15 @@ public class Main {
                 .longOpt( "verbose" )
                 .desc( "verbose" )
                 .build();
-        Option metadataOption = Option.builder( "md")
+        Option metadataOption = Option.builder( "e")
                 .longOpt( "metadatafile" )
                 .hasArg()
                 .desc( "path to metadata file" )
                 .build();
-        Option metadataDatasetLevelOption = Option.builder("ds")
-                .longOpt( "datasetlevel" )
-                .desc( "generate metadata on dataset level" )
-                .build();
-        Option metadataTripleLevelOption = Option.builder("tr")
-                .longOpt( "tripleLevel" )
-                .desc( "generate metadata on triple level" )
-                .build();
-        Option metadataTermLevelOption = Option.builder("te")
-                .longOpt( "termLevel" )
-                .desc(" generate metadata on term level" )
+        Option metadataDetailLevelOption = Option.builder("l")
+                .longOpt( "metadataDetailLevel" )
+                .hasArg()
+                .desc( "generate metadata on given detail level (dataset - triple - term)" )
                 .build();
         options.addOption(mappingdocOption);
         options.addOption(outputfileOption);
@@ -92,9 +85,7 @@ public class Main {
         options.addOption(helpOption);
         options.addOption(verboseOption);
         options.addOption(metadataOption);
-        options.addOption(metadataDatasetLevelOption);
-        options.addOption(metadataTripleLevelOption);
-        options.addOption(metadataTermLevelOption);
+        options.addOption(metadataDetailLevelOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -126,18 +117,38 @@ public class Main {
                 File mappingFile = Utils.getFile(mOptionValue);
                 QuadStore rmlStore = Utils.readTurtle(mappingFile);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
+                Initializer initializer;
                 Executor executor;
 
                 // Extract required information and create the MetadataGenerator
                 MetadataGenerator.DETAIL_LEVEL detailLevel;
-                if (checkOptionPresence(metadataTermLevelOption, lineArgs, configFile)) {
-                    detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
-                } else if (checkOptionPresence(metadataTripleLevelOption, lineArgs, configFile)) {
-                    detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
-                } else if (checkOptionPresence(metadataDatasetLevelOption, lineArgs, configFile)) {
-                    detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
+                String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
+                if (requestedDetailLevel != null) {
+                    if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
+                        printHelp(options);
+                        throw new Error("Please fill in the metadatafile option when requesting metadata generation.");
+                    }
+                    switch(requestedDetailLevel) {
+                        case "dataset":
+                            detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
+                            break;
+                        case "triple":
+                            detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
+                            break;
+                        case "term":
+                            detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
+                            break;
+                        default:
+                            printHelp(options);
+                            throw new Error("Unknown metadata detail level option. Please choose from: dataset - triple - term.");
+                    }
                 } else {
-                    detailLevel = MetadataGenerator.DETAIL_LEVEL.PREVENT;
+                    if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
+                        printHelp(options);
+                        throw new Error("Please fill in the detail level option when requesting metadata generation.");
+                    } else {
+                        detailLevel = MetadataGenerator.DETAIL_LEVEL.PREVENT;
+                    }
                 }
 
                 MetadataGenerator metadataGenerator = new MetadataGenerator(
@@ -147,14 +158,18 @@ public class Main {
                         rmlStore
                 );
 
+
+
                 String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
                 if (fOptionValue == null) {
-                    executor = new Executor(rmlStore, factory);
+                    initializer = new Initializer(rmlStore, null);
+                    executor = new Executor(initializer, rmlStore, factory);
                 } else {
                     Map<String, Class> libraryMap = new HashMap<>();
                     libraryMap.put("GrelFunctions", GrelProcessor.class);
                     FunctionLoader functionLoader = new FunctionLoader(null, null, libraryMap);
-                    executor = new Executor(rmlStore, factory, functionLoader);
+                    initializer = new Initializer(rmlStore, functionLoader);
+                    executor = new Executor(initializer, rmlStore, factory);
                 }
 
                 List<Term> triplesMaps = new ArrayList<>();

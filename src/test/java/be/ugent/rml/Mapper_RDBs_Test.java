@@ -489,7 +489,6 @@ public class Mapper_RDBs_Test extends TestCore {
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
         deleteTempMappingFile(tempMappingPath);
-
     }
 
     @Test

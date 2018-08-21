@@ -202,7 +202,7 @@ public class MetadataGenerator {
 
     public Term getRmlProcessor() {
         if (rmlProcessor == null) {
-            rmlProcessor = new BlankNode("RMLProcessor");
+            rmlProcessor = new BlankNode("RMLMapper");
         }
         return rmlProcessor;
     }
