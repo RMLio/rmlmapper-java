@@ -315,16 +315,12 @@ public class Utils {
         return list;
     }
 
-    public static QuadStore readTurtle(File file, RDFFormat format) {
-        InputStream is;
+    public static QuadStore readTurtle(InputStream is, RDFFormat format) {
         Model model = null;
         try {
-            is = new FileInputStream(file);
             //model = Rio.parse(mappingStream, "", format);
-
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
-            System.out.println(file);
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
         } catch (IOException e) {
@@ -333,6 +329,15 @@ public class Utils {
             ex.printStackTrace();
         }
         return new RDF4JStore(model);
+    }
+
+    public static QuadStore readTurtle(File file, RDFFormat format) {
+        try {
+            return readTurtle(getInputStreamFromFile(file), format);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return new RDF4JStore(null);
+        }
     }
 
     public static QuadStore readTurtle(File mappingFile) {

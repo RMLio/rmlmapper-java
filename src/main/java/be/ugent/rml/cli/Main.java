@@ -11,6 +11,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,9 +117,8 @@ public class Main {
             if (mOptionValue == null) {
                 printHelp(options);
             } else {
-                Reader mappingFileReader = Utils.getReaderFromLocation(mOptionValue, null, "application/rdf+xml");
-                File mappingFile = Utils.getFile(mOptionValue);
-                QuadStore rmlStore = Utils.readTurtle(mappingFile);
+                InputStream is = Utils.getInputStreamFromLocation(mOptionValue, null, "application/rdf+xml");
+                QuadStore rmlStore = Utils.readTurtle(is, RDFFormat.TURTLE);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
                 Initializer initializer;
                 Executor executor;
@@ -153,8 +153,6 @@ public class Main {
                         mOptionValue,
                         rmlStore
                 );
-
-
 
                 String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
                 if (fOptionValue == null) {

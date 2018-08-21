@@ -11,7 +11,7 @@
   a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "student.json";
+    rml:source "http://localhost:8000/inputFile";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.students[*]"
   ];
