@@ -125,10 +125,6 @@ public class Main {
                 String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
                 String metadataOutputFile = getPriorityOptionValue(metadataOption, lineArgs, configFile);
                 if (requestedDetailLevel != null && metadataOutputFile != null) {
-                    if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
-                        printHelp(options);
-                        throw new Error("Please fill in the metadatafile option when requesting metadata generation.");
-                    }
                     switch(requestedDetailLevel) {
                         case "dataset":
                             detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
