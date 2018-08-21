@@ -291,8 +291,4 @@ public class Executor {
 
         return temp;
     }
-
-    public Initializer getInitializer() {
-        return initializer;
-    }
 }

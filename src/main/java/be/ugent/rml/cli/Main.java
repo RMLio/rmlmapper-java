@@ -192,7 +192,7 @@ public class Main {
                 String stopTimestamp = Instant.now().toString();
 
                 // Generate post mapping metadata
-                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, executor.getInitializer().getTriplesMaps(),
+                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, initializer.getTriplesMaps(),
                         result);
 
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
