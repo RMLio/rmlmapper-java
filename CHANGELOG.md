@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for SPARQL endpoints
 - support for TPF servers
 
+## [0.2.1] - 2018-08-14
+
+### Fixed
+
+- Create valid temp file for prepackaged functions jars
+- Use GrelProcessor.class by default instead of GrelFunctions.jar
+
 ## [0.2.0] - 2018-08-09
 
 ### Added
@@ -67,6 +74,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[0.2.1]: https://github.com/RMLio/rmlmapper-java/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.6...v0.2.0
 [0.1.6]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.4...v0.1.5

@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +43,7 @@ class MyFileUtils {
 
         private ClassLoader cl;
         private String resource;
+        private String extension;
 
         /**
          * @param cl
@@ -50,6 +52,7 @@ class MyFileUtils {
         ClasspathResourceFileResource(ClassLoader cl, String resource) {
             this.cl = cl;
             this.resource = resource;
+            this.extension = FilenameUtils.getExtension(resource);
         }
 
         /**
@@ -57,13 +60,18 @@ class MyFileUtils {
          * @throws IOException
          */
         public File getFile() throws IOException {
+            String suffix = "temp";
+
+            if (this.extension != null) {
+                suffix += "." + this.extension;
+            }
+
             InputStream cpResource = cl.getResourceAsStream(resource);
-            File tmpFile = File.createTempFile("file", "temp");
+            File tmpFile = File.createTempFile("file", suffix);
             FileUtils.copyInputStreamToFile(cpResource, tmpFile);
             tmpFile.deleteOnExit();
             return tmpFile;
         }
-
     }
 
     public static class URLClassLoaderFileResource implements FileResource {

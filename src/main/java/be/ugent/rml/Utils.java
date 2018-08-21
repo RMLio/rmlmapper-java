@@ -391,7 +391,7 @@ public class Utils {
     }
 
     private static String getNQuadOfQuad(Quad q) {
-        return q.getSubject() + " " + q.getPredicate() + " " + q.getObject() + "" + q.getGraph() + ".";
+        return q.getSubject() + " " + q.getPredicate() + " " + q.getObject() + " " + q.getGraph() + ".";
     }
 
     public static String encodeURI(String url) {
