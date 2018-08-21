@@ -22,6 +22,8 @@ import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
 
+import static be.ugent.rml.Utils.getReaderFromLocation;
+
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -83,7 +85,7 @@ public class Main {
             Properties configFile = null;
             if (lineArgs.hasOption("c")) {
                 configFile = new Properties();
-                configFile.load(Utils.getReaderFromLocation(lineArgs.getOptionValue("c")));
+                configFile.load(getReaderFromLocation(lineArgs.getOptionValue("c")));
             }
 
             if (checkOptionPresence(helpOption, lineArgs, configFile)) {
@@ -101,6 +103,7 @@ public class Main {
             if (mOptionValue == null) {
                 printHelp(options);
             } else {
+                Reader mappingFileReader = Utils.getReaderFromLocation(mOptionValue, null, "application/rdf+xml");
                 File mappingFile = Utils.getFile(mOptionValue);
                 QuadStore rmlStore = Utils.readTurtle(mappingFile);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
