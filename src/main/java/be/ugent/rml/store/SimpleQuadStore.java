@@ -46,7 +46,9 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     public void addQuad(Term subject, Term predicate, Term object, Term graph) {
-        quads.add(new Quad(subject, predicate, object, graph));
+        if (subject != null && predicate != null && object != null) {
+            quads.add(new Quad(subject, predicate, object, graph));
+        }
     }
 
     public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {

@@ -22,11 +22,11 @@ import java.util.function.Consumer;
 
 public class MappingFactory {
     private final FunctionLoader functionLoader;
-    private TermGenerator subject;
-    private List<TermGenerator> graphs;
+    private Mapping.MappingInfo subjectMappingInfo;
+    private List<Mapping.MappingInfo> graphMappingInfos;
     private Term triplesMap;
     private QuadStore store;
-    private ArrayList<PredicateObjectGraphGenerator> predicateObjectGraphGenerators;
+    private List<PredicateObjectGraphMapping> predicateObjectGraphMappings;
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public MappingFactory(FunctionLoader functionLoader) {
@@ -36,19 +36,22 @@ public class MappingFactory {
     public Mapping createMapping(Term triplesMap, QuadStore store) throws IOException {
         this.triplesMap = triplesMap;
         this.store = store;
-        this.subject = null;
-        this.predicateObjectGraphGenerators = new ArrayList<>();
-        this.graphs = null;
+        this.subjectMappingInfo = null;
+        this.predicateObjectGraphMappings = new ArrayList<>();
+        this.graphMappingInfos = null;
 
         parseSubjectMap();
         parsePredicateObjectMaps();
+        graphMappingInfos = parseGraphMapsAndShortcuts(subjectMappingInfo.getTerm());
+
 
         //return the mapping
-        return new Mapping(subject, predicateObjectGraphGenerators, graphs);
+        return new Mapping(subjectMappingInfo, predicateObjectGraphMappings, graphMappingInfos);
     }
 
     private void parseSubjectMap() throws IOException {
-        if (this.subject == null) {
+        if (this.subjectMappingInfo == null) {
+            TermGenerator generator;
             List<Term> subjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"), null));
 
             if (!subjectmaps.isEmpty()) {
@@ -67,21 +70,21 @@ public class MappingFactory {
                         String template = getGenericTemplate(subjectmap);
 
                         if (template != null) {
-                            this.subject = new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(template, true));
+                            generator = new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(template, true));
                         } else {
-                            this.subject = new BlankNodeGenerator();
+                            generator = new BlankNodeGenerator();
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
-                        this.subject = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(getGenericTemplate(subjectmap), true));
+                        generator = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(getGenericTemplate(subjectmap), true));
                     }
                 } else {
                     DynamicFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
-                    this.subject = new NamedNodeGenerator(functionExecutor);
+                    generator = new NamedNodeGenerator(functionExecutor);
                 }
 
-                this.graphs = parseGraphMapsAndShortcuts(subjectmap);
+                this.subjectMappingInfo = new Mapping.MappingInfo(subjectmap, generator);
 
                 //get classes
                 List<Term> classes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR  + "class"), null));
@@ -91,7 +94,10 @@ public class MappingFactory {
                     // Don't put in graph for rr:class, subject is already put in graph, otherwise double export
                     NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(NAMESPACES.RDF + "type"));
                     NamedNodeGenerator objectGenerator = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(c.getValue()));
-                    predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(predicateGenerator, objectGenerator, null));
+                    predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(
+                            new Mapping.MappingInfo(subjectmap, predicateGenerator),
+                            new Mapping.MappingInfo(subjectmap, objectGenerator),
+                            null));
                 }
             } else {
                 throw new Error(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");
@@ -103,42 +109,42 @@ public class MappingFactory {
         List<Term> predicateobjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "predicateObjectMap"), null));
 
         for (Term pom : predicateobjectmaps) {
-            List<TermGenerator> predicateGenerators = parsePredicateMapsAndShortcuts(pom);
-            List<TermGenerator> graphGenerators = parseGraphMapsAndShortcuts(pom);
+            List<Mapping.MappingInfo> predicateMappingInfos = parsePredicateMapsAndShortcuts(pom);
+            List<Mapping.MappingInfo> graphMappingInfos = parseGraphMapsAndShortcuts(pom);
 
-            parseObjectMapsAndShortcutsAndGeneratePOGGenerators(pom, predicateGenerators, graphGenerators);
+            parseObjectMapsAndShortcutsAndGeneratePOGGenerators(pom, predicateMappingInfos, graphMappingInfos);
         }
     }
 
-    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<TermGenerator> predicateGenerators, List<TermGenerator> graphGenerators) throws IOException {
-        parseObjectMapsAndShortcutsWithCallback(termMap, oGen -> {
-            predicateGenerators.forEach(pGen -> {
-                if (graphGenerators.isEmpty()) {
-                    predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, null));
+    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<Mapping.MappingInfo> predicateMappingInfos, List<Mapping.MappingInfo> graphMappingInfos) throws IOException {
+        parseObjectMapsAndShortcutsWithCallback(termMap, oMappingInfo -> {
+            predicateMappingInfos.forEach(pMappingInfo -> {
+                if (graphMappingInfos.isEmpty()) {
+                    predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null));
                 } else {
-                    graphGenerators.forEach(gGen -> {
-                        predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, gGen));
+                    graphMappingInfos.forEach(gMappingInfo -> {
+                        predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo));
                     });
                 }
             });
         }, (parentTriplesMap, joinConditionFunctions) -> {
-            predicateGenerators.forEach(pGen -> {
-                List<PredicateObjectGraphGenerator> pos = getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(pGen, null, graphGenerators);
+            predicateMappingInfos.forEach(pMappingInfo -> {
+                List<PredicateObjectGraphMapping> pos = getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(pMappingInfo, null, graphMappingInfos);
 
-                pos.forEach(pogGen -> {
-                    pogGen.setParentTriplesMap(parentTriplesMap);
+                pos.forEach(pogMappingInfo -> {
+                    pogMappingInfo.setParentTriplesMap(parentTriplesMap);
 
                     joinConditionFunctions.forEach(jcf -> {
-                        pogGen.addJoinCondition(jcf);
+                        pogMappingInfo.addJoinCondition(jcf);
                     });
 
-                    predicateObjectGraphGenerators.add(pogGen);
+                    predicateObjectGraphMappings.add(pogMappingInfo);
                 });
             });
         });
     }
 
-    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, Consumer<TermGenerator> objectMapCallback, BiConsumer<Term, List<JoinConditionFunction>> refObjectMapCallback) throws IOException {
+    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, Consumer<Mapping.MappingInfo> objectMapCallback, BiConsumer<Term, List<JoinConditionFunction>> refObjectMapCallback) throws IOException {
         List<Term> objectmaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "objectMap"), null));
 
         for (Term objectmap : objectmaps) {
@@ -169,7 +175,7 @@ public class MappingFactory {
                         oGen = new NamedNodeGenerator(fn);
                     }
 
-                    objectMapCallback.accept(oGen);
+                    objectMapCallback.accept(new Mapping.MappingInfo(termMap, oGen));
                 } else {
                     //look for parenttriplesmap
                     List<Term> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), null));
@@ -237,7 +243,7 @@ public class MappingFactory {
                     gen = new NamedNodeGenerator(functionExecutor);
                 }
 
-                objectMapCallback.accept(gen);
+                objectMapCallback.accept(new Mapping.MappingInfo(termMap, gen));
             }
         }
 
@@ -254,12 +260,12 @@ public class MappingFactory {
                 gen = new NamedNodeGenerator(fn);
             }
 
-            objectMapCallback.accept(gen);
+            objectMapCallback.accept(new Mapping.MappingInfo(termMap, gen));
         }
     }
 
-    private List<TermGenerator> parseGraphMapsAndShortcuts(Term termMap) throws IOException {
-        ArrayList<TermGenerator> graphs = new ArrayList<>();
+    private List<Mapping.MappingInfo> parseGraphMapsAndShortcuts(Term termMap) throws IOException {
+        ArrayList<Mapping.MappingInfo> graphMappingInfos = new ArrayList<>();
 
         List<Term> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graphMap"), null));
 
@@ -276,21 +282,23 @@ public class MappingFactory {
                 String genericTemplate = getGenericTemplate(graphMap);
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
-                    graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                    graphMappingInfos.add(new Mapping.MappingInfo(termMap,
+                            new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true))));
                 } else {
                     if (genericTemplate == null) {
-                        graphs.add(new BlankNodeGenerator());
+                        graphMappingInfos.add(new Mapping.MappingInfo(termMap, new BlankNodeGenerator()));
                     } else {
-                        graphs.add(new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                        graphMappingInfos.add(new Mapping.MappingInfo(termMap,
+                                new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true))));
                     }
                 }
             } else {
                 DynamicFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
-                    graphs.add(new NamedNodeGenerator(functionExecutor));
+                    graphMappingInfos.add(new Mapping.MappingInfo(termMap, new NamedNodeGenerator(functionExecutor)));
                 } else {
-                    graphs.add(new BlankNodeGenerator(functionExecutor));
+                    graphMappingInfos.add(new Mapping.MappingInfo(termMap, new BlankNodeGenerator(functionExecutor)));
                 }
             }
         }
@@ -299,14 +307,15 @@ public class MappingFactory {
 
         for (Term graph : graphShortcuts) {
             String gStr = graph.getValue();
-            graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(gStr)));
+            graphMappingInfos.add(new Mapping.MappingInfo(termMap,
+                    new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(gStr))));
         }
 
-        return graphs;
+        return graphMappingInfos;
     }
 
-    private List<TermGenerator> parsePredicateMapsAndShortcuts(Term termMap) throws IOException {
-        ArrayList<TermGenerator> predicates = new ArrayList<>();
+    private List<Mapping.MappingInfo> parsePredicateMapsAndShortcuts(Term termMap) throws IOException {
+        ArrayList<Mapping.MappingInfo> predicateMappingInfos = new ArrayList<>();
 
         List<Term> predicateMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "predicateMap"), null));
 
@@ -316,11 +325,12 @@ public class MappingFactory {
             if (functionValues.isEmpty()) {
                 String genericTemplate = getGenericTemplate(predicateMap);
 
-                predicates.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                predicateMappingInfos.add(new Mapping.MappingInfo(termMap,
+                        new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true))));
             } else {
                 DynamicFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
-                predicates.add(new NamedNodeGenerator(functionExecutor));
+                predicateMappingInfos.add(new Mapping.MappingInfo(termMap, new NamedNodeGenerator(functionExecutor)));
             }
         }
 
@@ -328,10 +338,10 @@ public class MappingFactory {
 
         for (Term predicate : predicateShortcuts) {
             String pStr = predicate.getValue();
-            predicates.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(pStr)));
+            predicateMappingInfos.add(new Mapping.MappingInfo(termMap, new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(pStr))));
         }
 
-        return predicates;
+        return predicateMappingInfos;
     }
 
     private DynamicFunctionExecutor parseFunctionTermMap(Term functionValue) throws IOException {
@@ -339,23 +349,29 @@ public class MappingFactory {
         ArrayList<ParameterValuePair> params = new ArrayList<>();
 
         for (Term pom : functionPOMs) {
-            List<TermGenerator> predicateGenerators = parsePredicateMapsAndShortcuts(pom);
-            List<TermGenerator> objectGenerators = parseObjectMapsAndShortcuts(pom);
+            List<Mapping.MappingInfo> pMappingInfos = parsePredicateMapsAndShortcuts(pom);
+            List<Mapping.MappingInfo> oMappingInfos = parseObjectMapsAndShortcuts(pom);
 
-            params.add(new ParameterValuePair(predicateGenerators, objectGenerators));
+            List<TermGenerator> pGenerators = new ArrayList<>();
+            pMappingInfos.forEach(mappingInfo -> { pGenerators.add(mappingInfo.getTermGenerator()); });
+
+            List<TermGenerator> oGenerators = new ArrayList<>();
+            oMappingInfos.forEach(mappingInfo -> { oGenerators.add(mappingInfo.getTermGenerator()); });
+
+            params.add(new ParameterValuePair(pGenerators, oGenerators));
         }
 
         return new DynamicFunctionExecutor(params, functionLoader);
     }
 
-    private List<TermGenerator> parseObjectMapsAndShortcuts(Term pom) throws IOException {
-        ArrayList<TermGenerator> generators = new ArrayList<>();
+    private List<Mapping.MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {
+        List<Mapping.MappingInfo> mappingInfos  = new ArrayList<>();
 
-        parseObjectMapsAndShortcutsWithCallback(pom, termGenerator -> {
-            generators.add(termGenerator);
+        parseObjectMapsAndShortcutsWithCallback(pom, mappingInfo -> {
+            mappingInfos.add(mappingInfo);
         }, (term, joinConditionFunctions) -> {});
 
-        return generators;
+        return mappingInfos;
     }
 
     /**
@@ -406,15 +422,15 @@ public class MappingFactory {
         return termType;
     }
 
-    private List<PredicateObjectGraphGenerator> getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(TermGenerator pGen, TermGenerator oGen, List<TermGenerator> gGens) {
-        ArrayList<PredicateObjectGraphGenerator> list = new ArrayList<>();
+    private List<PredicateObjectGraphMapping> getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(Mapping.MappingInfo pMappingInfo, Mapping.MappingInfo oMappingInfo, List<Mapping.MappingInfo> gMappingInfos) {
+        ArrayList<PredicateObjectGraphMapping> list = new ArrayList<>();
 
-        gGens.forEach(gGen -> {
-            list.add(new PredicateObjectGraphGenerator(pGen, oGen, gGen));
+        gMappingInfos.forEach(gMappingInfo -> {
+            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo));
         });
 
-        if (gGens.isEmpty()) {
-            list.add(new PredicateObjectGraphGenerator(pGen, oGen, null));
+        if (gMappingInfos.isEmpty()) {
+            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null));
         }
 
         return list;

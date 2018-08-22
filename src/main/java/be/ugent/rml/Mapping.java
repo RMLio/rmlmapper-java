@@ -1,30 +1,50 @@
 package be.ugent.rml;
 
+import be.ugent.rml.term.Term;
 import be.ugent.rml.termgenerator.TermGenerator;
 
 import java.util.List;
 
 public class Mapping {
 
-    private TermGenerator subject;
-    private List<PredicateObjectGraphGenerator> predicateObjectGraphGenerators;
-    private List<TermGenerator> graphs;
+    private MappingInfo subjectMappingInfo;
+    private List<PredicateObjectGraphMapping> predicateObjectGraphMappings;
+    private List<MappingInfo> graphMappingInfos;
 
-    public Mapping(TermGenerator subject, List<PredicateObjectGraphGenerator> predicateObjectGraphGenerators, List<TermGenerator> graphs) {
-        this.subject = subject;
-        this.predicateObjectGraphGenerators = predicateObjectGraphGenerators;
-        this.graphs = graphs;
+    public Mapping(MappingInfo subjectMappingInfo, List<PredicateObjectGraphMapping> predicateObjectGraphMappings, List<MappingInfo> graphMappingInfos) {
+        this.subjectMappingInfo = subjectMappingInfo;
+        this.predicateObjectGraphMappings = predicateObjectGraphMappings;
+        this.graphMappingInfos = graphMappingInfos;
     }
 
-    public TermGenerator getSubject() {
-        return subject;
+    public MappingInfo getSubjectMappingInfo() {
+        return subjectMappingInfo;
     }
 
-    public List<PredicateObjectGraphGenerator> getPredicateObjectGraphGenerators() {
-        return predicateObjectGraphGenerators;
+    public List<PredicateObjectGraphMapping> getPredicateObjectGraphMappings() {
+        return predicateObjectGraphMappings;
     }
 
-    public List<TermGenerator> getGraphs() {
-        return graphs;
+    public List<MappingInfo> getGraphMappingInfos() {
+        return graphMappingInfos;
+    }
+
+
+    public static class MappingInfo {
+        private Term term;
+        private TermGenerator termGenerator;
+
+        public MappingInfo(Term term, TermGenerator termGenerator) {
+            this.term = term;
+            this.termGenerator = termGenerator;
+        }
+
+        public Term getTerm() {
+            return term;
+        }
+
+        public TermGenerator getTermGenerator() {
+            return termGenerator;
+        }
     }
 }

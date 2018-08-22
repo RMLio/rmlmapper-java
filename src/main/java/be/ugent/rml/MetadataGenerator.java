@@ -6,10 +6,7 @@ import be.ugent.rml.term.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -44,6 +41,8 @@ public class MetadataGenerator {
     private Set<String> distinctClasses;     // Used for counting number of distinct classes
     private Set<String> distinctProperties;  // Used for counting number of distinct properties
 
+    private Map<Term, Term> subjectMapsMap;  // todo: move this out of this class?
+
     private Term rdfDataset;
     private Term rdfDatasetGeneration;
     private Term rmlMapper;
@@ -59,6 +58,8 @@ public class MetadataGenerator {
         distinctObjects = new HashSet<>();
         distinctClasses = new HashSet<>();
         distinctProperties = new HashSet<>();
+
+        subjectMapsMap = new HashMap<>();
 
         generationFunctions = new ArrayList<>();
 
@@ -236,6 +237,24 @@ public class MetadataGenerator {
                         subjectTM);
             }
         });
+
+        generationFunctions.add((node, pquad) -> {
+
+        });
+    }
+
+    // Do this here instead of in the executor so we don't save this info if it's not required
+    private Term getSubjectMap(Term triplesMap) {
+        if (subjectMapsMap.containsKey(triplesMap)) {
+            return subjectMapsMap.get(triplesMap);
+        } else {
+            List<Term> subjectMap = Utils.getObjectsFromQuads(inputData.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"), null));
+            if (!subjectMap.isEmpty() && !Utils.isBlankNode(subjectMap.get(0).toString())) {
+                subjectMapsMap.put(triplesMap, subjectMap.get(0));
+                return subjectMap.get(0);
+            }
+        }
+        return null;
     }
 
     public DETAIL_LEVEL getDetailLevel() {
