@@ -123,35 +123,32 @@ public class Main {
                 // Extract required information and create the MetadataGenerator
                 MetadataGenerator.DETAIL_LEVEL detailLevel = MetadataGenerator.DETAIL_LEVEL.PREVENT;
                 String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
-                String metadataOutputFile = getPriorityOptionValue(metadataOption, lineArgs, configFile);
-                if (requestedDetailLevel != null && metadataOutputFile != null) {
-                    switch(requestedDetailLevel) {
-                        case "dataset":
-                            detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
-                            break;
-                        case "triple":
-                            detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
-                            break;
-                        case "term":
-                            detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
-                            break;
-                        default:
-                            printHelp(options);
-                            throw new Error("Unknown metadata detail level option. Please choose from: dataset - triple - term.");
+                if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
+                    if (requestedDetailLevel != null) {
+                        switch(requestedDetailLevel) {
+                            case "dataset":
+                                detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
+                                break;
+                            case "triple":
+                                detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
+                                break;
+                            case "term":
+                                detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
+                                break;
+                            default:
+                                logger.error("Unknown metadata detail level option. Use the -h flag for more info.");
+                        }
+                    } else {
+                        logger.error("Please specify the detail level when requesting metadata generation. Use the -h flag for more info.");
                     }
-                } else if (requestedDetailLevel != null || metadataOutputFile != null) {
-                    printHelp(options);
-                    throw new Error("Please specify both the output file path and the detail level options when requesting metadata generation.");
                 }
 
                 MetadataGenerator metadataGenerator = new MetadataGenerator(
                         detailLevel,
-                        metadataOutputFile,
+                        getPriorityOptionValue(metadataOption, lineArgs, configFile),
                         mOptionValue,
                         rmlStore
                 );
-
-
 
                 String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
                 if (fOptionValue == null) {
@@ -187,7 +184,6 @@ public class Main {
                 // Generate post mapping metadata
                 metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, initializer.getTriplesMaps(),
                         result);
-
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
