@@ -172,7 +172,7 @@ public class MetadataGenerator {
                     if (Utils.isLiteral(source.toString())) {
                         try {
                             File sourceFile = Utils.getFile(sourceObjects.get(0).getValue(), null);
-                            sourceNode = new NamedNode(String.format("file://%s", sourceFile.getAbsolutePath()));
+                            sourceNode = new NamedNode(String.format("file://%s", sourceFile.getPath()));
                         } catch (IOException ex) {
                             ex.printStackTrace();
                             throw new Error("Could not find source file: " + sourceObjects.get(0).getValue());
