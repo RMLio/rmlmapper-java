@@ -117,7 +117,6 @@ public class Main {
                 File mappingFile = Utils.getFile(mOptionValue);
                 QuadStore rmlStore = Utils.readTurtle(mappingFile);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
-                Initializer initializer;
                 Executor executor;
 
                 // Extract required information and create the MetadataGenerator
@@ -152,14 +151,12 @@ public class Main {
 
                 String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
                 if (fOptionValue == null) {
-                    initializer = new Initializer(rmlStore, null);
-                    executor = new Executor(initializer, rmlStore, factory);
+                    executor = new Executor(rmlStore, factory);
                 } else {
                     Map<String, Class> libraryMap = new HashMap<>();
                     libraryMap.put("GrelFunctions", GrelProcessor.class);
                     FunctionLoader functionLoader = new FunctionLoader(null, null, libraryMap);
-                    initializer = new Initializer(rmlStore, functionLoader);
-                    executor = new Executor(initializer, rmlStore, factory);
+                    executor = new Executor(rmlStore, factory, functionLoader);
                 }
 
                 List<Term> triplesMaps = new ArrayList<>();
@@ -182,7 +179,7 @@ public class Main {
                 String stopTimestamp = Instant.now().toString();
 
                 // Generate post mapping metadata
-                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, initializer.getTriplesMaps(),
+                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, executor.getTriplesMaps(),
                         result);
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 

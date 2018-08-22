@@ -30,8 +30,12 @@ public class Executor {
     private static int blankNodeCounter = 0;
     private HashMap<Term, Mapping> mappings;
 
-    public Executor(Initializer initializer, QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
-        this.initializer = initializer;
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
+        this(rmlStore, recordsFactory, null);
+    }
+
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) throws IOException {
+        this.initializer = new Initializer(rmlStore, functionLoader);
         this.mappings = this.initializer.getMappings();
         this.resultingTriples = new SimpleQuadStore();
         this.rmlStore = rmlStore;
@@ -290,5 +294,9 @@ public class Executor {
         Executor.blankNodeCounter++;
 
         return temp;
+    }
+
+    public List<Term> getTriplesMaps() {
+        return initializer.getTriplesMaps();
     }
 }
