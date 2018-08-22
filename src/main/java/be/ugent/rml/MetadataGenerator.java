@@ -42,9 +42,9 @@ public class MetadataGenerator {
     private Set<String> distinctClasses;     // Used for counting number of distinct classes
     private Set<String> distinctProperties;  // Used for counting number of distinct properties
 
-    Term rdfDataset;
-    Term rdfDatasetGeneration;
-    Term rmlMapper;
+    private Term rdfDataset;
+    private Term rdfDatasetGeneration;
+    private Term rmlMapper;
 
     public MetadataGenerator(DETAIL_LEVEL detailLevel, String outputFile, String mappingFile, QuadStore inputData) {
         mdStore = new SimpleQuadStore();
@@ -60,8 +60,17 @@ public class MetadataGenerator {
 
         generationFunctions = new ArrayList<>();
 
+        rdfDataset = new NamedNode(String.format("file:%s", outputFile));
+        rdfDatasetGeneration = new BlankNode(Utils.hashCode(outputFile));
+
+        rmlMapper = new BlankNode("RMLMapper");
+
+
         if (detailLevel.getLevel() >= DETAIL_LEVEL.TRIPLE.getLevel()) {
             addTripleLevelFunctions();
+        }
+        if (detailLevel.getLevel() >= DETAIL_LEVEL.TERM.getLevel()) {
+            addTermLevelFunctions();
         }
     }
 
@@ -83,7 +92,7 @@ public class MetadataGenerator {
 
     public void postMappingGeneration(String startTimestamp, String stopTimestamp, List<Term> triplesMaps, QuadStore result) {
         if (detailLevel.getLevel() >= DETAIL_LEVEL.DATASET.getLevel()) {
-            DatasetLevelMetadataGenerator.createMetadata(getRdfDataset(), getRdfDatasetGeneration(), getRMLMapper(),
+            DatasetLevelMetadataGenerator.createMetadata(rdfDataset, rdfDatasetGeneration, rmlMapper,
                     mdStore, getLogicalSources(triplesMaps, inputData), startTimestamp, stopTimestamp, mappingFile);
             if (detailLevel.getLevel() > DETAIL_LEVEL.TRIPLE.getLevel()) {
                 generateTripleLevelDetailMetadata(triplesMaps, result);
@@ -104,37 +113,36 @@ public class MetadataGenerator {
         }
 
         // Describe result
-        Term resultNode = getRdfDataset();
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
 
         getLogicalSources(triplesMaps, inputData).forEach(inputSource -> {
-            mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), inputSource);
+            mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), inputSource);
         });
 
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), getRdfDatasetGeneration());
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), rdfDatasetGeneration);
 
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "triples"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "triples"),
                 new Literal(Integer.toString(result.getQuads(null, null, null, null).size())
                         , new AbstractTerm(NAMESPACES.XSD + "integer")));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "distinctSubjects"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "distinctSubjects"),
                 new Literal(Integer.toString(distinctSubjects.size())
                         , new AbstractTerm(NAMESPACES.XSD + "integer")));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "distinctObjects"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "distinctObjects"),
                 new Literal(Integer.toString(distinctObjects.size())
                         , new AbstractTerm(NAMESPACES.XSD + "integer")));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "classes"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "classes"),
                 new Literal(Integer.toString(distinctClasses.size())
                         , new AbstractTerm(NAMESPACES.XSD + "integer")));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "properties"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "properties"),
                 new Literal(Integer.toString(distinctProperties.size())
                         , new AbstractTerm(NAMESPACES.XSD + "integer")));
 
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "documents"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "documents"),
                 new Literal("1"     // todo: change this when multiple output files are possible
                         , new AbstractTerm(NAMESPACES.XSD + "integer")));
 
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "feature"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "feature"),
                 new NamedNode("http://www.w3.org/ns/formats/N-Quads")); // todo: change this when output file format changes
     }
 
@@ -185,28 +193,6 @@ public class MetadataGenerator {
         }
     }
 
-    public Term getRdfDataset() {
-        if (rdfDataset == null) {
-            rdfDataset = new NamedNode(String.format("file:%s", outputFile));
-        }
-        return rdfDataset;
-    }
-
-    public Term getRdfDatasetGeneration() {
-        if (rdfDatasetGeneration == null) {
-            // Value: hash of output file path
-            rdfDatasetGeneration = new BlankNode(Utils.hashCode(outputFile));
-        }
-        return rdfDatasetGeneration;
-    }
-
-    public Term getRMLMapper() {
-        if (rmlMapper == null) {
-            rmlMapper = new BlankNode("RMLMapper");
-        }
-        return rmlMapper;
-    }
-
     private void addTripleLevelFunctions() {
         // Add source triplesMap info
         generationFunctions.add((node, pquad) -> {
@@ -214,17 +200,9 @@ public class MetadataGenerator {
             Term subjectTM = pquad.getSubject().getMetdata().getTriplesMap();
             mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
 
-            Term objectTM = null;
             if (pquad.getObject().getMetdata() != null && pquad.getObject().getMetdata().getTriplesMap() != null) {
-                objectTM = pquad.getObject().getMetdata().getTriplesMap();
+                Term objectTM = pquad.getObject().getMetdata().getTriplesMap();
                 mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), objectTM);
-            }
-
-            if (detailLevel.getLevel() >= DETAIL_LEVEL.TERM.getLevel()) {
-                mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
-                if (objectTM != null) {
-                    mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), objectTM);
-                }
             }
         });
         // Add generation time info
@@ -239,6 +217,21 @@ public class MetadataGenerator {
             distinctProperties.add(pquad.getPredicate().getTerm().getValue());
             if (pquad.getPredicate().getTerm().getValue().equals(NAMESPACES.RDF + "type")) {
                 distinctClasses.add(pquad.getObject().getTerm().getValue());
+            }
+        });
+    }
+
+    private void addTermLevelFunctions() {
+        generationFunctions.add((node, pquad) -> {
+            Term subjectTM = pquad.getSubject().getMetdata().getTriplesMap();
+            mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
+
+            if (pquad.getObject().getMetdata() != null && pquad.getObject().getMetdata().getTriplesMap() != null) {
+                mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
+                        pquad.getObject().getMetdata().getTriplesMap());
+            } else {
+                mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
+                        subjectTM);
             }
         });
     }
