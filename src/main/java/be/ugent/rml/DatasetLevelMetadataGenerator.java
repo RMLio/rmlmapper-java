@@ -46,7 +46,7 @@ public class DatasetLevelMetadataGenerator {
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "endedAtTime"),
                 new Literal(stopTimestamp, new AbstractTerm(NAMESPACES.XSD + "dateTime")));
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
-                new NamedNode(String.format("file:%s", mappingFile)));
+                new NamedNode(String.format("file://%s", mappingFile)));
         for (Term logicalSource: logicalSources) {
             result.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
                     logicalSource);

@@ -3,6 +3,8 @@ package be.ugent.rml;
 import be.ugent.rml.store.*;
 import be.ugent.rml.term.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,7 +62,7 @@ public class MetadataGenerator {
 
         generationFunctions = new ArrayList<>();
 
-        rdfDataset = new NamedNode(String.format("file:%s", outputFile));
+        rdfDataset = new NamedNode(String.format("file://%s", outputFile));
         rdfDatasetGeneration = new BlankNode(Utils.hashCode(outputFile));
 
         rmlMapper = new BlankNode("RMLMapper");
@@ -168,7 +170,13 @@ public class MetadataGenerator {
 
                     // Literal -- encapsulate source in blank node
                     if (Utils.isLiteral(source.toString())) {
-                        sourceNode = new NamedNode(String.format("file:%s",sourceObjects.get(0).getValue()));
+                        try {
+                            File sourceFile = Utils.getFile(sourceObjects.get(0).getValue(), null);
+                            sourceNode = new NamedNode(String.format("file://%s", sourceFile.getAbsolutePath()));
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                            throw new Error("Could not find source file: " + sourceObjects.get(0).getValue());
+                        }
                     } else {    // todo: what with blank nodes?
                         sourceNode = source;
                     }
