@@ -120,10 +120,11 @@ public class Main {
                 Executor executor;
 
                 // Extract required information and create the MetadataGenerator
-                MetadataGenerator.DETAIL_LEVEL detailLevel = MetadataGenerator.DETAIL_LEVEL.PREVENT;
+                MetadataGenerator metadataGenerator = null;
                 String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
                 if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
                     if (requestedDetailLevel != null) {
+                        MetadataGenerator.DETAIL_LEVEL detailLevel;
                         switch(requestedDetailLevel) {
                             case "dataset":
                                 detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
@@ -136,18 +137,18 @@ public class Main {
                                 break;
                             default:
                                 logger.error("Unknown metadata detail level option. Use the -h flag for more info.");
+                                return;
                         }
+                        metadataGenerator = new MetadataGenerator(
+                                detailLevel,
+                                getPriorityOptionValue(metadataOption, lineArgs, configFile),
+                                mOptionValue,
+                                rmlStore
+                        );
                     } else {
                         logger.error("Please specify the detail level when requesting metadata generation. Use the -h flag for more info.");
                     }
                 }
-
-                MetadataGenerator metadataGenerator = new MetadataGenerator(
-                        detailLevel,
-                        getPriorityOptionValue(metadataOption, lineArgs, configFile),
-                        mOptionValue,
-                        rmlStore
-                );
 
                 String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
                 if (fOptionValue == null) {
@@ -169,18 +170,22 @@ public class Main {
                     });
                 }
 
-                // Get start timestamp for metadatafile
+                // Get start timestamp for post mapping metadata
                 String startTimestamp = Instant.now().toString();
 
                 QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                         metadataGenerator);
 
-                // Get stop timestamp for metadatafile
+                // Get stop timestamp for post mapping metadata
                 String stopTimestamp = Instant.now().toString();
 
-                // Generate post mapping metadata
-                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, executor.getTriplesMaps(),
-                        result);
+                // Generate post mapping metadata and output all metadata
+                if (metadataGenerator != null) {
+                    metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, executor.getTriplesMaps(),
+                            result);
+                    metadataGenerator.writeMetadata();
+                }
+
                 TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
 
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
@@ -193,8 +198,6 @@ public class Main {
                     //write quads
                     Utils.writeOutput("quad", tq.getQuads(), "nq", outputFile);
                 }
-
-                metadataGenerator.writeMetadata();
             }
         } catch( ParseException exp ) {
             // oops, something went wrong

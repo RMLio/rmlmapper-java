@@ -18,7 +18,7 @@ public class MetadataGenerator {
 
     // Higher level --> more detailed
     public enum DETAIL_LEVEL {
-        PREVENT(-1), DATASET(0), TRIPLE(1), TERM(2);
+        DATASET(0), TRIPLE(1), TERM(2);
 
         private int level;
         DETAIL_LEVEL(int level) {
@@ -101,10 +101,6 @@ public class MetadataGenerator {
     }
 
     private void generateTripleLevelDetailMetadata(List<Term> triplesMaps, QuadStore result) {
-        if (detailLevel == DETAIL_LEVEL.PREVENT) {
-            return;
-        }
-
         // Describe triplesMaps
         for (Term triplesMap: triplesMaps) {
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
@@ -186,11 +182,9 @@ public class MetadataGenerator {
     }
 
     public void writeMetadata() {
-        if (detailLevel != DETAIL_LEVEL.PREVENT) {
-            mdStore.removeDuplicates();
-            TriplesQuads tq = Utils.getTriplesAndQuads(mdStore.toSimpleSortedQuadStore().getQuads(null, null, null, null));
-            Utils.writeOutput("triple", tq.getTriples(), "nq", outputFile);
-        }
+        mdStore.removeDuplicates();
+        TriplesQuads tq = Utils.getTriplesAndQuads(mdStore.toSimpleSortedQuadStore().getQuads(null, null, null, null));
+        Utils.writeOutput("triple", tq.getTriples(), "nq", outputFile);
     }
 
     private void addTripleLevelFunctions() {
