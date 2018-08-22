@@ -81,6 +81,8 @@ public class Executor {
 
                 //TODO validate subject or check if blank node
                 if (subject != null) {
+                    subject.getMetdata().setSourceMap(mapping.getSubjectMappingInfo().getTerm());
+
                     List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
 
                     mapping.getGraphMappingInfos().forEach(map -> {

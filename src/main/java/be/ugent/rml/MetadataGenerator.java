@@ -226,15 +226,17 @@ public class MetadataGenerator {
 
     private void addTermLevelFunctions() {
         generationFunctions.add((node, pquad) -> {
-            Term subjectTM = pquad.getSubject().getMetdata().getTriplesMap();
-            mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
+            Metadata subjectMD = pquad.getSubject().getMetdata();
+
+            mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectMD.getTriplesMap());
+            mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), subjectMD.getSourceMap());
 
             if (pquad.getObject().getMetdata() != null && pquad.getObject().getMetdata().getTriplesMap() != null) {
                 mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
                         pquad.getObject().getMetdata().getTriplesMap());
             } else {
                 mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
-                        subjectTM);
+                        subjectMD.getTriplesMap());
             }
         });
 

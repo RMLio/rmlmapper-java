@@ -29,7 +29,6 @@ public class Mapping {
         return graphMappingInfos;
     }
 
-
     public static class MappingInfo {
         private Term term;
         private TermGenerator termGenerator;
