@@ -229,7 +229,9 @@ public class MetadataGenerator {
             Metadata subjectMD = pquad.getSubject().getMetdata();
 
             mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectMD.getTriplesMap());
-            mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), subjectMD.getSourceMap());
+            if (!Utils.isBlankNode(subjectMD.getSourceMap().toString())) {
+                mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), subjectMD.getSourceMap());
+            }
 
             if (pquad.getObject().getMetdata() != null && pquad.getObject().getMetdata().getTriplesMap() != null) {
                 mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
