@@ -171,7 +171,8 @@ public class Main {
                 }
 
                 if (metadataGenerator != null) {
-                    metadataGenerator.preMappingGeneration((triplesMaps == null || triplesMaps.isEmpty()) ? executor.getTriplesMaps() : triplesMaps);
+                    metadataGenerator.preMappingGeneration((triplesMaps == null || triplesMaps.isEmpty()) ?
+                            executor.getTriplesMaps() : triplesMaps, rmlStore);
                 }
 
                 // Get start timestamp for post mapping metadata

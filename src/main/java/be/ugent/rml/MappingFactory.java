@@ -175,7 +175,7 @@ public class MappingFactory {
                         oGen = new NamedNodeGenerator(fn);
                     }
 
-                    objectMapCallback.accept(new MappingInfo(termMap, oGen));
+                    objectMapCallback.accept(new MappingInfo(objectmap, oGen));
                 } else {
                     //look for parenttriplesmap
                     List<Term> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), null));
@@ -243,7 +243,7 @@ public class MappingFactory {
                     gen = new NamedNodeGenerator(functionExecutor);
                 }
 
-                objectMapCallback.accept(new MappingInfo(termMap, gen));
+                objectMapCallback.accept(new MappingInfo(objectmap, gen));
             }
         }
 
@@ -325,12 +325,12 @@ public class MappingFactory {
             if (functionValues.isEmpty()) {
                 String genericTemplate = getGenericTemplate(predicateMap);
 
-                predicateMappingInfos.add(new MappingInfo(termMap,
+                predicateMappingInfos.add(new MappingInfo(predicateMap,
                         new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true))));
             } else {
                 DynamicFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
-                predicateMappingInfos.add(new MappingInfo(termMap, new NamedNodeGenerator(functionExecutor)));
+                predicateMappingInfos.add(new MappingInfo(predicateMap, new NamedNodeGenerator(functionExecutor)));
             }
         }
 
