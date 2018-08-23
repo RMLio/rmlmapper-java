@@ -10,17 +10,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DynamicFunctionExecutor implements FunctionExecutor {
+public class DynamicJoinConditionFunctionExecutor implements JoinConditionFunctionExecutor {
 
-    private List<ParameterValuePair> parameterValuePairs;
+    private List<ParameterValueOriginPair> parameterValuePairs;
     private FunctionLoader functionLoader;
 
-    public DynamicFunctionExecutor(List<ParameterValuePair> parameterValuePairs, FunctionLoader functionLoader) {
+    public DynamicJoinConditionFunctionExecutor(List<ParameterValueOriginPair> parameterValuePairs, FunctionLoader functionLoader) {
         this.parameterValuePairs = parameterValuePairs;
         this.functionLoader = functionLoader;
     }
 
-    public List<?> execute(Record record) throws IOException {
+    @Override
+    public boolean execute(Record child, Record parent) throws IOException {
         final ArrayList<Term> fnTerms = new ArrayList<>();
         final HashMap<String, Object> args =  new HashMap<>();
 
@@ -30,16 +31,24 @@ public class DynamicFunctionExecutor implements FunctionExecutor {
 
             pv.getParameterGenerators().forEach(parameterGen -> {
                 try {
-                    parameters.addAll(parameterGen.generate(record));
+                    parameters.addAll(parameterGen.generate(child));
                 } catch (IOException e) {
                     //todo be more nice and gentle
                     e.printStackTrace();
                 }
             });
 
-            pv.getValueGenerators().forEach(valueGenerator -> {
+            pv.getValueGeneratorPairs().forEach(pair -> {
+                Record record;
+
+                if (pair.getOrigin().equals("child")) {
+                    record = child;
+                } else {
+                    record = parent;
+                }
+
                 try {
-                    values.addAll(valueGenerator.generate(record));
+                    values.addAll(pair.getTermGenerator().generate(record));
                 } catch (IOException e) {
                     //todo be more nice and gentle
                     e.printStackTrace();
@@ -50,18 +59,15 @@ public class DynamicFunctionExecutor implements FunctionExecutor {
                 fnTerms.add(values.get(0));
             } else {
                 parameters.forEach(parameter -> {
-                   values.forEach(value -> {
-                       args.put(parameter.getValue(), value.getValue());
-                   }) ;
+                    values.forEach(value -> {
+                        args.put(parameter.getValue(), value.getValue());
+                    }) ;
                 });
             }
         });
 
-        if (fnTerms.isEmpty()) {
-            //todo throw error
-            return new ArrayList<>();
-        } else {
-            return functionLoader.getFunction(fnTerms.get(0)).execute(args);
-        }
+        List<String> results = functionLoader.getFunction(fnTerms.get(0)).execute(args);
+
+        return !results.isEmpty() && results.get(0).equals("true");
     }
 }

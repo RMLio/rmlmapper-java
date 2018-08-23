@@ -2,6 +2,7 @@ package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.JoinConditionFunction;
+import be.ugent.rml.functions.JoinConditionFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
@@ -164,11 +165,11 @@ public class Executor {
         this.resultingTriples.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
     }
 
-    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<JoinConditionFunction> conditions) throws IOException {
+    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<JoinConditionFunctionExecutor> conditions) throws IOException {
         ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<ProvenancedTerm>();
         ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
 
-        for (JoinConditionFunction condition : conditions) {
+        for (JoinConditionFunctionExecutor condition : conditions) {
             allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
         }
 
@@ -189,7 +190,7 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Term triplesMap, JoinConditionFunction condition) throws IOException {
+    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Term triplesMap, JoinConditionFunctionExecutor condition) throws IOException {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
