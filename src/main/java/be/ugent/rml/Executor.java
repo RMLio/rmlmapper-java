@@ -81,14 +81,12 @@ public class Executor {
 
                 //TODO validate subject or check if blank node
                 if (subject != null) {
-                    subject.getMetdata().setSourceMap(mapping.getSubjectMappingInfo().getTerm());
-
                     List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
 
-                    mapping.getGraphMappingInfos().forEach(map -> {
+                    mapping.getGraphMappingInfos().forEach(mappingInfo -> {
                         List<Term> terms = null;
                         try {
-                            terms = map.getTermGenerator().generate(record);
+                            terms = mappingInfo.getTermGenerator().generate(record);
                         } catch (IOException e) {
                             //todo be more nice and gentle
                             e.printStackTrace();
@@ -139,7 +137,7 @@ public class Executor {
             }
 
             pogMapping.getPredicateMappingInfo().getTermGenerator().generate(record).forEach(p -> {
-                predicates.add(new ProvenancedTerm(p));
+                predicates.add(new ProvenancedTerm(p, pogMapping.getPredicateMappingInfo()));
             });
 
             if (pogMapping.getObjectMappingInfo() != null && pogMapping.getObjectMappingInfo().getTermGenerator() != null) {
@@ -147,7 +145,7 @@ public class Executor {
                 ArrayList<ProvenancedTerm> provenancedObjects = new ArrayList<>();
 
                 objects.forEach(object -> {
-                    provenancedObjects.add(new ProvenancedTerm(object));
+                    provenancedObjects.add(new ProvenancedTerm(object, pogMapping.getObjectMappingInfo()));
                 });
 
                 if (objects.size() > 0) {
@@ -239,7 +237,7 @@ public class Executor {
 
             if (!nodes.isEmpty()) {
                 //todo: only create metadata when it's required
-                this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0), new Metadata(triplesMap)));
+                this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0), new Metadata(triplesMap, mapping.getSubjectMappingInfo().getTerm())));
             }
         }
 

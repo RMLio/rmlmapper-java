@@ -16,29 +16,20 @@
     rml:iterator "$.students[*]"
   ];
 
-  rr:subjectMap [ rr:template "http://example.com/resource/student_{ID}";
-    rr:class <http://example.com/ontology/Student>;
-    rr:graph <http://example.com/graph/students> ;
- ];
+  rr:subjectMap <#SubjectMap> ;
 	
-  rr:predicateObjectMap [ 
-    rr:predicate foaf:name ;
-    rr:objectMap [ rml:reference "Name" ];
-    rr:graph <http://example.com/graph/students> ;
-  ] ;
+  rr:predicateObjectMap <#NamePredicateObjectMap> ;
 
-  rr:predicateObjectMap [ 
-    rr:predicate <http://example.com/ontology/practises> ;
-    rr:objectMap [ 
-      a rr:RefObjectMap ;
-      rr:parentTriplesMap <TriplesMap2>;
-      rr:joinCondition [
-        rr:child "Sport" ;
-        rr:parent "ID" ;
-      ]
-    ];
-    rr:graph <http://example.com/graph/practise> ;
-  ] .
+  rr:predicateObjectMap  [ rr:predicate <http://example.com/ontology/practises> ;
+                           rr:objectMap [
+                             a rr:RefObjectMap ;
+                             rr:parentTriplesMap <TriplesMap2>;
+                             rr:joinCondition [
+                               rr:child "Sport" ;
+                               rr:parent "ID" ;
+                             ]
+                           ];
+                           rr:graph <http://example.com/graph/practise> ; ] .
 
 <TriplesMap2>
   a rr:TriplesMap;
@@ -58,3 +49,13 @@
     rr:predicate rdfs:label ; 
     rr:objectMap [ rml:reference "Name" ];
   ].
+
+<#SubjectMap> rr:template "http://example.com/resource/student_{ID}";
+              rr:class <http://example.com/ontology/Student>;
+              rr:graph <http://example.com/graph/students> .
+
+<#NamePredicateObjectMap>
+                          rr:predicate foaf:name ;
+                          rr:objectMap [ rml:reference "Name" ];
+                          rr:graph <http://example.com/graph/students>
+                            .

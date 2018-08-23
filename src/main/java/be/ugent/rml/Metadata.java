@@ -7,6 +7,8 @@ public class Metadata {
     private Term triplesMap;
     private Term sourceMap;
 
+    public Metadata() {}
+
     public Metadata(Term triplesMap) {
         this(triplesMap, null);
     }

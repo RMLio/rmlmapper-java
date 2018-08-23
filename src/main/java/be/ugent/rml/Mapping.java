@@ -28,22 +28,4 @@ public class Mapping {
     public List<MappingInfo> getGraphMappingInfos() {
         return graphMappingInfos;
     }
-
-    public static class MappingInfo {
-        private Term term;
-        private TermGenerator termGenerator;
-
-        public MappingInfo(Term term, TermGenerator termGenerator) {
-            this.term = term;
-            this.termGenerator = termGenerator;
-        }
-
-        public Term getTerm() {
-            return term;
-        }
-
-        public TermGenerator getTermGenerator() {
-            return termGenerator;
-        }
-    }
 }

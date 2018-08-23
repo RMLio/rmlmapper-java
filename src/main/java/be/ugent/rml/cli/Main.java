@@ -170,6 +170,10 @@ public class Main {
                     });
                 }
 
+                if (metadataGenerator != null) {
+                    metadataGenerator.preMappingGeneration((triplesMaps == null || triplesMaps.isEmpty()) ? executor.getTriplesMaps() : triplesMaps);
+                }
+
                 // Get start timestamp for post mapping metadata
                 String startTimestamp = Instant.now().toString();
 
@@ -181,7 +185,7 @@ public class Main {
 
                 // Generate post mapping metadata and output all metadata
                 if (metadataGenerator != null) {
-                    metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, executor.getTriplesMaps(),
+                    metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
                             result);
                     metadataGenerator.writeMetadata();
                 }

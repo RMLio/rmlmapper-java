@@ -10,13 +10,13 @@ import java.util.List;
 public class PredicateObjectGraphMapping {
 
 
-    private final Mapping.MappingInfo predicateMappingInfo;
-    private final Mapping.MappingInfo objectMappingInfo;
-    private final Mapping.MappingInfo graphMappingInfo;
+    private final MappingInfo predicateMappingInfo;
+    private final MappingInfo objectMappingInfo;
+    private final MappingInfo graphMappingInfo;
     private final List<JoinConditionFunction> joinConditions;
     private Term parentTriplesMap;
 
-    public PredicateObjectGraphMapping(Mapping.MappingInfo predicateMappingInfo, Mapping.MappingInfo objectMappingInfo, Mapping.MappingInfo graphMappingInfo) {
+    public PredicateObjectGraphMapping(MappingInfo predicateMappingInfo, MappingInfo objectMappingInfo, MappingInfo graphMappingInfo) {
         this.predicateMappingInfo = predicateMappingInfo;
         this.graphMappingInfo = graphMappingInfo;
         this.joinConditions = new ArrayList<JoinConditionFunction>();
@@ -39,15 +39,15 @@ public class PredicateObjectGraphMapping {
         joinConditions.add(condition);
     }
 
-    public Mapping.MappingInfo getPredicateMappingInfo() {
+    public MappingInfo getPredicateMappingInfo() {
         return predicateMappingInfo;
     }
 
-    public Mapping.MappingInfo getObjectMappingInfo() {
+    public MappingInfo getObjectMappingInfo() {
         return objectMappingInfo;
     }
 
-    public Mapping.MappingInfo getGraphMappingInfo() {
+    public MappingInfo getGraphMappingInfo() {
         return graphMappingInfo;
     }
 }
