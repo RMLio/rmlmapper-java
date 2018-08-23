@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 /**
  * Class that encapsulates the generation of metadata.
@@ -128,7 +126,7 @@ public class MetadataGenerator {
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.VOID + "dataDump"), new NamedNode(outputFile));
 
-            addActivityStatements(triplesMap, triplesMaptoActivityMap);
+            createActivityStatements(triplesMap, triplesMaptoActivityMap);
         }
     }
 
@@ -141,27 +139,27 @@ public class MetadataGenerator {
 
             if (!subjectMaps.isEmpty()) {
                 Term subjectMap = subjectMaps.get(0);
-                addActivityStatementsWithResultActivity(subjectMap, termMaptoActivityMap, triplesMaptoActivityMap.get(triplesMap));
+                createActivityStatementsWithResultActivity(subjectMap, termMaptoActivityMap, triplesMaptoActivityMap.get(triplesMap));
             }
 
             List<Term> predicateObjectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "predicateObjectMap"),
                     null));
 
             for (Term pom: predicateObjectMaps) {
-                Term pomActivity = addActivityStatementsWithResultActivity(pom, termMaptoActivityMap, triplesMaptoActivityMap.get(triplesMap));
+                Term pomActivity = createActivityStatementsWithResultActivity(pom, termMaptoActivityMap, triplesMaptoActivityMap.get(triplesMap));
 
                 List<Term> predicateMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(pom, new NamedNode(NAMESPACES.RR + "predicateMap"),
                         null));
                 List<Term> objectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(pom, new NamedNode(NAMESPACES.RR + "objectMap"),
                         null));
 
-                addActivityStatementsWithResultActivity(predicateMaps, termMaptoActivityMap, pomActivity);
-                addActivityStatementsWithResultActivity(objectMaps, termMaptoActivityMap, pomActivity);
+                createActivityStatementsWithResultActivity(predicateMaps, termMaptoActivityMap, pomActivity);
+                createActivityStatementsWithResultActivity(objectMaps, termMaptoActivityMap, pomActivity);
             }
         }
     }
 
-    private Term addActivityStatements(Term termMap, Map<Term, Term> map) {
+    private Term createActivityStatements(Term termMap, Map<Term, Term> map) {
         Term termMapActivity = new NamedNode(termMap.getValue() + "Activity"); // todo: should this be a blank node?
         if (map != null) {
             map.put(termMap, termMapActivity);
@@ -171,23 +169,23 @@ public class MetadataGenerator {
         return termMapActivity;
     }
 
-    private Term addActivityStatements(List<Term> termMaps, Map<Term, Term> map) {
+    private Term createActivityStatements(List<Term> termMaps, Map<Term, Term> map) {
         if (!termMaps.isEmpty()) {
-            return addActivityStatements(termMaps.get(0), map);
+            return createActivityStatements(termMaps.get(0), map);
         }
         return null;
     }
 
-    private Term addActivityStatementsWithResultActivity(Term termMap, Map<Term, Term> map, Term resultActivity) {
-        Term termMapActivity = addActivityStatements(termMap, map);
+    private Term createActivityStatementsWithResultActivity(Term termMap, Map<Term, Term> map, Term resultActivity) {
+        Term termMapActivity = createActivityStatements(termMap, map);
         mdStore.addTriple(resultActivity, new NamedNode(NAMESPACES.PROV + "wasInformedBy"),
                 termMapActivity);
         return termMapActivity;
     }
 
-    private Term addActivityStatementsWithResultActivity(List<Term> termMaps, Map<Term, Term> map, Term resultActivity) {
+    private Term createActivityStatementsWithResultActivity(List<Term> termMaps, Map<Term, Term> map, Term resultActivity) {
         if (!termMaps.isEmpty()) {
-            return addActivityStatementsWithResultActivity(termMaps.get(0), map, resultActivity);
+            return createActivityStatementsWithResultActivity(termMaps.get(0), map, resultActivity);
         }
         return null;
     }
@@ -322,8 +320,7 @@ public class MetadataGenerator {
 
             // PREDICATE
             if (!Utils.isBlankNode(predicateMD.getSourceMap().toString())) {
-                mdStore.addTriple(pquad.getPredicate().getTerm(), new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"),
-                        termMaptoActivityMap.get(predicateMD.getSourceMap()));
+                createValueAndGeneratedByStatements(pquad.getPredicate().getTerm(), termMaptoActivityMap.get(predicateMD.getSourceMap()));
             }
 
             // OBJECT
@@ -336,24 +333,17 @@ public class MetadataGenerator {
             }
 
             if (!Utils.isBlankNode(objectMD.getSourceMap().toString())) {
-                mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"),
-                        termMaptoActivityMap.get(objectMD.getSourceMap()));
+                createValueAndGeneratedByStatements(pquad.getObject().getTerm(), termMaptoActivityMap.get(objectMD.getSourceMap()));
             }
         });
     }
-
-    // Do this here instead of in the executor so we don't save this info if it's not required
-    private Term getSubjectMap(Term triplesMap) {
-        if (subjectMapsMap.containsKey(triplesMap)) {
-            return subjectMapsMap.get(triplesMap);
-        } else {
-            List<Term> subjectMap = Utils.getObjectsFromQuads(inputData.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"), null));
-            if (!subjectMap.isEmpty() && !Utils.isBlankNode(subjectMap.get(0).toString())) {
-                subjectMapsMap.put(triplesMap, subjectMap.get(0));
-                return subjectMap.get(0);
-            }
-        }
-        return null;
+    
+    private Term createValueAndGeneratedByStatements(Term value, Term generatedBy) {
+        Term node = new BlankNode();
+        mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
+        mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "value"), value);
+        mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), generatedBy);
+        return node;
     }
 
     public DETAIL_LEVEL getDetailLevel() {
