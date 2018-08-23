@@ -132,8 +132,7 @@ public class Main {
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
                 if (result.getQuads(null, null, null, null).isEmpty()) {
                     //write quads
-                    writeOutput("quad", result.getQuads(null, null, null, null),
-                            "nq", outputFile);
+                    writeOutput("quad", result.getQuads(null, null, null, null), outputFile);
                 }
             }
         } catch( ParseException exp ) {
@@ -171,7 +170,7 @@ public class Main {
         ((ch.qos.logback.classic.Logger) root).setLevel(level);
     }
 
-    private static void writeOutput(String what, List<Quad> output, String extension, String outputFile) {
+    private static void writeOutput(String what, List<Quad> output, String outputFile) {
         if (output.size() > 1) {
             logger.info(output.size() + " " + what + "s were generated");
         } else {
@@ -180,11 +179,11 @@ public class Main {
 
         //if output file provided, write to triples output file
         if (outputFile != null) {
-            File targetFile = new File(outputFile + "." + extension);
+            File targetFile = new File(outputFile);
             logger.info("Writing " + what + " to " + targetFile.getPath() + "...");
 
             if (!targetFile.isAbsolute()) {
-                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile + "." +  extension);
+                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);
             }
 
             try {
