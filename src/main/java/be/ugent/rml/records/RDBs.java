@@ -1,6 +1,7 @@
 package be.ugent.rml.records;
 
 import be.ugent.rml.DatabaseType;
+import be.ugent.rml.NAMESPACES;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,8 @@ public class RDBs  {
         This method adds the "jdbc:XXX://" prefix to the given dsn. This way the caller of this function doesn't need
         to take JDBC specific details into account.
      */
-    public List<Record> get(String dsn, DatabaseType.Database database, String username, String password, String query) {
+    public List<Record> get(String dsn, DatabaseType.Database database, String username, String password, String query,
+                            String referenceFormulation) {
         // List containing generated records
         List<Record> records = new ArrayList<>();
 
@@ -28,7 +30,10 @@ public class RDBs  {
             Class.forName(jdbcDriver);
 
             // Open connection
-            String connectionString = jdbcDSN + "?user=" + username + "&password=" + password;
+            String connectionString = jdbcDSN;
+            if (!connectionString.contains("user=")) {
+                connectionString += "?user=" + username + "&password=" + password;
+            }
             if (database == DatabaseType.Database.MYSQL) {
                 connectionString += "&serverTimezone=UTC&useSSL=false";
             }
@@ -44,24 +49,15 @@ public class RDBs  {
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
-            // Get number of requested columns
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnCount = rsmd.getColumnCount();
-
-            // Extract data from result set
-            while(rs.next()){
-                HashMap<String, List<String>> values = new HashMap<>();
-
-                // Iterate over column names
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnName = rsmd.getColumnName(i);
-
-                    List<String> temp = new ArrayList<String>();
-                    temp.add(rs.getString(columnName));
-                    values.put(columnName, temp);
-                }
-
-                records.add(new RDBsRecord(values));
+            switch(referenceFormulation) {
+                case NAMESPACES.QL + "CSV":
+                    records = getCSVRecords(rs);
+                    break;
+                case NAMESPACES.QL + "XPath":
+                    records = getXMLRecords(rs);
+                    break;
+                default:
+                    throw new Error("Unsupported rml:referenceFormulation for RDB source: " + referenceFormulation);
             }
 
             // Clean-up environment
@@ -93,5 +89,34 @@ public class RDBs  {
         }
 
         return records;
+    }
+
+
+    private List<Record> getCSVRecords(ResultSet rs) throws SQLException {
+        List<Record> records = new ArrayList<>();
+        // Get number of requested columns
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+
+        // Extract data from result set
+        while(rs.next()){
+            HashMap<String, List<String>> values = new HashMap<>();
+
+            // Iterate over column names
+            for (int i = 1; i <= columnCount; i++) {
+                String columnName = rsmd.getColumnName(i);
+
+                List<String> temp = new ArrayList<String>();
+                temp.add(rs.getString(columnName));
+                values.put(columnName, temp);
+            }
+
+            records.add(new CSVRecord(values));
+        }
+        return records;
+    }
+
+    private List<Record> getXMLRecords(ResultSet rs) throws SQLException {
+        throw new Error("Unsupported rml:referenceFormulation for RDB source: XPath");
     }
 }

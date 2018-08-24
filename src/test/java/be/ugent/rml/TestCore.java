@@ -22,7 +22,7 @@ abstract class TestCore {
         // execute mapping file
         URL url = classLoader.getResource(mapPath);
         if (url != null) {
-            mapPath = classLoader.getResource(mapPath).getFile();
+            mapPath = url.getFile();
         }
         File mappingFile = new File(mapPath);
         QuadStore rmlStore = Utils.readTurtle(mappingFile);

@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS test.country_info;
+DROP TABLE IF EXISTS country_info;
 
 CREATE TABLE country_info (
   "Country Code" INTEGER,

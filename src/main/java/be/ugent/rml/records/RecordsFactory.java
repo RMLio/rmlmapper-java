@@ -5,6 +5,8 @@ import be.ugent.rml.DataFetcher;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
@@ -28,35 +30,33 @@ public class RecordsFactory {
         allSPARQLRecords = new HashMap<>();
     }
 
-    public List<Record> createRecords(String triplesMap, QuadStore rmlStore) throws IOException {
+    public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
         //get logical source
-        List<String> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, NAMESPACES.RML + "logicalSource", null));
+        List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
         if (!logicalSources.isEmpty()) {
-            String logicalSource = logicalSources.get(0);
+            Term logicalSource = logicalSources.get(0);
 
             // Get logicalSource information
-            List<String> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "referenceFormulation", null));
-            List<String> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "source", null));
-            List<String> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "iterator", null));
-            List<String> table = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "tableName", null));
+            List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
+            List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+            List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "iterator"), null));
+            List<Term> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "tableName"), null));
 
             if (sources.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a source.");
             } else if (referenceFormulations.isEmpty()) {
-                if (!table.isEmpty()) {  // If no rml:referenceFormulation is given, but a table is given --> CSV
+                if (!tables.isEmpty()) {  // If no rml:referenceFormulation is given, but a table is given --> CSV
                     referenceFormulations = new ArrayList<>();
-                    referenceFormulations.add(0, NAMESPACES.QL + "CSV");
+                    referenceFormulations.add(0, new NamedNode(NAMESPACES.QL + "CSV"));
                 } else {
                     throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
                 }
             }
 
-            String source;
-            if (Utils.isLiteral(sources.get(0))) {
-                source = Utils.getLiteral(sources.get(0));
-
-                switch(referenceFormulations.get(0)) {
+            Term source = sources.get(0);
+            if (Utils.isLiteral(source.toString())) {
+                switch(referenceFormulations.get(0).getValue()) {
                     case NAMESPACES.QL + "CSV":
                         return getCSVRecords(source);
                     case NAMESPACES.QL + "XPath":
@@ -69,27 +69,28 @@ public class RecordsFactory {
                 }
 
             } else {
-                source = sources.get(0);
+                List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
 
-                List<String> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.RDF + "type", null));
-                switch(sourceType.get(0)) {
+                switch(sourceType.get(0).getValue()) {
                     case NAMESPACES.D2RQ + "Database":  // RDBs
                         // Check if SQL version is given
-                        List<String> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "sqlVersion", null));
+                        List<Term> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "sqlVersion"),
+                                null));
                         if (sqlVersion.isEmpty()) {
                             throw new Error("No SQL version identifier detected.");
                         }
-                        return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, table);
+                        return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, tables, referenceFormulations);
                     case NAMESPACES.SD + "Service":  // SPARQL
                         // Check if SPARQL Endpoint is given
-                        List<String> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.SD + "endpoint", null));
+                        List<Term> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "endpoint"),
+                                null));
                         if (endpoint.isEmpty()) {
                             throw new Error("No SPARQL endpoint detected.");
                         }
-                        return sparqlRecords(rmlStore, source, logicalSource, triplesMap, endpoint.get(0), iterators, referenceFormulations);
+                        return getSPARQLRecords(rmlStore, source, logicalSource, triplesMap,
+                                endpoint.get(0), iterators, referenceFormulations);
                     default:
                         throw new NotImplementedException();
-
                 }
             }
 
@@ -98,38 +99,39 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> getCSVRecords(String source) throws IOException {
-        if (allCSVRecords.containsKey(source)){
-            return allCSVRecords.get(source);
+    private List<Record> getCSVRecords(Term source) throws IOException {
+        if (allCSVRecords.containsKey(source.toString())){
+            return allCSVRecords.get(source.toString());
         } else {
             try {
                 CSV csv = new CSV();
-                allCSVRecords.put(source, csv.get(source, dataFetcher.getCwd()));
+                allCSVRecords.put(source.toString(),
+                        csv.get(Utils.getLiteral(source.toString()), dataFetcher.getCwd()));
             } catch (IOException e) {
                 throw e;
             }
 
-            return allCSVRecords.get(source);
+            return allCSVRecords.get(source.toString());
         }
     }
 
-    private List<Record> getXMLRecords(String source, List<String> iterators, String triplesMap) throws IOException {
+    private List<Record> getXMLRecords(Term source, List<Term> iterators, Term triplesMap) throws IOException {
         if (!iterators.isEmpty()) {
-            String iterator = Utils.getLiteral(iterators.get(0));
+            String iterator = iterators.get(0).getValue();
 
-            if (allXMLRecords.containsKey(source) && allXMLRecords.get(source).containsKey(iterator)) {
-                return allXMLRecords.get(source).get(iterator);
+            if (allXMLRecords.containsKey(source.toString()) && allXMLRecords.get(source.toString()).containsKey(iterator)) {
+                return allXMLRecords.get(source.toString()).get(iterator);
             } else {
                 try {
                     XML xml = new XML();
-                    List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
+                    List<Record> records = xml.get(Utils.getLiteral(source.toString()), iterator, dataFetcher.getCwd());
 
-                    if (allXMLRecords.containsKey(source)) {
-                        allXMLRecords.get(source).put(iterator, records);
+                    if (allXMLRecords.containsKey(source.toString())) {
+                        allXMLRecords.get(source.toString()).put(iterator, records);
                     } else {
                         Map<String, List<Record>> temp = new HashMap<>();
                         temp.put(iterator, records);
-                        allXMLRecords.put(source, temp);
+                        allXMLRecords.put(source.toString(), temp);
                     }
 
                     return records;
@@ -142,22 +144,22 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> getJSONRecords(String source, List<String> iterators, String triplesMap) throws IOException {
+    private List<Record> getJSONRecords(Term source, List<Term> iterators, Term triplesMap) throws IOException {
         if (!iterators.isEmpty()) {
-            String iterator = Utils.getLiteral(iterators.get(0));
+            String iterator = iterators.get(0).getValue();
 
-            if (allJSONRecords.containsKey(source) && allJSONRecords.get(source).containsKey(iterator)) {
-                return allJSONRecords.get(source).get(iterator);
+            if (allJSONRecords.containsKey(source.toString()) && allJSONRecords.get(source.toString()).containsKey(iterator)) {
+                return allJSONRecords.get(source.toString()).get(iterator);
             } else {
                 JSON json = new JSON();
-                List<Record> records = json.get(source, iterator, dataFetcher.getCwd());
+                List<Record> records = json.get(Utils.getLiteral(source.toString()), iterator, dataFetcher.getCwd());
 
-                if (allJSONRecords.containsKey(source)) {
-                    allJSONRecords.get(source).put(iterator, records);
+                if (allJSONRecords.containsKey(source.toString())) {
+                    allJSONRecords.get(source.toString()).put(iterator, records);
                 } else {
                     Map<String, List<Record>> temp = new HashMap<>();
                     temp.put(iterator, records);
-                    allJSONRecords.put(source, temp);
+                    allJSONRecords.put(source.toString(), temp);
                 }
 
                 return records;
@@ -167,50 +169,60 @@ public class RecordsFactory {
         }
     }
 
-    private List<Record> getRDBsRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap, List<String> table) {
+    private List<Record> getRDBsRecords(QuadStore rmlStore, Term source, Term logicalSource, Term triplesMap,
+                                        List<Term> table, List<Term> referenceFormulations) {
         // Retrieve database information from source object
 
         // - Driver URL
-        List<String> driverObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "jdbcDriver", null));
+        List<Term> driverObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "jdbcDriver"), null));
+
         if (driverObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a driver.");
         }
-        DatabaseType.Database database = DatabaseType.getDBtype(driverObject.get(0));
+
+        DatabaseType.Database database = DatabaseType.getDBtype(driverObject.get(0).getValue());
 
         // - DSN
-        List<String> dsnObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "jdbcDSN", null));
+        List<Term> dsnObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "jdbcDSN"), null));
+
         if(dsnObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a Data Source Name.");
         }
-        String dsn = Utils.getLiteral(dsnObject.get(0));
+
+        String dsn = dsnObject.get(0).getValue();
         dsn = dsn.substring(dsn.indexOf("//") + 2);
 
         // - SQL query
         String query;
-        List<String> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "query", null));
+        List<Term> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "query"), null));
+
         if (queryObject.isEmpty()) {
             if (table.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not include a SQL query nor a target table.");
             } else {
-                query = "SELECT * FROM " + Utils.getLiteral(table.get(0));
+                query = "SELECT * FROM " + table.get(0).getValue();
             }
         } else {
-            query = Utils.getLiteral(queryObject.get(0));
+            query = queryObject.get(0).getValue();
         }
 
         // - Username
-        List<String> usernameObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "username", null));
+        List<Term> usernameObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "username"), null));
+
         if (usernameObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a username.");
         }
-        String username = Utils.getLiteral(usernameObject.get(0));
+
+        String username = usernameObject.get(0).getValue();
 
         // - Password
-        List<String> passwordObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.D2RQ + "password", null));
+        List<Term> passwordObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "password"), null));
+
         if (usernameObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a password.");
         }
-        String password = Utils.getLiteral(passwordObject.get(0));
+
+        String password = passwordObject.get(0).getValue();
 
 
         // Get records
@@ -220,45 +232,44 @@ public class RecordsFactory {
             return allRDBsRecords.get(source).get(queryHash);
         } else {
             RDBs rdbs = new RDBs();
-            return rdbs.get(dsn, database, username, password, query);
+            return rdbs.get(dsn, database, username, password, query, referenceFormulations.get(0).getValue());
         }
     }
 
-    private List<Record> sparqlRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap,
-                                       String endpoint, List<String> iterators, List<String> referenceFormulations) {
+    private List<Record> getSPARQLRecords(QuadStore rmlStore, Term source, Term logicalSource, Term triplesMap,
+                                       Term endpoint, List<Term> iterators, List<Term> referenceFormulations) {
         if (!iterators.isEmpty()) {
 
             // Get query
-            List<String> query = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "query", null));
+            List<Term> query = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "query"), null));
             if (query.isEmpty()) {
                 throw new Error("No SPARQL query detected");
             }
-            String qs = query.get(0).replaceAll("[\r\n]+", " ").trim();
-            qs = Utils.getLiteral(qs);
+            String qs = query.get(0).getValue().replaceAll("[\r\n]+", " ").trim();
 
             // Get result format
-            List<String> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.SD + "resultFormat", null));
+            List<Term> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "resultFormat"), null));
             SPARQL.ResultFormat resultFormat = getSPARQLResultFormat(resultFormatObject, referenceFormulations);
 
             // Get iterator
-            String iterator = Utils.getLiteral(iterators.get(0));
+            String iterator = iterators.get(0).getValue();
 
             // Create key to save in records map
             // TODO: choose/discuss a better key
             int key = Utils.getHash(qs);
 
-            if (allSPARQLRecords.containsKey(source) && allSPARQLRecords.get(source).containsKey(key)) {
-                return allSPARQLRecords.get(source).get(key);
+            if (allSPARQLRecords.containsKey(source.toString()) && allSPARQLRecords.get(source.toString()).containsKey(key)) {
+                return allSPARQLRecords.get(source.toString()).get(key);
             } else {
                 SPARQL sparql = new SPARQL();
-                List<Record> records = sparql.get(endpoint, qs, iterator, resultFormat, referenceFormulations.get(0));
+                List<Record> records = sparql.get(endpoint.getValue(), qs, iterator, resultFormat, referenceFormulations.get(0).getValue());
 
-                if (allSPARQLRecords.containsKey(source)) {
-                    allSPARQLRecords.get(source).put(key, records);
+                if (allSPARQLRecords.containsKey(source.toString())) {
+                    allSPARQLRecords.get(source.toString()).put(key, records);
                 } else {
                     Map<Integer, List<Record>> temp = new HashMap<>();
                     temp.put(key, records);
-                    allSPARQLRecords.put(source, temp);
+                    allSPARQLRecords.put(source.toString(), temp);
                 }
                 return records;
             }
@@ -267,12 +278,12 @@ public class RecordsFactory {
         }
     }
 
-    private SPARQL.ResultFormat getSPARQLResultFormat(List<String> resultFormat, List<String> referenceFormulation) {
+    private SPARQL.ResultFormat getSPARQLResultFormat(List<Term> resultFormat, List<Term> referenceFormulation) {
         if (resultFormat.isEmpty() && referenceFormulation.isEmpty()) {     // This will never be called atm but may come in handy later
             throw new Error("Please specify the sd:resultFormat of the SPARQL endpoint or a rml:referenceFormulation.");
         } else if (referenceFormulation.isEmpty()) {
             for (SPARQL.ResultFormat format: SPARQL.ResultFormat.values()) {
-                if (resultFormat.get(0).equals(format.getUri())) {
+                if (resultFormat.get(0).getValue().equals(format.getUri())) {
                     return format;
                 }
             }
@@ -281,7 +292,7 @@ public class RecordsFactory {
 
         } else if (resultFormat.isEmpty()) {
             for (SPARQL.ResultFormat format: SPARQL.ResultFormat.values()) {
-                if (format.getReferenceFormulations().contains(referenceFormulation.get(0))) {
+                if (format.getReferenceFormulations().contains(referenceFormulation.get(0).getValue())) {
                     return format;
                 }
             }
@@ -290,8 +301,8 @@ public class RecordsFactory {
 
         } else {
             for (SPARQL.ResultFormat format : SPARQL.ResultFormat.values()) {
-                if (resultFormat.get(0).equals(format.getUri())
-                        && format.getReferenceFormulations().contains(referenceFormulation.get(0))) {
+                if (resultFormat.get(0).getValue().equals(format.getUri())
+                        && format.getReferenceFormulations().contains(referenceFormulation.get(0).getValue())) {
                     return format;
                 }
             }

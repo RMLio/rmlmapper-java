@@ -5,6 +5,9 @@ import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import org.slf4j.Logger;
@@ -18,6 +21,7 @@ import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -237,8 +241,8 @@ public class Utils {
         return output;
     }
 
-    public static List<String> getSubjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> subjects = new ArrayList<String>();
+    public static List<Term> getSubjectsFromQuads(List<Quad> quads) {
+        ArrayList<Term> subjects = new ArrayList<>();
 
         for (Quad quad : quads) {
             subjects.add(quad.getSubject());
@@ -247,8 +251,8 @@ public class Utils {
         return subjects;
     }
 
-    public static List<String> getObjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> objects = new ArrayList<String>();
+    public static List<Term> getObjectsFromQuads(List<Quad> quads) {
+        ArrayList<Term> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
             objects.add(quad.getObject());
@@ -258,10 +262,10 @@ public class Utils {
     }
 
     public static List<String> getLiteralObjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> objects = new ArrayList<String>();
+        ArrayList<String> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
-            objects.add(getLiteral(quad.getObject()));
+            objects.add(((Literal) quad.getObject()).getValue());
         }
 
         return objects;
@@ -287,19 +291,22 @@ public class Utils {
         }
     }
 
-    public static List<String> getList(QuadStore store, String first) {
-        List<String> list = new ArrayList<>();
+    public static List<Term> getList(QuadStore store, Term first) {
+        List<Term> list = new ArrayList<>();
+
         return getList(store, first, list);
     }
 
-    public static List<String> getList(QuadStore store, String first, List<String> list) {
-        if (first.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+    public static List<Term> getList(QuadStore store, Term first, List<Term> list) {
+        if (first.equals(new NamedNode(NAMESPACES.RDF + "nil"))) {
             return list;
         }
-        String value = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#first", null)).get(0);
-        String next = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest", null)).get(0);
+
+        Term value = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode(NAMESPACES.RDF + "first"), null)).get(0);
+        Term next = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode(NAMESPACES.RDF + "rest"), null)).get(0);
         list.add(value);
-        if (next.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+
+        if (next.equals(new NamedNode(NAMESPACES.RDF + "nil"))) {
             return list;
         } else {
             list = getList(store, next, list);
@@ -380,42 +387,11 @@ public class Utils {
     }
 
     private static String getNTripleOfQuad(Quad q) {
-        String s = q.getSubject();
-
-        if (!Utils.isBlankNode(s)) {
-            s = "<" + s + ">";
-        }
-
-        String p = "<" + q.getPredicate() + ">";
-        String o = q.getObject();
-
-        if (!Utils.isBlankNode(o) && !Utils.isLiteral(o)) {
-            o = "<" + o + ">";
-        }
-
-        return s + " " + p + " " + o + ".";
+        return q.getSubject() + " " + q.getPredicate() + " " + q.getObject() + ".";
     }
 
     private static String getNQuadOfQuad(Quad q) {
-        String s = q.getSubject();
-
-        if (!Utils.isBlankNode(s)) {
-            s = "<" + s + ">";
-        }
-
-        String o = q.getObject();
-
-        if (!Utils.isBlankNode(o) && !Utils.isLiteral(o)) {
-            o = "<" + o + ">";
-        }
-
-        String g = q.getGraph();
-
-        if (!Utils.isBlankNode(g)) {
-            g = "<" + g + ">";
-        }
-
-        return s + " " + s + " " + o + " " + g + ".";
+        return q.getSubject() + " " + q.getPredicate() + " " + q.getObject() + " " + q.getGraph() + ".";
     }
 
     public static String encodeURI(String url) {
@@ -444,6 +420,16 @@ public class Utils {
         return result;
     }
 
+    public static String fileToString(File file) throws IOException {
+        Reader reader = getReaderFromFile(file);
+        int intValueOfChar;
+        String targetString = "";
+        while ((intValueOfChar = reader.read()) != -1) {
+            targetString += (char) intValueOfChar;
+        }
+        reader.close();
+        return targetString;
+    }
     /*
         Extracts the selected columns from the SQL query
         Orders them alphabetically
@@ -479,7 +465,7 @@ public class Utils {
     }
 
     public static String getURLParamsString(Map<String, String> params)
-            throws UnsupportedEncodingException{
+            throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
 
         for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -493,5 +479,74 @@ public class Utils {
         return resultString.length() > 0
                 ? resultString.substring(0, resultString.length() - 1) // remove final '&'
                 : resultString;
+    }
+
+    public static int getFreePortNumber() throws IOException {
+        ServerSocket temp = new ServerSocket(0);
+        temp.setReuseAddress(true);
+        int portNumber = temp.getLocalPort();
+        temp.close();
+        return portNumber;
+
+    }
+
+    /**
+     * This method parse the generic template and returns an array
+     * that can later be used by the executor (via applyTemplate)
+     * to get the data values from the records.
+     **/
+    public static Template parseTemplate(String template) {
+        Template result = new Template();
+        String current = "";
+        boolean previousWasBackslash = false;
+        boolean variableBusy = false;
+
+        if (template != null) {
+            for (Character c : template.toCharArray()) {
+
+                if (c == '{') {
+                    if (previousWasBackslash) {
+                        current += c;
+                        previousWasBackslash = false;
+                    } else if(variableBusy) {
+                        throw new Error("Parsing of template failed. Probably a { was followed by a second { without first closing the first {. Make sure that you use { and } correctly.");
+                    } else {
+                        variableBusy = true;
+
+                        if (!current.equals("")) {
+                            result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
+                        }
+
+                        current = "";
+                    }
+                } else if (c == '}') {
+                    if (previousWasBackslash) {
+                        current += c;
+                        previousWasBackslash = false;
+                    } else if (variableBusy){
+                        result.addElement(new TemplateElement(current, TEMPLATETYPE.VARIABLE));
+                        current = "";
+                        variableBusy = false;
+                    } else {
+                        throw new Error("Parsing of template failed. Probably a } as used before a { was used. Make sure that you use { and } correctly.");
+                    }
+                } else if (c == '\\') {
+                    if (previousWasBackslash) {
+                        previousWasBackslash = false;
+                        current += c;
+                    } else {
+                        previousWasBackslash = true;
+                    }
+                } else {
+                    current += c;
+                }
+            }
+
+            if (!current.equals("")) {
+                result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
+            }
+        }
+
+        return result;
     }
 }

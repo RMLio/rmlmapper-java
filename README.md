@@ -8,9 +8,15 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 
 ### Supported
 - local data sources:
- - CSV
- - JSON (JSONPath)
- - XML (XPath)
+ - CSV files
+ - JSON files (JSONPath)
+ - XML files (XPath)
+- remote data sources:
+ - relational databases (MySQL, PostgreSQL, and SQLServer)
+ - files via HTTP urls (via GET)
+  - CSV files
+  - JSON files (JSONPath)
+  - XML files (XPath)
 - functions (most cases)
 - output formats: ntriples and nquads
 
@@ -18,9 +24,8 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 - functions (all cases)
 - conditions
 - data sources:
- - databases
+ - NoSQL databases
  - web APIs
- - remote data sources: CSV, JSON, XML
 - output formats: turtle, trig
 
 ## Build
@@ -34,7 +39,10 @@ The following options are available.
 
 - `-m, --mapping <arg>`: path to mapping document
 - `-o, --output <arg>`: path to output file
+- `-t, --functionfile <arg>`: path to functions.ttl file
+- `-c, --configfile <arg>`: path to config file
 - `-d, --duplicates`: remove duplicates in the output
+- `-f, --functionfile <arg>`: path to functions.ttl file (dynamic functions are found relative to functions.ttl)
 - `-v, --verbose`: show more details
 - `-h, --help`: show help
 
@@ -122,6 +130,20 @@ try {
 }
 ```
 
+### Testing
+#### RDBs
+Make sure you have [Docker](https://www.docker.com) running.
+
+Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```true``` for testing locally. 
+This causes the creation of the required Docker containers and adds the right connection string to the mapping files.
+
+Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```false``` for testing on / pushing to GitLab. 
+This makes sure that the containers running on GitLab are used and adds the right connection strings to the mapping files.
+
+##### Problems
+* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests have been turned off.
+* A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on windows 7 machines.
+
 # Dependencies
 
 |             Dependency             | License                                                            |
@@ -141,3 +163,12 @@ try {
 | com.opencsv opencsv                | Apache License 2.0                                                 |
 | commons-lang                       | Apache License 2.0                                                 |
 | ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
+
+# UML Diagrams
+## How to generate with IntelliJ IDEA
+(Requires Ultimate edition)
+
+* Right click on package: "be.ugent.rml"
+* Diagrams > Show Diagram > Java Class Diagrams
+* Choose what properties of the classes you want to show in the upper left corner
+* Export to file > .png  | Save diagram > .uml
