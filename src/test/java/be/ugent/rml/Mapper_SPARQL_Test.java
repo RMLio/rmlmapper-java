@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,8 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 @RunWith(ZohhakRunner.class)
 public class Mapper_SPARQL_Test extends TestCore {
@@ -127,26 +127,15 @@ public class Mapper_SPARQL_Test extends TestCore {
             "RMLTC0012a-SPARQL, ttl",
     })
     public void evaluate_XXXX_SPARQL(String resourceDir, String outputExtension) {
-        stopServer();
-
         String resourcePath = "test-cases/" + resourceDir + "/resource.ttl";
         String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
         String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
-        String tempMapping = replacePortInMappingFile(mappingPath);
 
-        Dataset ds = RDFDataMgr.loadDataset(resourcePath);
+        List<String> resources = new ArrayList<>();
+        resources.add(resourcePath);
 
-        this.server = FusekiServer.create()
-                .setPort(openPorts.get(tempMapping).getLocalPort())
-                .add("/ds", ds, true)
-                .build();
-        this.server.start();
+        doTest(mappingPath, resources, outputPath);
 
-
-        doMapping(tempMapping, outputPath);
-
-        closePort(tempMapping);
-        stopServer();
     }
 
     @Test(expected = Error.class)
@@ -156,65 +145,54 @@ public class Mapper_SPARQL_Test extends TestCore {
 
     @Test
     public void evaluate_0009a_SPARQL() throws Exception {
-        stopServer();
+        String mappingPath = "test-cases/RMLTC0009a-SPARQL/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0009a-SPARQL/output.ttl";
 
-        Dataset ds1 = RDFDataMgr.loadDataset("test-cases/RMLTC0009a-SPARQL/resource1.ttl");
-        Dataset ds2 = RDFDataMgr.loadDataset("test-cases/RMLTC0009a-SPARQL/resource2.ttl");
+        List<String> resources = new ArrayList<>();
+        resources.add("test-cases/RMLTC0009a-SPARQL/resource1.ttl");
+        resources.add("test-cases/RMLTC0009a-SPARQL/resource2.ttl");
 
-        String tempMapping = replacePortInMappingFile("test-cases/RMLTC0009a-SPARQL/mapping.ttl");
-
-        server = FusekiServer.create()
-                .setPort(openPorts.get(tempMapping).getLocalPort())
-                .add("/ds1", ds1, true)
-                .add("/ds2", ds2, true)
-                .build();
-        server.start();
-
-        doMapping(tempMapping, "test-cases/RMLTC0009a-SPARQL/output.ttl");
-
-        closePort(tempMapping);
-        stopServer();
+        doTest(mappingPath, resources, outputPath);
     }
 
     @Test
     public void evaluate_0009b_SPARQL() throws Exception {
-        stopServer();
+        String mappingPath = "test-cases/RMLTC0009b-SPARQL/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0009b-SPARQL/output.nq";
 
-        Dataset ds1 = RDFDataMgr.loadDataset("test-cases/RMLTC0009b-SPARQL/resource1.ttl");
-        Dataset ds2 = RDFDataMgr.loadDataset("test-cases/RMLTC0009b-SPARQL/resource2.ttl");
+        List<String> resources = new ArrayList<>();
+        resources.add("test-cases/RMLTC0009b-SPARQL/resource1.ttl");
+        resources.add("test-cases/RMLTC0009b-SPARQL/resource2.ttl");
 
-        String tempMapping = replacePortInMappingFile("test-cases/RMLTC0009b-SPARQL/mapping.ttl");
-
-        server = FusekiServer.create()
-                .setPort(openPorts.get(tempMapping).getLocalPort())
-                .add("/ds1", ds1, true)
-                .add("/ds2", ds2, true)
-                .build();
-        server.start();
-
-        doMapping(tempMapping, "test-cases/RMLTC0009b-SPARQL/output.nq");
-
-        closePort(tempMapping);
-        stopServer();
+        doTest(mappingPath, resources, outputPath);
     }
 
     @Test
     public void evaluate_00012b_SPARQL() throws Exception {
+        String mappingPath = "test-cases/RMLTC0012b-SPARQL/mapping.ttl";
+        String outputPath = "test-cases/RMLTC0012b-SPARQL/output.ttl";
+
+        List<String> resources = new ArrayList<>();
+        resources.add("test-cases/RMLTC0012b-SPARQL/resource1.ttl");
+        resources.add("test-cases/RMLTC0012b-SPARQL/resource2.ttl");
+
+        doTest(mappingPath, resources, outputPath);
+    }
+
+    public void doTest(String mappingPath, List<String> resourceFiles, String outputPath) {
         stopServer();
+        String tempMapping = replacePortInMappingFile(mappingPath);
 
-        Dataset ds1 = RDFDataMgr.loadDataset("test-cases/RMLTC0012b-SPARQL/resource1.ttl");
-        Dataset ds2 = RDFDataMgr.loadDataset("test-cases/RMLTC0012b-SPARQL/resource2.ttl");
+        FusekiServer.Builder builder = FusekiServer.create();
+        builder.setPort(openPorts.get(tempMapping).getLocalPort());
 
-        String tempMapping = replacePortInMappingFile("test-cases/RMLTC0012b-SPARQL/mapping.ttl");
+        for (int i = 0; i < resourceFiles.size(); i++) {
+            builder.add("/ds"+(i+1), RDFDataMgr.loadDataset(resourceFiles.get(i)), true);
+        }
+        this.server = builder.build();
+        this.server.start();
 
-        server = FusekiServer.create()
-                .setPort(openPorts.get(tempMapping).getLocalPort())
-                .add("/ds1", ds1, true)
-                .add("/ds2", ds2, true)
-                .build();
-        server.start();
-
-        doMapping(tempMapping, "test-cases/RMLTC0012b-SPARQL/output.ttl");
+        doMapping(tempMapping, outputPath);
 
         closePort(tempMapping);
         stopServer();

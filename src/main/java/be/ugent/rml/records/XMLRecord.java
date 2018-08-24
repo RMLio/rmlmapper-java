@@ -29,31 +29,6 @@ public class XMLRecord implements Record {
 
         try {
             NodeList result = (NodeList) xPath.compile(value).evaluate(node, XPathConstants.NODESET);
-
-            if (result.getLength() == 0) {  // try with attributes (e.g. SPARQL works like this)
-                NodeList childNodes = node.getChildNodes();
-                Node bindingNode = null;
-                int i = 0;
-                while (bindingNode == null && i < childNodes.getLength()) {
-                    if (childNodes.item(i).getNodeName().equals("binding")) {
-
-                        // Check if "name" attribute matches with required value
-                        NamedNodeMap attributes = childNodes.item(i).getAttributes();
-                        Node nameAttribute = attributes.getNamedItem("name");
-                        if (nameAttribute.getNodeValue().equals(value)) {
-                            bindingNode = childNodes.item(i);
-                        }
-                    }
-                    i++;
-                }
-
-                // Get bindingNode's child with the requested value
-                i = 0;
-                while (result.getLength() == 0 && i < SPARQL_NODE_TYPES.length) {
-                    result = (NodeList) xPath.compile(SPARQL_NODE_TYPES[i]).evaluate(bindingNode, XPathConstants.NODESET);
-                }
-            }
-
             for (int i = 0; i < result.getLength(); i ++) {
                 results.add(result.item(i).getTextContent());
             }

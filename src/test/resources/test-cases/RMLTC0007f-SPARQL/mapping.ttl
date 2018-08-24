@@ -11,15 +11,15 @@
 
 <#InputSPARQL>
     a sd:Service ;
-    sd:endpoint <http://localhost:PORT/ds/sparql> ;
+    sd:endpoint <http://localhost:PORT/ds1/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query ;
-    sd:resultFormat <http://www.w3.org/ns/formats/SPARQL_Results_XML> .
+    sd:resultFormat <http://www.w3.org/ns/formats/SPARQL_Results_JSON> .
 
 <#Country>
     rml:logicalSource [
         rml:source <#InputSPARQL>;
-        rml:referenceFormulation ql:XPath;
-        rml:iterator "/sparql/results/result";
+        rml:referenceFormulation ql:JSONPath;
+        rml:iterator "$.results.bindings[*]";
         rml:query """
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -33,7 +33,7 @@
     ];
 
     rr:subjectMap [
-        rr:template "http://example.com/Student/{ID}/{FirstName}";
+        rr:template "http://example.com/Student/{ID.value}/{FirstName.value}";
         rr:graph ex:PersonGraph
       ];
 
