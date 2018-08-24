@@ -18,11 +18,13 @@ public class StaticFunctionExecutor implements FunctionExecutor{
         this.parameters = parameters;
     }
 
+    @Override
     public List<?> execute(Record record) {
         Map <String, Object> filledInParameters = new HashMap<>();
 
         for (Map.Entry<String, List<Template>> entry : this.parameters.entrySet()) {
-            List<String> objects = Utils.applyTemplate(entry.getValue().get(0), record);
+            List<Template> templates = entry.getValue();
+            List<String> objects = Utils.applyTemplate(templates.get(0), record);
 
             if (objects.size() > 0) {
                 filledInParameters.put(entry.getKey(), objects.get(0));

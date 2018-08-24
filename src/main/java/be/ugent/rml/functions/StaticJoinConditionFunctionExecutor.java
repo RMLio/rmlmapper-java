@@ -13,8 +13,8 @@ public class StaticJoinConditionFunctionExecutor implements JoinConditionFunctio
     private final FunctionModel functionModel;
     private final Map<String, Object[]> parameters;
 
-    public StaticJoinConditionFunctionExecutor(FunctionModel functionModel, Map<String, Object[]> parameters) {
-        this.functionModel = functionModel;
+    public StaticJoinConditionFunctionExecutor(FunctionModel model, Map<String, Object[]> parameters) {
+        this.functionModel = model;
         this.parameters = parameters;
     }
 
@@ -27,7 +27,6 @@ public class StaticJoinConditionFunctionExecutor implements JoinConditionFunctio
             String recordType = (String) entry.getValue()[0];
 
             Record record;
-
             if (recordType.equals("child")) {
                 record = child;
             } else {
@@ -35,6 +34,7 @@ public class StaticJoinConditionFunctionExecutor implements JoinConditionFunctio
             }
 
             List<String> objects = Utils.applyTemplate(templates.get(0), record);
+
             if (objects.size() > 0) {
                 filledInParameters.put(entry.getKey(), objects.get(0));
             } else {
