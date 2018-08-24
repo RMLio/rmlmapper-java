@@ -130,7 +130,7 @@ public class Main {
 
 
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-                if (result.getQuads(null, null, null, null).isEmpty()) {
+                if (!result.getQuads(null, null, null).isEmpty()) {
                     //write quads
                     writeOutput("quad", result.getQuads(null, null, null, null), outputFile);
                 }
