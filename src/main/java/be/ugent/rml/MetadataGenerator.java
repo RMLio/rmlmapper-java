@@ -324,11 +324,14 @@ public class MetadataGenerator {
             }
 
             // OBJECT
+            Term objectNode = (Utils.isLiteral(pquad.getObject().getTerm().toString())) ?
+                    createValueStatements(pquad.getObject().getTerm()) : pquad.getObject().getTerm();
+
             if (objectMD.getTriplesMap() != null) {
-                mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
+                mdStore.addTriple(objectNode, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
                         objectMD.getTriplesMap());
             } else {
-                mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
+                mdStore.addTriple(objectNode, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
                         subjectMD.getTriplesMap());
             }
 
@@ -337,11 +340,16 @@ public class MetadataGenerator {
             }
         });
     }
-    
-    private Term createValueAndGeneratedByStatements(Term value, Term generatedBy) {
+
+    private Term createValueStatements(Term value) {
         Term node = new BlankNode();
         mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
         mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "value"), value);
+        return node;
+    }
+
+    private Term createValueAndGeneratedByStatements(Term value, Term generatedBy) {
+        Term node = createValueStatements(value);
         mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), generatedBy);
         return node;
     }
