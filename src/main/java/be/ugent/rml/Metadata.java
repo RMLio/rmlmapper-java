@@ -2,6 +2,9 @@ package be.ugent.rml;
 
 import be.ugent.rml.term.Term;
 
+/**
+ * Holds the source triplesMap and Subject-, Object- or PredicateMap for a specific (provenanced) term.
+ */
 public class Metadata {
 
     private Term triplesMap;
