@@ -143,10 +143,17 @@ try {
 | ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
 
 # UML Diagrams
-## How to generate with IntelliJ IDEA
+
+## Architecture Diagram
+### How to generate with IntelliJ IDEA
 (Requires Ultimate edition)
 
 * Right click on package: "be.ugent.rml"
 * Diagrams > Show Diagram > Java Class Diagrams
 * Choose what properties of the classes you want to show in the upper left corner
 * Export to file > .png  | Save diagram > .uml
+
+## Sequence Diagram
+### Edit on [draw.io](https://www.draw.io)
+* Go to [draw.io](https://www.draw.io)
+* Click on 'Open Existing Diagram' and choose the .html file
