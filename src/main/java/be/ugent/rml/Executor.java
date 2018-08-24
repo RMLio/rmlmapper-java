@@ -1,7 +1,6 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.JoinConditionFunction;
 import be.ugent.rml.functions.JoinConditionFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
