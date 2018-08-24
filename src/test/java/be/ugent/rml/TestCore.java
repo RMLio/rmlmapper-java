@@ -55,23 +55,10 @@ abstract class TestCore {
     }
 
     void doMapping(Executor executor, String outPath) {
-        ClassLoader classLoader = getClass().getClassLoader();
-
         try {
             QuadStore result = executor.execute(null);
             result.removeDuplicates();
-
-            // load output file
-            File outputFile = new File(classLoader.getResource(outPath).getFile());
-            QuadStore outputStore;
-
-            if (outPath.endsWith(".nq")) {
-                outputStore = Utils.readTurtle(outputFile, RDFFormat.NQUADS);
-            } else {
-                outputStore = Utils.readTurtle(outputFile);
-            }
-
-            assertEquals(outputStore.toSortedString(), result.toSortedString());
+            compareStores(result, filePathToStore(outPath), false);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             fail();
@@ -93,31 +80,9 @@ abstract class TestCore {
         }
     }
 
-    void compareFiles(String path1, String path2, boolean removeTimestamps) {
-        ClassLoader classLoader = getClass().getClassLoader();
-
-        // load output file 1
-        File outputFile1 = new File(classLoader.getResource(path1).getFile());
-        QuadStore outputStore1;
-
-        if (path1.endsWith(".nq")) {
-            outputStore1 = Utils.readTurtle(outputFile1, RDFFormat.NQUADS);
-        } else {
-            outputStore1 = Utils.readTurtle(outputFile1);
-        }
-
-        // load output file 2
-        File outputFile2 = new File(classLoader.getResource(path2).getFile());
-        QuadStore outputStore2;
-
-        if (path1.endsWith(".nq")) {
-            outputStore2 = Utils.readTurtle(outputFile2, RDFFormat.NQUADS);
-        } else {
-            outputStore2 = Utils.readTurtle(outputFile2);
-        }
-
-        String string1 = outputStore1.toSortedString();
-        String string2 = outputStore2.toSortedString();
+    void compareStores(QuadStore store1, QuadStore store2, boolean removeTimestamps) {
+        String string1 = store1.toSortedString();
+        String string2 = store2.toSortedString();
 
         if (removeTimestamps) {
             string1 = string1.replaceAll("\"[^\"]*\"\\^\\^<http://www.w3\\.org/2001/XMLSchema#dateTime>", "");
@@ -125,5 +90,25 @@ abstract class TestCore {
         }
 
         assertEquals(string1, string2);
+    }
+
+    void compareFiles(String path1, String path2, boolean removeTimestamps) {
+        compareStores(filePathToStore(path1), filePathToStore(path2), removeTimestamps);
+    }
+
+    QuadStore filePathToStore(String path) {
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        // load output file
+        File outputFile = new File(classLoader.getResource(path).getFile());
+        QuadStore store;
+
+        if (path.endsWith(".nq")) {
+            store = Utils.readTurtle(outputFile, RDFFormat.NQUADS);
+        } else {
+            store = Utils.readTurtle(outputFile);
+        }
+
+        return store;
     }
 }
