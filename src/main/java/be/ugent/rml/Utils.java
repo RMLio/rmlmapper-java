@@ -324,7 +324,6 @@ public class Utils {
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
         } catch (Exception e) {
-            e.printStackTrace();
             throw new Error("Failed to read turtle file.");
         }
         return new RDF4JStore(model);
