@@ -3,11 +3,9 @@ package be.ugent.rml;
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.jena.fuseki.embedded.FusekiServer;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.RDFDataMgr;
-import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;

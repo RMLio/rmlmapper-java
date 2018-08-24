@@ -41,7 +41,6 @@ public class RecordsFactory {
             List<String> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RML + "iterator", null));
             List<String> table = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, NAMESPACES.RR + "tableName", null));
 
-            SPARQL.ResultFormat sparqlResultFormat = null;
             if (sources.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a source.");
             } else if (referenceFormulations.isEmpty()) {
@@ -87,7 +86,7 @@ public class RecordsFactory {
                         if (endpoint.isEmpty()) {
                             throw new Error("No SPARQL endpoint detected.");
                         }
-                        return sparqlRecords(rmlStore, source, logicalSource, triplesMap, endpoint.get(0), iterators, referenceFormulations, sparqlResultFormat);
+                        return sparqlRecords(rmlStore, source, logicalSource, triplesMap, endpoint.get(0), iterators, referenceFormulations);
                     default:
                         throw new NotImplementedException();
 
@@ -226,7 +225,7 @@ public class RecordsFactory {
     }
 
     private List<Record> sparqlRecords(QuadStore rmlStore, String source, String logicalSource, String triplesMap,
-                                       String endpoint, List<String> iterators, List<String> referenceFormulations, SPARQL.ResultFormat resultFormat) {
+                                       String endpoint, List<String> iterators, List<String> referenceFormulations) {
         if (!iterators.isEmpty()) {
 
             // Get query
@@ -234,14 +233,12 @@ public class RecordsFactory {
             if (query.isEmpty()) {
                 throw new Error("No SPARQL query detected");
             }
-            String qs = query.get(0).replaceAll("\n", " ").trim();
+            String qs = query.get(0).replaceAll("[\r\n]+", " ").trim();
             qs = Utils.getLiteral(qs);
 
-            // Get result format if not received
-            if (resultFormat == null) {
-                List<String> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.SD + "resultFormat", null));
-                resultFormat = getSPARQLResultFormat(resultFormatObject, referenceFormulations);
-            }
+            // Get result format
+            List<String> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, NAMESPACES.SD + "resultFormat", null));
+            SPARQL.ResultFormat resultFormat = getSPARQLResultFormat(resultFormatObject, referenceFormulations);
 
             // Get iterator
             String iterator = Utils.getLiteral(iterators.get(0));

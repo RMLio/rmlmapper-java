@@ -34,7 +34,6 @@ public class XML extends IteratorFormat {
             XPath xPath = XPathFactory.newInstance().newXPath();
             NodeList result = (NodeList) xPath.compile(iterator).evaluate(xmlDocument, XPathConstants.NODESET);
 
-
             for (int i = 0; i < result.getLength(); i ++) {
                 records.add(new XMLRecord(result.item(i)));
             }

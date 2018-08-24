@@ -1,7 +1,6 @@
 package be.ugent.rml.records;
 
 import be.ugent.rml.Utils;
-import org.apache.jena.query.*;
 import org.eclipse.rdf4j.query.resultio.UnsupportedQueryResultFormatException;
 
 import java.io.*;
@@ -33,12 +32,11 @@ public class SPARQL {
         private final Set<String> referenceFormulations;
 
 
-        private ResultFormat(String name, String uri, String mediaType, String... referenceFormulations) {
+        ResultFormat(String name, String uri, String mediaType, String... referenceFormulations) {
             this.name = name;
             this.uri = uri;
             this.mediaType = mediaType;
             this.referenceFormulations = new HashSet<>(Arrays.asList(referenceFormulations));
-            ;
         }
 
         public String getUri() { return uri; }
@@ -52,7 +50,15 @@ public class SPARQL {
         }
     }
 
-    // referenceFormulation given because we might it them later for referenceFormulation specific implementations
+    /**
+     *
+     * @param endpoint SPARQL endpoint
+     * @param qs QueryString
+     * @param iterator result iterator
+     * @param resultFormat result format
+     * @param referenceFormulation given because we might it them later for referenceFormulation specific implementations
+     * @return records
+     */
     public List<Record> get(String endpoint, String qs, String iterator, ResultFormat resultFormat, String referenceFormulation) {
         switch(resultFormat) {
             case XML:
