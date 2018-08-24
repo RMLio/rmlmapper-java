@@ -3,11 +3,10 @@ package be.ugent.rml;
 import be.ugent.rml.store.*;
 import be.ugent.rml.term.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -18,7 +17,7 @@ public class MetadataGenerator {
 
     // Higher level --> more detailed
     public enum DETAIL_LEVEL {
-        PREVENT(-1), DATASET(0), TRIPLE(1), TERM(2);
+        DATASET(0), TRIPLE(1), TERM(2);
 
         private int level;
         DETAIL_LEVEL(int level) {
@@ -35,6 +34,7 @@ public class MetadataGenerator {
     private String outputFile;
     private QuadStore inputData;
     private String mappingFile;
+    private List<Term> triplesMaps;
     private List<BiConsumer<Term, ProvenancedQuad>> generationFunctions;
     private List<Term> logicalSources;
     private Set<String> distinctSubjects;    // Used for counting number of distinct subjects
@@ -42,9 +42,14 @@ public class MetadataGenerator {
     private Set<String> distinctClasses;     // Used for counting number of distinct classes
     private Set<String> distinctProperties;  // Used for counting number of distinct properties
 
-    Term rdfDataset;
-    Term rdfDatasetGeneration;
-    Term rmlProcessor;
+    private Map<Term, Term> subjectMapsMap;  // todo: move this out of this class?
+
+    private Map<Term, Term> triplesMaptoActivityMap;
+    private Map<Term, Term> termMaptoActivityMap;
+
+    private Term rdfDataset;
+    private Term rdfDatasetGeneration;
+    private Term rmlMapper;
 
     public MetadataGenerator(DETAIL_LEVEL detailLevel, String outputFile, String mappingFile, QuadStore inputData) {
         mdStore = new SimpleQuadStore();
@@ -58,10 +63,21 @@ public class MetadataGenerator {
         distinctClasses = new HashSet<>();
         distinctProperties = new HashSet<>();
 
+        subjectMapsMap = new HashMap<>();
+
         generationFunctions = new ArrayList<>();
+
+        rdfDataset = new NamedNode(String.format("file://%s", outputFile));
+        rdfDatasetGeneration = new BlankNode(Utils.hashCode(outputFile));
+
+        rmlMapper = new BlankNode("RMLMapper");
+
 
         if (detailLevel.getLevel() >= DETAIL_LEVEL.TRIPLE.getLevel()) {
             addTripleLevelFunctions();
+        }
+        if (detailLevel.getLevel() >= DETAIL_LEVEL.TERM.getLevel()) {
+            addTermLevelFunctions();
         }
     }
 
@@ -81,60 +97,130 @@ public class MetadataGenerator {
         }
     }
 
-    public void postMappingGeneration(String startTimestamp, String stopTimestamp, List<Term> triplesMaps, QuadStore result) {
-        if (detailLevel.getLevel() >= DETAIL_LEVEL.DATASET.getLevel()) {
-            DatasetLevelMetadataGenerator.createMetadata(getRdfDataset(), getRdfDatasetGeneration(), getRmlProcessor(),
-                    mdStore, getLogicalSources(triplesMaps, inputData), startTimestamp, stopTimestamp, mappingFile);
-            if (detailLevel.getLevel() >= DETAIL_LEVEL.TRIPLE.getLevel()) {
-                generateTripleLevelDetailMetadata(triplesMaps, result);
+    public void preMappingGeneration(List<Term> triplesMaps, QuadStore mappingQuads) {
+        this.triplesMaps = triplesMaps;
+        if (detailLevel.getLevel() >= DETAIL_LEVEL.TRIPLE.getLevel()) {
+            generatePreTripleLevelDetailMetadata();
+            if (detailLevel.getLevel() >= DETAIL_LEVEL.TERM.getLevel()) {
+                generatePreTermLevelDetailMetadata(mappingQuads);
             }
         }
     }
 
-    private void generateTripleLevelDetailMetadata(List<Term> triplesMaps, QuadStore result) {
-        if (detailLevel == DETAIL_LEVEL.PREVENT) {
-            return;
+    public void postMappingGeneration(String startTimestamp, String stopTimestamp, QuadStore result) {
+        if (detailLevel.getLevel() >= DETAIL_LEVEL.DATASET.getLevel()) {
+            DatasetLevelMetadataGenerator.createMetadata(rdfDataset, rdfDatasetGeneration, rmlMapper,
+                    mdStore, getLogicalSources(triplesMaps, inputData), startTimestamp, stopTimestamp, mappingFile);
+            if (detailLevel.getLevel() >= DETAIL_LEVEL.TRIPLE.getLevel()) {
+                generatePostTripleLevelDetailMetadata(result);
+            }
         }
+    }
+
+    private void generatePreTripleLevelDetailMetadata()  {
+        triplesMaptoActivityMap = new HashMap<>();
 
         // Describe triplesMaps
         for (Term triplesMap: triplesMaps) {
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
-            mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.VOID + "dataDump"), getRdfDataset());
+            mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.VOID + "dataDump"), rdfDataset);
+            createActivityStatements(triplesMap, triplesMaptoActivityMap);
         }
+    }
 
+    private void generatePreTermLevelDetailMetadata(QuadStore mappingQuads) {
+        termMaptoActivityMap = new HashMap<>();
+
+        for (Term triplesMap: triplesMaps) {
+            List<Term> subjectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"),
+                    null));
+
+            if (!subjectMaps.isEmpty()) {
+                Term subjectMap = subjectMaps.get(0);
+                createActivityStatementsWithResultActivity(subjectMap, termMaptoActivityMap, triplesMaptoActivityMap.get(triplesMap));
+            }
+
+            List<Term> predicateObjectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "predicateObjectMap"),
+                    null));
+
+            for (Term pom: predicateObjectMaps) {
+                Term pomActivity = createActivityStatementsWithResultActivity(pom, termMaptoActivityMap, triplesMaptoActivityMap.get(triplesMap));
+
+                List<Term> predicateMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(pom, new NamedNode(NAMESPACES.RR + "predicateMap"),
+                        null));
+                List<Term> objectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(pom, new NamedNode(NAMESPACES.RR + "objectMap"),
+                        null));
+
+                createActivityStatementsWithResultActivity(predicateMaps, termMaptoActivityMap, pomActivity);
+                createActivityStatementsWithResultActivity(objectMaps, termMaptoActivityMap, pomActivity);
+            }
+        }
+    }
+
+    private Term createActivityStatements(Term termMap, Map<Term, Term> map) {
+        Term termMapActivity = new NamedNode(termMap.getValue() + "Activity"); // todo: should this be a blank node?
+        if (map != null) {
+            map.put(termMap, termMapActivity);
+        }
+        mdStore.addTriple(termMapActivity, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Activity"));
+        mdStore.addTriple(termMapActivity, new NamedNode(NAMESPACES.PROV + "used"), termMap);
+        return termMapActivity;
+    }
+
+    private Term createActivityStatements(List<Term> termMaps, Map<Term, Term> map) {
+        if (!termMaps.isEmpty()) {
+            return createActivityStatements(termMaps.get(0), map);
+        }
+        return null;
+    }
+
+    private Term createActivityStatementsWithResultActivity(Term termMap, Map<Term, Term> map, Term resultActivity) {
+        Term termMapActivity = createActivityStatements(termMap, map);
+        mdStore.addTriple(resultActivity, new NamedNode(NAMESPACES.PROV + "wasInformedBy"),
+                termMapActivity);
+        return termMapActivity;
+    }
+
+    private Term createActivityStatementsWithResultActivity(List<Term> termMaps, Map<Term, Term> map, Term resultActivity) {
+        if (!termMaps.isEmpty()) {
+            return createActivityStatementsWithResultActivity(termMaps.get(0), map, resultActivity);
+        }
+        return null;
+    }
+
+    private void generatePostTripleLevelDetailMetadata(QuadStore result) {
         // Describe result
-        Term resultNode = getRdfDataset();
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
 
         getLogicalSources(triplesMaps, inputData).forEach(inputSource -> {
-            mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), inputSource);
+            mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), inputSource);
         });
 
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), getRdfDatasetGeneration());
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), rdfDatasetGeneration);
 
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "triples"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "triples"),
                 new Literal(Integer.toString(result.getQuads(null, null, null, null).size())
                         , new NamedNode(NAMESPACES.XSD + "integer")));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "distinctSubjects"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "distinctSubjects"),
                 new Literal(Integer.toString(distinctSubjects.size())
                         , new NamedNode(NAMESPACES.XSD + "integer")));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "distinctObjects"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "distinctObjects"),
                 new Literal(Integer.toString(distinctObjects.size())
                         , new NamedNode(NAMESPACES.XSD + "integer")));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "classes"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "classes"),
                 new Literal(Integer.toString(distinctClasses.size())
                         , new NamedNode(NAMESPACES.XSD + "integer")));
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "properties"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "properties"),
                 new Literal(Integer.toString(distinctProperties.size())
                         , new NamedNode(NAMESPACES.XSD + "integer")));
 
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "documents"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "documents"),
                 new Literal("1"     // todo: change this when multiple output files are possible
                         , new NamedNode(NAMESPACES.XSD + "integer")));
 
-        mdStore.addTriple(resultNode, new NamedNode(NAMESPACES.VOID + "feature"),
+        mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "feature"),
                 new NamedNode("http://www.w3.org/ns/formats/N-Quads")); // todo: change this when output file format changes
 
     }
@@ -165,7 +251,13 @@ public class MetadataGenerator {
 
                     // Literal -- encapsulate source in blank node
                     if (Utils.isLiteral(source.toString())) {
-                        sourceNode = new NamedNode(String.format("file:%s",sourceObjects.get(0).getValue()));
+                        try {
+                            File sourceFile = Utils.getFile(sourceObjects.get(0).getValue(), null);
+                            sourceNode = new NamedNode(String.format("file://%s", sourceFile.getPath()));
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                            throw new Error("Could not find source file: " + sourceObjects.get(0).getValue());
+                        }
                     } else {    // todo: what with blank nodes?
                         sourceNode = source;
                     }
@@ -179,33 +271,9 @@ public class MetadataGenerator {
     }
 
     public void writeMetadata() {
-        if (detailLevel != DETAIL_LEVEL.PREVENT) {
-            mdStore.removeDuplicates();
-            TriplesQuads tq = Utils.getTriplesAndQuads(mdStore.toSimpleSortedQuadStore().getQuads(null, null, null, null));
-            Utils.writeOutput("triple", tq.getTriples(), "nq", outputFile);
-        }
-    }
-
-    public Term getRdfDataset() {
-        if (rdfDataset == null) {
-            rdfDataset = new NamedNode(String.format("file:%s", outputFile));
-        }
-        return rdfDataset;
-    }
-
-    public Term getRdfDatasetGeneration() {
-        if (rdfDatasetGeneration == null) {
-            // Value: hash of output file path
-            rdfDatasetGeneration = new BlankNode(Utils.hashCode(outputFile));
-        }
-        return rdfDatasetGeneration;
-    }
-
-    public Term getRmlProcessor() {
-        if (rmlProcessor == null) {
-            rmlProcessor = new BlankNode("RMLMapper");
-        }
-        return rmlProcessor;
+        mdStore.removeDuplicates();
+        TriplesQuads tq = Utils.getTriplesAndQuads(mdStore.toSimpleSortedQuadStore().getQuads(null, null, null, null));
+        Utils.writeOutput("triple", tq.getTriples(), "nq", outputFile);
     }
 
     private void addTripleLevelFunctions() {
@@ -215,17 +283,9 @@ public class MetadataGenerator {
             Term subjectTM = pquad.getSubject().getMetdata().getTriplesMap();
             mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
 
-            Term objectTM = null;
             if (pquad.getObject().getMetdata() != null && pquad.getObject().getMetdata().getTriplesMap() != null) {
-                objectTM = pquad.getObject().getMetdata().getTriplesMap();
+                Term objectTM = pquad.getObject().getMetdata().getTriplesMap();
                 mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), objectTM);
-            }
-
-            if (detailLevel.getLevel() >= DETAIL_LEVEL.TERM.getLevel()) {
-                mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), subjectTM);
-                if (objectTM != null) {
-                    mdStore.addTriple(pquad.getObject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"), objectTM);
-                }
             }
         });
         // Add generation time info
@@ -242,6 +302,56 @@ public class MetadataGenerator {
                 distinctClasses.add(pquad.getObject().getTerm().getValue());
             }
         });
+    }
+
+    private void addTermLevelFunctions() {
+        generationFunctions.add((node, pquad) -> {
+            Metadata subjectMD = pquad.getSubject().getMetdata();
+            Metadata predicateMD = pquad.getPredicate().getMetdata();
+            Metadata objectMD = pquad.getObject().getMetdata();
+
+            // SUBJECT
+            mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
+                    subjectMD.getTriplesMap());
+            if (!Utils.isBlankNode(subjectMD.getSourceMap().toString())) {
+                mdStore.addTriple(pquad.getSubject().getTerm(), new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"),
+                        termMaptoActivityMap.get(subjectMD.getSourceMap()));
+            }
+
+            // PREDICATE
+            if (!Utils.isBlankNode(predicateMD.getSourceMap().toString())) {
+                createValueAndGeneratedByStatements(pquad.getPredicate().getTerm(), termMaptoActivityMap.get(predicateMD.getSourceMap()));
+            }
+
+            // OBJECT
+            Term objectNode = (Utils.isLiteral(pquad.getObject().getTerm().toString())) ?
+                    createValueStatements(pquad.getObject().getTerm()) : pquad.getObject().getTerm();
+
+            if (objectMD.getTriplesMap() != null) {
+                mdStore.addTriple(objectNode, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
+                        objectMD.getTriplesMap());
+            } else {
+                mdStore.addTriple(objectNode, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
+                        subjectMD.getTriplesMap());
+            }
+
+            if (!Utils.isBlankNode(objectMD.getSourceMap().toString())) {
+                createValueAndGeneratedByStatements(pquad.getObject().getTerm(), termMaptoActivityMap.get(objectMD.getSourceMap()));
+            }
+        });
+    }
+
+    private Term createValueStatements(Term value) {
+        Term node = new BlankNode();
+        mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
+        mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "value"), value);
+        return node;
+    }
+
+    private Term createValueAndGeneratedByStatements(Term value, Term generatedBy) {
+        Term node = createValueStatements(value);
+        mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"), generatedBy);
+        return node;
     }
 
     public DETAIL_LEVEL getDetailLevel() {

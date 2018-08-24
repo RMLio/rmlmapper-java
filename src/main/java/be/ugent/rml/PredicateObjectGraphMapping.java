@@ -7,24 +7,20 @@ import be.ugent.rml.termgenerator.TermGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PredicateObjectGraphGenerator {
+public class PredicateObjectGraphMapping {
 
 
-    private final TermGenerator predicateGenerator;
-    private final TermGenerator objectGenerator;
-    private final TermGenerator graphGenerator;
+    private final MappingInfo predicateMappingInfo;
+    private final MappingInfo objectMappingInfo;
+    private final MappingInfo graphMappingInfo;
     private final List<JoinConditionFunction> joinConditions;
     private Term parentTriplesMap;
 
-    public PredicateObjectGraphGenerator(TermGenerator predicateGenerator, TermGenerator objectGenerator, TermGenerator graphGenerator) {
-        this.graphGenerator = graphGenerator;
-        this.predicateGenerator = predicateGenerator;
+    public PredicateObjectGraphMapping(MappingInfo predicateMappingInfo, MappingInfo objectMappingInfo, MappingInfo graphMappingInfo) {
+        this.predicateMappingInfo = predicateMappingInfo;
+        this.graphMappingInfo = graphMappingInfo;
         this.joinConditions = new ArrayList<JoinConditionFunction>();
-        this.objectGenerator = objectGenerator;
-    }
-
-    public TermGenerator getPredicateGenerator() {
-        return predicateGenerator;
+        this.objectMappingInfo = objectMappingInfo;
     }
 
     public Term getParentTriplesMap() {
@@ -43,11 +39,15 @@ public class PredicateObjectGraphGenerator {
         joinConditions.add(condition);
     }
 
-    public TermGenerator getObjectGenerator() {
-        return objectGenerator;
+    public MappingInfo getPredicateMappingInfo() {
+        return predicateMappingInfo;
     }
 
-    public TermGenerator getGraphGenerator() {
-        return graphGenerator;
+    public MappingInfo getObjectMappingInfo() {
+        return objectMappingInfo;
+    }
+
+    public MappingInfo getGraphMappingInfo() {
+        return graphMappingInfo;
     }
 }

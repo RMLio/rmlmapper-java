@@ -27,7 +27,7 @@ abstract class TestCore {
         File mappingFile = new File(mapPath);
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
-        return new Executor(new Initializer(rmlStore, null ), rmlStore,
+        return new Executor(rmlStore,
                 new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
     }
 
@@ -37,8 +37,8 @@ abstract class TestCore {
         File mappingFile = new File(classLoader.getResource(mapPath).getFile());
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
-        return new Executor(new Initializer(rmlStore, functionLoader), rmlStore,
-                new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
+        return new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)),
+                functionLoader);
     }
 
     Executor doMapping(String mapPath, String outPath) {
@@ -86,8 +86,7 @@ abstract class TestCore {
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
         try {
-            Executor executor = new Executor(new Initializer(rmlStore, null), rmlStore,
-                    new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
+            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
             QuadStore result = executor.execute(null);
         } catch (IOException e) {
 

@@ -15,7 +15,7 @@ import java.time.Instant;
  */
 public class DatasetLevelMetadataGenerator {
 
-    public static void createMetadata(Term rdfDataset, Term rdfDatasetGeneration, Term rmlProcessor,
+    public static void createMetadata(Term rdfDataset, Term rdfDatasetGeneration, Term rmlMapper,
                                            QuadStore result, List<Term> logicalSources,
                                            String startTimestamp, String stopTimestamp, String mappingFile) {
         // <#RDF_Dataset>
@@ -28,12 +28,12 @@ public class DatasetLevelMetadataGenerator {
         result.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"),
                 rdfDatasetGeneration);
         result.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasAssociatedWith"),
-                rmlProcessor);
+                rmlMapper);
 
-        // <#RMLProcessor>
-        result.addTriple(rmlProcessor, new NamedNode(NAMESPACES.RDF + "type"),
+        // <#rmlMapper>
+        result.addTriple(rmlMapper, new NamedNode(NAMESPACES.RDF + "type"),
                 new NamedNode(NAMESPACES.PROV + "Agent"));
-        result.addTriple(rmlProcessor, new NamedNode(NAMESPACES.PROV + "type"),
+        result.addTriple(rmlMapper, new NamedNode(NAMESPACES.PROV + "type"),
                 new NamedNode(NAMESPACES.PROV + "SoftwareAgent"));
 
         // <#RDFdataset_Generation>
@@ -46,7 +46,7 @@ public class DatasetLevelMetadataGenerator {
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "endedAtTime"),
                 new Literal(stopTimestamp, new NamedNode(NAMESPACES.XSD + "dateTime")));
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
-                new NamedNode(String.format("file:%s", mappingFile)));
+                new NamedNode(String.format("file://%s", mappingFile)));
         for (Term logicalSource: logicalSources) {
             result.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
                     logicalSource);
