@@ -12,18 +12,18 @@
   rml:logicalSource [
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rr:query "SELECT ID, LastName, concat_ws(FirstName, '', LastName) as Name FROM student";
+    rr:query "SELECT id, lastname, concat_ws(firstname, '', lastname) as name FROM student";
     rr:tableName "student";
   ];
 
   rr:subjectMap [
-      rr:template "http://example.com/{ID}/{LastName}";
+      rr:template "http://example.com/{id}/{lastname}";
     ];
 
     rr:predicateObjectMap [
         rr:predicate foaf:name ;
         rr:objectMap [
-          rml:reference "Name";
+          rml:reference "name";
           rr:termType rr:Literal;
         ]
       ].
