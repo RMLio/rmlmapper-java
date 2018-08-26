@@ -25,5 +25,3 @@
       rml:reference "city"
     ]
   ].
-
-										
