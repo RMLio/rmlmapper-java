@@ -3,7 +3,6 @@ package be.ugent.rml;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
@@ -333,20 +332,6 @@ public class Utils {
         return Utils.readTurtle(mappingFile, RDFFormat.TURTLE);
     }
 
-    public static boolean isBlankNode(String value) {
-        return value.startsWith("_:");
-    }
-
-    public static String toNTriples(List<Quad> quads) {
-        StringBuilder output = new StringBuilder();
-
-        for (Quad q : quads) {
-            output.append(Utils.getNTripleOfQuad(q) + "\n");
-        }
-
-        return output.toString();
-    }
-
     public static String toNQuads(List<Quad> quads) {
         StringBuilder output = new StringBuilder();
 
@@ -357,39 +342,22 @@ public class Utils {
         return output.toString();
     }
 
-    public static void toNTriples(List<Quad> quads, Writer out) throws IOException {
-        for (Quad q : quads) {
-            out.write(Utils.getNTripleOfQuad(q) + "\n");
-        }
-    }
-
     public static void toNQuads(List<Quad> quads, Writer out) throws IOException {
         for (Quad q : quads) {
             out.write(Utils.getNQuadOfQuad(q) + "\n");
         }
     }
 
-    public static TriplesQuads getTriplesAndQuads(List<Quad> all) {
-        List<Quad> triples = new ArrayList<>();
-        List<Quad> quads = new ArrayList<>();
+    private static String getNQuadOfQuad(Quad q) {
+        String str = q.getSubject() + " " + q.getPredicate() + " " + q.getObject();
 
-        for (Quad q: all) {
-            if (q.getGraph() == null || q.getGraph().equals("")) {
-                triples.add(q);
-            } else {
-                quads.add(q);
-            }
+        if (q.getGraph() != null) {
+            str += " " + q.getGraph();
         }
 
-        return new TriplesQuads(triples, quads);
-    }
+        str += ".";
 
-    private static String getNTripleOfQuad(Quad q) {
-        return q.getSubject() + " " + q.getPredicate() + " " + q.getObject() + ".";
-    }
-
-    private static String getNQuadOfQuad(Quad q) {
-        return q.getSubject() + " " + q.getPredicate() + " " + q.getObject() + " " + q.getGraph() + ".";
+        return str;
     }
 
     public static String encodeURI(String url) {
@@ -448,8 +416,7 @@ public class Utils {
         throw new Error("Invalid query: " + query);
     }
 
-    public static String readFile(String path, Charset encoding) throws IOException
-    {
+    public static String readFile(String path, Charset encoding) throws IOException {
         if (encoding == null) {
             encoding = StandardCharsets.UTF_8;
         }
