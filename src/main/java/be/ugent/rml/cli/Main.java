@@ -6,7 +6,6 @@ import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
@@ -130,9 +129,11 @@ public class Main {
 
 
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-                if (!result.getQuads(null, null, null).isEmpty()) {
+                List<Quad> quads = result.getQuads(null, null, null);
+
+                if (!quads.isEmpty()) {
                     //write quads
-                    writeOutput("quad", result.getQuads(null, null, null, null), outputFile);
+                    writeOutput(quads, outputFile);
                 }
             }
         } catch( ParseException exp ) {
@@ -170,17 +171,17 @@ public class Main {
         ((ch.qos.logback.classic.Logger) root).setLevel(level);
     }
 
-    private static void writeOutput(String what, List<Quad> output, String outputFile) {
+    private static void writeOutput(List<Quad> output, String outputFile) {
         if (output.size() > 1) {
-            logger.info(output.size() + " " + what + "s were generated");
+            logger.info(output.size() + " quads were generated");
         } else {
-            logger.info(output.size() + " " + what + " was generated");
+            logger.info(output.size() + " quad was generated");
         }
 
         //if output file provided, write to triples output file
         if (outputFile != null) {
             File targetFile = new File(outputFile);
-            logger.info("Writing " + what + " to " + targetFile.getPath() + "...");
+            logger.info("Writing quads to " + targetFile.getPath() + "...");
 
             if (!targetFile.isAbsolute()) {
                 targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);
@@ -189,11 +190,7 @@ public class Main {
             try {
                 BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
 
-                if (what.equals("triple")) {
-                    Utils.toNTriples(output, out);
-                } else {
-                    Utils.toNQuads(output, out);
-                }
+                Utils.toNQuads(output, out);
 
                 out.close();
                 logger.info("Writing to " + targetFile.getPath() + " is done.");
@@ -201,11 +198,7 @@ public class Main {
                 System.err.println( "Writing output to file failed. Reason: " + e.getMessage() );
             }
         } else {
-            if (what.equals("triple")) {
-                System.out.println(Utils.toNTriples(output));
-            } else {
-                System.out.println(Utils.toNQuads(output));
-            }
+            System.out.println(Utils.toNQuads(output));
         }
     }
 }
