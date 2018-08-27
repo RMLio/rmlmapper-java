@@ -1,7 +1,8 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.ApplyTemplateFunction;
-import be.ugent.rml.functions.StaticFunctionExecutor;
+import be.ugent.rml.functions.SingleRecordFunctionExecutor;
+import be.ugent.rml.functions.StaticSingleRecordFunctionExecutor;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
@@ -11,11 +12,11 @@ import java.util.List;
 
 public class ApplyTemplateFunctionFactory {
 
-    static StaticFunctionExecutor generate(String genericTemplate, Term termType) {
+    static SingleRecordFunctionExecutor generate(String genericTemplate, Term termType) {
         return ApplyTemplateFunctionFactory.generate(genericTemplate, termType.equals(new NamedNode(NAMESPACES.RR + "IRI")));
     }
 
-    static StaticFunctionExecutor generate(String genericTemplate, boolean encodeURI) {
+    static SingleRecordFunctionExecutor generate(String genericTemplate, boolean encodeURI) {
         HashMap<String, List<Template>> parameters = new HashMap<>();
         ArrayList<Template> temp = new ArrayList<>();
         temp.add(Utils.parseTemplate(genericTemplate));
@@ -23,7 +24,7 @@ public class ApplyTemplateFunctionFactory {
         return new ApplyTemplateFunction(parameters, encodeURI);
     }
 
-    static StaticFunctionExecutor generateWithConstantValue(String value) {
+    static SingleRecordFunctionExecutor generateWithConstantValue(String value) {
         HashMap<String, List<Template>> parameters = new HashMap<>();
         List<Template> temp = new ArrayList<>();
         Template temp2 = new Template();

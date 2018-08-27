@@ -7,13 +7,13 @@ import be.ugent.rml.records.Record;
 import java.util.List;
 import java.util.Map;
 
-public class ApplyTemplateFunction extends StaticFunctionExecutor {
+public class ApplyTemplateFunction implements SingleRecordFunctionExecutor {
 
     private boolean encodeURI;
+    private Map<String, List<Template>> parameters;
 
     public ApplyTemplateFunction(Map<String, List<Template>> parameters, boolean encodeURI) {
-        super(null, parameters);
-
+        this.parameters = parameters;
         this.encodeURI = encodeURI;
     }
 

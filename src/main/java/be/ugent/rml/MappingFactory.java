@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class MappingFactory {
     private final FunctionLoader functionLoader;
@@ -76,7 +75,7 @@ public class MappingFactory {
                         this.subject = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(getGenericTemplate(subjectmap), true));
                     }
                 } else {
-                    DynamicFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
+                    SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
                     this.subject = new NamedNodeGenerator(functionExecutor);
                 }
@@ -138,7 +137,7 @@ public class MappingFactory {
         });
     }
 
-    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<TermGenerator, String> objectMapCallback, BiConsumer<Term, List<JoinConditionFunctionExecutor>> refObjectMapCallback) throws IOException {
+    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<TermGenerator, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
         List<Term> objectmaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "objectMap"), null));
 
         for (Term objectmap : objectmaps) {
@@ -150,7 +149,7 @@ public class MappingFactory {
 
         for (Term o : objectsConstants) {
             TermGenerator gen;
-            StaticFunctionExecutor fn = ApplyTemplateFunctionFactory.generateWithConstantValue(o.getValue());
+            SingleRecordFunctionExecutor fn = ApplyTemplateFunctionFactory.generateWithConstantValue(o.getValue());
 
             if (o instanceof Literal) {
                 gen = new LiteralGenerator(fn);
@@ -162,7 +161,7 @@ public class MappingFactory {
         }
     }
 
-    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<TermGenerator, String> objectMapCallback, BiConsumer<Term, List<JoinConditionFunctionExecutor>> refObjectMapCallback) throws IOException {
+    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<TermGenerator, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
         List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
         Term termType = getTermType(objectmap);
 
@@ -175,7 +174,7 @@ public class MappingFactory {
             String genericTemplate = getGenericTemplate(objectmap);
 
             if (genericTemplate != null) {
-                StaticFunctionExecutor fn = ApplyTemplateFunctionFactory.generate(genericTemplate, termType);
+                SingleRecordFunctionExecutor fn = ApplyTemplateFunctionFactory.generate(genericTemplate, termType);
                 TermGenerator oGen;
 
                 if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
@@ -202,7 +201,7 @@ public class MappingFactory {
 
                 List<Term> rrJoinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "joinCondition"), null));
                 List<Term> rmljoinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "joinCondition"), null));
-                ArrayList<JoinConditionFunctionExecutor> joinConditionFunctionExecutors = new ArrayList<>();
+                ArrayList<MultipleRecordsFunctionExecutor> joinConditionFunctionExecutors = new ArrayList<>();
 
                 for (Term joinCondition : rrJoinConditions) {
 
@@ -231,7 +230,7 @@ public class MappingFactory {
                         Object[] detailsChild = {"child", childsList};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
-                        joinConditionFunctionExecutors.add(new StaticJoinConditionFunctionExecutor(equal, parameters));
+                        joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(equal, parameters));
                     }
                 }
 
@@ -249,7 +248,7 @@ public class MappingFactory {
                 }, null);
             }
         } else {
-            DynamicFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
+            SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
             TermGenerator gen;
 
             //TODO is literal the default?
@@ -298,7 +297,7 @@ public class MappingFactory {
                     }
                 }
             } else {
-                DynamicFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
+                SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
                     graphs.add(new NamedNodeGenerator(functionExecutor));
@@ -331,7 +330,7 @@ public class MappingFactory {
 
                 predicates.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
             } else {
-                DynamicFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
+                SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
                 predicates.add(new NamedNodeGenerator(functionExecutor));
             }
@@ -347,7 +346,7 @@ public class MappingFactory {
         return predicates;
     }
 
-    private DynamicFunctionExecutor parseFunctionTermMap(Term functionValue) throws IOException {
+    private SingleRecordFunctionExecutor parseFunctionTermMap(Term functionValue) throws IOException {
         List<Term> functionPOMs = Utils.getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RR + "predicateObjectMap"), null));
         ArrayList<ParameterValuePair> params = new ArrayList<>();
 
@@ -358,10 +357,10 @@ public class MappingFactory {
             params.add(new ParameterValuePair(predicateGenerators, objectGenerators));
         }
 
-        return new DynamicFunctionExecutor(params, functionLoader);
+        return new DynamicSingleRecordFunctionExecutor(params, functionLoader);
     }
 
-    private JoinConditionFunctionExecutor parseJoinConditionFunctionTermMap(Term functionValue) throws IOException {
+    private MultipleRecordsFunctionExecutor parseJoinConditionFunctionTermMap(Term functionValue) throws IOException {
         List<Term> functionPOMs = Utils.getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RR + "predicateObjectMap"), null));
         ArrayList<ParameterValueOriginPair> params = new ArrayList<>();
 
@@ -376,7 +375,7 @@ public class MappingFactory {
             params.add(new ParameterValueOriginPair(predicateGenerators, objectGeneratorOriginPairs));
         }
 
-        return new DynamicJoinConditionFunctionExecutor(params, functionLoader);
+        return new DynamicMultipleRecordsFunctionExecutor(params, functionLoader);
     }
 
     private List<TermGenerator> parseObjectMapsAndShortcuts(Term pom) throws IOException {

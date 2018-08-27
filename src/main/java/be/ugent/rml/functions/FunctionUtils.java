@@ -58,6 +58,10 @@ public class FunctionUtils {
         return args;
     }
 
+    public static boolean isResultsTrue(List<?> results) {
+        return !results.isEmpty() && results.get(0).equals("true");
+    }
+
     private static Class getParamType(Term type) {
         String typeStr = type.getValue();
 

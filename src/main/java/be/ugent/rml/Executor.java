@@ -1,7 +1,9 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
+import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.JoinConditionFunctionExecutor;
+import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
@@ -164,11 +166,11 @@ public class Executor {
         this.resultingTriples.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
     }
 
-    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<JoinConditionFunctionExecutor> conditions) throws IOException {
+    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws IOException {
         ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<ProvenancedTerm>();
         ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
 
-        for (JoinConditionFunctionExecutor condition : conditions) {
+        for (MultipleRecordsFunctionExecutor condition : conditions) {
             allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
         }
 
@@ -189,7 +191,7 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Term triplesMap, JoinConditionFunctionExecutor condition) throws IOException {
+    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Term triplesMap, MultipleRecordsFunctionExecutor condition) throws IOException {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
@@ -200,7 +202,11 @@ public class Executor {
         for (int i = 0; i < records.size(); i++) {
             Record parent = records.get(i);
 
-            if (condition.execute(child, parent)) {
+            HashMap<String, Record> recordsMap = new HashMap<>();
+            recordsMap.put("child", child);
+            recordsMap.put("parent", parent);
+
+            if (FunctionUtils.isResultsTrue(condition.execute(recordsMap))) {
                 ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
                 iris.add(subject);
             }

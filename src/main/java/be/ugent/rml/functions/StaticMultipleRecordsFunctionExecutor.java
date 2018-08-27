@@ -4,27 +4,30 @@ import be.ugent.rml.Template;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.Record;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StaticFunctionExecutor implements FunctionExecutor{
+public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
 
     private final FunctionModel functionModel;
-    protected final Map<String, List<Template>> parameters;
+    private final Map<String, Object[]> parameters;
 
-    public StaticFunctionExecutor(FunctionModel model, Map<String, List<Template>> parameters) {
+    public StaticMultipleRecordsFunctionExecutor(FunctionModel model, Map<String, Object[]> parameters) {
         this.functionModel = model;
         this.parameters = parameters;
     }
 
     @Override
-    public List<?> execute(Record record) {
+    public List<?> execute(Map<String, Record> records) throws IOException {
         Map <String, Object> filledInParameters = new HashMap<>();
 
-        for (Map.Entry<String, List<Template>> entry : this.parameters.entrySet()) {
-            List<Template> templates = entry.getValue();
-            List<String> objects = Utils.applyTemplate(templates.get(0), record);
+        for (Map.Entry<String, Object[]> entry : this.parameters.entrySet()) {
+            List<Template> templates = (List<Template>) entry.getValue()[1];
+            String recordType = (String) entry.getValue()[0];
+
+            List<String> objects = Utils.applyTemplate(templates.get(0), records.get(recordType));
 
             if (objects.size() > 0) {
                 filledInParameters.put(entry.getKey(), objects.get(0));

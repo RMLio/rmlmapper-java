@@ -1,6 +1,6 @@
 package be.ugent.rml.termgenerator;
 
-import be.ugent.rml.functions.FunctionExecutor;
+import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.Term;
@@ -14,21 +14,21 @@ public class LiteralGenerator extends TermGenerator {
     private String language;
     private Term datatype;
 
-    private LiteralGenerator(FunctionExecutor functionExecutor, String language, Term datatype) {
+    private LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, String language, Term datatype) {
         super(functionExecutor);
         this.language = language;
         this.datatype = datatype;
     }
 
-    public LiteralGenerator(FunctionExecutor functionExecutor, String language) {
+    public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, String language) {
         this(functionExecutor, language, null);
     }
 
-    public LiteralGenerator(FunctionExecutor functionExecutor, Term datatype) {
+    public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, Term datatype) {
         this(functionExecutor, null, datatype);
     }
 
-    public LiteralGenerator(FunctionExecutor functionExecutor) {
+    public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor) {
         this(functionExecutor, null, null);
     }
 

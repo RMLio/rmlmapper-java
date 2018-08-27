@@ -1,7 +1,7 @@
 package be.ugent.rml.termgenerator;
 
 import be.ugent.rml.Executor;
-import be.ugent.rml.functions.FunctionExecutor;
+import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.BlankNode;
 import be.ugent.rml.term.Term;
@@ -16,7 +16,7 @@ public class BlankNodeGenerator extends TermGenerator {
         this(null);
     }
 
-    public BlankNodeGenerator(FunctionExecutor functionExecutor) {
+    public BlankNodeGenerator(SingleRecordFunctionExecutor functionExecutor) {
         super(functionExecutor);
     }
 
