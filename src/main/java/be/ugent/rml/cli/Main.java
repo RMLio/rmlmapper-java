@@ -3,6 +3,7 @@ package be.ugent.rml.cli;
 import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.GrelProcessor;
+import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
@@ -112,6 +113,7 @@ public class Main {
                 } else {
                     Map<String, Class> libraryMap = new HashMap<>();
                     libraryMap.put("GrelFunctions", GrelProcessor.class);
+                    libraryMap.put("IDLabFunctions", IDLabFunctions.class);
                     FunctionLoader functionLoader = new FunctionLoader(null, null, libraryMap);
                     executor = new Executor(rmlStore, factory, functionLoader);
                 }
