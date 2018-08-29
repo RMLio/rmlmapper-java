@@ -1,6 +1,6 @@
 package be.ugent.rml.termgenerator;
 
-import be.ugent.rml.functions.FunctionExecutor;
+import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class NamedNodeGenerator extends TermGenerator {
 
-    public NamedNodeGenerator(FunctionExecutor functionExecutor) {
+    public NamedNodeGenerator(SingleRecordFunctionExecutor functionExecutor) {
         super(functionExecutor);
     }
 

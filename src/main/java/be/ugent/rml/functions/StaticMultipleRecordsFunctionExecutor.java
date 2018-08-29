@@ -4,36 +4,31 @@ import be.ugent.rml.Template;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.Record;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JoinConditionFunction {
+public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
 
-    private FunctionModel functionModel;
-    private Map<String, Object[]> parameters;
+    private final FunctionModel functionModel;
+    private final Map<String, Object[]> parameters;
 
-    public JoinConditionFunction(FunctionModel functionModel, Map<String, Object[]> parameters) {
-        this.functionModel = functionModel;
+    public StaticMultipleRecordsFunctionExecutor(FunctionModel model, Map<String, Object[]> parameters) {
+        this.functionModel = model;
         this.parameters = parameters;
     }
 
-    public boolean execute(Record child, Record parent) {
+    @Override
+    public List<?> execute(Map<String, Record> records) throws IOException {
         Map <String, Object> filledInParameters = new HashMap<>();
 
         for (Map.Entry<String, Object[]> entry : this.parameters.entrySet()) {
             List<Template> templates = (List<Template>) entry.getValue()[1];
             String recordType = (String) entry.getValue()[0];
 
-            Record record;
+            List<String> objects = Utils.applyTemplate(templates.get(0), records.get(recordType));
 
-            if (recordType.equals("child")) {
-                record = child;
-            } else {
-                record = parent;
-            }
-
-            List<String> objects = Utils.applyTemplate(templates.get(0), record);
             if (objects.size() > 0) {
                 filledInParameters.put(entry.getKey(), objects.get(0));
             } else {
@@ -42,8 +37,6 @@ public class JoinConditionFunction {
             }
         }
 
-        List<String> results = this.functionModel.execute(filledInParameters);
-
-        return !results.isEmpty() && results.get(0).equals("true");
+        return this.functionModel.execute(filledInParameters);
     }
 }

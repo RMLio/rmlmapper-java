@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
-import be.ugent.rml.functions.JoinConditionFunction;
+import be.ugent.rml.functions.JoinConditionFunctionExecutor;
+import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.term.Term;
 import be.ugent.rml.termgenerator.TermGenerator;
 
@@ -13,13 +14,13 @@ public class PredicateObjectGraphGenerator {
     private final TermGenerator predicateGenerator;
     private final TermGenerator objectGenerator;
     private final TermGenerator graphGenerator;
-    private final List<JoinConditionFunction> joinConditions;
+    private final List<MultipleRecordsFunctionExecutor> joinConditions;
     private Term parentTriplesMap;
 
     public PredicateObjectGraphGenerator(TermGenerator predicateGenerator, TermGenerator objectGenerator, TermGenerator graphGenerator) {
         this.graphGenerator = graphGenerator;
         this.predicateGenerator = predicateGenerator;
-        this.joinConditions = new ArrayList<JoinConditionFunction>();
+        this.joinConditions = new ArrayList<MultipleRecordsFunctionExecutor>();
         this.objectGenerator = objectGenerator;
     }
 
@@ -31,7 +32,7 @@ public class PredicateObjectGraphGenerator {
         return parentTriplesMap;
     }
 
-    public List<JoinConditionFunction> getJoinConditions() {
+    public List<MultipleRecordsFunctionExecutor> getJoinConditions() {
         return joinConditions;
     }
 
@@ -39,7 +40,7 @@ public class PredicateObjectGraphGenerator {
         this.parentTriplesMap = parentTriplesMap;
     }
 
-    public void addJoinCondition(JoinConditionFunction condition) {
+    public void addJoinCondition(MultipleRecordsFunctionExecutor condition) {
         joinConditions.add(condition);
     }
 
