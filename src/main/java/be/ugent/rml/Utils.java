@@ -9,6 +9,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import org.eclipse.rdf4j.model.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -29,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -311,7 +313,7 @@ public class Utils {
         return list;
     }
 
-    public static QuadStore readTurtle(File file, RDFFormat format) {
+    public static RDF4JStore readTurtle(File file, RDFFormat format) {
         InputStream is;
         Model model = null;
         try {
@@ -328,36 +330,8 @@ public class Utils {
         return new RDF4JStore(model);
     }
 
-    public static QuadStore readTurtle(File mappingFile) {
+    public static RDF4JStore readTurtle(File mappingFile) {
         return Utils.readTurtle(mappingFile, RDFFormat.TURTLE);
-    }
-
-    public static String toNQuads(List<Quad> quads) {
-        StringBuilder output = new StringBuilder();
-
-        for (Quad q : quads) {
-            output.append(Utils.getNQuadOfQuad(q) + "\n");
-        }
-
-        return output.toString();
-    }
-
-    public static void toNQuads(List<Quad> quads, Writer out) throws IOException {
-        for (Quad q : quads) {
-            out.write(Utils.getNQuadOfQuad(q) + "\n");
-        }
-    }
-
-    private static String getNQuadOfQuad(Quad q) {
-        String str = q.getSubject() + " " + q.getPredicate() + " " + q.getObject();
-
-        if (q.getGraph() != null) {
-            str += " " + q.getGraph();
-        }
-
-        str += ".";
-
-        return str;
     }
 
     public static String encodeURI(String url) {

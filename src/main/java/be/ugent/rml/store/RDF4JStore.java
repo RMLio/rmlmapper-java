@@ -6,18 +6,32 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.impl.TreeModel;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RDF4JStore extends QuadStore {
 
     private Model model;
+    private int triplesWithGraphCounter;
+    private static final Logger logger = LoggerFactory.getLogger(RDF4JStore.class);
 
     public RDF4JStore(Model model) {
         this.model = model;
+    }
+
+    public RDF4JStore() {
+        model = new TreeModel();
+        triplesWithGraphCounter = 0;
     }
 
     @Override
@@ -26,13 +40,18 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public void addTriple(Term subject, Term predicate, Term object) {
-
-    }
-
-    @Override
     public void addQuad(Term subject, Term predicate, Term object, Term graph) {
+        ValueFactory vf = SimpleValueFactory.getInstance();
+        Resource s = getRDF4JSubject(subject, vf);
+        IRI p = getRDF4JPredicate(predicate, vf);
+        Value o = getRDF4JObject(object, vf);
+        Resource g = getRDF4JGraph(graph, vf);
 
+        model.add(s, p, o, g);
+
+        if (g != null) {
+            triplesWithGraphCounter ++;
+        }
     }
 
     @Override
@@ -45,33 +64,11 @@ public class RDF4JStore extends QuadStore {
         ValueFactory vf = SimpleValueFactory.getInstance();
         Model result;
 
-        Object filterSubject = null;
-        Object filterPredicate = null;
-        Object filterObject = null;
+        Resource filterSubject = getRDF4JSubject(subject, vf);
+        IRI filterPredicate = getRDF4JPredicate(predicate, vf);
+        Value filterObject = getRDF4JObject(object, vf);
 
-        if (subject != null) {
-            if (subject instanceof BlankNode) {
-                filterSubject= vf.createBNode(subject.getValue());
-            } else {
-                filterSubject = vf.createIRI(subject.getValue());
-            }
-        }
-
-        if (predicate != null) {
-            filterPredicate = vf.createIRI(predicate.getValue());
-        }
-
-        if (object != null) {
-            if (object instanceof BlankNode) {
-                filterObject = vf.createBNode(object.getValue());
-            } else if (object instanceof Literal) {
-                filterObject = vf.createLiteral(object.getValue());
-            } else {
-                filterObject = vf.createIRI(object.getValue());
-            }
-        }
-
-        result = model.filter((Resource) filterSubject, (IRI) filterPredicate, (Value) filterObject);
+        result = model.filter(filterSubject, filterPredicate, filterObject);
 
         List<Quad> quads = new ArrayList<>();
 
@@ -90,6 +87,50 @@ public class RDF4JStore extends QuadStore {
         return quads;
     }
 
+    public void toTrig(Writer out) {
+        Rio.write(model, out, RDFFormat.TRIG);
+    }
+
+    public void toTrix(Writer out) {
+        Rio.write(model, out, RDFFormat.TRIX);
+    }
+
+    public void toJSONLD(Writer out) {
+        Rio.write(model, out, RDFFormat.JSONLD);
+    }
+
+    @Override
+    public void toNQuads(Writer out) {
+        Rio.write(model, out, RDFFormat.NQUADS);
+    }
+
+    public void toTurtle(Writer out) {
+        Rio.write(model, out, RDFFormat.TURTLE);
+
+        if (triplesWithGraphCounter > 0) {
+            logger.warn("There are graphs generated. However, Turtle does not support graphs. Use Trig instead.");
+        }
+    }
+
+    public void setNamespaces(Set<Namespace> namespaces) {
+        namespaces.forEach(namespace -> {
+            model.setNamespace(namespace);
+        });
+    }
+
+    public Set<Namespace> getNamespaces() {
+        return model.getNamespaces();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return model.isEmpty();
+    }
+
+    public int size() {
+        return model.size();
+    }
+
     private Term convertStringToTerm(String str) {
         if (str.startsWith("_:")) {
             return new BlankNode(str.replace("_:", ""));
@@ -105,5 +146,43 @@ public class RDF4JStore extends QuadStore {
         } else {
             return new NamedNode(str);
         }
+    }
+
+    private Resource getRDF4JSubject(Term subject, ValueFactory vf) {
+        if (subject != null) {
+            if (subject instanceof BlankNode) {
+                return vf.createBNode(subject.getValue());
+            } else {
+                return vf.createIRI(subject.getValue());
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private IRI getRDF4JPredicate(Term predicate, ValueFactory vf) {
+        if (predicate != null) {
+            return vf.createIRI(predicate.getValue());
+        } else {
+            return null;
+        }
+    }
+
+    private Value getRDF4JObject(Term object, ValueFactory vf) {
+        if (object != null) {
+            if (object instanceof BlankNode) {
+                return vf.createBNode(object.getValue());
+            } else if (object instanceof Literal) {
+                return vf.createLiteral(object.getValue());
+            } else {
+                return vf.createIRI(object.getValue());
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private Resource getRDF4JGraph(Term graph, ValueFactory vf) {
+        return getRDF4JSubject(graph, vf);
     }
 }

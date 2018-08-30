@@ -7,20 +7,18 @@ import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
+import org.eclipse.rdf4j.model.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 public class Main {
 
@@ -65,6 +63,11 @@ public class Main {
                 .longOpt( "verbose" )
                 .desc( "verbose" )
                 .build();
+        Option serializationFormatOption = Option.builder("s")
+                .longOpt( "serialization" )
+                .desc( "serialization format (nquads (default), trig, trix, jsonld)" )
+                .hasArg()
+                .build();
         options.addOption(mappingdocOption);
         options.addOption(outputfileOption);
         options.addOption(functionfileOption);
@@ -73,6 +76,7 @@ public class Main {
         options.addOption(configfileOption);
         options.addOption(helpOption);
         options.addOption(verboseOption);
+        options.addOption(serializationFormatOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -102,19 +106,29 @@ public class Main {
                 printHelp(options);
             } else {
                 File mappingFile = Utils.getFile(mOptionValue);
-                QuadStore rmlStore = Utils.readTurtle(mappingFile);
+                RDF4JStore rmlStore = Utils.readTurtle(mappingFile);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
+
+                String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
+                QuadStore outputStore;
+
+                if (outputFormat == null || outputFormat.equals("nquads")) {
+                    outputStore = new SimpleQuadStore();
+                } else {
+                    outputStore = new RDF4JStore();
+                }
+
                 Executor executor;
 
                 String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
                 if (fOptionValue == null) {
-                    executor = new Executor(rmlStore, factory);
+                    executor = new Executor(rmlStore, factory, null, outputStore);
                 } else {
                     Map<String, Class> libraryMap = new HashMap<>();
                     libraryMap.put("GrelFunctions", GrelProcessor.class);
                     libraryMap.put("IDLabFunctions", IDLabFunctions.class);
                     FunctionLoader functionLoader = new FunctionLoader(null, null, libraryMap);
-                    executor = new Executor(rmlStore, factory, functionLoader);
+                    executor = new Executor(rmlStore, factory, functionLoader, outputStore);
                 }
 
                 List<Term> triplesMaps = new ArrayList<>();
@@ -128,14 +142,12 @@ public class Main {
                 }
 
                 QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile));
-
-
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-                List<Quad> quads = result.getQuads(null, null, null);
 
-                if (!quads.isEmpty()) {
+                if (!result.isEmpty()) {
                     //write quads
-                    writeOutput(quads, outputFile);
+                    result.setNamespaces(rmlStore.getNamespaces());
+                    writeOutput(result, outputFile, outputFormat);
                 }
             }
         } catch( ParseException exp ) {
@@ -173,34 +185,67 @@ public class Main {
         ((ch.qos.logback.classic.Logger) root).setLevel(level);
     }
 
-    private static void writeOutput(List<Quad> output, String outputFile) {
-        if (output.size() > 1) {
-            logger.info(output.size() + " quads were generated");
+    private static void writeOutput(QuadStore store, String outputFile, String format) {
+
+        if (format != null) {
+            format = format.toLowerCase();
         } else {
-            logger.info(output.size() + " quad was generated");
+            format = "nquads";
         }
 
-        //if output file provided, write to triples output file
-        if (outputFile != null) {
-            File targetFile = new File(outputFile);
-            logger.info("Writing quads to " + targetFile.getPath() + "...");
-
-            if (!targetFile.isAbsolute()) {
-                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);
-            }
-
-            try {
-                BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
-
-                Utils.toNQuads(output, out);
-
-                out.close();
-                logger.info("Writing to " + targetFile.getPath() + " is done.");
-            } catch(IOException e) {
-                System.err.println( "Writing output to file failed. Reason: " + e.getMessage() );
-            }
+        if (store.size() > 1) {
+            logger.info(store.size() + " quads were generated");
         } else {
-            System.out.println(Utils.toNQuads(output));
+            logger.info(store.size() + " quad was generated");
+        }
+
+        try {
+
+            BufferedWriter out;
+            String doneMessage = null;
+
+            //if output file provided, write to triples output file
+            if (outputFile != null) {
+                File targetFile = new File(outputFile);
+                logger.info("Writing quads to " + targetFile.getPath() + "...");
+
+                if (!targetFile.isAbsolute()) {
+                    targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);
+                }
+
+                doneMessage = "Writing to " + targetFile.getPath() + " is done.";
+
+                out = new BufferedWriter(new FileWriter(targetFile));
+
+            } else {
+                out = new BufferedWriter(new OutputStreamWriter(System.out));
+            }
+
+            switch (format) {
+                case "turtle":
+                    store.toTurtle(out);
+                    break;
+                case "trig":
+                    store.toTrig(out);
+                    break;
+                case "trix":
+                    store.toTrix(out);
+                    break;
+                case "jsonld":
+                    store.toJSONLD(out);
+                    break;
+                case "nquads":
+                default:
+                    store.toNQuads(out);
+            }
+
+            out.close();
+
+            if (doneMessage != null) {
+                logger.info(doneMessage);
+            }
+        } catch(IOException e) {
+            System.err.println( "Writing output failed. Reason: " + e.getMessage() );
         }
     }
 }

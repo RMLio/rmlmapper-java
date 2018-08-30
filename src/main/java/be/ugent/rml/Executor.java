@@ -2,7 +2,6 @@ package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.FunctionUtils;
-import be.ugent.rml.functions.JoinConditionFunctionExecutor;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
@@ -24,24 +23,33 @@ public class Executor {
     // this map stores for every Triples Map, which is a Term, a map with the record index and the record's corresponding subject,
     // which is a ProvenancedTerm.
     private HashMap<Term, HashMap<Integer, ProvenancedTerm>> subjectCache;
-    private QuadStore resultingTriples;
+    private QuadStore resultingQuads;
     private QuadStore rmlStore;
     private RecordsFactory recordsFactory;
     private static int blankNodeCounter = 0;
     private HashMap<Term, Mapping> mappings;
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
-        this(rmlStore, recordsFactory, null);
+        this(rmlStore, recordsFactory, null, null);
     }
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) throws IOException {
+        this(rmlStore, recordsFactory, functionLoader, null);
+    }
+
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads) throws IOException {
         this.initializer = new Initializer(rmlStore, functionLoader);
         this.mappings = this.initializer.getMappings();
-        this.resultingTriples = new SimpleQuadStore();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
+
+        if (resultingQuads == null) {
+            this.resultingQuads = new SimpleQuadStore();
+        } else {
+            this.resultingQuads = resultingQuads;
+        }
     }
 
     public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates) throws IOException {
@@ -91,10 +99,10 @@ public class Executor {
         }
 
         if (removeDuplicates) {
-            this.resultingTriples.removeDuplicates();
+            this.resultingQuads.removeDuplicates();
         }
 
-        return resultingTriples;
+        return resultingQuads;
     }
 
     public QuadStore execute(List<Term> triplesMaps) throws IOException {
@@ -163,7 +171,7 @@ public class Executor {
             g = graph.getTerm();
         }
 
-        this.resultingTriples.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
+        this.resultingQuads.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
     }
 
     private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws IOException {
