@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for SPARQL endpoints
 - support for TPF servers
 
+## [4.0.0] - 2018-09-03
+
+### Added
+- support for config file
+- no difference between triples and quads when writing output to file
+
 ## [0.2.1] - 2018-08-14
 
 ### Fixed
@@ -74,6 +80,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v0.2.1...v4.0.0
 [0.2.1]: https://github.com/RMLio/rmlmapper-java/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.6...v0.2.0
 [0.1.6]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.5...v0.1.6
