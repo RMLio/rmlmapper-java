@@ -1,6 +1,5 @@
 package be.ugent.rml.records;
 
-import be.ugent.rml.Utils;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import net.minidev.json.JSONArray;

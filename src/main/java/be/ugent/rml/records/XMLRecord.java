@@ -3,7 +3,6 @@ package be.ugent.rml.records;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -13,8 +12,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 public class XMLRecord implements Record {
-
-    private static final String[] SPARQL_NODE_TYPES = new String[]{"literal", "uri", "bnode"};
 
     private Node node;
 

@@ -4,7 +4,6 @@ import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.records.SPARQL;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.TriplesQuads;
