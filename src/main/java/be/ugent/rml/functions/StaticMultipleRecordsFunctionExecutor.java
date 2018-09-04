@@ -20,7 +20,7 @@ public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFun
     }
 
     @Override
-    public List<?> execute(Map<String, Record> records) throws IOException {
+    public Object execute(Map<String, Record> records) throws IOException {
         Map <String, Object> filledInParameters = new HashMap<>();
 
         for (Map.Entry<String, Object[]> entry : this.parameters.entrySet()) {

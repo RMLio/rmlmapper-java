@@ -19,8 +19,8 @@ public class XMLRecord implements Record {
     }
 
     @Override
-    public List<String> get(String value) {
-        List<String> results = new ArrayList<>();
+    public List<Object> get(String value) {
+        List<Object> results = new ArrayList<>();
         XPath xPath = XPathFactory.newInstance().newXPath();
 
         try {

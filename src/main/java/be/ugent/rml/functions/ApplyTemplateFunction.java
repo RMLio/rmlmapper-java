@@ -10,19 +10,21 @@ import java.util.Map;
 public class ApplyTemplateFunction implements SingleRecordFunctionExecutor {
 
     private boolean encodeURI;
+    private boolean unnestCollections;
     private Map<String, List<Template>> parameters;
 
-    public ApplyTemplateFunction(Map<String, List<Template>> parameters, boolean encodeURI) {
+    public ApplyTemplateFunction(Map<String, List<Template>> parameters, boolean encodeURI, boolean unnestCollections) {
         this.parameters = parameters;
         this.encodeURI = encodeURI;
+        this.unnestCollections = unnestCollections;
     }
 
     public ApplyTemplateFunction(Map<String, List<Template>> parameters) {
-        this(parameters, false);
+        this(parameters, false, false);
     }
 
     @Override
     public List<?> execute(Record record) {
-        return Utils.applyTemplate(this.parameters.get("_TEMPLATE").get(0), record, encodeURI);
+        return Utils.applyTemplate(this.parameters.get("_TEMPLATE").get(0), record, encodeURI, unnestCollections);
     }
 }

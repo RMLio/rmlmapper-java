@@ -58,8 +58,20 @@ public class FunctionUtils {
         return args;
     }
 
-    public static boolean isResultsTrue(List<?> results) {
-        return !results.isEmpty() && results.get(0).equals("true");
+    public static List<String> functionObjectToList(Object o) {
+        ArrayList<String> result = new ArrayList<>();
+
+        if (o == null) {
+            return result;
+        } else if (o instanceof String) {
+            result.add((String) o);
+        } else if (o instanceof List) {
+            ((List) o).forEach(item -> {
+                result.add(item.toString());
+            });
+        }
+
+        return result;
     }
 
     private static Class getParamType(Term type) {
@@ -72,6 +84,8 @@ public class FunctionUtils {
                 return int.class;
             case "http://www.w3.org/2001/XMLSchema#decimal":
                 return double.class;
+            case "http://www.w3.org/1999/02/22-rdf-syntax-ns#List":
+                return List.class;
             default:
                 throw new Error("Couldn't derive type from " + type);
         }

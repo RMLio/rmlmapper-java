@@ -1,5 +1,6 @@
 package be.ugent.rml.termgenerator;
 
+import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
@@ -17,7 +18,7 @@ public class NamedNodeGenerator extends TermGenerator {
 
     @Override
     public List<Term> generate(Record record) throws IOException {
-        List<String> objectStrings = (List<String>) functionExecutor.execute(record);
+        List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(record));
         ArrayList<Term> objects = new ArrayList<>();
 
         if (objectStrings.size() > 0) {

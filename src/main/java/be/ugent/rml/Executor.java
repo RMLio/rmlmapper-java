@@ -206,7 +206,7 @@ public class Executor {
             recordsMap.put("child", child);
             recordsMap.put("parent", parent);
 
-            if (FunctionUtils.isResultsTrue(condition.execute(recordsMap))) {
+            if ((boolean) condition.execute(recordsMap)) {
                 ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
                 iris.add(subject);
             }

@@ -19,6 +19,7 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.URL;
@@ -28,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -169,10 +171,10 @@ public class Utils {
     }
 
     public static List<String> applyTemplate(Template template, Record record) {
-        return Utils.applyTemplate(template, record, false);
+        return Utils.applyTemplate(template, record, false, false);
     }
 
-    public static List<String> applyTemplate(Template template, Record record, boolean encodeURIEnabled) {
+    public static List<String> applyTemplate(Template template, Record record, boolean encodeURIEnabled, boolean unnestCollections) {
         List<String> result = new ArrayList<String>();
         result.add("");
         //we only return a result when all elements of the template are found
@@ -188,11 +190,25 @@ public class Utils {
                 }
             } else {
                 //we need to get the variables from the data
-                //we also need to keep all combinations of multiple results are returned for variable; pretty tricky business
+                //we also need to keep all combinations if multiple results are returned for variable; pretty tricky business
                 List<String> temp = new ArrayList<>();
-                List<String> values = record.get(element.getValue());
+                List<Object> values = record.get(element.getValue());
+                ArrayList<String> parsedValues = new ArrayList<>();
 
-                for (String value : values) {
+                values.forEach(value -> {
+                   if (unnestCollections && value instanceof Collection) {
+                       Collection collection = (Collection) value;
+
+                       collection.forEach(item -> {
+                          parsedValues.add(item.toString());
+                       });
+                   } else {
+                       parsedValues.add(value.toString());
+                   }
+                });
+
+
+                for (String value : parsedValues) {
 
                     if (encodeURIEnabled) {
                         value = Utils.encodeURI(value);
@@ -203,11 +219,11 @@ public class Utils {
                     }
                 }
 
-                if (!values.isEmpty()) {
+                if (!parsedValues.isEmpty()) {
                     result = temp;
                 }
 
-                if (values.isEmpty()) {
+                if (parsedValues.isEmpty()) {
                     logger.warn("Not all values for a template where found. More specific, the variable " + element.getValue() + " did not provide any results.");
                     allValuesFound = false;
                 }

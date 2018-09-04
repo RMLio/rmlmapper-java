@@ -174,7 +174,7 @@ public class MappingFactory {
             String genericTemplate = getGenericTemplate(objectmap);
 
             if (genericTemplate != null) {
-                SingleRecordFunctionExecutor fn = ApplyTemplateFunctionFactory.generate(genericTemplate, termType);
+                SingleRecordFunctionExecutor fn = ApplyTemplateFunctionFactory.generate(genericTemplate, termType, false);
                 TermGenerator oGen;
 
                 if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {

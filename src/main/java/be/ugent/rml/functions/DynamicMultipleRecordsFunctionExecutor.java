@@ -22,7 +22,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     }
 
     @Override
-    public List<?> execute(Map<String, Record> records) throws IOException {
+    public Object execute(Map<String, Record> records) throws IOException {
         final ArrayList<Term> fnTerms = new ArrayList<>();
         final HashMap<String, Object> args =  new HashMap<>();
 
