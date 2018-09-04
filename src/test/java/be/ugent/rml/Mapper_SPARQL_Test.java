@@ -3,14 +3,13 @@ package be.ugent.rml;
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.fuseki.embedded.FusekiServer;
-import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -30,6 +29,8 @@ public class Mapper_SPARQL_Test extends TestCore {
         if (server != null) {
             server.stop();
         }
+        System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
+        System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
     }
 
     private ServerSocket findRandomOpenPortOnAllLocalInterfaces() {
@@ -77,7 +78,7 @@ public class Mapper_SPARQL_Test extends TestCore {
         Deletes the temp mapping file.
      */
     private static void closePort(String absolutePath) {
-        String portNumber = absolutePath.substring(absolutePath.lastIndexOf('/'), absolutePath.lastIndexOf('.'));
+        String portNumber = FilenameUtils.getBaseName(absolutePath);
         if (openPorts.containsKey(absolutePath)) {
             try {
                 // Close port and remove from map
