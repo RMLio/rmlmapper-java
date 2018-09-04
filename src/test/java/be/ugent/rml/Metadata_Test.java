@@ -31,7 +31,7 @@ public class Metadata_Test extends TestCore {
 
     @Test
     public void termLevelTest() {
-        Main.main("-c ./test-cases/METADATA_TEST_term_level/config_example.properties".split(" "));
+        Main.main("-c ./src/test/resources/metadata/METADATA_TEST_term_level/config_example.properties".split(" "));
         compareFiles(
                 "metadata/METADATA_TEST_term_level/target_metadata.nq",
                 "metadata/METADATA_TEST_term_level/generated_metadata.nq",
