@@ -28,6 +28,6 @@
   rr:predicateObjectMap [
     rr:predicate ex:writtenBy;
     rr:objectMap [
-      rml:reference "authors"
+      rml:reference "authors[*]"
     ]
   ].
