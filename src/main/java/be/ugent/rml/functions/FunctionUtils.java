@@ -58,20 +58,16 @@ public class FunctionUtils {
         return args;
     }
 
-    public static List<String> functionObjectToList(Object o) {
-        ArrayList<String> result = new ArrayList<>();
-
-        if (o == null) {
-            return result;
-        } else if (o instanceof String) {
-            result.add((String) o);
-        } else if (o instanceof List) {
-            ((List) o).forEach(item -> {
-                result.add(item.toString());
-            });
+    public static void functionObjectToList(Object o, List<String> result) {
+        if (o != null) {
+            if (o instanceof String) {
+                result.add((String) o);
+            } else if (o instanceof List) {
+                ((List) o).forEach(item -> {
+                    functionObjectToList(item, result);
+                });
+            }
         }
-
-        return result;
     }
 
     private static Class getParamType(Term type) {

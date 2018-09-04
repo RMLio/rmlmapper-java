@@ -52,9 +52,13 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
                 fnTerms.add(values.get(0));
             } else {
                 parameters.forEach(parameter -> {
+                    ArrayList<Object> temp = new ArrayList<>();
+
                     values.forEach(value -> {
-                        args.put(parameter.getValue(), value.getValue());
-                    }) ;
+                        temp.add(value.getValue());
+                    });
+
+                    args.put(parameter.getValue(), temp);
                 });
             }
         });

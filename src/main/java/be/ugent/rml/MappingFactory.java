@@ -1,5 +1,8 @@
 package be.ugent.rml;
 
+import be.ugent.rml.extractor.ConstantExtractor;
+import be.ugent.rml.extractor.Extractor;
+import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.*;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
@@ -9,6 +12,7 @@ import be.ugent.rml.termgenerator.BlankNodeGenerator;
 import be.ugent.rml.termgenerator.LiteralGenerator;
 import be.ugent.rml.termgenerator.NamedNodeGenerator;
 import be.ugent.rml.termgenerator.TermGenerator;
+import org.elasticsearch.cluster.routing.allocation.decider.Decision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,16 +67,16 @@ public class MappingFactory {
 
                     //checking if we are dealing with a Blank Node as subject
                     if (!termTypes.isEmpty() && termTypes.get(0).equals(new NamedNode(NAMESPACES.RR  + "BlankNode"))) {
-                        String template = getGenericTemplate(subjectmap);
+                        SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, subjectmap, true);
 
-                        if (template != null) {
-                            this.subject = new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(template, true));
+                        if (executor != null) {
+                            this.subject = new BlankNodeGenerator(executor);
                         } else {
                             this.subject = new BlankNodeGenerator();
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
-                        this.subject = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(getGenericTemplate(subjectmap), true));
+                        this.subject = new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, subjectmap, true));
                     }
                 } else {
                     SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
@@ -88,8 +92,8 @@ public class MappingFactory {
                 //we create predicateobjects for the classes
                 for (Term c: classes) {
                     // Don't put in graph for rr:class, subject is already put in graph, otherwise double export
-                    NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(NAMESPACES.RDF + "type"));
-                    NamedNodeGenerator objectGenerator = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(c.getValue()));
+                    NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(new ConstantExtractor(NAMESPACES.RDF + "type"));
+                    NamedNodeGenerator objectGenerator = new NamedNodeGenerator(new ConstantExtractor(c.getValue()));
                     predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(predicateGenerator, objectGenerator, null));
                 }
             } else {
@@ -149,7 +153,7 @@ public class MappingFactory {
 
         for (Term o : objectsConstants) {
             TermGenerator gen;
-            SingleRecordFunctionExecutor fn = ApplyTemplateFunctionFactory.generateWithConstantValue(o.getValue());
+            SingleRecordFunctionExecutor fn = new ConstantExtractor(o.getValue());
 
             if (o instanceof Literal) {
                 gen = new LiteralGenerator(fn);
@@ -171,24 +175,23 @@ public class MappingFactory {
         List<Term> parentTermMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "parentTermMap"), null));
 
         if (functionValues.isEmpty()) {
-            String genericTemplate = getGenericTemplate(objectmap);
+            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, false);
 
-            if (genericTemplate != null) {
-                SingleRecordFunctionExecutor fn = ApplyTemplateFunctionFactory.generate(genericTemplate, termType, false);
+            if (executor != null) {
                 TermGenerator oGen;
 
                 if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
                     //check if we need to apply a datatype to the object
                     if (!datatypes.isEmpty()) {
-                        oGen = new LiteralGenerator(fn, datatypes.get(0));
+                        oGen = new LiteralGenerator(executor, datatypes.get(0));
                         //check if we need to apply a language to the object
                     } else if (!languages.isEmpty()) {
-                        oGen = new LiteralGenerator(fn, languages.get(0).getValue());
+                        oGen = new LiteralGenerator(executor, languages.get(0).getValue());
                     } else {
-                        oGen = new LiteralGenerator(fn);
+                        oGen = new LiteralGenerator(executor);
                     }
                 } else {
-                    oGen = new NamedNodeGenerator(fn);
+                    oGen = new NamedNodeGenerator(executor);
                 }
 
                 objectMapCallback.accept(oGen, "child");
@@ -216,18 +219,12 @@ public class MappingFactory {
                         FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
                         Map<String, Object[]> parameters = new HashMap<>();
 
-                        Template parent = new Template();
-                        parent.addElement(new TemplateElement(parents.get(0), TEMPLATETYPE.VARIABLE));
-                        List<Template> parentsList = new ArrayList<>();
-                        parentsList.add(parent);
-                        Object[] detailsParent = {"parent", parentsList};
+                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0));
+                        Object[] detailsParent = {"parent", parent};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
 
-                        Template child = new Template();
-                        child.addElement(new TemplateElement(childs.get(0), TEMPLATETYPE.VARIABLE));
-                        List<Template> childsList = new ArrayList<>();
-                        childsList.add(child);
-                        Object[] detailsChild = {"child", childsList};
+                        SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0));
+                        Object[] detailsChild = {"child", child};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
                         joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(equal, parameters));
@@ -285,15 +282,15 @@ public class MappingFactory {
             }
 
             if (functionValues.isEmpty()) {
-                String genericTemplate = getGenericTemplate(graphMap);
+                SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, graphMap, true);
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
-                    graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                    graphs.add(new NamedNodeGenerator(executor));
                 } else {
-                    if (genericTemplate == null) {
+                    if (executor == null) {
                         graphs.add(new BlankNodeGenerator());
                     } else {
-                        graphs.add(new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                        graphs.add(new BlankNodeGenerator(executor));
                     }
                 }
             } else {
@@ -311,7 +308,7 @@ public class MappingFactory {
 
         for (Term graph : graphShortcuts) {
             String gStr = graph.getValue();
-            graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(gStr)));
+            graphs.add(new NamedNodeGenerator(new ConstantExtractor(gStr)));
         }
 
         return graphs;
@@ -326,9 +323,7 @@ public class MappingFactory {
             List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(predicateMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
 
             if (functionValues.isEmpty()) {
-                String genericTemplate = getGenericTemplate(predicateMap);
-
-                predicates.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                predicates.add(new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false)));
             } else {
                 SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
@@ -340,7 +335,7 @@ public class MappingFactory {
 
         for (Term predicate : predicateShortcuts) {
             String pStr = predicate.getValue();
-            predicates.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(pStr)));
+            predicates.add(new NamedNodeGenerator(new ConstantExtractor(pStr)));
         }
 
         return predicates;
@@ -386,27 +381,6 @@ public class MappingFactory {
         }, (term, joinConditionFunctions) -> {});
 
         return generators;
-    }
-
-    /**
-     * This method parses reference, template, and constant of a given Term Map and return a generic template.
-     **/
-    private String getGenericTemplate(Term termMap) {
-        List<Term> references = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML + "reference"), null));
-        List<Term> templates = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "template"), null));
-        List<Term> constants = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "constant"), null));
-        String genericTemplate = null;
-
-        if (!references.isEmpty()) {
-            genericTemplate = "{" + references.get(0).getValue() + "}";
-        } else if (!templates.isEmpty()) {
-            genericTemplate = templates.get(0).getValue();
-        } else if (!constants.isEmpty()) {
-            genericTemplate = constants.get(0).getValue();
-            genericTemplate = genericTemplate.replaceAll("\\{", "\\\\{").replaceAll("}", "\\\\}");
-        }
-
-        return genericTemplate;
     }
 
     /**

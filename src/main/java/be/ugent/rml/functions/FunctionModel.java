@@ -123,6 +123,7 @@ public class FunctionModel {
     private Object[] getParameters(Map<String, Object> parameters) {
         Object[] args = new Object[this.parameters.size()];
         Class[] paramTypes = this.method.getParameterTypes();
+
         for (int i = 0; i < this.parameters.size(); i++) {
             if (parameters.get(this.parameters.get(i).getValue()) != null) {
                 args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i]);
@@ -130,13 +131,24 @@ public class FunctionModel {
                 args[i] = null;
             }
         }
+
         return args;
     }
 
     private Object parseParameter(Object parameter, Class type) {
         switch (type.getName()) {
             case "java.lang.String":
-                return parameter.toString();
+                if (parameter instanceof List) {
+                    List l = (List) parameter;
+
+                    if (l.isEmpty()) {
+                        return null;
+                    } else {
+                        return l.get(0);
+                    }
+                } else {
+                    return parameter.toString();
+                }
             case "int":
                 return Integer.parseInt(parameter.toString());
             case "double":

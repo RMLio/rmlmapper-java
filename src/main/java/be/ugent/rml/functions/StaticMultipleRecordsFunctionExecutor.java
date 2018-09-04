@@ -1,12 +1,9 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.Template;
-import be.ugent.rml.Utils;
 import be.ugent.rml.records.Record;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
@@ -24,13 +21,13 @@ public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFun
         Map <String, Object> filledInParameters = new HashMap<>();
 
         for (Map.Entry<String, Object[]> entry : this.parameters.entrySet()) {
-            List<Template> templates = (List<Template>) entry.getValue()[1];
+            SingleRecordFunctionExecutor executor = (SingleRecordFunctionExecutor) entry.getValue()[1];
             String recordType = (String) entry.getValue()[0];
 
-            List<String> objects = Utils.applyTemplate(templates.get(0), records.get(recordType));
+            Object o = executor.execute(records.get(recordType));
 
-            if (objects.size() > 0) {
-                filledInParameters.put(entry.getKey(), objects.get(0));
+            if (o != null) {
+                filledInParameters.put(entry.getKey(), o);
             } else {
                 // TODO check whether key is actually optional!
                 filledInParameters.put(entry.getKey(), null);
