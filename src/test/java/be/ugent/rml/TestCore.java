@@ -97,10 +97,13 @@ abstract class TestCore {
     }
 
     QuadStore filePathToStore(String path) {
-        ClassLoader classLoader = getClass().getClassLoader();
-
         // load output file
-        File outputFile = new File(classLoader.getResource(path).getFile());
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         QuadStore store;
 
         if (path.endsWith(".nq")) {
