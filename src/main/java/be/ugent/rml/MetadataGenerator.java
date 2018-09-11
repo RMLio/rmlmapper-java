@@ -3,8 +3,6 @@ package be.ugent.rml;
 import be.ugent.rml.store.*;
 import be.ugent.rml.term.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -159,7 +157,12 @@ public class MetadataGenerator {
     }
 
     private Term createActivityStatements(Term termMap, Map<Term, Term> map) {
-        Term termMapActivity = new NamedNode(termMap.getValue() + "Activity"); // todo: should this be a blank node?
+        Term termMapActivity;
+        if (termMap instanceof BlankNode) {
+            termMapActivity = new BlankNode(termMap.getValue() + "Activity");
+        } else {
+            termMapActivity = new NamedNode(termMap.getValue() + "Activity");
+        }
         if (map != null) {
             map.put(termMap, termMapActivity);
         }

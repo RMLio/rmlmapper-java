@@ -108,6 +108,7 @@ public class Utils {
             }
         }
 
+        logger.debug("Looking for file " + path + " in basePath " + basePath);
 
         // Relative from user dir?
         f = new File(basePath, path);
@@ -557,6 +558,7 @@ public class Utils {
                     Utils.toNQuads(output, out);
                 }
 
+                out.flush();
                 out.close();
                 logger.info("Writing to " + targetFile.getPath() + " is done.");
             } catch(IOException e) {
