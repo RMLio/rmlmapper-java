@@ -55,23 +55,10 @@ abstract class TestCore {
     }
 
     void doMapping(Executor executor, String outPath) {
-        ClassLoader classLoader = getClass().getClassLoader();
-
         try {
             QuadStore result = executor.execute(null);
             result.removeDuplicates();
-
-            // load output file
-            File outputFile = new File(classLoader.getResource(outPath).getFile());
-            QuadStore outputStore;
-
-            if (outPath.endsWith(".nq")) {
-                outputStore = Utils.readTurtle(outputFile, RDFFormat.NQUADS);
-            } else {
-                outputStore = Utils.readTurtle(outputFile);
-            }
-
-            assertEquals(outputStore.toSortedString(), result.toSortedString());
+            compareStores(result, filePathToStore(outPath), false);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             fail();
@@ -91,5 +78,40 @@ abstract class TestCore {
         } catch (IOException e) {
 
         }
+    }
+
+    void compareStores(QuadStore store1, QuadStore store2, boolean removeTimestamps) {
+        String string1 = store1.toSortedString();
+        String string2 = store2.toSortedString();
+
+        if (removeTimestamps) {
+            string1 = string1.replaceAll("\"[^\"]*\"\\^\\^<http://www.w3\\.org/2001/XMLSchema#dateTime>", "");
+            string2 = string2.replaceAll("\"[^\"]*\"\\^\\^<http://www.w3\\.org/2001/XMLSchema#dateTime>", "");
+        }
+
+        assertEquals(string1, string2);
+    }
+
+    void compareFiles(String path1, String path2, boolean removeTimestamps) {
+        compareStores(filePathToStore(path1), filePathToStore(path2), removeTimestamps);
+    }
+
+    QuadStore filePathToStore(String path) {
+        // load output file
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        QuadStore store;
+
+        if (path.endsWith(".nq")) {
+            store = Utils.readTurtle(outputFile, RDFFormat.NQUADS);
+        } else {
+            store = Utils.readTurtle(outputFile);
+        }
+
+        return store;
     }
 }

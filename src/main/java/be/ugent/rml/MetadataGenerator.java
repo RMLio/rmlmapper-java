@@ -3,8 +3,6 @@ package be.ugent.rml;
 import be.ugent.rml.store.*;
 import be.ugent.rml.term.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -137,8 +135,7 @@ public class MetadataGenerator {
         for (Term triplesMap: triplesMaps) {
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
-            mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.VOID + "dataDump"), new NamedNode(outputFile));
-
+            mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.VOID + "dataDump"), rdfDataset);
             createActivityStatements(triplesMap, triplesMaptoActivityMap);
         }
     }
@@ -173,7 +170,12 @@ public class MetadataGenerator {
     }
 
     private Term createActivityStatements(Term termMap, Map<Term, Term> map) {
-        Term termMapActivity = new NamedNode(termMap.getValue() + "Activity"); // todo: should this be a blank node?
+        Term termMapActivity;
+        if (termMap instanceof BlankNode) {
+            termMapActivity = new BlankNode(termMap.getValue() + "Activity");
+        } else {
+            termMapActivity = new NamedNode(termMap.getValue() + "Activity");
+        }
         if (map != null) {
             map.put(termMap, termMapActivity);
         }
@@ -216,26 +218,27 @@ public class MetadataGenerator {
 
         mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "triples"),
                 new Literal(Integer.toString(result.getQuads(null, null, null, null).size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
         mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "distinctSubjects"),
                 new Literal(Integer.toString(distinctSubjects.size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
         mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "distinctObjects"),
                 new Literal(Integer.toString(distinctObjects.size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
         mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "classes"),
                 new Literal(Integer.toString(distinctClasses.size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
         mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "properties"),
                 new Literal(Integer.toString(distinctProperties.size())
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
 
         mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "documents"),
                 new Literal("1"     // todo: change this when multiple output files are possible
-                        , new AbstractTerm(NAMESPACES.XSD + "integer")));
+                        , new NamedNode(NAMESPACES.XSD + "integer")));
 
         mdStore.addTriple(rdfDataset, new NamedNode(NAMESPACES.VOID + "feature"),
                 new NamedNode("http://www.w3.org/ns/formats/N-Quads")); // todo: change this when output file format changes
+
     }
 
     /**
@@ -270,13 +273,13 @@ public class MetadataGenerator {
 
                     // Literal -- encapsulate source in blank node
                     if (Utils.isLiteral(source.toString())) {
-                        try {
-                            File sourceFile = Utils.getFile(sourceObjects.get(0).getValue(), null);
-                            sourceNode = new NamedNode(String.format("file://%s", sourceFile.getPath()));
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                            throw new Error("Could not find source file: " + sourceObjects.get(0).getValue());
-                        }
+//                        try {
+//                            File sourceFile = Utils.getFile(sourceObjects.get(0).getValue(), null);
+                            sourceNode = new NamedNode(String.format("file://%s", sourceObjects.get(0).getValue()));
+//                        } catch (IOException ex) {
+//                            ex.printStackTrace();
+//                            throw new Error("Could not find source file: " + sourceObjects.get(0).getValue());
+//                        }
                     } else {    // todo: what with blank nodes?
                         sourceNode = source;
                     }
@@ -313,7 +316,7 @@ public class MetadataGenerator {
         // Add generation time info
         generationFunctions.add((node, pquad) -> {
             mdStore.addTriple(node, new NamedNode(NAMESPACES.PROV + "generatedAtTime"),
-                    new Literal(Instant.now().toString(), new AbstractTerm(NAMESPACES.XSD + "dateTime")));
+                    new Literal(Instant.now().toString(), new NamedNode(NAMESPACES.XSD + "dateTime")));
         });
         // Add counters
         generationFunctions.add((node, pquad) -> {

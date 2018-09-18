@@ -11,7 +11,7 @@
   a rr:TriplesMap;
 
   rml:logicalSource [ 
-    rml:source "/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/student.json";
+    rml:source "src/test/resources/metadata/METADATA_TEST_triple_level/student.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.students[*]"
   ];
@@ -35,7 +35,7 @@
   a rr:TriplesMap;
 		
   rml:logicalSource [ 
-    rml:source "/Users/driesmarzougui/Documents/work/IDLab/RMLProcessor/rmlmapper-java/src/test/resources/test-cases/metadata_test/sport.json";
+    rml:source "src/test/resources/metadata/METADATA_TEST_triple_level/sport.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.sports[*]"
   ];

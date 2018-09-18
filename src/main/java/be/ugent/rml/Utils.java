@@ -11,6 +11,7 @@ import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import org.apache.commons.codec.binary.Hex;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -107,6 +108,7 @@ public class Utils {
             }
         }
 
+        logger.debug("Looking for file " + path + " in basePath " + basePath);
 
         // Relative from user dir?
         f = new File(basePath, path);
@@ -323,10 +325,13 @@ public class Utils {
 
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+            System.out.println(file);
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (RDFParseException ex) {
+            ex.printStackTrace();
         }
         return new RDF4JStore(model);
     }
@@ -553,6 +558,7 @@ public class Utils {
                     Utils.toNQuads(output, out);
                 }
 
+                out.flush();
                 out.close();
                 logger.info("Writing to " + targetFile.getPath() + " is done.");
             } catch(IOException e) {
