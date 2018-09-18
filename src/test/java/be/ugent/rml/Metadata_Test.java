@@ -13,7 +13,7 @@ public class Metadata_Test extends TestCore {
     public void datasetLevelTest() {
         Main.main("-c ./metadata/METADATA_TEST_dataset_level/config_example.properties".split(" "));
         try {
-            Thread.sleep(5);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -28,7 +28,7 @@ public class Metadata_Test extends TestCore {
     public void tripleLevelTest() {
         Main.main("-c ./metadata/METADATA_TEST_triple_level/config_example.properties".split(" "));
         try {
-            Thread.sleep(5);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -43,7 +43,7 @@ public class Metadata_Test extends TestCore {
     public void termLevelTest() {
         Main.main("-c ./src/test/resources/metadata/METADATA_TEST_term_level/config_example.properties".split(" "));
         try {
-            Thread.sleep(5);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

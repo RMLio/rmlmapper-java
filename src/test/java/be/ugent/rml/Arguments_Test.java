@@ -9,7 +9,7 @@ public class Arguments_Test extends TestCore {
     public void withConfigFile() {
         Main.main("-c ./ARGUMENT_TEST_config_file/config_example.properties".split(" "));
         try {
-            Thread.sleep(5);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -24,7 +24,7 @@ public class Arguments_Test extends TestCore {
     public void withoutConfigFile() {
         Main.main("-m ./ARGUMENT_TEST_config_file/mapping.ttl -o src/test/resources/ARGUMENT_TEST_config_file/generated_output.nq".split(" "));
         try {
-            Thread.sleep(5);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
