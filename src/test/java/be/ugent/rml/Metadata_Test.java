@@ -12,6 +12,11 @@ public class Metadata_Test extends TestCore {
     @Test
     public void datasetLevelTest() {
         Main.main("-c ./metadata/METADATA_TEST_dataset_level/config_example.properties".split(" "));
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         compareFiles(
                 "./metadata/METADATA_TEST_dataset_level/target_metadata.nq",
                 "./metadata/METADATA_TEST_dataset_level/generated_metadata.nq",
@@ -22,6 +27,11 @@ public class Metadata_Test extends TestCore {
     @Test
     public void tripleLevelTest() {
         Main.main("-c ./metadata/METADATA_TEST_triple_level/config_example.properties".split(" "));
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         compareFiles(
                 "./metadata/METADATA_TEST_triple_level/target_metadata.nq",
                 "./metadata/METADATA_TEST_triple_level/generated_metadata.nq",
@@ -32,6 +42,11 @@ public class Metadata_Test extends TestCore {
     @Test
     public void termLevelTest() {
         Main.main("-c ./src/test/resources/metadata/METADATA_TEST_term_level/config_example.properties".split(" "));
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         compareFiles(
                 "./metadata/METADATA_TEST_term_level/target_metadata.nq",
                 "./metadata/METADATA_TEST_term_level/generated_metadata.nq",

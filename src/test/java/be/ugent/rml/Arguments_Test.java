@@ -8,6 +8,11 @@ public class Arguments_Test extends TestCore {
     @Test
     public void withConfigFile() {
         Main.main("-c ./ARGUMENT_TEST_config_file/config_example.properties".split(" "));
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         compareFiles(
                 "ARGUMENT_TEST_config_file/target_output.nq",
                 "ARGUMENT_TEST_config_file/generated_output.nq",
@@ -18,6 +23,11 @@ public class Arguments_Test extends TestCore {
     @Test
     public void withoutConfigFile() {
         Main.main("-m ./ARGUMENT_TEST_config_file/mapping.ttl -o src/test/resources/ARGUMENT_TEST_config_file/generated_output.nq".split(" "));
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         compareFiles(
                 "ARGUMENT_TEST_config_file/target_output.nq",
                 "ARGUMENT_TEST_config_file/generated_output.nq",
