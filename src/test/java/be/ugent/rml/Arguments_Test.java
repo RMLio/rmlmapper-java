@@ -14,23 +14,23 @@ public class Arguments_Test extends TestCore {
             e.printStackTrace();
         }
         compareFiles(
-                "ARGUMENT_TEST_config_file/target_output.nq",
-                "ARGUMENT_TEST_config_file/generated_output.nq",
+                "./ARGUMENT_TEST_config_file/target_output.nq",
+                "./ARGUMENT_TEST_config_file/generated_output.nq",
                 false
         );
     }
 
     @Test
     public void withoutConfigFile() {
-        Main.main("-m ./ARGUMENT_TEST_config_file/mapping.ttl -o src/test/resources/ARGUMENT_TEST_config_file/generated_output.nq".split(" "));
+        Main.main("-m ./ARGUMENT_TEST_config_file/mapping.ttl -o ./src/test/resources/ARGUMENT_TEST_config_file/generated_output.nq".split(" "));
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         compareFiles(
-                "ARGUMENT_TEST_config_file/target_output.nq",
-                "ARGUMENT_TEST_config_file/generated_output.nq",
+                "./ARGUMENT_TEST_config_file/target_output.nq",
+                "./ARGUMENT_TEST_config_file/generated_output.nq",
                 false
         );
     }
