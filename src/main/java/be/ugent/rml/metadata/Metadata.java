@@ -1,4 +1,4 @@
-package be.ugent.rml;
+package be.ugent.rml.metadata;
 
 import be.ugent.rml.term.Term;
 
@@ -10,7 +10,8 @@ public class Metadata {
     private Term triplesMap;
     private Term sourceMap;
 
-    public Metadata() {}
+    public Metadata() {
+    }
 
     public Metadata(Term triplesMap) {
         this(triplesMap, null);
@@ -21,11 +22,11 @@ public class Metadata {
         this.sourceMap = sourceMap;
     }
 
-    public Term getTriplesMap() {
+    Term getTriplesMap() {
         return triplesMap;
     }
 
-    public Term getSourceMap() {
+    Term getSourceMap() {
         return sourceMap;
     }
 

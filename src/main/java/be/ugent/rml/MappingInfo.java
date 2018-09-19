@@ -17,6 +17,6 @@ public class MappingInfo {
     }
 
     public TermGenerator getTermGenerator() {
-            return termGenerator;
-        }
+        return termGenerator;
+    }
 }

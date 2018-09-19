@@ -1,7 +1,4 @@
-package be.ugent.rml.store;
-
-import be.ugent.rml.term.ProvenancedTerm;
-import be.ugent.rml.term.Term;
+package be.ugent.rml.term;
 
 public class ProvenancedQuad {
 

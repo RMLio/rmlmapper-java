@@ -3,9 +3,9 @@ package be.ugent.rml.cli;
 import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.GrelProcessor;
+import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
@@ -69,12 +69,12 @@ public class Main {
         Option metadataOption = Option.builder( "e")
                 .longOpt( "metadatafile" )
                 .hasArg()
-                .desc( "path to metadata file" )
+                .desc( "path to metadata-test-cases file" )
                 .build();
         Option metadataDetailLevelOption = Option.builder("l")
                 .longOpt( "metadataDetailLevel" )
                 .hasArg()
-                .desc( "generate metadata on given detail level (dataset - triple - term)" )
+                .desc( "generate metadata-test-cases on given detail level (dataset - triple - term)" )
                 .build();
         options.addOption(mappingdocOption);
         options.addOption(outputfileOption);
@@ -136,7 +136,7 @@ public class Main {
                                 detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
                                 break;
                             default:
-                                logger.error("Unknown metadata detail level option. Use the -h flag for more info.");
+                                logger.error("Unknown metadata-test-cases detail level option. Use the -h flag for more info.");
                                 return;
                         }
                         metadataGenerator = new MetadataGenerator(
@@ -146,7 +146,7 @@ public class Main {
                                 rmlStore
                         );
                     } else {
-                        logger.error("Please specify the detail level when requesting metadata generation. Use the -h flag for more info.");
+                        logger.error("Please specify the detail level when requesting metadata-test-cases generation. Use the -h flag for more info.");
                     }
                 }
 
@@ -175,16 +175,16 @@ public class Main {
                             executor.getTriplesMaps() : triplesMaps, rmlStore);
                 }
 
-                // Get start timestamp for post mapping metadata
+                // Get start timestamp for post mapping metadata-test-cases
                 String startTimestamp = Instant.now().toString();
 
                 QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                         metadataGenerator);
 
-                // Get stop timestamp for post mapping metadata
+                // Get stop timestamp for post mapping metadata-test-cases
                 String stopTimestamp = Instant.now().toString();
 
-                // Generate post mapping metadata and output all metadata
+                // Generate post mapping metadata-test-cases and output all metadata-test-cases
                 if (metadataGenerator != null) {
                     metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
                             result);

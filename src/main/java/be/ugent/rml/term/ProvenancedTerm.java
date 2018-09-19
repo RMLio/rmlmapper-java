@@ -1,7 +1,7 @@
 package be.ugent.rml.term;
 
 import be.ugent.rml.MappingInfo;
-import be.ugent.rml.Metadata;
+import be.ugent.rml.metadata.Metadata;
 
 public class ProvenancedTerm {
 

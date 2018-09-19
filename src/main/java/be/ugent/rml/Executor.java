@@ -2,21 +2,20 @@ package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.JoinConditionFunction;
+import be.ugent.rml.metadata.Metadata;
+import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.ProvenancedQuad;
+import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.ProvenancedTerm;
 import be.ugent.rml.term.Term;
-import be.ugent.rml.termgenerator.TermGenerator;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Executor {
 
@@ -55,7 +54,7 @@ public class Executor {
                 metadataGenerator.insertQuad(new ProvenancedQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph()));
             };
         } else {
-            pogFunction = (subject,pog) -> {
+            pogFunction = (subject, pog) -> {
                 generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
             };
         }
@@ -118,7 +117,7 @@ public class Executor {
     }
 
 
-    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record,  List<ProvenancedTerm> alreadyNeededGraphs) throws IOException {
+    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record, List<ProvenancedTerm> alreadyNeededGraphs) throws IOException {
         ArrayList<PredicateObjectGraph> results = new ArrayList<>();
 
         List<PredicateObjectGraphMapping> predicateObjectGraphMappings = mapping.getPredicateObjectGraphMappings();
@@ -236,7 +235,7 @@ public class Executor {
             List<Term> nodes = mapping.getSubjectMappingInfo().getTermGenerator().generate(record);
 
             if (!nodes.isEmpty()) {
-                //todo: only create metadata when it's required
+                //todo: only create metadata-test-cases when it's required
                 this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0), new Metadata(triplesMap, mapping.getSubjectMappingInfo().getTerm())));
             }
         }
@@ -250,7 +249,7 @@ public class Executor {
         List<Record> records = getRecords(triplesMap);
         ArrayList<ProvenancedTerm> iris = new ArrayList<ProvenancedTerm>();
 
-        for (int i = 0; i < records.size(); i ++) {
+        for (int i = 0; i < records.size(); i++) {
             Record record = records.get(i);
             ProvenancedTerm subject = getSubject(triplesMap, mapping, record, i);
 

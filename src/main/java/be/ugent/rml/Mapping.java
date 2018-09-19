@@ -1,8 +1,5 @@
 package be.ugent.rml;
 
-import be.ugent.rml.term.Term;
-import be.ugent.rml.termgenerator.TermGenerator;
-
 import java.util.List;
 
 public class Mapping {

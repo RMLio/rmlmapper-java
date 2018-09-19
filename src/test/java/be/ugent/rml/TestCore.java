@@ -108,7 +108,11 @@ abstract class TestCore {
 
         //compareStores(store1, store2, false);
 
-        assertTrue(store1.equals(store2));
+        try {
+            assertTrue(store1.equals(store2));
+        } catch (AssertionError e) {
+            compareStores(store1, store2, false);
+        }
     }
 
     RDF4JStore filePathToStore(String path) {

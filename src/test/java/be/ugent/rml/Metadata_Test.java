@@ -15,9 +15,9 @@ public class Metadata_Test extends TestCore {
 
     @Test
     public void datasetLevelTest() {
-        Main.main("-c ./metadata/METADATA_TEST_dataset_level/config_example.properties".split(" "));
+        Main.main("-c ./metadata-test-cases/metadata-dataset-level/config_example.properties".split(" "));
         compareFiles(
-                "./metadata/METADATA_TEST_dataset_level/target_metadata.nq",
+                "metadata-test-cases/metadata-dataset-level/target_metadata.nq",
                 "./generated_metadata.nq",
                 true
         );
@@ -27,9 +27,9 @@ public class Metadata_Test extends TestCore {
 
     @Test
     public void tripleLevelTest() {
-        Main.main("-c ./metadata/METADATA_TEST_triple_level/config_example.properties".split(" "));
+        Main.main("-c ./metadata-test-cases/metadata-triple-level/config_example.properties".split(" "));
         compareFiles(
-                "./metadata/METADATA_TEST_triple_level/target_metadata.nq",
+                "metadata-test-cases/metadata-triple-level/target_metadata.nq",
                 "./generated_metadata.nq",
                 true
         );
@@ -39,9 +39,9 @@ public class Metadata_Test extends TestCore {
 
     @Test
     public void termLevelTest() {
-        Main.main("-c ./src/test/resources/metadata/METADATA_TEST_term_level/config_example.properties".split(" "));
+        Main.main("-c ./src/test/resources/metadata-test-cases/metadata-term-level/config_example.properties".split(" "));
         compareFiles(
-                "./metadata/METADATA_TEST_term_level/target_metadata.nq",
+                "metadata-test-cases/metadata-term-level/target_metadata.nq",
                 "./generated_metadata.nq",
                 true
         );
@@ -49,7 +49,7 @@ public class Metadata_Test extends TestCore {
         cleanup();
     }
 
-    void cleanup() {
+    private void cleanup() {
         try {
             File outputFile = Utils.getFile("./generated_output.nq");
             assertTrue(outputFile.delete());

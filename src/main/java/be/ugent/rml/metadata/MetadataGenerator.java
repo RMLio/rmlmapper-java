@@ -1,5 +1,7 @@
-package be.ugent.rml;
+package be.ugent.rml.metadata;
 
+import be.ugent.rml.NAMESPACES;
+import be.ugent.rml.Utils;
 import be.ugent.rml.store.*;
 import be.ugent.rml.term.*;
 
@@ -8,8 +10,8 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
- * Class that encapsulates the generation of metadata.
- * (Does everything for metadata generation)
+ * Class that encapsulates the generation of metadata-test-cases.
+ * (Does everything for metadata-test-cases generation)
  */
 public class MetadataGenerator {
 
@@ -18,6 +20,7 @@ public class MetadataGenerator {
         DATASET(0), TRIPLE(1), TERM(2);
 
         private int level;
+
         DETAIL_LEVEL(int level) {
             this.level = level;
         }
@@ -33,7 +36,7 @@ public class MetadataGenerator {
     private QuadStore inputData;
     private String mappingFile;
     private List<Term> triplesMaps;
-    private List<BiConsumer<Term, ProvenancedQuad>> generationFunctions;    // Will contain different functions according to requested metadata detail level
+    private List<BiConsumer<Term, ProvenancedQuad>> generationFunctions;    // Will contain different functions according to requested metadata-test-cases detail level
     private List<Term> logicalSources;
     private Set<String> distinctSubjects;    // Used for counting number of distinct subjects
     private Set<String> distinctObjects;     // Used for counting number of distinct objects
@@ -64,7 +67,7 @@ public class MetadataGenerator {
         rdfDataset = new NamedNode(String.format("file://%s", outputFile));
         rdfDatasetGeneration = new BlankNode(Utils.hashCode(outputFile));
 
-        rmlMapper = new BlankNode("RMLMapper");
+        rmlMapper = new NamedNode("http://rml.io/tool/rmlmapper-java");
 
 
         if (detailLevel.getLevel() >= DETAIL_LEVEL.TRIPLE.getLevel()) {
@@ -79,26 +82,28 @@ public class MetadataGenerator {
      * Gets called every time a quad is generated.
      * Creates a node representing the quad.
      * Applies the metadatageneration functions to the given quad.
+     *
      * @param provenancedQuad
      */
     public void insertQuad(ProvenancedQuad provenancedQuad) {
         // Value: hash of subject + predicate + object
         Term node = new BlankNode(Utils.hashCode(provenancedQuad.getSubject().getTerm().getValue() +
-                                                             provenancedQuad.getPredicate().getTerm().getValue() +
-                                                             provenancedQuad.getObject().getTerm().getValue()));
+                provenancedQuad.getPredicate().getTerm().getValue() +
+                provenancedQuad.getObject().getTerm().getValue()));
 
         mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.RDF + "Statement"));
         mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "subject"), provenancedQuad.getSubject().getTerm());
         mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "predicate"), provenancedQuad.getPredicate().getTerm());
         mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "object"), provenancedQuad.getObject().getTerm());
 
-        for (BiConsumer<Term, ProvenancedQuad> function: generationFunctions) {
+        for (BiConsumer<Term, ProvenancedQuad> function : generationFunctions) {
             function.accept(node, provenancedQuad);
         }
     }
 
     /**
-     * Generates metadata before the actual mapping.
+     * Generates metadata-test-cases before the actual mapping.
+     *
      * @param triplesMaps
      * @param mappingQuads
      */
@@ -113,7 +118,8 @@ public class MetadataGenerator {
     }
 
     /**
-     * Generates metadata after the actual mapping.
+     * Generates metadata-test-cases after the actual mapping.
+     *
      * @param startTimestamp
      * @param stopTimestamp
      * @param result
@@ -128,11 +134,11 @@ public class MetadataGenerator {
         }
     }
 
-    private void generatePreTripleLevelDetailMetadata()  {
+    private void generatePreTripleLevelDetailMetadata() {
         triplesMaptoActivityMap = new HashMap<>();
 
         // Describe triplesMaps
-        for (Term triplesMap: triplesMaps) {
+        for (Term triplesMap : triplesMaps) {
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Entity"));
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.VOID + "Dataset"));
             mdStore.addTriple(triplesMap, new NamedNode(NAMESPACES.VOID + "dataDump"), rdfDataset);
@@ -143,7 +149,7 @@ public class MetadataGenerator {
     private void generatePreTermLevelDetailMetadata(QuadStore mappingQuads) {
         termMaptoActivityMap = new HashMap<>();
 
-        for (Term triplesMap: triplesMaps) {
+        for (Term triplesMap : triplesMaps) {
             List<Term> subjectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"),
                     null));
 
@@ -155,7 +161,7 @@ public class MetadataGenerator {
             List<Term> predicateObjectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "predicateObjectMap"),
                     null));
 
-            for (Term pom: predicateObjectMaps) {
+            for (Term pom : predicateObjectMaps) {
                 Term pomActivity = createActivityStatementsWithResultActivity(pom, termMaptoActivityMap, triplesMaptoActivityMap.get(triplesMap));
 
                 List<Term> predicateMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(pom, new NamedNode(NAMESPACES.RR + "predicateMap"),
@@ -182,13 +188,6 @@ public class MetadataGenerator {
         mdStore.addTriple(termMapActivity, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.PROV + "Activity"));
         mdStore.addTriple(termMapActivity, new NamedNode(NAMESPACES.PROV + "used"), termMap);
         return termMapActivity;
-    }
-
-    private Term createActivityStatements(List<Term> termMaps, Map<Term, Term> map) {
-        if (!termMaps.isEmpty()) {
-            return createActivityStatements(termMaps.get(0), map);
-        }
-        return null;
     }
 
     private Term createActivityStatementsWithResultActivity(Term termMap, Map<Term, Term> map, Term resultActivity) {
@@ -243,14 +242,15 @@ public class MetadataGenerator {
 
     /**
      * Creates a list of all source terms.
+     *
      * @param triplesMaps
      * @param rmlStore
      * @return
      */
-    public List<Term> getLogicalSources(List<Term> triplesMaps, QuadStore rmlStore) {
+    private List<Term> getLogicalSources(List<Term> triplesMaps, QuadStore rmlStore) {
         if (logicalSources == null) {
             logicalSources = new ArrayList<>();
-            for(Term triplesMap: triplesMaps) {
+            for (Term triplesMap : triplesMaps) {
                 List<Term> logicalSourcesObjects = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap,
                         new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
@@ -275,7 +275,7 @@ public class MetadataGenerator {
                     if (Utils.isLiteral(source.toString())) {
 //                        try {
 //                            File sourceFile = Utils.getFile(sourceObjects.get(0).getValue(), null);
-                            sourceNode = new NamedNode(String.format("file://%s", sourceObjects.get(0).getValue()));
+                        sourceNode = new NamedNode(String.format("file://%s", sourceObjects.get(0).getValue()));
 //                        } catch (IOException ex) {
 //                            ex.printStackTrace();
 //                            throw new Error("Could not find source file: " + sourceObjects.get(0).getValue());
@@ -293,7 +293,7 @@ public class MetadataGenerator {
     }
 
     /**
-     * Outputs the generated metadata.
+     * Outputs the generated metadata-test-cases.
      */
     public void writeMetadata() {
         mdStore.removeDuplicates();

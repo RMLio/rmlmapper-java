@@ -11,7 +11,7 @@
   a rr:TriplesMap;
 
   rml:logicalSource [ 
-    rml:source "src/test/resources/metadata/METADATA_TEST_dataset_level/student.json";
+    rml:source "src/test/resources/metadata-test-cases/student.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.students[*]"
   ];
@@ -44,7 +44,7 @@
   a rr:TriplesMap;
 		
   rml:logicalSource [ 
-    rml:source "src/test/resources/metadata/METADATA_TEST_dataset_level/sport.json";
+    rml:source "src/test/resources/metadata-test-cases/sport.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.sports[*]"
   ];

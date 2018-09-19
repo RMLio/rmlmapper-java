@@ -10,7 +10,6 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
-import org.apache.commons.codec.binary.Hex;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +57,7 @@ public class Utils {
     }
 
     public static InputStream getInputStreamFromLocation(String location) throws IOException {
-        return getInputStreamFromLocation(location,null,"");
+        return getInputStreamFromLocation(location, null, "");
     }
 
     public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
@@ -188,7 +187,7 @@ public class Utils {
             TemplateElement element = template.getTemplateElements().get(i);
             //if the element is constant, we don't need to look at the data, so we can just add it to the result
             if (element.getType() == TEMPLATETYPE.CONSTANT) {
-                for (int j = 0; j < result.size(); j ++) {
+                for (int j = 0; j < result.size(); j++) {
                     result.set(j, result.get(j) + element.getValue());
                 }
             } else {
@@ -288,7 +287,7 @@ public class Utils {
         try {
             getLiteral(value);
             return true;
-        } catch (Error e){
+        } catch (Error e) {
             return false;
         }
     }
@@ -325,13 +324,11 @@ public class Utils {
 
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
-            System.out.println(file);
+            logger.debug("Reading from " + file.getAbsolutePath());
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
-        } catch (IOException e) {
+        } catch (IOException | RDFParseException e) {
             e.printStackTrace();
-        } catch (RDFParseException ex) {
-            ex.printStackTrace();
         }
         return new RDF4JStore(model);
     }
@@ -380,7 +377,7 @@ public class Utils {
         List<Quad> triples = new ArrayList<>();
         List<Quad> quads = new ArrayList<>();
 
-        for (Quad q: all) {
+        for (Quad q : all) {
             if (q.getGraph() == null || q.getGraph().equals("")) {
                 triples.add(q);
             } else {
@@ -401,7 +398,7 @@ public class Utils {
 
     public static String encodeURI(String url) {
         Escaper escaper = UrlEscapers.urlFragmentEscaper();
-        String result =  escaper.escape(url);
+        String result = escaper.escape(url);
 
         result = result.replaceAll("!", "%21");
         result = result.replaceAll("#", "%23");
@@ -435,6 +432,7 @@ public class Utils {
         reader.close();
         return targetString;
     }
+
     /*
         Extracts the selected columns from the SQL query
         Orders them alphabetically
@@ -455,8 +453,7 @@ public class Utils {
         throw new Error("Invalid query: " + query);
     }
 
-    public static String readFile(String path, Charset encoding) throws IOException
-    {
+    public static String readFile(String path, Charset encoding) throws IOException {
         if (encoding == null) {
             encoding = StandardCharsets.UTF_8;
         }
@@ -491,7 +488,7 @@ public class Utils {
                     if (previousWasBackslash) {
                         current += c;
                         previousWasBackslash = false;
-                    } else if(variableBusy) {
+                    } else if (variableBusy) {
                         throw new Error("Parsing of template failed. Probably a { was followed by a second { without first closing the first {. Make sure that you use { and } correctly.");
                     } else {
                         variableBusy = true;
@@ -506,7 +503,7 @@ public class Utils {
                     if (previousWasBackslash) {
                         current += c;
                         previousWasBackslash = false;
-                    } else if (variableBusy){
+                    } else if (variableBusy) {
                         result.addElement(new TemplateElement(current, TEMPLATETYPE.VARIABLE));
                         current = "";
                         variableBusy = false;
@@ -546,7 +543,7 @@ public class Utils {
             logger.info("Writing " + what + " to " + targetFile.getPath() + "...");
 
             if (!targetFile.isAbsolute()) {
-                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile + "." +  extension);
+                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile + "." + extension);
             }
 
             try {
@@ -561,8 +558,8 @@ public class Utils {
                 out.flush();
                 out.close();
                 logger.info("Writing to " + targetFile.getPath() + " is done.");
-            } catch(IOException e) {
-                System.err.println( "Writing output to file failed. Reason: " + e.getMessage() );
+            } catch (IOException e) {
+                logger.error("Writing output to file failed. Reason: " + e.getMessage());
             }
         } else {
             if (what.equals("triple")) {
@@ -577,9 +574,9 @@ public class Utils {
         String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         SecureRandom rnd = new SecureRandom();
 
-        StringBuilder sb = new StringBuilder( len );
-        for( int i = 0; i < len; i++ )
-            sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
         return sb.toString();
 
     }
@@ -587,7 +584,7 @@ public class Utils {
     public static String hashCode(String s) {
         int hash = 0;
         for (int i = 0; i < s.toCharArray().length; i++) {
-            hash += s.toCharArray()[i] * 31^(s.toCharArray().length - 1 - i);
+            hash += s.toCharArray()[i] * 31 ^ (s.toCharArray().length - 1 - i);
         }
         return Integer.toString(Math.abs(hash));
     }

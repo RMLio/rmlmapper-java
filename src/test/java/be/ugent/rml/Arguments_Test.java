@@ -4,15 +4,16 @@ import be.ugent.rml.cli.Main;
 import org.junit.Test;
 
 import java.io.File;
+
 import static org.junit.Assert.assertTrue;
 
 public class Arguments_Test extends TestCore {
 
     @Test
     public void withConfigFile() {
-        Main.main("-c ./ARGUMENT_TEST_config_file/config_example.properties".split(" "));
+        Main.main("-c ./argument-config-file-test-cases/config_example.properties".split(" "));
         compareFiles(
-                "./ARGUMENT_TEST_config_file/target_output.nq",
+                "argument-config-file-test-cases/target_output.nq",
                 "./generated_output.nq",
                 false
         );
@@ -28,9 +29,9 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void withoutConfigFile() {
-        Main.main("-m ./ARGUMENT_TEST_config_file/mapping.ttl -o ./generated_output.nq".split(" "));
+        Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq".split(" "));
         compareFiles(
-                "./ARGUMENT_TEST_config_file/target_output.nq",
+                "argument-config-file-test-cases/target_output.nq",
                 "./generated_output.nq",
                 false
         );
