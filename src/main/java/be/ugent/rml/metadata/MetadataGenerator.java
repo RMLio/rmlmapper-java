@@ -86,18 +86,20 @@ public class MetadataGenerator {
      * @param provenancedQuad
      */
     public void insertQuad(ProvenancedQuad provenancedQuad) {
-        // Value: hash of subject + predicate + object
-        Term node = new BlankNode(Utils.hashCode(provenancedQuad.getSubject().getTerm().getValue() +
-                provenancedQuad.getPredicate().getTerm().getValue() +
-                provenancedQuad.getObject().getTerm().getValue()));
+        if (provenancedQuad.getSubject() != null & provenancedQuad.getPredicate() != null & provenancedQuad.getObject() != null) {
+            // Value: hash of subject + predicate + object
+            Term node = new BlankNode(Utils.hashCode(provenancedQuad.getSubject().getTerm().getValue() +
+                    provenancedQuad.getPredicate().getTerm().getValue() +
+                    provenancedQuad.getObject().getTerm().getValue()));
 
-        mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.RDF + "Statement"));
-        mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "subject"), provenancedQuad.getSubject().getTerm());
-        mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "predicate"), provenancedQuad.getPredicate().getTerm());
-        mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "object"), provenancedQuad.getObject().getTerm());
+            mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.RDF + "Statement"));
+            mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "subject"), provenancedQuad.getSubject().getTerm());
+            mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "predicate"), provenancedQuad.getPredicate().getTerm());
+            mdStore.addTriple(node, new NamedNode(NAMESPACES.RDF + "object"), provenancedQuad.getObject().getTerm());
 
-        for (BiConsumer<Term, ProvenancedQuad> function : generationFunctions) {
-            function.accept(node, provenancedQuad);
+            for (BiConsumer<Term, ProvenancedQuad> function : generationFunctions) {
+                function.accept(node, provenancedQuad);
+            }
         }
     }
 
