@@ -1,27 +1,33 @@
 package be.ugent.rml.term;
 
-import be.ugent.rml.Metadata;
-import be.ugent.rml.term.Term;
+import be.ugent.rml.MappingInfo;
+import be.ugent.rml.metadata.Metadata;
 
 public class ProvenancedTerm {
 
     private Term term;
-    private Metadata metdata;
+    private Metadata metadata;
 
-    public ProvenancedTerm(Term term, Metadata metdata) {
+    public ProvenancedTerm(Term term, Metadata metadata) {
         this.term = term;
-        this.metdata = metdata;
+        this.metadata = metadata;
+    }
+
+    public ProvenancedTerm(Term term, MappingInfo mappingInfo) {
+        this.term = term;
+        this.metadata = new Metadata();
+        this.metadata.setSourceMap(mappingInfo.getTerm());
     }
 
     public ProvenancedTerm(Term term) {
-        this(term, null);
+        this.term = term;
     }
 
     public Term getTerm() {
         return term;
     }
 
-    public Metadata getMetdata() {
-        return metdata;
+    public Metadata getMetadata() {
+        return metadata;
     }
 }

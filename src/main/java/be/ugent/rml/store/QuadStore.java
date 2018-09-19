@@ -40,4 +40,17 @@ public abstract class QuadStore {
 
         return output.toString();
     }
+
+    public QuadStore toSimpleSortedQuadStore() {
+        QuadStore sortedStore = new SimpleQuadStore();
+
+        List<Quad> quads = getQuads(null, null, null);
+        Collections.sort(quads);
+
+        for (Quad q : quads) {
+            sortedStore.addQuad(q.getSubject(), q.getPredicate(), q.getObject(), q.getGraph());
+        }
+
+        return sortedStore;
+    }
 }
