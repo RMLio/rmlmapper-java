@@ -179,7 +179,9 @@ public class Executor {
             g = graph.getTerm();
         }
 
-        this.resultingTriples.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
+        if (subject != null && predicate != null & object != null) {
+            this.resultingTriples.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
+        }
     }
 
     private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws IOException {
