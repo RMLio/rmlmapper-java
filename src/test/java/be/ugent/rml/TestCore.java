@@ -3,6 +3,8 @@ package be.ugent.rml;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.term.NamedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -11,6 +13,7 @@ import java.io.*;
 import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 abstract class TestCore {
@@ -86,17 +89,29 @@ abstract class TestCore {
 
         if (removeTimestamps) {
             string1 = string1.replaceAll("\"[^\"]*\"\\^\\^<http://www.w3\\.org/2001/XMLSchema#dateTime>", "");
-            string2 = string2.replaceAll("\"[^\"]*\"\\^\\^<http://www.w3\\.org/2001/XMLSchema#dateTime>", "");
+            string2 = string2.replaceAll("\"[^\"]*\"\\^\\^<c>", "");
         }
 
         assertEquals(string1, string2);
     }
 
     void compareFiles(String path1, String path2, boolean removeTimestamps) {
-        compareStores(filePathToStore(path1), filePathToStore(path2), removeTimestamps);
+        RDF4JStore store1 = filePathToStore(path1);
+        RDF4JStore store2 = filePathToStore(path2);
+
+        store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
+        store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
+        store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
+        store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
+        store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
+        store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
+
+        //compareStores(store1, store2, false);
+
+        assertTrue(store1.equals(store2));
     }
 
-    QuadStore filePathToStore(String path) {
+    RDF4JStore filePathToStore(String path) {
         // load output file
         File outputFile = null;
         try {
@@ -104,12 +119,12 @@ abstract class TestCore {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        QuadStore store;
+        RDF4JStore store;
 
         if (path.endsWith(".nq")) {
-            store = Utils.readTurtle(outputFile, RDFFormat.NQUADS);
+            store = (RDF4JStore) Utils.readTurtle(outputFile, RDFFormat.NQUADS);
         } else {
-            store = Utils.readTurtle(outputFile);
+            store = (RDF4JStore) Utils.readTurtle(outputFile);
         }
 
         return store;

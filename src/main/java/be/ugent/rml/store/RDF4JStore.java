@@ -6,6 +6,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.util.Models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,36 +43,13 @@ public class RDF4JStore extends QuadStore {
 
     @Override
     public List<Quad> getQuads(Term subject, Term predicate, Term object) {
-        ValueFactory vf = SimpleValueFactory.getInstance();
         Model result;
 
-        Object filterSubject = null;
-        Object filterPredicate = null;
-        Object filterObject = null;
+        Resource filterSubject = getFilterSubject(subject);
+        IRI filterPredicate = getFilterPredicate(predicate);
+        Value filterObject = getFilterObject(object);
 
-        if (subject != null) {
-            if (subject instanceof BlankNode) {
-                filterSubject= vf.createBNode(subject.getValue());
-            } else {
-                filterSubject = vf.createIRI(subject.getValue());
-            }
-        }
-
-        if (predicate != null) {
-            filterPredicate = vf.createIRI(predicate.getValue());
-        }
-
-        if (object != null) {
-            if (object instanceof BlankNode) {
-                filterObject = vf.createBNode(object.getValue());
-            } else if (object instanceof Literal) {
-                filterObject = vf.createLiteral(object.getValue());
-            } else {
-                filterObject = vf.createIRI(object.getValue());
-            }
-        }
-
-        result = model.filter((Resource) filterSubject, (IRI) filterPredicate, (Value) filterObject);
+        result = model.filter(filterSubject, filterPredicate, filterObject);
 
         List<Quad> quads = new ArrayList<>();
 
@@ -88,6 +66,72 @@ public class RDF4JStore extends QuadStore {
         }
 
         return quads;
+    }
+
+    public Model getModel() {
+        return model;
+    }
+
+    public boolean equals(Object o) {
+        if (o instanceof RDF4JStore) {
+            RDF4JStore otherStore = (RDF4JStore) o;
+
+            return Models.isomorphic(model, otherStore.getModel());
+        } else {
+            return false;
+        }
+    }
+
+    public void removeQuads(Term subject, Term predicate, Term object, Term graph) {
+        throw new Error("Method removeQuads() not implemented.");
+    }
+
+    public void removeQuads(Term subject, Term predicate, Term object) {
+        Resource filterSubject = getFilterSubject(subject);
+        IRI filterPredicate = getFilterPredicate(predicate);
+        Value filterObject = getFilterObject(object);
+
+        model.remove(filterSubject, filterPredicate, filterObject);
+    }
+
+    private Resource getFilterSubject(Term subject) {
+        if (subject != null) {
+            ValueFactory vf = SimpleValueFactory.getInstance();
+
+            if (subject instanceof BlankNode) {
+                return vf.createBNode(subject.getValue());
+            } else {
+                return vf.createIRI(subject.getValue());
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private IRI getFilterPredicate(Term predicate) {
+        if (predicate != null) {
+            ValueFactory vf = SimpleValueFactory.getInstance();
+
+            return vf.createIRI(predicate.getValue());
+        } else {
+            return null;
+        }
+    }
+
+    private Value getFilterObject(Term object) {
+        if (object != null) {
+            ValueFactory vf = SimpleValueFactory.getInstance();
+
+            if (object instanceof BlankNode) {
+                return vf.createBNode(object.getValue());
+            } else if (object instanceof Literal) {
+                return vf.createLiteral(object.getValue());
+            } else {
+                return vf.createIRI(object.getValue());
+            }
+        } else {
+            return null;
+        }
     }
 
     private Term convertStringToTerm(String str) {

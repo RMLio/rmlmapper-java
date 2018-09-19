@@ -37,8 +37,8 @@ _:69080 <http://www.w3.org/ns/prov#endedAtTime> "2018-09-07T10:13:55.754Z"^^<htt
 _:69080 <http://www.w3.org/ns/prov#generated> <file://./generated_metadata.nq>.
 _:69080 <http://www.w3.org/ns/prov#startedAtTime> "2018-09-07T10:13:55.293Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 _:69080 <http://www.w3.org/ns/prov#used> <file://./metadata/METADATA_TEST_term_level/mapping.ttl>.
-_:69080 <http://www.w3.org/ns/prov#used> <file://./sport.json>.
-_:69080 <http://www.w3.org/ns/prov#used> <file://./student.json>.
+_:69080 <http://www.w3.org/ns/prov#used> <file://src/test/resources/metadata/METADATA_TEST_term_level/sport.json>.
+_:69080 <http://www.w3.org/ns/prov#used> <file://src/test/resources/metadata/METADATA_TEST_term_level/student.json>.
 _:224353 <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> "Demi Moore".
 _:224353 <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://xmlns.com/foaf/0.1/name>.
 _:224353 <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://example.com/resource/student_20>.
