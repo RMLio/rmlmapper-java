@@ -136,7 +136,7 @@ public class RecordsFactory {
                 }
             }
         } else {
-            throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for XPath.");
+            throw new Error("The Logical Source of " + triplesMap + " does not have iterator, while this is expected for XPath.");
         }
     }
 

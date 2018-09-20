@@ -139,17 +139,19 @@ public class RDF4JStore extends QuadStore {
             return new BlankNode(str.replace("_:", ""));
         } else if (str.startsWith("\"")) {
             Pattern pattern;
-            if (str.contains("@")) {
+
+            if (str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"")) {
                 pattern = Pattern.compile("^\"([^\"]*)\"@<([^>]*)>");
             } else if (str.contains("^^")) {
                 pattern = Pattern.compile("^\"([^\"]*)\"\\^\\^<([^>]*)>");
             } else {
                 pattern = Pattern.compile("^\"([^\"]*)\"");
             }
+
             Matcher matcher = pattern.matcher(str);
 
             if (matcher.find()) {
-                if (str.contains("@")) {
+                if (str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"")) {
                     return new Literal(matcher.group(1), matcher.group(2));
                 } else if (str.contains("^^")) {
                     return new Literal(matcher.group(1), new NamedNode(matcher.group(2)));

@@ -1,0 +1,4 @@
+<http://www.example.com/dir_AAA> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.example.com/T> .
+<http://www.example.com/dir_AAB> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.example.com/T> .
+<http://www.example.com/dir_AAC> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.example.com/T> .
+<http://www.example.com/dir_AAD> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.example.com/T> .
