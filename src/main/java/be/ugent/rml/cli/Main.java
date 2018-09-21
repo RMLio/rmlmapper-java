@@ -152,15 +152,19 @@ public class Main {
                 }
 
                 String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
+                FunctionLoader functionLoader;
+
+                Map<String, Class> libraryMap = new HashMap<>();
+                libraryMap.put("GrelFunctions", GrelProcessor.class);
+                libraryMap.put("IDLabFunctions", IDLabFunctions.class);
+
                 if (fOptionValue == null) {
-                    executor = new Executor(rmlStore, factory);
+                    functionLoader = new FunctionLoader(null, null, libraryMap);
                 } else {
-                    Map<String, Class> libraryMap = new HashMap<>();
-                    libraryMap.put("GrelFunctions", GrelProcessor.class);
-                    libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-                    FunctionLoader functionLoader = new FunctionLoader(null, null, libraryMap);
-                    executor = new Executor(rmlStore, factory, functionLoader);
+                    functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
                 }
+
+                executor = new Executor(rmlStore, factory, functionLoader);
 
                 List<Term> triplesMaps = new ArrayList<>();
 
