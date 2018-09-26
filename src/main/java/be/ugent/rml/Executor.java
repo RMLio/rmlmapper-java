@@ -231,7 +231,7 @@ public class Executor {
             Object expectedBoolean = condition.execute(recordsMap);
 
             if (expectedBoolean instanceof Boolean) {
-                if ((boolean) condition.execute(recordsMap)) {
+                if ((boolean) expectedBoolean) {
                     ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
                     iris.add(subject);
                 }
