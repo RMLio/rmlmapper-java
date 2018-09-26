@@ -1,14 +1,12 @@
 package be.ugent.rml.functions;
 
 import be.ugent.rml.term.Term;
-import net.minidev.json.JSONArray;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -163,7 +161,7 @@ public class FunctionModel {
                         e.printStackTrace();
                     }
                 } else {
-                    return (ArrayList<Object>) parameter;
+                    return parameter;
                 }
 
             default:

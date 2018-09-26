@@ -322,7 +322,6 @@ public class MappingFactory {
             String gStr = graph.getValue();
             graphMappingInfos.add(new MappingInfo(termMap,
                     new NamedNodeGenerator(new ConstantExtractor(gStr))));
-
         }
 
         return graphMappingInfos;
@@ -339,7 +338,6 @@ public class MappingFactory {
             if (functionValues.isEmpty()) {
                 predicateMappingInfos.add(new MappingInfo(predicateMap,
                         new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false))));
-
             } else {
                 SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
