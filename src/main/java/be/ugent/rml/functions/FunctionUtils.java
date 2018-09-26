@@ -58,15 +58,6 @@ public class FunctionUtils {
         return args;
     }
 
-    public static boolean isResultsTrue(Object results) {
-        if (results instanceof List) {
-            List temp = (List) results;
-            return !temp.isEmpty() && temp.get(0).equals("true");
-        } else {
-            return false;
-        }
-    }
-
     public static void functionObjectToList(Object o, List<String> result) {
         if (o != null) {
             if (o instanceof String) {
