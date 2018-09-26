@@ -23,14 +23,14 @@ public class SimpleQuadStore extends QuadStore {
         for (Quad q : quads) {
             int i = 0;
 
-            while (i < quadsWithDuplicates.size() && ! (quadsWithDuplicates.get(i).getSubject().equals(q.getSubject())
+            while (i < quadsWithDuplicates.size() && !(quadsWithDuplicates.get(i).getSubject().equals(q.getSubject())
                     && quadsWithDuplicates.get(i).getObject().equals(q.getObject())
                     && quadsWithDuplicates.get(i).getPredicate().equals(q.getPredicate())
                     && !(quadsWithDuplicates.get(i).getGraph() == null && q.getGraph() != null)
                     && !(quadsWithDuplicates.get(i).getGraph() != null && q.getGraph() == null)
                     && ((quadsWithDuplicates.get(i).getGraph() == null && q.getGraph() == null) || quadsWithDuplicates.get(i).getGraph().equals(q.getGraph()))
             )) {
-                i ++;
+                i++;
             }
 
             if (i == quadsWithDuplicates.size()) {
@@ -46,7 +46,9 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     public void addQuad(Term subject, Term predicate, Term object, Term graph) {
-        quads.add(new Quad(subject, predicate, object, graph));
+        if (subject != null && predicate != null && object != null) {
+            quads.add(new Quad(subject, predicate, object, graph));
+        }
     }
 
     public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {

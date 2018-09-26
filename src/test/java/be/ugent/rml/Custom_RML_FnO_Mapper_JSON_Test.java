@@ -9,7 +9,6 @@ public class Custom_RML_FnO_Mapper_JSON_Test extends TestFunctionCore {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0020-JSON/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0020-JSON/output.ttl");
     }
 
-    @Ignore
     @Test
     public void evaluate_0021_JSON() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0021-JSON/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0021-JSON/output.ttl");

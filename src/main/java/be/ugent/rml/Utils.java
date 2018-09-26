@@ -12,6 +12,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -30,6 +31,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,7 +61,7 @@ public class Utils {
     }
 
     public static InputStream getInputStreamFromLocation(String location) throws IOException {
-        return getInputStreamFromLocation(location,null,"");
+        return getInputStreamFromLocation(location, null, "");
     }
 
     public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
@@ -109,6 +111,7 @@ public class Utils {
             }
         }
 
+        logger.debug("Looking for file " + path + " in basePath " + basePath);
 
         // Relative from user dir?
         f = new File(basePath, path);
@@ -235,9 +238,10 @@ public class Utils {
 
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+            logger.debug("Reading from " + file.getAbsolutePath());
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
-        } catch (IOException e) {
+        } catch (IOException | RDFParseException e) {
             e.printStackTrace();
         }
         return new RDF4JStore(model);
@@ -277,7 +281,7 @@ public class Utils {
 
     public static String encodeURI(String url) {
         Escaper escaper = UrlEscapers.urlFragmentEscaper();
-        String result =  escaper.escape(url);
+        String result = escaper.escape(url);
 
         result = result.replaceAll("!", "%21");
         result = result.replaceAll("#", "%23");
@@ -311,6 +315,7 @@ public class Utils {
         reader.close();
         return targetString;
     }
+
     /*
         Extracts the selected columns from the SQL query
         Orders them alphabetically
@@ -366,7 +371,7 @@ public class Utils {
                     if (previousWasBackslash) {
                         current += c;
                         previousWasBackslash = false;
-                    } else if(variableBusy) {
+                    } else if (variableBusy) {
                         throw new Error("Parsing of template failed. Probably a { was followed by a second { without first closing the first {. Make sure that you use { and } correctly.");
                     } else {
                         variableBusy = true;
@@ -406,5 +411,56 @@ public class Utils {
         }
 
         return extractors;
+    }
+
+    public static void writeOutput(List<Quad> output, String outputFile) {
+        if (output.size() > 1) {
+            logger.info(output.size() + " quads were generated");
+        } else {
+            logger.info(output.size() + " quad was generated");
+        }
+
+        //if output file provided, write to triples output file
+        if (outputFile != null) {
+            File targetFile = new File(outputFile);
+            logger.info("Writing quads to " + targetFile.getPath() + "...");
+
+            if (!targetFile.isAbsolute()) {
+                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);
+            }
+
+            try {
+                BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
+
+                Utils.toNQuads(output, out);
+
+                out.flush();
+                out.close();
+                logger.info("Writing to " + targetFile.getPath() + " is done.");
+            } catch (IOException e) {
+                logger.error("Writing output to file failed. Reason: " + e.getMessage());
+            }
+        } else {
+            System.out.println(Utils.toNQuads(output));
+        }
+    }
+
+    public static String randomString(int len) {
+        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        SecureRandom rnd = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
+
+    }
+
+    public static String hashCode(String s) {
+        int hash = 0;
+        for (int i = 0; i < s.toCharArray().length; i++) {
+            hash += s.toCharArray()[i] * 31 ^ (s.toCharArray().length - 1 - i);
+        }
+        return Integer.toString(Math.abs(hash));
     }
 }
