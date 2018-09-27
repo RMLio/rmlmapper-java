@@ -7,10 +7,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-- support for NoSQL databases
-- support for Web APIs
-- support for SPARQL endpoints
-- support for TPF servers
+### Added
+
+- output formats: turtle, trig, trix, jsonld
+- functions with list input
+- metadata generation
+
+### Changed
+
+- all (including templating) works with function generators
+
+### Fixed
+
+- function file path not passed on to the function loader when using the CLI
+- when parsing a string into an RDF term, take into account @ is not always a language tag
+- parenttriplesmap handling null values
+- config file
 
 ## [4.0.0] - 2018-09-03
 
