@@ -22,7 +22,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     }
 
     @Override
-    public List<?> execute(Map<String, Record> records) throws IOException {
+    public Object execute(Map<String, Record> records) throws IOException {
         final ArrayList<Term> fnTerms = new ArrayList<>();
         final HashMap<String, Object> args =  new HashMap<>();
 
@@ -52,9 +52,13 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
                 fnTerms.add(values.get(0));
             } else {
                 parameters.forEach(parameter -> {
+                    ArrayList<Object> temp = new ArrayList<>();
+
                     values.forEach(value -> {
-                        args.put(parameter.getValue(), value.getValue());
-                    }) ;
+                        temp.add(value.getValue());
+                    });
+
+                    args.put(parameter.getValue(), temp);
                 });
             }
         });

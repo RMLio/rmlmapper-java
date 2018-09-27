@@ -13,12 +13,16 @@ import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.ProvenancedTerm;
 import be.ugent.rml.term.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
 
 public class Executor {
+
+    private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
     private Initializer initializer;
     private HashMap<Term, List<Record>> recordsHolders;
@@ -224,9 +228,15 @@ public class Executor {
             recordsMap.put("child", child);
             recordsMap.put("parent", parent);
 
-            if (FunctionUtils.isResultsTrue(condition.execute(recordsMap))) {
-                ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
-                iris.add(subject);
+            Object expectedBoolean = condition.execute(recordsMap);
+
+            if (expectedBoolean instanceof Boolean) {
+                if ((boolean) expectedBoolean) {
+                    ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
+                    iris.add(subject);
+                }
+            } else {
+                logger.warn("The used condition with the Parent Triples Map does not return a boolean.");
             }
         }
 

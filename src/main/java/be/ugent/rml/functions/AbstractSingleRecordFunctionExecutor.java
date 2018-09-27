@@ -10,7 +10,7 @@ public abstract class AbstractSingleRecordFunctionExecutor implements SingleReco
 
     protected MultipleRecordsFunctionExecutor functionExecutor;
 
-    public List<?> execute(Record record) throws IOException {
+    public Object execute(Record record) throws IOException {
         HashMap<String, Record> recordsMap = new HashMap<>();
         recordsMap.put("_default", record);
 

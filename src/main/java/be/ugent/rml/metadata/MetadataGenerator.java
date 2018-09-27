@@ -274,7 +274,7 @@ public class MetadataGenerator {
                     Term sourceNode;
 
                     // Literal -- encapsulate source in blank node
-                    if (Utils.isLiteral(source.toString())) {
+                    if (source instanceof Literal) {
 //                        try {
 //                            File sourceFile = Utils.getFile(sourceObjects.get(0).getValue(), null);
                         sourceNode = new NamedNode(String.format("file://%s", sourceObjects.get(0).getValue()));
@@ -351,7 +351,7 @@ public class MetadataGenerator {
             }
 
             // OBJECT
-            Term objectNode = (Utils.isLiteral(pquad.getObject().getTerm().toString())) ?
+            Term objectNode = (pquad.getObject().getTerm() instanceof Literal) ?
                     createValueStatements(pquad.getObject().getTerm()) : pquad.getObject().getTerm();
 
             if (objectMD.getTriplesMap() != null) {

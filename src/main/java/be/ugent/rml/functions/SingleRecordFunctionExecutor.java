@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface SingleRecordFunctionExecutor {
 
-    List<?> execute(Record record) throws IOException;
+    Object execute(Record record) throws IOException;
 }

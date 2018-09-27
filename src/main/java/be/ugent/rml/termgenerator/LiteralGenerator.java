@@ -1,5 +1,6 @@
 package be.ugent.rml.termgenerator;
 
+import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.Literal;
@@ -13,29 +14,32 @@ public class LiteralGenerator extends TermGenerator {
 
     private String language;
     private Term datatype;
+    private int maxNumberOfTerms;
 
-    private LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, String language, Term datatype) {
+    private LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, String language, Term datatype, int maxNumberOfTerms) {
         super(functionExecutor);
         this.language = language;
         this.datatype = datatype;
+        this.maxNumberOfTerms = maxNumberOfTerms;
     }
 
     public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, String language) {
-        this(functionExecutor, language, null);
+        this(functionExecutor, language, null, 0);
     }
 
     public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, Term datatype) {
-        this(functionExecutor, null, datatype);
+        this(functionExecutor, null, datatype, 0);
     }
 
     public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor) {
-        this(functionExecutor, null, null);
+        this(functionExecutor, null, null, 0);
     }
 
     @Override
     public List<Term> generate(Record record) throws IOException {
         ArrayList<Term> objects = new ArrayList<>();
-        List<String> objectStrings = (List<String>) this.functionExecutor.execute(record);
+        ArrayList<String> objectStrings = new ArrayList<>();
+        FunctionUtils.functionObjectToList(this.functionExecutor.execute(record), objectStrings);
 
         if (objectStrings.size() > 0) {
             //add language tag if present
@@ -51,6 +55,11 @@ public class LiteralGenerator extends TermGenerator {
             });
         }
 
-        return objects;
+        if (maxNumberOfTerms != 0) {
+            return objects.subList(0, maxNumberOfTerms);
+
+        } else {
+            return objects;
+        }
     }
 }

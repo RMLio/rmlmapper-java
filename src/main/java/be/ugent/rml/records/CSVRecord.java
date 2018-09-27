@@ -6,14 +6,14 @@ import java.util.Map;
 
 public class CSVRecord implements Record {
 
-    private Map<String, List<String>> values;
+    private Map<String, List<Object>> values;
 
-    public CSVRecord(Map<String, List<String>> values) {
+    public CSVRecord(Map<String, List<Object>> values) {
         this.values = values;
     }
 
-    public List<String> get(String value) {
-        List<String> result = values.get(value);
+    public List<Object> get(String value) {
+        List<Object> result = values.get(value);
 
         if (result == null) {
             result =  new ArrayList<>();
