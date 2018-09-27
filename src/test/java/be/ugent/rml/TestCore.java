@@ -13,7 +13,6 @@ import java.io.*;
 import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 abstract class TestCore {
@@ -61,7 +60,7 @@ abstract class TestCore {
         try {
             QuadStore result = executor.execute(null);
             result.removeDuplicates();
-            compareStores(result, filePathToStore(outPath), false);
+            compareStores(result, filePathToStore(outPath));
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             fail();
@@ -79,18 +78,13 @@ abstract class TestCore {
             Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
             QuadStore result = executor.execute(null);
         } catch (IOException e) {
-
+            // I expected you!
         }
     }
 
-    void compareStores(QuadStore store1, QuadStore store2, boolean removeTimestamps) {
+    private void compareStores(QuadStore store1, QuadStore store2) {
         String string1 = store1.toSortedString();
         String string2 = store2.toSortedString();
-
-        if (removeTimestamps) {
-            string1 = string1.replaceAll("\"[^\"]*\"\\^\\^<http://www.w3\\.org/2001/XMLSchema#dateTime>", "");
-            string2 = string2.replaceAll("\"[^\"]*\"\\^\\^<c>", "");
-        }
 
         assertEquals(string1, string2);
     }
@@ -99,24 +93,24 @@ abstract class TestCore {
         RDF4JStore store1 = filePathToStore(path1);
         RDF4JStore store2 = filePathToStore(path2);
 
-        store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
-        store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
-        store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
-        store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
-        store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
-        store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
-
-        //compareStores(store1, store2, false);
+        if (removeTimestamps) {
+            store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
+            store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
+            store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
+            store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
+            store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
+            store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
+        }
 
         try {
-            assertTrue(store1.equals(store2));
+            assertEquals(store1, store2);
         } catch (AssertionError e) {
-            compareStores(store1, store2, false);
+            compareStores(store1, store2);
         }
     }
 
-    RDF4JStore filePathToStore(String path) {
-        // load output file
+    private RDF4JStore filePathToStore(String path) {
+        // load output-turtle file
         File outputFile = null;
         try {
             outputFile = Utils.getFile(path);
@@ -126,9 +120,11 @@ abstract class TestCore {
         RDF4JStore store;
 
         if (path.endsWith(".nq")) {
-            store = (RDF4JStore) Utils.readTurtle(outputFile, RDFFormat.NQUADS);
+            store = Utils.readTurtle(outputFile, RDFFormat.NQUADS);
+        } else if (path.endsWith(".json")) {
+            store = Utils.readTurtle(outputFile, RDFFormat.JSONLD);
         } else {
-            store = (RDF4JStore) Utils.readTurtle(outputFile);
+            store = Utils.readTurtle(outputFile);
         }
 
         return store;

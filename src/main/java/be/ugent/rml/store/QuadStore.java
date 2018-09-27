@@ -3,7 +3,6 @@ package be.ugent.rml.store;
 import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.Namespace;
 
-import javax.naming.Name;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
