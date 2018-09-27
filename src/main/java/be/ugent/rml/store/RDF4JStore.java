@@ -11,6 +11,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.rdf4j.model.util.Models;
 
 import java.io.Writer;
 import java.util.ArrayList;
@@ -41,11 +42,10 @@ public class RDF4JStore extends QuadStore {
 
     @Override
     public void addQuad(Term subject, Term predicate, Term object, Term graph) {
-        ValueFactory vf = SimpleValueFactory.getInstance();
-        Resource s = getRDF4JSubject(subject, vf);
-        IRI p = getRDF4JPredicate(predicate, vf);
-        Value o = getRDF4JObject(object, vf);
-        Resource g = getRDF4JGraph(graph, vf);
+        Resource s = getFilterSubject(subject);
+        IRI p = getFilterPredicate(predicate);
+        Value o = getFilterObject(object);
+        Resource g = getFilterGraph(graph);
 
         model.add(s, p, o, g);
 
@@ -61,12 +61,11 @@ public class RDF4JStore extends QuadStore {
 
     @Override
     public List<Quad> getQuads(Term subject, Term predicate, Term object) {
-        ValueFactory vf = SimpleValueFactory.getInstance();
         Model result;
 
-        Resource filterSubject = getRDF4JSubject(subject, vf);
-        IRI filterPredicate = getRDF4JPredicate(predicate, vf);
-        Value filterObject = getRDF4JObject(object, vf);
+        Resource filterSubject = getFilterSubject(subject);
+        IRI filterPredicate = getFilterPredicate(predicate);
+        Value filterObject = getFilterObject(object);
 
         result = model.filter(filterSubject, filterPredicate, filterObject);
 
@@ -131,25 +130,36 @@ public class RDF4JStore extends QuadStore {
         return model.size();
     }
 
-    private Term convertStringToTerm(String str) {
-        if (str.startsWith("_:")) {
-            return new BlankNode(str.replace("_:", ""));
-        } else if (str.startsWith("\"")) {
-            Pattern pattern = Pattern.compile("^\"(.*)\"");
-            Matcher matcher = pattern.matcher(str);
+    public Model getModel() {
+        return model;
+    }
 
-            if (matcher.find()) {
-                return new Literal(matcher.group(1));
-            } else {
-                throw new Error("Invalid Literal: " + str);
-            }
+    public boolean equals(Object o) {
+        if (o instanceof RDF4JStore) {
+            RDF4JStore otherStore = (RDF4JStore) o;
+
+            return Models.isomorphic(model, otherStore.getModel());
         } else {
-            return new NamedNode(str);
+            return false;
         }
     }
 
-    private Resource getRDF4JSubject(Term subject, ValueFactory vf) {
+    public void removeQuads(Term subject, Term predicate, Term object, Term graph) {
+        throw new Error("Method removeQuads() not implemented.");
+    }
+
+    public void removeQuads(Term subject, Term predicate, Term object) {
+        Resource filterSubject = getFilterSubject(subject);
+        IRI filterPredicate = getFilterPredicate(predicate);
+        Value filterObject = getFilterObject(object);
+
+        model.remove(filterSubject, filterPredicate, filterObject);
+    }
+
+    private Resource getFilterSubject(Term subject) {
         if (subject != null) {
+            ValueFactory vf = SimpleValueFactory.getInstance();
+
             if (subject instanceof BlankNode) {
                 return vf.createBNode(subject.getValue());
             } else {
@@ -160,16 +170,20 @@ public class RDF4JStore extends QuadStore {
         }
     }
 
-    private IRI getRDF4JPredicate(Term predicate, ValueFactory vf) {
+    private IRI getFilterPredicate(Term predicate) {
         if (predicate != null) {
+            ValueFactory vf = SimpleValueFactory.getInstance();
+
             return vf.createIRI(predicate.getValue());
         } else {
             return null;
         }
     }
 
-    private Value getRDF4JObject(Term object, ValueFactory vf) {
+    private Value getFilterObject(Term object) {
         if (object != null) {
+            ValueFactory vf = SimpleValueFactory.getInstance();
+
             if (object instanceof BlankNode) {
                 return vf.createBNode(object.getValue());
             } else if (object instanceof Literal) {
@@ -182,7 +196,39 @@ public class RDF4JStore extends QuadStore {
         }
     }
 
-    private Resource getRDF4JGraph(Term graph, ValueFactory vf) {
-        return getRDF4JSubject(graph, vf);
+    private Resource getFilterGraph(Term graph) {
+        return getFilterSubject(graph);
+    }
+
+    private Term convertStringToTerm(String str) {
+        if (str.startsWith("_:")) {
+            return new BlankNode(str.replace("_:", ""));
+        } else if (str.startsWith("\"")) {
+            Pattern pattern;
+
+            if (str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"")) {
+                pattern = Pattern.compile("^\"([^\"]*)\"@<([^>]*)>");
+            } else if (str.contains("^^")) {
+                pattern = Pattern.compile("^\"([^\"]*)\"\\^\\^<([^>]*)>");
+            } else {
+                pattern = Pattern.compile("^\"([^\"]*)\"");
+            }
+
+            Matcher matcher = pattern.matcher(str);
+
+            if (matcher.find()) {
+                if (str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"")) {
+                    return new Literal(matcher.group(1), matcher.group(2));
+                } else if (str.contains("^^")) {
+                    return new Literal(matcher.group(1), new NamedNode(matcher.group(2)));
+                } else {
+                    return new Literal(matcher.group(1));
+                }
+            } else {
+                throw new Error("Invalid Literal: " + str);
+            }
+        } else {
+            return new NamedNode(str);
+        }
     }
 }

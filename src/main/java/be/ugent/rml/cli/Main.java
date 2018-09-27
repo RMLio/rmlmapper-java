@@ -4,8 +4,8 @@ import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.functions.lib.IDLabFunctions;
+import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
@@ -13,28 +13,33 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
-import org.eclipse.rdf4j.model.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String [] args) {
+    public static void main(String[] args) {
         Options options = new Options();
         Option mappingdocOption = Option.builder("m")
-                .longOpt( "mappingfile" )
+                .longOpt("mappingfile")
                 .hasArg()
-                .desc(  "path to mapping document" )
+                .desc("path to mapping document")
                 .build();
         Option outputfileOption = Option.builder("o")
-                .longOpt( "outputfile" )
+                .longOpt("outputfile")
                 .hasArg()
-                .desc(  "path to output file" )
+                .desc("path to output file")
                 .build();
         Option functionfileOption = Option.builder("f")
                 .longOpt("functionfile")
@@ -42,26 +47,36 @@ public class Main {
                 .desc("path to functions.ttl file (dynamic functions are found relative to functions.ttl)")
                 .build();
         Option triplesmapsOption = Option.builder("t")
-                .longOpt( "triplesmaps" )
+                .longOpt("triplesmaps")
                 .hasArg()
-                .desc(  "IRIs of the triplesmaps that should be executed (default is all triplesmaps)" )
+                .desc("IRIs of the triplesmaps that should be executed (default is all triplesmaps)")
                 .build();
         Option removeduplicatesOption = Option.builder("d")
-                .longOpt( "duplicates" )
-                .desc(  "remove duplicates" )
+                .longOpt("duplicates")
+                .desc("remove duplicates")
                 .build();
         Option configfileOption = Option.builder("c")
-                .longOpt( "configfile" )
+                .longOpt("configfile")
                 .hasArg()
-                .desc( "path to configuration file" )
+                .desc("path to configuration file")
                 .build();
         Option helpOption = Option.builder("h")
-                .longOpt( "help" )
-                .desc( "get help info" )
+                .longOpt("help")
+                .desc("get help info")
                 .build();
         Option verboseOption = Option.builder("v")
-                .longOpt( "verbose" )
-                .desc( "verbose" )
+                .longOpt("verbose")
+                .desc("verbose")
+                .build();
+        Option metadataOption = Option.builder("e")
+                .longOpt("metadatafile")
+                .hasArg()
+                .desc("path to metadata-test-cases file")
+                .build();
+        Option metadataDetailLevelOption = Option.builder("l")
+                .longOpt("metadataDetailLevel")
+                .hasArg()
+                .desc("generate metadata-test-cases on given detail level (dataset - triple - term)")
                 .build();
         Option serializationFormatOption = Option.builder("s")
                 .longOpt( "serialization" )
@@ -77,6 +92,8 @@ public class Main {
         options.addOption(helpOption);
         options.addOption(verboseOption);
         options.addOption(serializationFormatOption);
+        options.addOption(metadataOption);
+        options.addOption(metadataDetailLevelOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -120,16 +137,53 @@ public class Main {
 
                 Executor executor;
 
-                String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
-                if (fOptionValue == null) {
-                    executor = new Executor(rmlStore, factory, null, outputStore);
-                } else {
-                    Map<String, Class> libraryMap = new HashMap<>();
-                    libraryMap.put("GrelFunctions", GrelProcessor.class);
-                    libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-                    FunctionLoader functionLoader = new FunctionLoader(null, null, libraryMap);
-                    executor = new Executor(rmlStore, factory, functionLoader, outputStore);
+                // Extract required information and create the MetadataGenerator
+                MetadataGenerator metadataGenerator = null;
+                String metadataFile = getPriorityOptionValue(metadataOption, lineArgs, configFile);
+                String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
+
+                if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
+                    if (requestedDetailLevel != null) {
+                        MetadataGenerator.DETAIL_LEVEL detailLevel;
+                        switch (requestedDetailLevel) {
+                            case "dataset":
+                                detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
+                                break;
+                            case "triple":
+                                detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
+                                break;
+                            case "term":
+                                detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
+                                break;
+                            default:
+                                logger.error("Unknown metadata-test-cases detail level option. Use the -h flag for more info.");
+                                return;
+                        }
+                        metadataGenerator = new MetadataGenerator(
+                                detailLevel,
+                                getPriorityOptionValue(metadataOption, lineArgs, configFile),
+                                mOptionValue,
+                                rmlStore
+                        );
+                    } else {
+                        logger.error("Please specify the detail level when requesting metadata-test-cases generation. Use the -h flag for more info.");
+                    }
                 }
+
+                String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
+                FunctionLoader functionLoader;
+
+                Map<String, Class> libraryMap = new HashMap<>();
+                libraryMap.put("GrelFunctions", GrelProcessor.class);
+                libraryMap.put("IDLabFunctions", IDLabFunctions.class);
+
+                if (fOptionValue == null) {
+                    functionLoader = new FunctionLoader(null, null, libraryMap);
+                } else {
+                    functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
+                }
+
+                executor = new Executor(rmlStore, factory, functionLoader, outputStore);
 
                 List<Term> triplesMaps = new ArrayList<>();
 
@@ -141,7 +195,28 @@ public class Main {
                     });
                 }
 
-                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile));
+                if (metadataGenerator != null) {
+                    metadataGenerator.preMappingGeneration(triplesMaps.isEmpty() ?
+                            executor.getTriplesMaps() : triplesMaps, rmlStore);
+                }
+
+                // Get start timestamp for post mapping metadata-test-cases
+                String startTimestamp = Instant.now().toString();
+
+                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                        metadataGenerator);
+
+                // Get stop timestamp for post mapping metadata-test-cases
+                String stopTimestamp = Instant.now().toString();
+
+                // Generate post mapping metadata-test-cases and output all metadata-test-cases
+                if (metadataGenerator != null) {
+                    metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
+                            result);
+
+                    writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
+                }
+
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
 
                 if (!result.isEmpty()) {
@@ -150,14 +225,13 @@ public class Main {
                     writeOutput(result, outputFile, outputFormat);
                 }
             }
-        } catch( ParseException exp ) {
+        } catch (ParseException exp) {
             // oops, something went wrong
             logger.error("Parsing failed. Reason: " + exp.getMessage());
             printHelp(options);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-
     }
 
     private static boolean checkOptionPresence(Option option, CommandLine lineArgs, Properties properties) {
@@ -165,6 +239,7 @@ public class Main {
                 && properties.getProperty(option.getLongOpt()) != null
                 && !properties.getProperty(option.getLongOpt()).equals("false"));  // ex: 'help = false' in the config file shouldn't return the help text
     }
+
     private static String getPriorityOptionValue(Option option, CommandLine lineArgs, Properties properties) {
         if (lineArgs.hasOption(option.getOpt())) {
             return lineArgs.getOptionValue(option.getOpt());

@@ -1,5 +1,8 @@
 package be.ugent.rml;
 
+import be.ugent.rml.extractor.ConstantExtractor;
+import be.ugent.rml.extractor.Extractor;
+import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.*;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
@@ -9,6 +12,7 @@ import be.ugent.rml.termgenerator.BlankNodeGenerator;
 import be.ugent.rml.termgenerator.LiteralGenerator;
 import be.ugent.rml.termgenerator.NamedNodeGenerator;
 import be.ugent.rml.termgenerator.TermGenerator;
+import org.elasticsearch.cluster.routing.allocation.decider.Decision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +25,11 @@ import java.util.function.BiConsumer;
 
 public class MappingFactory {
     private final FunctionLoader functionLoader;
-    private TermGenerator subject;
-    private List<TermGenerator> graphs;
+    private MappingInfo subjectMappingInfo;
+    private List<MappingInfo> graphMappingInfos;
     private Term triplesMap;
     private QuadStore store;
-    private ArrayList<PredicateObjectGraphGenerator> predicateObjectGraphGenerators;
+    private List<PredicateObjectGraphMapping> predicateObjectGraphMappings;
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public MappingFactory(FunctionLoader functionLoader) {
@@ -35,19 +39,22 @@ public class MappingFactory {
     public Mapping createMapping(Term triplesMap, QuadStore store) throws IOException {
         this.triplesMap = triplesMap;
         this.store = store;
-        this.subject = null;
-        this.predicateObjectGraphGenerators = new ArrayList<>();
-        this.graphs = null;
+        this.subjectMappingInfo = null;
+        this.predicateObjectGraphMappings = new ArrayList<>();
+        this.graphMappingInfos = null;
 
         parseSubjectMap();
         parsePredicateObjectMaps();
+        graphMappingInfos = parseGraphMapsAndShortcuts(subjectMappingInfo.getTerm());
+
 
         //return the mapping
-        return new Mapping(subject, predicateObjectGraphGenerators, graphs);
+        return new Mapping(subjectMappingInfo, predicateObjectGraphMappings, graphMappingInfos);
     }
 
     private void parseSubjectMap() throws IOException {
-        if (this.subject == null) {
+        if (this.subjectMappingInfo == null) {
+            TermGenerator generator;
             List<Term> subjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"), null));
 
             if (!subjectmaps.isEmpty()) {
@@ -56,41 +63,46 @@ public class MappingFactory {
                 }
 
                 Term subjectmap = subjectmaps.get(0);
-                List<Term> functionValues =  Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+                List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
 
                 if (functionValues.isEmpty()) {
-                    List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR  + "termType"), null));
+                    List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR + "termType"), null));
 
                     //checking if we are dealing with a Blank Node as subject
                     if (!termTypes.isEmpty() && termTypes.get(0).equals(new NamedNode(NAMESPACES.RR  + "BlankNode"))) {
-                        String template = getGenericTemplate(subjectmap);
+                        SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, subjectmap, true);
 
-                        if (template != null) {
-                            this.subject = new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(template, true));
+                        if (executor != null) {
+                            generator = new BlankNodeGenerator(executor);
                         } else {
-                            this.subject = new BlankNodeGenerator();
+                            generator = new BlankNodeGenerator();
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
-                        this.subject = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(getGenericTemplate(subjectmap), true));
+                        generator = new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, subjectmap, true));
                     }
                 } else {
                     SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
-                    this.subject = new NamedNodeGenerator(functionExecutor);
+                    generator = new NamedNodeGenerator(functionExecutor);
                 }
 
-                this.graphs = parseGraphMapsAndShortcuts(subjectmap);
+                this.subjectMappingInfo = new MappingInfo(subjectmap, generator);
 
                 //get classes
-                List<Term> classes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR  + "class"), null));
+                List<Term> classes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR + "class"), null));
 
                 //we create predicateobjects for the classes
-                for (Term c: classes) {
+                for (Term c : classes) {
                     // Don't put in graph for rr:class, subject is already put in graph, otherwise double export
-                    NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(NAMESPACES.RDF + "type"));
-                    NamedNodeGenerator objectGenerator = new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(c.getValue()));
-                    predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(predicateGenerator, objectGenerator, null));
+                    NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(new ConstantExtractor(NAMESPACES.RDF + "type"));
+                    NamedNodeGenerator objectGenerator = new NamedNodeGenerator(new ConstantExtractor(c.getValue()));
+                    predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(
+                            new MappingInfo(subjectmap, predicateGenerator),
+                            new MappingInfo(subjectmap, objectGenerator),
+                            null));
+
+
                 }
             } else {
                 throw new Error(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");
@@ -102,42 +114,42 @@ public class MappingFactory {
         List<Term> predicateobjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "predicateObjectMap"), null));
 
         for (Term pom : predicateobjectmaps) {
-            List<TermGenerator> predicateGenerators = parsePredicateMapsAndShortcuts(pom);
-            List<TermGenerator> graphGenerators = parseGraphMapsAndShortcuts(pom);
+            List<MappingInfo> predicateMappingInfos = parsePredicateMapsAndShortcuts(pom);
+            List<MappingInfo> graphMappingInfos = parseGraphMapsAndShortcuts(pom);
 
-            parseObjectMapsAndShortcutsAndGeneratePOGGenerators(pom, predicateGenerators, graphGenerators);
+            parseObjectMapsAndShortcutsAndGeneratePOGGenerators(pom, predicateMappingInfos, graphMappingInfos);
         }
     }
 
-    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<TermGenerator> predicateGenerators, List<TermGenerator> graphGenerators) throws IOException {
-        parseObjectMapsAndShortcutsWithCallback(termMap, (oGen, childOrParent) -> {
-            predicateGenerators.forEach(pGen -> {
-                if (graphGenerators.isEmpty()) {
-                    predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, null));
+    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<MappingInfo> predicateMappingInfos, List<MappingInfo> graphMappingInfos) throws IOException {
+        parseObjectMapsAndShortcutsWithCallback(termMap, (oMappingInfo, childOrParent) -> {
+            predicateMappingInfos.forEach(pMappingInfo -> {
+                if (graphMappingInfos.isEmpty()) {
+                    predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null));
                 } else {
-                    graphGenerators.forEach(gGen -> {
-                        predicateObjectGraphGenerators.add(new PredicateObjectGraphGenerator(pGen, oGen, gGen));
+                    graphMappingInfos.forEach(gMappingInfo -> {
+                        predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo));
                     });
                 }
             });
         }, (parentTriplesMap, joinConditionFunctionExecutors) -> {
-            predicateGenerators.forEach(pGen -> {
-                List<PredicateObjectGraphGenerator> pos = getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(pGen, null, graphGenerators);
+            predicateMappingInfos.forEach(pMappingInfo -> {
+                List<PredicateObjectGraphMapping> pos = getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(pMappingInfo, null, graphMappingInfos);
 
-                pos.forEach(pogGen -> {
-                    pogGen.setParentTriplesMap(parentTriplesMap);
+                pos.forEach(pogMappingInfo -> {
+                    pogMappingInfo.setParentTriplesMap(parentTriplesMap);
 
                     joinConditionFunctionExecutors.forEach(jcfe -> {
-                        pogGen.addJoinCondition(jcfe);
+                        pogMappingInfo.addJoinCondition(jcfe);
                     });
 
-                    predicateObjectGraphGenerators.add(pogGen);
+                    predicateObjectGraphMappings.add(pogMappingInfo);
                 });
             });
         });
     }
 
-    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<TermGenerator, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
+    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
         List<Term> objectmaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "objectMap"), null));
 
         for (Term objectmap : objectmaps) {
@@ -149,7 +161,7 @@ public class MappingFactory {
 
         for (Term o : objectsConstants) {
             TermGenerator gen;
-            SingleRecordFunctionExecutor fn = ApplyTemplateFunctionFactory.generateWithConstantValue(o.getValue());
+            SingleRecordFunctionExecutor fn = new ConstantExtractor(o.getValue());
 
             if (o instanceof Literal) {
                 gen = new LiteralGenerator(fn);
@@ -157,11 +169,11 @@ public class MappingFactory {
                 gen = new NamedNodeGenerator(fn);
             }
 
-            objectMapCallback.accept(gen, "child");
+            objectMapCallback.accept(new MappingInfo(termMap, gen), "child");
         }
     }
 
-    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<TermGenerator, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
+    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
         List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
         Term termType = getTermType(objectmap);
 
@@ -171,28 +183,27 @@ public class MappingFactory {
         List<Term> parentTermMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "parentTermMap"), null));
 
         if (functionValues.isEmpty()) {
-            String genericTemplate = getGenericTemplate(objectmap);
+            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, false);
 
-            if (genericTemplate != null) {
-                SingleRecordFunctionExecutor fn = ApplyTemplateFunctionFactory.generate(genericTemplate, termType);
+            if (executor != null) {
                 TermGenerator oGen;
 
                 if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
                     //check if we need to apply a datatype to the object
                     if (!datatypes.isEmpty()) {
-                        oGen = new LiteralGenerator(fn, datatypes.get(0));
+                        oGen = new LiteralGenerator(executor, datatypes.get(0));
                         //check if we need to apply a language to the object
                     } else if (!languages.isEmpty()) {
-                        oGen = new LiteralGenerator(fn, languages.get(0).getValue());
+                        oGen = new LiteralGenerator(executor, languages.get(0).getValue());
                     } else {
-                        oGen = new LiteralGenerator(fn);
+                        oGen = new LiteralGenerator(executor);
                     }
                 } else {
-                    oGen = new NamedNodeGenerator(fn);
+                    oGen = new NamedNodeGenerator(executor);
                 }
 
-                objectMapCallback.accept(oGen, "child");
-            } else if (! parentTriplesMaps.isEmpty()) {
+                objectMapCallback.accept(new MappingInfo(objectmap, oGen), "child");
+            } else if (!parentTriplesMaps.isEmpty()) {
                 if (parentTriplesMaps.size() > 1) {
                     logger.warn(triplesMap + " has " + parentTriplesMaps.size() + " Parent Triples Maps. You can only have one. A random one is taken.");
                 }
@@ -216,25 +227,19 @@ public class MappingFactory {
                         FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
                         Map<String, Object[]> parameters = new HashMap<>();
 
-                        Template parent = new Template();
-                        parent.addElement(new TemplateElement(parents.get(0), TEMPLATETYPE.VARIABLE));
-                        List<Template> parentsList = new ArrayList<>();
-                        parentsList.add(parent);
-                        Object[] detailsParent = {"parent", parentsList};
+                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0));
+                        Object[] detailsParent = {"parent", parent};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
 
-                        Template child = new Template();
-                        child.addElement(new TemplateElement(childs.get(0), TEMPLATETYPE.VARIABLE));
-                        List<Template> childsList = new ArrayList<>();
-                        childsList.add(child);
-                        Object[] detailsChild = {"child", childsList};
+                        SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0));
+                        Object[] detailsChild = {"child", child};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
                         joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(equal, parameters));
                     }
                 }
 
-                for (Term joinCondition: rmljoinConditions) {
+                for (Term joinCondition : rmljoinConditions) {
                     Term functionValue = Utils.getObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.FNML + "functionValue"), null)).get(0);
                     joinConditionFunctionExecutors.add(parseJoinConditionFunctionTermMap(functionValue));
                 }
@@ -252,7 +257,7 @@ public class MappingFactory {
             TermGenerator gen;
 
             //TODO is literal the default?
-            if (termType == null || termType.equals( new NamedNode(NAMESPACES.RR + "Literal"))) {
+            if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
                 //check if we need to apply a datatype to the object
                 if (!datatypes.isEmpty()) {
                     gen = new LiteralGenerator(functionExecutor, datatypes.get(0));
@@ -266,12 +271,12 @@ public class MappingFactory {
                 gen = new NamedNodeGenerator(functionExecutor);
             }
 
-            objectMapCallback.accept(gen, "child");
+            objectMapCallback.accept(new MappingInfo(objectmap, gen), "child");
         }
     }
 
-    private List<TermGenerator> parseGraphMapsAndShortcuts(Term termMap) throws IOException {
-        ArrayList<TermGenerator> graphs = new ArrayList<>();
+    private List<MappingInfo> parseGraphMapsAndShortcuts(Term termMap) throws IOException {
+        ArrayList<MappingInfo> graphMappingInfos = new ArrayList<>();
 
         List<Term> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graphMap"), null));
 
@@ -284,41 +289,46 @@ public class MappingFactory {
                 termType = termTypes.get(0);
             }
 
+            TermGenerator generator;
+
             if (functionValues.isEmpty()) {
-                String genericTemplate = getGenericTemplate(graphMap);
+                SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, graphMap, true);
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
-                    graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                    generator = new NamedNodeGenerator(executor);
                 } else {
-                    if (genericTemplate == null) {
-                        graphs.add(new BlankNodeGenerator());
+                    if (executor == null) {
+                        generator = new BlankNodeGenerator();
                     } else {
-                        graphs.add(new BlankNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                        generator = new BlankNodeGenerator(executor);
                     }
                 }
             } else {
                 SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
-                    graphs.add(new NamedNodeGenerator(functionExecutor));
+                    generator = new NamedNodeGenerator(functionExecutor);
                 } else {
-                    graphs.add(new BlankNodeGenerator(functionExecutor));
+                    generator = new BlankNodeGenerator(functionExecutor);
                 }
             }
+
+            graphMappingInfos.add(new MappingInfo(termMap, generator));
         }
 
         List<Term> graphShortcuts = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graph"), null));
 
         for (Term graph : graphShortcuts) {
             String gStr = graph.getValue();
-            graphs.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(gStr)));
+            graphMappingInfos.add(new MappingInfo(termMap,
+                    new NamedNodeGenerator(new ConstantExtractor(gStr))));
         }
 
-        return graphs;
+        return graphMappingInfos;
     }
 
-    private List<TermGenerator> parsePredicateMapsAndShortcuts(Term termMap) throws IOException {
-        ArrayList<TermGenerator> predicates = new ArrayList<>();
+    private List<MappingInfo> parsePredicateMapsAndShortcuts(Term termMap) throws IOException {
+        ArrayList<MappingInfo> predicateMappingInfos = new ArrayList<>();
 
         List<Term> predicateMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "predicateMap"), null));
 
@@ -326,13 +336,12 @@ public class MappingFactory {
             List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(predicateMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
 
             if (functionValues.isEmpty()) {
-                String genericTemplate = getGenericTemplate(predicateMap);
-
-                predicates.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generate(genericTemplate, true)));
+                predicateMappingInfos.add(new MappingInfo(predicateMap,
+                        new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false))));
             } else {
                 SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
-                predicates.add(new NamedNodeGenerator(functionExecutor));
+                predicateMappingInfos.add(new MappingInfo(predicateMap, new NamedNodeGenerator(functionExecutor)));
             }
         }
 
@@ -340,10 +349,10 @@ public class MappingFactory {
 
         for (Term predicate : predicateShortcuts) {
             String pStr = predicate.getValue();
-            predicates.add(new NamedNodeGenerator(ApplyTemplateFunctionFactory.generateWithConstantValue(pStr)));
+            predicateMappingInfos.add(new MappingInfo(termMap, new NamedNodeGenerator(new ConstantExtractor(pStr))));
         }
 
-        return predicates;
+        return predicateMappingInfos;
     }
 
     private SingleRecordFunctionExecutor parseFunctionTermMap(Term functionValue) throws IOException {
@@ -351,10 +360,20 @@ public class MappingFactory {
         ArrayList<ParameterValuePair> params = new ArrayList<>();
 
         for (Term pom : functionPOMs) {
-            List<TermGenerator> predicateGenerators = parsePredicateMapsAndShortcuts(pom);
-            List<TermGenerator> objectGenerators = parseObjectMapsAndShortcuts(pom);
+            List<MappingInfo> pMappingInfos = parsePredicateMapsAndShortcuts(pom);
+            List<MappingInfo> oMappingInfos = parseObjectMapsAndShortcuts(pom);
 
-            params.add(new ParameterValuePair(predicateGenerators, objectGenerators));
+            List<TermGenerator> pGenerators = new ArrayList<>();
+            pMappingInfos.forEach(mappingInfo -> {
+                pGenerators.add(mappingInfo.getTermGenerator());
+            });
+
+            List<TermGenerator> oGenerators = new ArrayList<>();
+            oMappingInfos.forEach(mappingInfo -> {
+                oGenerators.add(mappingInfo.getTermGenerator());
+            });
+
+            params.add(new ParameterValuePair(pGenerators, oGenerators));
         }
 
         return new DynamicSingleRecordFunctionExecutor(params, functionLoader);
@@ -365,48 +384,33 @@ public class MappingFactory {
         ArrayList<ParameterValueOriginPair> params = new ArrayList<>();
 
         for (Term pom : functionPOMs) {
-            List<TermGenerator> predicateGenerators = parsePredicateMapsAndShortcuts(pom);
-            ArrayList<TermGeneratorOriginPair> objectGeneratorOriginPairs = new ArrayList<>();
+            List<MappingInfo> pMappingInfos = parsePredicateMapsAndShortcuts(pom);
 
+            List<TermGenerator> pGenerators = new ArrayList<>();
+            pMappingInfos.forEach(mappingInfo -> {
+                pGenerators.add(mappingInfo.getTermGenerator());
+            });
+
+            ArrayList<TermGeneratorOriginPair> objectGeneratorOriginPairs = new ArrayList<>();
             parseObjectMapsAndShortcutsWithCallback(pom, (oGen, childOrParent) -> {
-                objectGeneratorOriginPairs.add(new TermGeneratorOriginPair(oGen, childOrParent));
+                objectGeneratorOriginPairs.add(new TermGeneratorOriginPair(oGen.getTermGenerator(), childOrParent));
             }, null);
 
-            params.add(new ParameterValueOriginPair(predicateGenerators, objectGeneratorOriginPairs));
+            params.add(new ParameterValueOriginPair(pGenerators, objectGeneratorOriginPairs));
         }
 
         return new DynamicMultipleRecordsFunctionExecutor(params, functionLoader);
     }
 
-    private List<TermGenerator> parseObjectMapsAndShortcuts(Term pom) throws IOException {
-        ArrayList<TermGenerator> generators = new ArrayList<>();
+    private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {
+        List<MappingInfo> mappingInfos = new ArrayList<>();
 
-        parseObjectMapsAndShortcutsWithCallback(pom, (termGenerator, childOrParent) -> {
-            generators.add(termGenerator);
-        }, (term, joinConditionFunctions) -> {});
+        parseObjectMapsAndShortcutsWithCallback(pom, (mappingInfo, childOrParent) -> {
+            mappingInfos.add(mappingInfo);
+        }, (term, joinConditionFunctions) -> {
+        });
 
-        return generators;
-    }
-
-    /**
-     * This method parses reference, template, and constant of a given Term Map and return a generic template.
-     **/
-    private String getGenericTemplate(Term termMap) {
-        List<Term> references = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML + "reference"), null));
-        List<Term> templates = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "template"), null));
-        List<Term> constants = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "constant"), null));
-        String genericTemplate = null;
-
-        if (!references.isEmpty()) {
-            genericTemplate = "{" + references.get(0).getValue() + "}";
-        } else if (!templates.isEmpty()) {
-            genericTemplate = templates.get(0).getValue();
-        } else if (!constants.isEmpty()) {
-            genericTemplate = constants.get(0).getValue();
-            genericTemplate = genericTemplate.replaceAll("\\{", "\\\\{").replaceAll("}", "\\\\}");
-        }
-
-        return genericTemplate;
+        return mappingInfos;
     }
 
     /**
@@ -415,9 +419,9 @@ public class MappingFactory {
      **/
     private Term getTermType(Term map) {
         List<Term> references = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML + "reference"), null));
-        List<Term> templates = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR  + "template"), null));
-        List<Term> constants = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR  + "constant"), null));
-        List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR  + "termType"), null));
+        List<Term> templates = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR + "template"), null));
+        List<Term> constants = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR + "constant"), null));
+        List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR + "termType"), null));
 
         Term termType = null;
 
@@ -436,15 +440,15 @@ public class MappingFactory {
         return termType;
     }
 
-    private List<PredicateObjectGraphGenerator> getPredicateObjectGraphGeneratorFromMultipleGraphGenerators(TermGenerator pGen, TermGenerator oGen, List<TermGenerator> gGens) {
-        ArrayList<PredicateObjectGraphGenerator> list = new ArrayList<>();
+    private List<PredicateObjectGraphMapping> getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(MappingInfo pMappingInfo, MappingInfo oMappingInfo, List<MappingInfo> gMappingInfos) {
+        ArrayList<PredicateObjectGraphMapping> list = new ArrayList<>();
 
-        gGens.forEach(gGen -> {
-            list.add(new PredicateObjectGraphGenerator(pGen, oGen, gGen));
+        gMappingInfos.forEach(gMappingInfo -> {
+            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo));
         });
 
-        if (gGens.isEmpty()) {
-            list.add(new PredicateObjectGraphGenerator(pGen, oGen, null));
+        if (gMappingInfos.isEmpty()) {
+            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null));
         }
 
         return list;

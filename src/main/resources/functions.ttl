@@ -136,6 +136,18 @@ idlab-fn:stringContainsOtherString a fno:Function ;
     lib:method "stringContainsOtherString"
   ].
 
+idlab-fn:listContainsElement a fno:Function ;
+  fno:name "listContainsElement" ;
+  rdfs:label "listContainsElement" ;
+  dcterms:description "Returns true if the string is found in the list" ;
+  fno:expects ( idlab-fn:_list idlab-fn:_str ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "listContainsElement"
+  ].
+
 idlab-fn:_str a fno:Parameter ;
   fno:name "input string" ;
   rdfs:label "input string" ;
@@ -147,6 +159,12 @@ idlab-fn:_otherStr a fno:Parameter ;
   rdfs:label "other input string" ;
   fno:type xsd:string ;
   fno:predicate idlab-fn:otherStr .
+
+idlab-fn:_list a fno:Parameter ;
+  fno:name "list" ;
+  rdfs:label "list" ;
+  fno:type rdf:List ;
+  fno:predicate idlab-fn:list .
 
 idlab-fn:_delimiter a fno:Parameter ;
   fno:name "delimiter" ;

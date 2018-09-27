@@ -1,6 +1,8 @@
 package be.ugent.rml;
 
-import be.ugent.rml.records.Record;
+import be.ugent.rml.extractor.ConstantExtractor;
+import be.ugent.rml.extractor.Extractor;
+import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
@@ -9,7 +11,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
-import org.eclipse.rdf4j.model.Namespace;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -27,10 +29,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,7 +58,7 @@ public class Utils {
     }
 
     public static InputStream getInputStreamFromLocation(String location) throws IOException {
-        return getInputStreamFromLocation(location,null,"");
+        return getInputStreamFromLocation(location, null, "");
     }
 
     public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
@@ -106,6 +108,7 @@ public class Utils {
             }
         }
 
+        logger.debug("Looking for file " + path + " in basePath " + basePath);
 
         // Relative from user dir?
         f = new File(basePath, path);
@@ -170,76 +173,6 @@ public class Utils {
         return location.startsWith("https://") || location.startsWith("http://");
     }
 
-    public static List<String> applyTemplate(Template template, Record record) {
-        return Utils.applyTemplate(template, record, false);
-    }
-
-    public static List<String> applyTemplate(Template template, Record record, boolean encodeURIEnabled) {
-        List<String> result = new ArrayList<String>();
-        result.add("");
-        //we only return a result when all elements of the template are found
-        boolean allValuesFound = true;
-
-        //we iterate over all elements of the template, unless one is not found
-        for (int i = 0; allValuesFound && i < template.getTemplateElements().size(); i++) {
-            TemplateElement element = template.getTemplateElements().get(i);
-            //if the element is constant, we don't need to look at the data, so we can just add it to the result
-            if (element.getType() == TEMPLATETYPE.CONSTANT) {
-                for (int j = 0; j < result.size(); j ++) {
-                    result.set(j, result.get(j) + element.getValue());
-                }
-            } else {
-                //we need to get the variables from the data
-                //we also need to keep all combinations of multiple results are returned for variable; pretty tricky business
-                List<String> temp = new ArrayList<>();
-                List<String> values = record.get(element.getValue());
-
-                for (String value : values) {
-
-                    if (encodeURIEnabled) {
-                        value = Utils.encodeURI(value);
-                    }
-
-                    for (String aResult : result) {
-                        temp.add(aResult + value);
-                    }
-                }
-
-                if (!values.isEmpty()) {
-                    result = temp;
-                }
-
-                if (values.isEmpty()) {
-                    logger.warn("Not all values for a template where found. More specific, the variable " + element.getValue() + " did not provide any results.");
-                    allValuesFound = false;
-                }
-            }
-        }
-
-        if (allValuesFound) {
-            if (template.countVariables() > 0) {
-                String emptyTemplate = getEmptyTemplate(template);
-                result.removeIf(s -> s.equals(emptyTemplate));
-            }
-
-            return result;
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    private static String getEmptyTemplate(Template template) {
-        String output = "";
-
-        for (TemplateElement t : template.getTemplateElements()) {
-            if (t.getType() == TEMPLATETYPE.CONSTANT) {
-                output += t.getValue();
-            }
-        }
-
-        return output;
-    }
-
     public static List<Term> getSubjectsFromQuads(List<Quad> quads) {
         ArrayList<Term> subjects = new ArrayList<>();
 
@@ -268,26 +201,6 @@ public class Utils {
         }
 
         return objects;
-    }
-
-    public static String getLiteral(String value) {
-        Pattern pattern = Pattern.compile("^\"(.*)\"");
-        Matcher matcher = pattern.matcher(value);
-
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-
-        throw new Error("Invalid Literal: " + value);
-    }
-
-    public static boolean isLiteral(String value) {
-        try {
-            getLiteral(value);
-            return true;
-        } catch (Error e){
-            return false;
-        }
     }
 
     public static List<Term> getList(QuadStore store, Term first) {
@@ -322,9 +235,10 @@ public class Utils {
 
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+            logger.debug("Reading from " + file.getAbsolutePath());
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
-        } catch (IOException e) {
+        } catch (IOException | RDFParseException e) {
             e.printStackTrace();
         }
         return new RDF4JStore(model);
@@ -336,7 +250,7 @@ public class Utils {
 
     public static String encodeURI(String url) {
         Escaper escaper = UrlEscapers.urlFragmentEscaper();
-        String result =  escaper.escape(url);
+        String result = escaper.escape(url);
 
         result = result.replaceAll("!", "%21");
         result = result.replaceAll("#", "%23");
@@ -370,6 +284,7 @@ public class Utils {
         reader.close();
         return targetString;
     }
+
     /*
         Extracts the selected columns from the SQL query
         Orders them alphabetically
@@ -408,12 +323,12 @@ public class Utils {
     }
 
     /**
-     * This method parse the generic template and returns an array
-     * that can later be used by the executor (via applyTemplate)
+     * This method parse the generic template and returns a list of Extractors
+     * that can later be used by the executor
      * to get the data values from the records.
      **/
-    public static Template parseTemplate(String template) {
-        Template result = new Template();
+    public static List<Extractor> parseTemplate(String template) {
+        ArrayList<Extractor> extractors = new ArrayList<>();
         String current = "";
         boolean previousWasBackslash = false;
         boolean variableBusy = false;
@@ -425,13 +340,13 @@ public class Utils {
                     if (previousWasBackslash) {
                         current += c;
                         previousWasBackslash = false;
-                    } else if(variableBusy) {
+                    } else if (variableBusy) {
                         throw new Error("Parsing of template failed. Probably a { was followed by a second { without first closing the first {. Make sure that you use { and } correctly.");
                     } else {
                         variableBusy = true;
 
                         if (!current.equals("")) {
-                            result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
+                            extractors.add(new ConstantExtractor(current));
                         }
 
                         current = "";
@@ -441,7 +356,7 @@ public class Utils {
                         current += c;
                         previousWasBackslash = false;
                     } else if (variableBusy){
-                        result.addElement(new TemplateElement(current, TEMPLATETYPE.VARIABLE));
+                        extractors.add(new ReferenceExtractor(current));
                         current = "";
                         variableBusy = false;
                     } else {
@@ -460,10 +375,29 @@ public class Utils {
             }
 
             if (!current.equals("")) {
-                result.addElement(new TemplateElement(current, TEMPLATETYPE.CONSTANT));
+                extractors.add(new ConstantExtractor(current));
             }
         }
 
-        return result;
+        return extractors;
+    }
+
+    public static String randomString(int len) {
+        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        SecureRandom rnd = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
+
+    }
+
+    public static String hashCode(String s) {
+        int hash = 0;
+        for (int i = 0; i < s.toCharArray().length; i++) {
+            hash += s.toCharArray()[i] * 31 ^ (s.toCharArray().length - 1 - i);
+        }
+        return Integer.toString(Math.abs(hash));
     }
 }

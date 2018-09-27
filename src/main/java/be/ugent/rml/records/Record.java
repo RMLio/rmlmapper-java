@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface Record {
 
-    List<String> get(String value);
+    List<Object> get(String value);
 }

@@ -11,4 +11,12 @@ public class IDLabFunctions {
 
         return list.contains(otherStr);
     }
+
+    public static boolean listContainsElement(List list, String str) {
+        if (list != null) {
+            return list.contains(str);
+        } else {
+            return false;
+        }
+    }
 }
