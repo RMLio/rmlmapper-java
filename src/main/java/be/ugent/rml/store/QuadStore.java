@@ -17,11 +17,7 @@ public abstract class QuadStore {
     public abstract List<Quad> getQuads(Term subject, Term predicate, Term object);
     public abstract boolean isEmpty();
     public abstract int size();
-    public abstract void toTurtle(Writer out);
-    public abstract void toJSONLD(Writer out);
-    public abstract void toTrix(Writer out);
-    public abstract void toTrig(Writer out);
-    public abstract void toNQuads(Writer out) throws IOException;
+    public abstract void write(Writer out, String format) throws IOException;
     public abstract void setNamespaces(Set<Namespace> namespaces);
 
     public void addTriple(Term subject, Term predicate, Term object) {

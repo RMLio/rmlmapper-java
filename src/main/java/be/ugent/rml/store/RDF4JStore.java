@@ -86,28 +86,31 @@ public class RDF4JStore extends QuadStore {
         return quads;
     }
 
-    public void toTrig(Writer out) {
-        Rio.write(model, out, RDFFormat.TRIG);
-    }
-
-    public void toTrix(Writer out) {
-        Rio.write(model, out, RDFFormat.TRIX);
-    }
-
-    public void toJSONLD(Writer out) {
-        Rio.write(model, out, RDFFormat.JSONLD);
-    }
-
     @Override
-    public void toNQuads(Writer out) {
-        Rio.write(model, out, RDFFormat.NQUADS);
-    }
+    public void write(Writer out, String format) {
+        switch (format) {
+            case "turtle":
+                Rio.write(model, out, RDFFormat.TURTLE);
 
-    public void toTurtle(Writer out) {
-        Rio.write(model, out, RDFFormat.TURTLE);
+                if (triplesWithGraphCounter > 0) {
+                    logger.warn("There are graphs generated. However, Turtle does not support graphs. Use Trig instead.");
+                }
 
-        if (triplesWithGraphCounter > 0) {
-            logger.warn("There are graphs generated. However, Turtle does not support graphs. Use Trig instead.");
+                break;
+            case "trig":
+                Rio.write(model, out, RDFFormat.TRIG);
+                break;
+            case "trix":
+                Rio.write(model, out, RDFFormat.TRIX);
+                break;
+            case "jsonld":
+                Rio.write(model, out, RDFFormat.JSONLD);
+                break;
+            case "nquads":
+                Rio.write(model, out, RDFFormat.NQUADS);
+                break;
+            default:
+                throw new Error("Serialization " + format + " not supported");
         }
     }
 

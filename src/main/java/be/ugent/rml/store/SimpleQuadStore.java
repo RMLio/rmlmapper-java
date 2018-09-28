@@ -3,7 +3,6 @@ package be.ugent.rml.store;
 import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.Namespace;
 
-import javax.ws.rs.NotSupportedException;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -71,27 +70,17 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
-    public void toTurtle(Writer out) {
-        throw new NotSupportedException();
+    public void write(Writer out, String format) throws IOException {
+        switch (format) {
+            case "nquads":
+                toNQuads(out);
+                break;
+            default:
+                throw new Error("Serialization " + format + " not supported");
+        }
     }
 
-    @Override
-    public void toJSONLD(Writer out) {
-        throw new NotSupportedException();
-    }
-
-    @Override
-    public void toTrix(Writer out) {
-        throw new NotSupportedException();
-    }
-
-    @Override
-    public void toTrig(Writer out) {
-        throw new NotSupportedException();
-    }
-
-    @Override
-    public void toNQuads(Writer out) throws IOException {
+    private void toNQuads(Writer out) throws IOException {
         for (Quad q : quads) {
             out.write(getNQuadOfQuad(q) + "\n");
         }

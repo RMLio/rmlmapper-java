@@ -296,24 +296,7 @@ public class Main {
                 out = new BufferedWriter(new OutputStreamWriter(System.out));
             }
 
-            switch (format) {
-                case "turtle":
-                    store.toTurtle(out);
-                    break;
-                case "trig":
-                    store.toTrig(out);
-                    break;
-                case "trix":
-                    store.toTrix(out);
-                    break;
-                case "jsonld":
-                    store.toJSONLD(out);
-                    break;
-                case "nquads":
-                default:
-                    store.toNQuads(out);
-            }
-
+            store.write(out, format);
             out.close();
 
             if (doneMessage != null) {
