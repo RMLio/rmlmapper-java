@@ -294,15 +294,6 @@ public class MetadataGenerator {
         return logicalSources;
     }
 
-    /**
-     * Outputs the generated metadata-test-cases.
-     */
-    public void writeMetadata() {
-        mdStore.removeDuplicates();
-        List<Quad> quads = mdStore.toSimpleSortedQuadStore().getQuads(null, null, null);
-        Utils.writeOutput(quads, outputFile);
-    }
-
     private void addTripleLevelFunctions() {
         // Add source triplesMap info
         generationFunctions.add((node, pquad) -> {
@@ -383,5 +374,9 @@ public class MetadataGenerator {
 
     public DETAIL_LEVEL getDetailLevel() {
         return detailLevel;
+    }
+
+    public QuadStore getResult() {
+        return mdStore;
     }
 }

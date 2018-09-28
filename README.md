@@ -18,15 +18,18 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
   - JSON files (JSONPath)
   - XML files (XPath)
 - functions (most cases)
-- output formats: nquads
+- configuration file
+- metadata generation
+- output formats: turtle, trig, trix, jsonld, nquads
 
 ### Future
 - functions (all cases)
 - conditions
 - data sources:
- - NoSQL databases
- - web APIs
-- output formats: turtle, trig
+   - NoSQL databases
+   - web APIs
+   - SPARQL endpoints
+   - TPF servers
 
 ## Build
 The RMLMapper is build using Maven: `mvn install`.

@@ -29,24 +29,33 @@ public class Executor {
     // this map stores for every Triples Map, which is a Term, a map with the record index and the record's corresponding subject,
     // which is a ProvenancedTerm.
     private HashMap<Term, HashMap<Integer, ProvenancedTerm>> subjectCache;
-    private QuadStore resultingTriples;
+    private QuadStore resultingQuads;
     private QuadStore rmlStore;
     private RecordsFactory recordsFactory;
     private static int blankNodeCounter = 0;
     private HashMap<Term, Mapping> mappings;
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
-        this(rmlStore, recordsFactory, null);
+        this(rmlStore, recordsFactory, null, null);
     }
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) throws IOException {
+        this(rmlStore, recordsFactory, functionLoader, null);
+    }
+
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads) throws IOException {
         this.initializer = new Initializer(rmlStore, functionLoader);
         this.mappings = this.initializer.getMappings();
-        this.resultingTriples = new SimpleQuadStore();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
+
+        if (resultingQuads == null) {
+            this.resultingQuads = new SimpleQuadStore();
+        } else {
+            this.resultingQuads = resultingQuads;
+        }
     }
 
     public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws IOException {
@@ -111,10 +120,10 @@ public class Executor {
         }
 
         if (removeDuplicates) {
-            this.resultingTriples.removeDuplicates();
+            this.resultingQuads.removeDuplicates();
         }
 
-        return resultingTriples;
+        return resultingQuads;
     }
 
     public QuadStore execute(List<Term> triplesMaps) throws IOException {
@@ -183,8 +192,9 @@ public class Executor {
             g = graph.getTerm();
         }
 
+
         if (subject != null && predicate != null & object != null) {
-            this.resultingTriples.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
+            this.resultingQuads.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
         }
     }
 

@@ -226,7 +226,7 @@ public class Utils {
         return list;
     }
 
-    public static QuadStore readTurtle(File file, RDFFormat format) {
+    public static RDF4JStore readTurtle(File file, RDFFormat format) {
         InputStream is;
         Model model = null;
         try {
@@ -244,36 +244,8 @@ public class Utils {
         return new RDF4JStore(model);
     }
 
-    public static QuadStore readTurtle(File mappingFile) {
+    public static RDF4JStore readTurtle(File mappingFile) {
         return Utils.readTurtle(mappingFile, RDFFormat.TURTLE);
-    }
-
-    public static String toNQuads(List<Quad> quads) {
-        StringBuilder output = new StringBuilder();
-
-        for (Quad q : quads) {
-            output.append(Utils.getNQuadOfQuad(q) + "\n");
-        }
-
-        return output.toString();
-    }
-
-    public static void toNQuads(List<Quad> quads, Writer out) throws IOException {
-        for (Quad q : quads) {
-            out.write(Utils.getNQuadOfQuad(q) + "\n");
-        }
-    }
-
-    private static String getNQuadOfQuad(Quad q) {
-        String str = q.getSubject() + " " + q.getPredicate() + " " + q.getObject();
-
-        if (q.getGraph() != null) {
-            str += " " + q.getGraph();
-        }
-
-        str += ".";
-
-        return str;
     }
 
     public static String encodeURI(String url) {
@@ -408,38 +380,6 @@ public class Utils {
         }
 
         return extractors;
-    }
-
-    public static void writeOutput(List<Quad> output, String outputFile) {
-        if (output.size() > 1) {
-            logger.info(output.size() + " quads were generated");
-        } else {
-            logger.info(output.size() + " quad was generated");
-        }
-
-        //if output file provided, write to triples output file
-        if (outputFile != null) {
-            File targetFile = new File(outputFile);
-            logger.info("Writing quads to " + targetFile.getPath() + "...");
-
-            if (!targetFile.isAbsolute()) {
-                targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);
-            }
-
-            try {
-                BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
-
-                Utils.toNQuads(output, out);
-
-                out.flush();
-                out.close();
-                logger.info("Writing to " + targetFile.getPath() + " is done.");
-            } catch (IOException e) {
-                logger.error("Writing output to file failed. Reason: " + e.getMessage());
-            }
-        } else {
-            System.out.println(Utils.toNQuads(output));
-        }
     }
 
     public static String randomString(int len) {

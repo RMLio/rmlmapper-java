@@ -6,8 +6,9 @@ import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
@@ -77,6 +78,11 @@ public class Main {
                 .hasArg()
                 .desc("generate metadata-test-cases on given detail level (dataset - triple - term)")
                 .build();
+        Option serializationFormatOption = Option.builder("s")
+                .longOpt( "serialization" )
+                .desc( "serialization format (nquads (default), trig, trix, jsonld)" )
+                .hasArg()
+                .build();
         options.addOption(mappingdocOption);
         options.addOption(outputfileOption);
         options.addOption(functionfileOption);
@@ -85,6 +91,7 @@ public class Main {
         options.addOption(configfileOption);
         options.addOption(helpOption);
         options.addOption(verboseOption);
+        options.addOption(serializationFormatOption);
         options.addOption(metadataOption);
         options.addOption(metadataDetailLevelOption);
 
@@ -116,13 +123,25 @@ public class Main {
                 printHelp(options);
             } else {
                 File mappingFile = Utils.getFile(mOptionValue);
-                QuadStore rmlStore = Utils.readTurtle(mappingFile);
+                RDF4JStore rmlStore = Utils.readTurtle(mappingFile);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
+
+                String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
+                QuadStore outputStore;
+
+                if (outputFormat == null || outputFormat.equals("nquads")) {
+                    outputStore = new SimpleQuadStore();
+                } else {
+                    outputStore = new RDF4JStore();
+                }
+
                 Executor executor;
 
                 // Extract required information and create the MetadataGenerator
                 MetadataGenerator metadataGenerator = null;
+                String metadataFile = getPriorityOptionValue(metadataOption, lineArgs, configFile);
                 String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
+
                 if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
                     if (requestedDetailLevel != null) {
                         MetadataGenerator.DETAIL_LEVEL detailLevel;
@@ -164,7 +183,7 @@ public class Main {
                     functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
                 }
 
-                executor = new Executor(rmlStore, factory, functionLoader);
+                executor = new Executor(rmlStore, factory, functionLoader, outputStore);
 
                 List<Term> triplesMaps = new ArrayList<>();
 
@@ -177,7 +196,7 @@ public class Main {
                 }
 
                 if (metadataGenerator != null) {
-                    metadataGenerator.preMappingGeneration((triplesMaps == null || triplesMaps.isEmpty()) ?
+                    metadataGenerator.preMappingGeneration(triplesMaps.isEmpty() ?
                             executor.getTriplesMaps() : triplesMaps, rmlStore);
                 }
 
@@ -194,16 +213,16 @@ public class Main {
                 if (metadataGenerator != null) {
                     metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
                             result);
-                    metadataGenerator.writeMetadata();
+
+                    writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
                 }
 
-
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-                List<Quad> quads = result.getQuads(null, null, null);
 
-                if (!quads.isEmpty()) {
+                if (!result.isEmpty()) {
                     //write quads
-                    Utils.writeOutput(quads, outputFile);
+                    result.setNamespaces(rmlStore.getNamespaces());
+                    writeOutput(result, outputFile, outputFormat);
                 }
             }
         } catch (ParseException exp) {
@@ -239,5 +258,52 @@ public class Main {
     private static void setLoggerLevel(Level level) {
         Logger root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         ((ch.qos.logback.classic.Logger) root).setLevel(level);
+    }
+
+    private static void writeOutput(QuadStore store, String outputFile, String format) {
+
+        if (format != null) {
+            format = format.toLowerCase();
+        } else {
+            format = "nquads";
+        }
+
+        if (store.size() > 1) {
+            logger.info(store.size() + " quads were generated");
+        } else {
+            logger.info(store.size() + " quad was generated");
+        }
+
+        try {
+
+            BufferedWriter out;
+            String doneMessage = null;
+
+            //if output file provided, write to triples output file
+            if (outputFile != null) {
+                File targetFile = new File(outputFile);
+                logger.info("Writing quads to " + targetFile.getPath() + "...");
+
+                if (!targetFile.isAbsolute()) {
+                    targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);
+                }
+
+                doneMessage = "Writing to " + targetFile.getPath() + " is done.";
+
+                out = new BufferedWriter(new FileWriter(targetFile));
+
+            } else {
+                out = new BufferedWriter(new OutputStreamWriter(System.out));
+            }
+
+            store.write(out, format);
+            out.close();
+
+            if (doneMessage != null) {
+                logger.info(doneMessage);
+            }
+        } catch(IOException e) {
+            System.err.println( "Writing output failed. Reason: " + e.getMessage() );
+        }
     }
 }
