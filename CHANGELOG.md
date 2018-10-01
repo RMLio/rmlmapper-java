@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- use environment variable for RDB testing
 - all (including templating) works with function generators
 
 ### Fixed
