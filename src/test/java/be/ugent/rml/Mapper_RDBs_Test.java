@@ -34,7 +34,7 @@ import java.util.*;
 public class Mapper_RDBs_Test extends TestCore {
 
     // Change this if needed
-    private static final Boolean LOCAL_TESTING = !Boolean.getBoolean("CI");
+    private static final Boolean LOCAL_TESTING = !Boolean.valueOf(System.getProperty("CI"));
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_RDBs_Test.class);
 
