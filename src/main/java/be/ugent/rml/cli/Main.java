@@ -129,7 +129,7 @@ public class Main {
                 String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
                 QuadStore outputStore;
 
-                if (outputFormat == null || outputFormat.equals("nquads")) {
+                if (outputFormat == null || outputFormat.equals("nquads") || outputFormat.equals("hdt")) {
                     outputStore = new SimpleQuadStore();
                 } else {
                     outputStore = new RDF4JStore();
@@ -261,13 +261,32 @@ public class Main {
     }
 
     private static void writeOutput(QuadStore store, String outputFile, String format) {
+        boolean hdt = format != null && format.equals("hdt");
 
-        if (format != null) {
-            format = format.toLowerCase();
+        if (hdt) {
+            try {
+                format = "nquads";
+                File tmpFile = File.createTempFile("file", ".nt");
+                tmpFile.deleteOnExit();
+                String uncompressedOutputFile = tmpFile.getAbsolutePath();
+
+                writeOutputUncompressed(store, uncompressedOutputFile, format);
+                Utils.ntriples2hdt(uncompressedOutputFile, outputFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
-            format = "nquads";
-        }
+            if (format != null) {
+                format = format.toLowerCase();
+            } else {
+                format = "nquads";
+            }
 
+            writeOutputUncompressed(store, outputFile, format);
+        }
+    }
+
+    private static void writeOutputUncompressed(QuadStore store, String outputFile, String format) {
         if (store.size() > 1) {
             logger.info(store.size() + " quads were generated");
         } else {
