@@ -270,8 +270,9 @@ public class Main {
                 tmpFile.deleteOnExit();
                 String uncompressedOutputFile = tmpFile.getAbsolutePath();
 
-                writeOutputUncompressed(store, uncompressedOutputFile, format);
+                File nquadsFile = writeOutputUncompressed(store, uncompressedOutputFile, format);
                 Utils.ntriples2hdt(uncompressedOutputFile, outputFile);
+                nquadsFile.deleteOnExit();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -286,7 +287,9 @@ public class Main {
         }
     }
 
-    private static void writeOutputUncompressed(QuadStore store, String outputFile, String format) {
+    private static File writeOutputUncompressed(QuadStore store, String outputFile, String format) {
+        File targetFile = null;
+
         if (store.size() > 1) {
             logger.info(store.size() + " quads were generated");
         } else {
@@ -294,13 +297,12 @@ public class Main {
         }
 
         try {
-
             BufferedWriter out;
             String doneMessage = null;
 
             //if output file provided, write to triples output file
             if (outputFile != null) {
-                File targetFile = new File(outputFile);
+                targetFile = new File(outputFile);
                 logger.info("Writing quads to " + targetFile.getPath() + "...");
 
                 if (!targetFile.isAbsolute()) {
@@ -324,5 +326,7 @@ public class Main {
         } catch(IOException e) {
             System.err.println( "Writing output failed. Reason: " + e.getMessage() );
         }
+
+        return targetFile;
     }
 }
