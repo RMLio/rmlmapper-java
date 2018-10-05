@@ -23,7 +23,7 @@ public class Literal extends AbstractTerm {
 
     @Override
     public String toString() {
-        String temp = "\"" + this.getValue() + "\"";
+        String temp = "\"" + this.getValue().replace("\"", "\\\"") + "\"";
 
         if (this.language != null && !this.language.equals("")) {
             temp += "@" + this.language;

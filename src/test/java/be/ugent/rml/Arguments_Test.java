@@ -106,4 +106,22 @@ public class Arguments_Test extends TestCore {
             e.printStackTrace();
         }
     }
+
+
+    @Test
+    public void quoteInLiteral() {
+        Main.main("-m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        compareFiles(
+                "argument/quote-in-literal/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        try {
+            File outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
