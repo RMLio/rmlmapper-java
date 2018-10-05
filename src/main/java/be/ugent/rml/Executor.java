@@ -206,16 +206,17 @@ public class Executor {
             allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
         }
 
-        if (allIRIs.size() > 0) {
-            for (ProvenancedTerm iri : allIRIs.get(0)) {
-                int i = 1;
+        if (!allIRIs.isEmpty()) {
+            goodIRIs.addAll(allIRIs.get(0));
 
-                while (i < allIRIs.size() && !allIRIs.get(i).contains(iri)) {
-                    i++;
-                }
+            for(int i = 1; i < allIRIs.size(); i ++) {
+                List<ProvenancedTerm> list = allIRIs.get(i);
 
-                if (i == allIRIs.size()) {
-                    goodIRIs.add(iri);
+                for (int j = 0; j < goodIRIs.size(); j ++) {
+                    if (!list.contains(goodIRIs.get(j))) {
+                        goodIRIs.remove(j);
+                        j --;
+                    }
                 }
             }
         }
