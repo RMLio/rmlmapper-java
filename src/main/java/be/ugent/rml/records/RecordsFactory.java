@@ -92,7 +92,7 @@ public class RecordsFactory {
                 }
             }
         } else {
-            throw new Error("No Logical Source is found for " + triplesMap + ". Exact one Logical Source is required per Triples Map.");
+            throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
         }
     }
 
@@ -136,7 +136,7 @@ public class RecordsFactory {
                 }
             }
         } else {
-            throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for XPath.");
+            throw new Error("The Logical Source of " + triplesMap + " does not have iterator, while this is expected for XPath.");
         }
     }
 

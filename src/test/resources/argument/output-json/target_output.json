@@ -1,0 +1,18 @@
+[
+  {
+    "@id": "http://example.com/10/Venus",
+    "@type": [
+      "http://xmlns.com/foaf/0.1/Person"
+    ],
+    "http://example.com/id": [
+      {
+        "@value": "10"
+      }
+    ],
+    "http://xmlns.com/foaf/0.1/name": [
+      {
+        "@value": "Venus"
+      }
+    ]
+  }
+]

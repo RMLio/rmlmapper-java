@@ -23,7 +23,7 @@ public class Literal extends AbstractTerm {
 
     @Override
     public String toString() {
-        String temp = "\"" + this.getValue() + "\"";
+        String temp = "\"" + escapeValue(this.getValue()) + "\"";
 
         if (this.language != null && !this.language.equals("")) {
             temp += "@" + this.language;
@@ -41,5 +41,35 @@ public class Literal extends AbstractTerm {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Escapes a Unicode string to an N-Triples compatible character sequence. Any special characters are
+     * escaped using backslashes (<tt>"</tt> becomes <tt>\"</tt>, etc.), and non-ascii/non-printable
+     * characters are escaped using Unicode escapes (<tt>&#x5C;uxxxx</tt> and <tt>&#x5C;Uxxxxxxxx</tt>) if the
+     * option is selected.
+     */
+    private String escapeValue(String label) {
+        String result = "";
+
+        for (int i = 0; i < label.length(); i++) {
+            char c = label.charAt(i);
+
+            if (c == '\\') {
+                result += "\\\\";
+            } else if (c == '"') {
+                result += "\\\"";
+            } else if (c == '\n') {
+                result += "\\n";
+            } else if (c == '\r') {
+                result += "\\r";
+            } else if (c == '\t') {
+                result += "\\t";
+            } else {
+                result += c;
+            }
+        }
+
+        return result;
     }
 }

@@ -34,7 +34,7 @@ import java.util.*;
 public class Mapper_RDBs_Test extends TestCore {
 
     // Change this if needed
-    private static final Boolean LOCAL_TESTING = false;
+    private static final Boolean LOCAL_TESTING = !Boolean.valueOf(System.getenv("CI"));
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_RDBs_Test.class);
 
@@ -489,7 +489,6 @@ public class Mapper_RDBs_Test extends TestCore {
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
         deleteTempMappingFile(tempMappingPath);
-
     }
 
     @Test
