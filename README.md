@@ -42,7 +42,7 @@ The following options are available.
 
 - `-m, --mapping <arg>`: path to mapping document
 - `-o, --output <arg>`: path to output file
-- `-t, --functionfile <arg>`: path to functions.ttl file
+- `-t, --triplesmaps <arg>`: triplesmaps to be executed in order, split by `,` (default: all)
 - `-c, --configfile <arg>`: path to config file
 - `-d, --duplicates`: remove duplicates in the output
 - `-f, --functionfile <arg>`: path to functions.ttl file (dynamic functions are found relative to functions.ttl)
