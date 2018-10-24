@@ -1,0 +1,3 @@
+<http://example.com/0> <http://example.com/value> <http://values.com/A> .
+<http://example.com/0> <http://example.com/value> <http://values.com/B> .
+<http://example.com/0> <http://example.com/value> <http://values.com/C> .
