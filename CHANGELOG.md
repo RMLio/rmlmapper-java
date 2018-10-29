@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+
+- local build on Windows 7 works
+- object with template with an array as input ? return multiple objects
+
 ## [4.1.0] - 2018-10-15
 
 ### Added
