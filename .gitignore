@@ -2,3 +2,5 @@
 target
 rmlmapper.iml
 .DS_Store
+.settings
+.vscode

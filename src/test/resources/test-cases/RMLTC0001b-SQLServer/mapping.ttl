@@ -18,12 +18,12 @@
     rml:referenceFormulation ql:CSV
   ];
 
-  rr:subjectMap [ 
-    rr:template "http://example.com/{Name}" 
-  ]; 
-	
-  rr:predicateObjectMap [ 
-    rr:predicate foaf:name; 
+  rr:subjectMap [
+    rr:template "http://example.com/{Name}"
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate foaf:name;
     rr:objectMap [
       rml:reference "Name"
     ]

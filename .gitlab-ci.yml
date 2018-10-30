@@ -1,10 +1,17 @@
 image: maven:3.5.0-jdk-8
 
 variables:
-  # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
+  # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
   # `showDateTime` will show the passed time in milliseconds.
 #  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  # Postgres
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: ""
+  # SQLServer
+  ACCEPT_EULA: Y
+  SA_PASSWORD: "YourSTRONG!Passw0rd"
 
 cache:
   key: ${CI_JOB_NAME}
@@ -19,12 +26,3 @@ services:
   - postgres:10.4
   - name: microsoft/mssql-server-linux:latest
     alias: sqlserver
-
-variables:
-    # Postgres
-  POSTGRES_DB: postgres
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: ""
-    # SQLServer
-  ACCEPT_EULA: Y
-  SA_PASSWORD: "YourSTRONG!Passw0rd"

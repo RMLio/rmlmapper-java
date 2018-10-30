@@ -18,18 +18,22 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
   - JSON files (JSONPath)
   - XML files (XPath)
 - functions (most cases)
-- output formats: ntriples and nquads
+- configuration file
+- metadata generation
+- output formats: turtle, trig, trix, jsonld, nquads
+- join conditions
 
 ### Future
 - functions (all cases)
-- conditions
+- conditions (all cases)
 - data sources:
- - NoSQL databases
- - web APIs
-- output formats: turtle, trig
+   - NoSQL databases
+   - web APIs
+   - SPARQL endpoints
+   - TPF servers
 
 ## Build
-The RMLMaper is build using Maven: `mvn install`.
+The RMLMapper is build using Maven: `mvn install`.
 A standalone jar can be found in `/target`.
 
 ## Usage
@@ -39,7 +43,7 @@ The following options are available.
 
 - `-m, --mapping <arg>`: path to mapping document
 - `-o, --output <arg>`: path to output file
-- `-t, --functionfile <arg>`: path to functions.ttl file
+- `-t, --triplesmaps <arg>`: triplesmaps to be executed in order, split by `,` (default: all)
 - `-c, --configfile <arg>`: path to config file
 - `-d, --duplicates`: remove duplicates in the output
 - `-f, --functionfile <arg>`: path to functions.ttl file (dynamic functions are found relative to functions.ttl)
@@ -50,7 +54,7 @@ The following options are available.
 
 An example of how you can use the RMLMapper as an external library can be found below.
 
-```
+```java
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
@@ -61,17 +65,23 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.QuadStore;
 
-boolean removeDuplicates = false; //set to true if you want to remove duplicates triples/quads from the output
-String cwd = "/home/rml"; //path to default directory for local files
-String mappingFile = "/home/rml/mapping.rml.ttl" //path to the mapping file that needs to be executed
-List<String> triplesMaps = new ArrayList<>(); //list of triplesmaps to execute. When this list is empty all triplesmaps in the mapping file are executed
+public class Main {
 
-InputStream mappingStream = new FileInputStream(mappingFile);
-Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
-RDF4JStore rmlStore = new RDF4JStore(model);
+    public static void main(String[] args) {
 
-Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(cwd, rmlStore)));
-QuadStore result = executor.execute(triplesMaps, removeDuplicates);
+        boolean removeDuplicates = false; //set to true if you want to remove duplicates triples/quads from the output
+        String cwd = "/home/rml"; //path to default directory for local files
+        String mappingFile = "/home/rml/mapping.rml.ttl"; //path to the mapping file that needs to be executed
+        List<String> triplesMaps = new ArrayList<>(); //list of triplesmaps to execute. When this list is empty all triplesmaps in the mapping file are executed
+        
+        InputStream mappingStream = new FileInputStream(mappingFile);
+        Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
+        RDF4JStore rmlStore = new RDF4JStore(model);
+        
+        Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(cwd, rmlStore)));
+        QuadStore result = executor.execute(triplesMaps, removeDuplicates);
+    } 
+}
 ```
 
 ### Including functions
@@ -134,15 +144,9 @@ try {
 #### RDBs
 Make sure you have [Docker](https://www.docker.com) running.
 
-Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```true``` for testing locally. 
-This causes the creation of the required Docker containers and adds the right connection string to the mapping files.
-
-Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```false``` for testing on / pushing to GitLab. 
-This makes sure that the containers running on GitLab are used and adds the right connection strings to the mapping files.
-
 ##### Problems
-* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests have been turned off.
-* A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on windows 7 machines.
+* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests will always succeed locally.
+* A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on Windows 7 machines.
 
 # Dependencies
 

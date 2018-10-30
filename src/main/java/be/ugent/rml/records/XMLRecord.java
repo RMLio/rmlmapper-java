@@ -2,7 +2,6 @@ package be.ugent.rml.records;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -20,12 +19,13 @@ public class XMLRecord implements Record {
     }
 
     @Override
-    public List<String> get(String value) {
-        List<String> results = new ArrayList<>();
+    public List<Object> get(String value) {
+        List<Object> results = new ArrayList<>();
         XPath xPath = XPathFactory.newInstance().newXPath();
 
         try {
             NodeList result = (NodeList) xPath.compile(value).evaluate(node, XPathConstants.NODESET);
+
             for (int i = 0; i < result.getLength(); i ++) {
                 results.add(result.item(i).getTextContent());
             }

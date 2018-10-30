@@ -6,15 +6,15 @@ import java.util.List;
 
 public class RDBsRecord implements Record {
 
-    HashMap<String, List<String>> values;
+    HashMap<String, List<Object>> values;
 
-    public RDBsRecord(HashMap<String, List<String>> values) {
+    public RDBsRecord(HashMap<String, List<Object>> values) {
         this.values = values;
     }
 
     @Override
-    public List<String> get(String value) {
-        List<String> result = values.get(value);
+    public List<Object> get(String value) {
+        List<Object> result = values.get(value);
 
         if (result == null) {
             result = new ArrayList<>();

@@ -100,13 +100,13 @@ public class RDBs  {
 
         // Extract data from result set
         while(rs.next()){
-            HashMap<String, List<String>> values = new HashMap<>();
+            HashMap<String, List<Object>> values = new HashMap<>();
 
             // Iterate over column names
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = rsmd.getColumnName(i);
 
-                List<String> temp = new ArrayList<String>();
+                List<Object> temp = new ArrayList<>();
                 temp.add(rs.getString(columnName));
                 values.put(columnName, temp);
             }

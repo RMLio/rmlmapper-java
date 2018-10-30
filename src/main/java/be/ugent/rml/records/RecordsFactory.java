@@ -5,6 +5,7 @@ import be.ugent.rml.DataFetcher;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.apache.commons.lang.NotImplementedException;
@@ -43,95 +44,97 @@ public class RecordsFactory {
             List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "iterator"), null));
             List<Term> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "tableName"), null));
 
-            if (sources.isEmpty()) {
+            // If no rml:referenceFormulation is given, but a table is given --> CSV
+            if (referenceFormulations.isEmpty() && !tables.isEmpty()) {
+                referenceFormulations = new ArrayList<>();
+                referenceFormulations.add(0, new NamedNode(NAMESPACES.QL + "CSV"));
+            }
+
+            if (referenceFormulations.isEmpty()) {
+                throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
+            } else if (sources.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a source.");
-            } else if (referenceFormulations.isEmpty()) {
-                if (!tables.isEmpty()) {  // If no rml:referenceFormulation is given, but a table is given --> CSV
-                    referenceFormulations = new ArrayList<>();
-                    referenceFormulations.add(0, new NamedNode(NAMESPACES.QL + "CSV"));
-                } else {
-                    throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
-                }
-            }
-
-            Term source = sources.get(0);
-            if (Utils.isLiteral(source.toString())) {
-                switch(referenceFormulations.get(0).getValue()) {
-                    case NAMESPACES.QL + "CSV":
-                        return getCSVRecords(source);
-                    case NAMESPACES.QL + "XPath":
-                        return getXMLRecords(source, iterators, triplesMap);
-                    case NAMESPACES.QL + "JSONPath":
-                        return getJSONRecords(source, iterators, triplesMap);
-                    default:
-                        throw new NotImplementedException();
-
-                }
-
             } else {
-                List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
+                if (sources.get(0) instanceof Literal) {
+                    String source = sources.get(0).getValue();
+                    switch (referenceFormulations.get(0).getValue()) {
+                        case NAMESPACES.QL + "CSV":
+                            return getCSVRecords(source);
+                        case NAMESPACES.QL + "XPath":
+                            return getXMLRecords(source, iterators, triplesMap);
+                        case NAMESPACES.QL + "JSONPath":
+                            return getJSONRecords(source, iterators, triplesMap);
+                        default:
+                            throw new NotImplementedException();
+                    }
 
-                switch(sourceType.get(0).getValue()) {
-                    case NAMESPACES.D2RQ + "Database":  // RDBs
-                        // Check if SQL version is given
-                        List<Term> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "sqlVersion"),
-                                null));
-                        if (sqlVersion.isEmpty()) {
-                            throw new Error("No SQL version identifier detected.");
-                        }
-                        return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, tables, referenceFormulations);
-                    case NAMESPACES.SD + "Service":  // SPARQL
-                        // Check if SPARQL Endpoint is given
-                        List<Term> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "endpoint"),
-                                null));
-                        if (endpoint.isEmpty()) {
-                            throw new Error("No SPARQL endpoint detected.");
-                        }
-                        return getSPARQLRecords(rmlStore, source, logicalSource, triplesMap,
-                                endpoint.get(0), iterators, referenceFormulations);
-                    default:
-                        throw new NotImplementedException();
+                } else {
+                    Term source = sources.get(0);
+
+                    List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
+
+                    switch(sourceType.get(0).getValue()) {
+                        case NAMESPACES.D2RQ + "Database":  // RDBs
+                            // Check if SQL version is given
+                            List<Term> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "sqlVersion"), null));
+
+                            if (sqlVersion.isEmpty()) {
+                                throw new Error("No SQL version identifier detected.");
+                            }
+
+                            return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, tables, referenceFormulations);
+                        case NAMESPACES.SD + "Service":  // SPARQL
+                            // Check if SPARQL Endpoint is given
+                            List<Term> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "endpoint"),
+                                    null));
+                            if (endpoint.isEmpty()) {
+                                throw new Error("No SPARQL endpoint detected.");
+                            }
+                            return getSPARQLRecords(rmlStore, source, logicalSource, triplesMap,
+                                    endpoint.get(0), iterators, referenceFormulations);
+                        default:
+                            throw new NotImplementedException();
+
+                    }
                 }
             }
-
         } else {
-            throw new Error("No Logical Source is found for " + triplesMap + ". Exact one Logical Source is required per Triples Map.");
+            throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
         }
     }
 
-    private List<Record> getCSVRecords(Term source) throws IOException {
-        if (allCSVRecords.containsKey(source.toString())){
-            return allCSVRecords.get(source.toString());
+    private List<Record> getCSVRecords(String source) throws IOException {
+        if (allCSVRecords.containsKey(source)){
+            return allCSVRecords.get(source);
         } else {
             try {
                 CSV csv = new CSV();
-                allCSVRecords.put(source.toString(),
-                        csv.get(Utils.getLiteral(source.toString()), dataFetcher.getCwd()));
+                allCSVRecords.put(source, csv.get(source, dataFetcher.getCwd()));
             } catch (IOException e) {
                 throw e;
             }
 
-            return allCSVRecords.get(source.toString());
+            return allCSVRecords.get(source);
         }
     }
 
-    private List<Record> getXMLRecords(Term source, List<Term> iterators, Term triplesMap) throws IOException {
+    private List<Record> getXMLRecords(String source, List<Term> iterators, Term triplesMap) throws IOException {
         if (!iterators.isEmpty()) {
             String iterator = iterators.get(0).getValue();
 
-            if (allXMLRecords.containsKey(source.toString()) && allXMLRecords.get(source.toString()).containsKey(iterator)) {
-                return allXMLRecords.get(source.toString()).get(iterator);
+            if (allXMLRecords.containsKey(source) && allXMLRecords.get(source).containsKey(iterator)) {
+                return allXMLRecords.get(source).get(iterator);
             } else {
                 try {
                     XML xml = new XML();
-                    List<Record> records = xml.get(Utils.getLiteral(source.toString()), iterator, dataFetcher.getCwd());
+                    List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
 
-                    if (allXMLRecords.containsKey(source.toString())) {
-                        allXMLRecords.get(source.toString()).put(iterator, records);
+                    if (allXMLRecords.containsKey(source)) {
+                        allXMLRecords.get(source).put(iterator, records);
                     } else {
                         Map<String, List<Record>> temp = new HashMap<>();
                         temp.put(iterator, records);
-                        allXMLRecords.put(source.toString(), temp);
+                        allXMLRecords.put(source, temp);
                     }
 
                     return records;
@@ -140,29 +143,33 @@ public class RecordsFactory {
                 }
             }
         } else {
-            throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for XPath.");
+            throw new Error("The Logical Source of " + triplesMap + " does not have iterator, while this is expected for XPath.");
         }
     }
 
-    private List<Record> getJSONRecords(Term source, List<Term> iterators, Term triplesMap) throws IOException {
+    private List<Record> getJSONRecords(String source, List<Term> iterators, Term triplesMap) throws IOException {
         if (!iterators.isEmpty()) {
             String iterator = iterators.get(0).getValue();
 
-            if (allJSONRecords.containsKey(source.toString()) && allJSONRecords.get(source.toString()).containsKey(iterator)) {
-                return allJSONRecords.get(source.toString()).get(iterator);
+            if (allJSONRecords.containsKey(source) && allJSONRecords.get(source).containsKey(iterator)) {
+                return allJSONRecords.get(source).get(iterator);
             } else {
-                JSON json = new JSON();
-                List<Record> records = json.get(Utils.getLiteral(source.toString()), iterator, dataFetcher.getCwd());
+                try {
+                    JSON json = new JSON();
+                    List<Record> records = json.get(source, iterator, dataFetcher.getCwd());
 
-                if (allJSONRecords.containsKey(source.toString())) {
-                    allJSONRecords.get(source.toString()).put(iterator, records);
-                } else {
-                    Map<String, List<Record>> temp = new HashMap<>();
-                    temp.put(iterator, records);
-                    allJSONRecords.put(source.toString(), temp);
+                    if (allJSONRecords.containsKey(source)) {
+                        allJSONRecords.get(source).put(iterator, records);
+                    } else {
+                        Map<String, List<Record>> temp = new HashMap<>();
+                        temp.put(iterator, records);
+                        allJSONRecords.put(source, temp);
+                    }
+
+                    return records;
+                } catch (IOException e) {
+                    throw e;
                 }
-
-                return records;
             }
         } else {
             throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for JSONPath.");
