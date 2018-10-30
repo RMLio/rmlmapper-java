@@ -1,12 +1,14 @@
 package be.ugent.rml.functions;
 
 import be.ugent.rml.Utils;
+import be.ugent.rml.extractor.ConstantExtractor;
 import be.ugent.rml.extractor.Extractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.records.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,14 +29,12 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
 
     @Override
     public List<?> execute(Record record) {
-       ArrayList<String> result = new ArrayList<>();
-       result.add(concat(record));
-
-       return result;
+       return concat(record);
     }
 
-    private String concat(Record record) {
-        String result = "";
+    private List<String> concat(Record record) {
+        ArrayList<String> results = new ArrayList<>();
+        results.add("");
 
         //we only return a result when all elements of the template are found
         boolean allValuesFound = true;
@@ -45,40 +45,49 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
         for (int i = 0; allValuesFound && i < extractors.size(); i++) {
             Extractor extractor = extractors.get(i);
 
-            List<Object> extractedValues = extractor.extract(record);
-            Object extractedValue = null;
+            List<String> extractedValues = new ArrayList<>();
+            FunctionUtils.functionObjectToList(extractor.extract(record), extractedValues);
 
             if (!extractedValues.isEmpty()) {
-                extractedValue = extractedValues.get(0);
-            }
+                ArrayList<String> temp = new ArrayList<>();
 
-            if (extractor instanceof ReferenceExtractor) {
-                referenceCount ++;
-            } else if (extractedValue != null) {
-                onlyConstants += extractedValue.toString();
-            }
+                for (int k = 0; k < results.size(); k ++) {
 
-            if (extractedValue != null) {
-                String value = extractedValue.toString();
+                    for (int j = 0; j < extractedValues.size(); j ++) {
+                        String result = results.get(k);
+                        String value = extractedValues.get(j);
 
-                if (encodeURI && extractor instanceof ReferenceExtractor) {
-                    value = Utils.encodeURI(value);
+                        if (encodeURI && extractor instanceof ReferenceExtractor) {
+                            value = Utils.encodeURI(value);
+                        }
+
+                        result += value;
+
+                        if (extractor instanceof ConstantExtractor) {
+                            onlyConstants += value;
+                        }
+
+                        temp.add(result);
+                    }
+
+                    if (extractor instanceof ReferenceExtractor) {
+                        referenceCount ++;
+                    }
                 }
 
-                result += value;
+                results = temp;
             }
 
-            if (extractedValue == null) {
+            if (extractedValues.isEmpty()) {
                 logger.warn("Not all values for a template where found. More specific, the variable " + extractor + " did not provide any results.");
                 allValuesFound = false;
             }
         }
 
-        if ((allValuesFound && referenceCount > 0 && result.equals(onlyConstants)) || !allValuesFound) {
-            result = null;
-
+        if ((allValuesFound && referenceCount > 0 && results.contains(onlyConstants)) || !allValuesFound) {
+            results = new ArrayList<>();
         }
 
-        return result;
+        return results;
     }
 }

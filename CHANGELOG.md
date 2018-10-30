@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+
+- local build on Windows 7 works
+- object with template with an array as input ? return multiple objects
+
+## [4.1.0] - 2018-10-15
+
 ### Added
 
 - output formats: turtle, trig, trix, jsonld
@@ -20,6 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- double join condition
+- support quote in literal
 - function file path not passed on to the function loader when using the CLI
 - when parsing a string into an RDF term, take into account @ is not always a language tag
 - parenttriplesmap handling null values
@@ -93,6 +102,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.1.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v0.2.1...v4.0.0
 [0.2.1]: https://github.com/RMLio/rmlmapper-java/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.6...v0.2.0
