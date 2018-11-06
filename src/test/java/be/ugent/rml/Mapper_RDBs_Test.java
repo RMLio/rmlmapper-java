@@ -89,10 +89,10 @@ public class Mapper_RDBs_Test extends TestCore {
 
         startMySQLDB();
 
-        if (LOCAL_TESTING && ! WINDOWS_SEVEN) {
-            startPostgreSQLLocal();
+        if (!LOCAL_TESTING) {
+//            startPostgreSQLLocal();
             //startSQLServerLocal();
-        } else {
+//        } else {
             startPostgreSQL();
             startSQLServer();
         }
@@ -640,7 +640,7 @@ public class Mapper_RDBs_Test extends TestCore {
             "RMLTC0012a-PostgreSQL, ttl",
             "RMLTC0012b-PostgreSQL, ttl"})
     public void evaluate_XXXX_RDBs_PostgreSQL(String resourceDir, String outputExtension) throws Exception {
-        if (WINDOWS_SEVEN) {
+        if (LOCAL_TESTING) {
             return;
         }
         String resourcePath = "test-cases/" + resourceDir + "/resource.sql";
@@ -663,7 +663,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     @Test(expected = Error.class)
     public void evaluate_0002c_RDBs_PostgreSQL() throws Exception {
-        if (WINDOWS_SEVEN) {
+        if (LOCAL_TESTING) {
             throw new Error();
         }
         String resourcePath = "test-cases/RMLTC0002c-PostgreSQL/resource.sql";
@@ -686,7 +686,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     @Test(expected = Error.class)
     public void evaluate_0002e_RDBs_PostgreSQL() throws Exception {
-        if (WINDOWS_SEVEN) {
+        if (LOCAL_TESTING) {
             throw new Error();
         }
         String resourcePath = "test-cases/RMLTC0002e-PostgreSQL/resource.sql";
@@ -709,7 +709,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     @Test(expected = Error.class)
     public void evaluate_0002i_RDBs_PostgreSQL() throws Exception {
-        if (WINDOWS_SEVEN) {
+        if (LOCAL_TESTING) {
             throw new Error();
         }
         String resourcePath = "test-cases/RMLTC0002i-PostgreSQL/resource.sql";
@@ -732,7 +732,7 @@ public class Mapper_RDBs_Test extends TestCore {
 
     @Test(expected = Error.class)
     public void evaluate_0003a_RDBs_PostgreSQL() throws Exception {
-        if (WINDOWS_SEVEN) {
+        if (LOCAL_TESTING) {
             throw new Error();
         }
         String resourcePath = "test-cases/RMLTC0003a-PostgreSQL/resource.sql";
