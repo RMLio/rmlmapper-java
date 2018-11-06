@@ -13,6 +13,13 @@
         <url>https://github.com/RMLio/rmlmapper-java</url>
     </scm>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -115,6 +122,20 @@
             <artifactId>jena-fuseki-embedded</artifactId>
             <version>3.8.0</version>
         </dependency>
+            <groupId>com.github.rdfhdt</groupId>
+            <artifactId>hdt-java</artifactId>
+            <version>hdt-2.1-SNAPSHOT</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.rdfhdt</groupId>-->
+            <!--<artifactId>hdt-java-core</artifactId>-->
+            <!--<version>2.1-SNAPSHOT</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.rdfhdt</groupId>-->
+            <!--<artifactId>hdt-api</artifactId>-->
+            <!--<version>2.1-SNAPSHOT</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>

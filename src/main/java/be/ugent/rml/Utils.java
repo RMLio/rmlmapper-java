@@ -12,6 +12,11 @@ import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import org.eclipse.rdf4j.rio.RDFParseException;
+import org.rdfhdt.hdt.enums.RDFNotation;
+import org.rdfhdt.hdt.exceptions.ParserException;
+import org.rdfhdt.hdt.hdt.HDT;
+import org.rdfhdt.hdt.hdt.HDTManager;
+import org.rdfhdt.hdt.options.HDTSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.model.Model;
@@ -424,5 +429,22 @@ public class Utils {
             hash += s.toCharArray()[i] * 31 ^ (s.toCharArray().length - 1 - i);
         }
         return Integer.toString(Math.abs(hash));
+    }
+
+    public static void ntriples2hdt(String rdfInputPath, String hdtOutputPath) {
+        // Configuration variables
+        String baseURI = "http://example.com/mydataset";
+        String inputType = "ntriples";
+
+        try {
+            // Create HDT from RDF file
+            HDT hdt = HDTManager.generateHDT(rdfInputPath, baseURI, RDFNotation.parse(inputType), new HDTSpecification(), null);
+            // Save generated HDT to a file
+            hdt.saveToHDT(hdtOutputPath, null);
+            // IMPORTANT: Free resources
+            hdt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
