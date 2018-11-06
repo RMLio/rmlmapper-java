@@ -129,7 +129,7 @@ public class Main {
                 String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
                 QuadStore outputStore;
 
-                if (outputFormat == null || outputFormat.equals("nquads")) {
+                if (outputFormat == null || outputFormat.equals("nquads") || outputFormat.equals("hdt")) {
                     outputStore = new SimpleQuadStore();
                 } else {
                     outputStore = new RDF4JStore();
@@ -261,12 +261,34 @@ public class Main {
     }
 
     private static void writeOutput(QuadStore store, String outputFile, String format) {
+        boolean hdt = format != null && format.equals("hdt");
 
-        if (format != null) {
-            format = format.toLowerCase();
+        if (hdt) {
+            try {
+                format = "nquads";
+                File tmpFile = File.createTempFile("file", ".nt");
+                tmpFile.deleteOnExit();
+                String uncompressedOutputFile = tmpFile.getAbsolutePath();
+
+                File nquadsFile = writeOutputUncompressed(store, uncompressedOutputFile, format);
+                Utils.ntriples2hdt(uncompressedOutputFile, outputFile);
+                nquadsFile.deleteOnExit();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
-            format = "nquads";
+            if (format != null) {
+                format = format.toLowerCase();
+            } else {
+                format = "nquads";
+            }
+
+            writeOutputUncompressed(store, outputFile, format);
         }
+    }
+
+    private static File writeOutputUncompressed(QuadStore store, String outputFile, String format) {
+        File targetFile = null;
 
         if (store.size() > 1) {
             logger.info(store.size() + " quads were generated");
@@ -275,13 +297,12 @@ public class Main {
         }
 
         try {
-
             BufferedWriter out;
             String doneMessage = null;
 
             //if output file provided, write to triples output file
             if (outputFile != null) {
-                File targetFile = new File(outputFile);
+                targetFile = new File(outputFile);
                 logger.info("Writing quads to " + targetFile.getPath() + "...");
 
                 if (!targetFile.isAbsolute()) {
@@ -305,5 +326,7 @@ public class Main {
         } catch(IOException e) {
             System.err.println( "Writing output failed. Reason: " + e.getMessage() );
         }
+
+        return targetFile;
     }
 }
