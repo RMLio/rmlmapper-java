@@ -39,16 +39,30 @@ A standalone jar can be found in `/target`.
 ## Usage
 
 ### CLI
-The following options are available.
+The following options are most common.
 
 - `-m, --mapping <arg>`: path to mapping document
 - `-o, --output <arg>`: path to output file
-- `-t, --triplesmaps <arg>`: triplesmaps to be executed in order, split by `,` (default: all)
-- `-c, --configfile <arg>`: path to config file
-- `-d, --duplicates`: remove duplicates in the output
-- `-f, --functionfile <arg>`: path to functions.ttl file (dynamic functions are found relative to functions.ttl)
-- `-v, --verbose`: show more details
-- `-h, --help`: show help
+- `-s,--serialization <arg>`: serialization format (nquads (default), trig, trix, jsonld, hdt)
+
+All options can be found when executing `java -jar rmlmapper.jar --help`,
+that output is found below.
+
+```
+usage: java -jar mapper.jar <options>
+options:
+ -c,--configfile <arg>            path to configuration file
+ -d,--duplicates                  remove duplicates in the output
+ -e,--metadatafile <arg>          path to metadata-test-cases file
+ -f,--functionfile <arg>          path to functions.ttl file (dynamic functions are found relative to functions.ttl)
+ -h,--help                        show help info
+ -l,--metadataDetailLevel <arg>   generate metadata-test-cases on given detail level (dataset - triple - term)
+ -m,--mappingfile <arg>           path to mapping document
+ -o,--outputfile <arg>            path to output file (default: stdout)
+ -s,--serialization <arg>         serialization format (nquads (default), trig, trix, jsonld, hdt)
+ -t,--triplesmaps <arg>           IRIs of the triplesmaps that should be executed in order, split by ',' (default is all triplesmaps)
+ -v,--verbose                     show more details in debugging output
+```
 
 ### Library
 
