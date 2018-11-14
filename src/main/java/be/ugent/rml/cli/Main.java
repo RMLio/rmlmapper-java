@@ -39,7 +39,7 @@ public class Main {
         Option outputfileOption = Option.builder("o")
                 .longOpt("outputfile")
                 .hasArg()
-                .desc("path to output file")
+                .desc("path to output file (default: stdout)")
                 .build();
         Option functionfileOption = Option.builder("f")
                 .longOpt("functionfile")
@@ -49,11 +49,11 @@ public class Main {
         Option triplesmapsOption = Option.builder("t")
                 .longOpt("triplesmaps")
                 .hasArg()
-                .desc("IRIs of the triplesmaps that should be executed (default is all triplesmaps)")
+                .desc("IRIs of the triplesmaps that should be executed in order, split by ',' (default is all triplesmaps)")
                 .build();
         Option removeduplicatesOption = Option.builder("d")
                 .longOpt("duplicates")
-                .desc("remove duplicates")
+                .desc("remove duplicates in the output")
                 .build();
         Option configfileOption = Option.builder("c")
                 .longOpt("configfile")
@@ -62,25 +62,25 @@ public class Main {
                 .build();
         Option helpOption = Option.builder("h")
                 .longOpt("help")
-                .desc("get help info")
+                .desc("show help info")
                 .build();
         Option verboseOption = Option.builder("v")
                 .longOpt("verbose")
-                .desc("verbose")
+                .desc("show more details in debugging output")
                 .build();
         Option metadataOption = Option.builder("e")
                 .longOpt("metadatafile")
                 .hasArg()
-                .desc("path to metadata-test-cases file")
+                .desc("path to output metadata file")
                 .build();
         Option metadataDetailLevelOption = Option.builder("l")
                 .longOpt("metadataDetailLevel")
                 .hasArg()
-                .desc("generate metadata-test-cases on given detail level (dataset - triple - term)")
+                .desc("generate metadata on given detail level (dataset - triple - term)")
                 .build();
         Option serializationFormatOption = Option.builder("s")
                 .longOpt( "serialization" )
-                .desc( "serialization format (nquads (default), trig, trix, jsonld)" )
+                .desc( "serialization format (nquads (default), trig, trix, jsonld, hdt)" )
                 .hasArg()
                 .build();
         options.addOption(mappingdocOption);
@@ -129,7 +129,7 @@ public class Main {
                 String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
                 QuadStore outputStore;
 
-                if (outputFormat == null || outputFormat.equals("nquads")) {
+                if (outputFormat == null || outputFormat.equals("nquads") || outputFormat.equals("hdt")) {
                     outputStore = new SimpleQuadStore();
                 } else {
                     outputStore = new RDF4JStore();
@@ -156,7 +156,7 @@ public class Main {
                                 detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
                                 break;
                             default:
-                                logger.error("Unknown metadata-test-cases detail level option. Use the -h flag for more info.");
+                                logger.error("Unknown metadata detail level option. Use the -h flag for more info.");
                                 return;
                         }
                         metadataGenerator = new MetadataGenerator(
@@ -166,7 +166,7 @@ public class Main {
                                 rmlStore
                         );
                     } else {
-                        logger.error("Please specify the detail level when requesting metadata-test-cases generation. Use the -h flag for more info.");
+                        logger.error("Please specify the detail level when requesting metadata generation. Use the -h flag for more info.");
                     }
                 }
 
@@ -200,16 +200,16 @@ public class Main {
                             executor.getTriplesMaps() : triplesMaps, rmlStore);
                 }
 
-                // Get start timestamp for post mapping metadata-test-cases
+                // Get start timestamp for post mapping metadata
                 String startTimestamp = Instant.now().toString();
 
                 QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                         metadataGenerator);
 
-                // Get stop timestamp for post mapping metadata-test-cases
+                // Get stop timestamp for post mapping metadata
                 String stopTimestamp = Instant.now().toString();
 
-                // Generate post mapping metadata-test-cases and output all metadata-test-cases
+                // Generate post mapping metadata and output all metadata
                 if (metadataGenerator != null) {
                     metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
                             result);
@@ -261,12 +261,34 @@ public class Main {
     }
 
     private static void writeOutput(QuadStore store, String outputFile, String format) {
+        boolean hdt = format != null && format.equals("hdt");
 
-        if (format != null) {
-            format = format.toLowerCase();
+        if (hdt) {
+            try {
+                format = "nquads";
+                File tmpFile = File.createTempFile("file", ".nt");
+                tmpFile.deleteOnExit();
+                String uncompressedOutputFile = tmpFile.getAbsolutePath();
+
+                File nquadsFile = writeOutputUncompressed(store, uncompressedOutputFile, format);
+                Utils.ntriples2hdt(uncompressedOutputFile, outputFile);
+                nquadsFile.deleteOnExit();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
-            format = "nquads";
+            if (format != null) {
+                format = format.toLowerCase();
+            } else {
+                format = "nquads";
+            }
+
+            writeOutputUncompressed(store, outputFile, format);
         }
+    }
+
+    private static File writeOutputUncompressed(QuadStore store, String outputFile, String format) {
+        File targetFile = null;
 
         if (store.size() > 1) {
             logger.info(store.size() + " quads were generated");
@@ -275,13 +297,12 @@ public class Main {
         }
 
         try {
-
             BufferedWriter out;
             String doneMessage = null;
 
             //if output file provided, write to triples output file
             if (outputFile != null) {
-                File targetFile = new File(outputFile);
+                targetFile = new File(outputFile);
                 logger.info("Writing quads to " + targetFile.getPath() + "...");
 
                 if (!targetFile.isAbsolute()) {
@@ -305,5 +326,7 @@ public class Main {
         } catch(IOException e) {
             System.err.println( "Writing output failed. Reason: " + e.getMessage() );
         }
+
+        return targetFile;
     }
 }

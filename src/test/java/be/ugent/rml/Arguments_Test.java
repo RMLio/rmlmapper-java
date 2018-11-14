@@ -2,13 +2,16 @@ package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
 import org.junit.Test;
+import org.rdfhdt.hdt.hdt.HDT;
+import org.rdfhdt.hdt.hdt.HDTManager;
+import org.rdfhdt.hdt.triples.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class Arguments_Test extends TestCore {
@@ -104,6 +107,39 @@ public class Arguments_Test extends TestCore {
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void outputHDT() throws IOException {
+        Main.main("-m ./argument/mapping.ttl -o ./generated_output.hdt -s hdt".split(" "));
+
+        File file1 = new File("./src/test/resources/argument/output-hdt/target_output.hdt");
+        File file2 = new File("./generated_output.hdt");
+
+        // Load HDT file.
+        HDT hdt1 = HDTManager.loadHDT(file1.getAbsolutePath(), null);
+        HDT hdt2 = HDTManager.loadHDT(file2.getAbsolutePath(), null);
+
+        try {
+            Triples triples1 = hdt1.getTriples();
+            Triples triples2 = hdt2.getTriples();
+
+            assertEquals(triples1.size(), triples2.size());
+
+            IteratorTripleID iteratorTripleID1 = triples1.searchAll();
+            IteratorTripleID iteratorTripleID2 = triples2.searchAll();
+
+            while(iteratorTripleID1.hasNext()) {
+                TripleID tripleID1 = iteratorTripleID1.next();
+                TripleID tripleID2 = iteratorTripleID2.next();
+
+                assertTrue(tripleID1.equals(tripleID2));
+            }
+        } finally {
+            hdt1.close();
+            hdt2.close();
+            assertTrue(file2.delete());
         }
     }
 

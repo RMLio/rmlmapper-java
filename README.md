@@ -39,16 +39,30 @@ A standalone jar can be found in `/target`.
 ## Usage
 
 ### CLI
-The following options are available.
+The following options are most common.
 
 - `-m, --mapping <arg>`: path to mapping document
 - `-o, --output <arg>`: path to output file
-- `-t, --triplesmaps <arg>`: triplesmaps to be executed in order, split by `,` (default: all)
-- `-c, --configfile <arg>`: path to config file
-- `-d, --duplicates`: remove duplicates in the output
-- `-f, --functionfile <arg>`: path to functions.ttl file (dynamic functions are found relative to functions.ttl)
-- `-v, --verbose`: show more details
-- `-h, --help`: show help
+- `-s,--serialization <arg>`: serialization format (nquads (default), trig, trix, jsonld, hdt)
+
+All options can be found when executing `java -jar rmlmapper.jar --help`,
+that output is found below.
+
+```
+usage: java -jar mapper.jar <options>
+options:
+ -c,--configfile <arg>            path to configuration file
+ -d,--duplicates                  remove duplicates in the output
+ -e,--metadatafile <arg>          path to metadata-test-cases file
+ -f,--functionfile <arg>          path to functions.ttl file (dynamic functions are found relative to functions.ttl)
+ -h,--help                        show help info
+ -l,--metadataDetailLevel <arg>   generate metadata-test-cases on given detail level (dataset - triple - term)
+ -m,--mappingfile <arg>           path to mapping document
+ -o,--outputfile <arg>            path to output file (default: stdout)
+ -s,--serialization <arg>         serialization format (nquads (default), trig, trix, jsonld, hdt)
+ -t,--triplesmaps <arg>           IRIs of the triplesmaps that should be executed in order, split by ',' (default is all triplesmaps)
+ -v,--verbose                     show more details in debugging output
+```
 
 ### Library
 
@@ -65,21 +79,27 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.QuadStore;
 
-public class Main {
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+
+class Main {
 
     public static void main(String[] args) {
 
-        boolean removeDuplicates = false; //set to true if you want to remove duplicates triples/quads from the output
         String cwd = "/home/rml"; //path to default directory for local files
         String mappingFile = "/home/rml/mapping.rml.ttl"; //path to the mapping file that needs to be executed
-        List<String> triplesMaps = new ArrayList<>(); //list of triplesmaps to execute. When this list is empty all triplesmaps in the mapping file are executed
         
-        InputStream mappingStream = new FileInputStream(mappingFile);
-        Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
-        RDF4JStore rmlStore = new RDF4JStore(model);
-        
-        Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(cwd, rmlStore)));
-        QuadStore result = executor.execute(triplesMaps, removeDuplicates);
+        try {
+            InputStream mappingStream = new FileInputStream(mappingFile);
+            Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
+            RDF4JStore rmlStore = new RDF4JStore(model);
+
+            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(cwd, rmlStore)));
+            QuadStore result = executor.execute(null);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     } 
 }
 ```
@@ -123,24 +143,51 @@ You can change the functions.ttl path using a commandline-option (`-f`).
 This overrides the dynamic loading.
 See the snippet below for an example of how to do it.
 
-```
+```java
+package be.ugent.rml;
+
+import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.GrelProcessor;
+import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.QuadStore;
+import com.google.common.io.Resources;
 
-String mapPath = "path/to/mapping/file";
-String outPath = "path/to/where/the/output/triples/should/be/written";
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-Map<String, Class> libraryMap = new HashMap<>();
-libraryMap.put("GrelFunctions.jar", GrelProcessor.class);
-FunctionLoader functionLoader = new FunctionLoader(libraryMap);
-try {
-    Executor executor = this.createExecutor(mapPath, functionLoader);
-    doMapping(executor, outPath);
-} catch (IOException e) {
-    logger.error(e.getMessage(), e);
+
+class Main {
+
+    public static void main(String[] args) {
+        String mapPath = "path/to/mapping/file";
+        String functionPath = "path/to/functions.ttl/file";
+
+        URL url = Resources.getResource(functionPath);
+        
+        Map<String, Class> libraryMap = new HashMap<>();
+        libraryMap.put("GrelFunctions.jar", GrelProcessor.class);
+        try {
+            File functionsFile = new File(url.toURI());
+            FunctionLoader functionLoader = new FunctionLoader(functionsFile, null, libraryMap);
+            ClassLoader classLoader = Main.class.getClassLoader();
+            // execute mapping file
+            File mappingFile = new File(classLoader.getResource(mapPath).getFile());
+            QuadStore rmlStore = Utils.readTurtle(mappingFile);
+            
+            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)),
+                functionLoader);
+            QuadStore result = executor.execute(null);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
 ```
 
 ### Testing
+
 #### RDBs
 Make sure you have [Docker](https://www.docker.com) running.
 
@@ -167,6 +214,7 @@ Make sure you have [Docker](https://www.docker.com) running.
 | com.opencsv opencsv                | Apache License 2.0                                                 |
 | commons-lang                       | Apache License 2.0                                                 |
 | ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
+| org.rdfhdt.hdt-jena                | GNU Lesser General Public License v3.0                             |
 
 # UML Diagrams
 ## How to generate with IntelliJ IDEA
