@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+
+- rdf4j version bump to 2.4.1
+
 ## [4.2.0] - 2018-11-14
 
 ### Added
