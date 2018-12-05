@@ -195,7 +195,7 @@ Make sure you have [Docker](https://www.docker.com) running.
 * A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests will always succeed locally.
 * A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on Windows 7 machines.
 
-# Dependencies
+## Dependencies
 
 |             Dependency             | License                                                            |
 |:----------------------------------:|--------------------------------------------------------------------|
@@ -216,8 +216,16 @@ Make sure you have [Docker](https://www.docker.com) running.
 | ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
 | org.rdfhdt.hdt-jena                | GNU Lesser General Public License v3.0                             |
 
-# UML Diagrams
-## How to generate with IntelliJ IDEA
+## Remarks
+
+### XML file parsing performance
+
+The RMLMapper's XML parsing implementation (`javax.xml.parsers`) has been chosen to support full XPath.
+This implementation causes a large memory consumption (up to ten times larger than the original XML file size).
+However, the RMLMapper can be easily adapted to use a different XML parsing implementation that might be better suited for a specific use case.
+
+## UML Diagrams
+### How to generate with IntelliJ IDEA
 (Requires Ultimate edition)
 
 * Right click on package: "be.ugent.rml"
