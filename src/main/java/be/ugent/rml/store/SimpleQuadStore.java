@@ -52,7 +52,17 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {
-        return quads;
+        Quad quad = new Quad(subject, predicate, object, graph);
+
+        List<Quad> filteredQuads = new ArrayList<>();
+
+        for (Quad q : quads) {
+            if (quad.compareTo(q) == 0) {
+                filteredQuads.add(q);
+            }
+        }
+
+        return filteredQuads;
     }
 
     public List<Quad> getQuads(Term subject, Term predicate, Term object) {
