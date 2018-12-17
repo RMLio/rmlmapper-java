@@ -7,10 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.3.0] - 2018-12-17
+
+### Added
+
+- SPARQL endpoint support
+
+### Changed
+
+- rdf4j version bump to 2.4.1
+
 ## [4.2.0] - 2018-11-14
 
 ### Added
 
+- support for SPARQL
 - output format: hdt
 
 ### Fixed
@@ -108,6 +119,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v0.2.1...v4.0.0

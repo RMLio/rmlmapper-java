@@ -11,10 +11,7 @@ import be.ugent.rml.term.Term;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RecordsFactory {
 
@@ -23,6 +20,7 @@ public class RecordsFactory {
     private Map<String, Map<String, List<Record>>> allJSONRecords;
     private Map<String, Map<String, List<Record>>> allXMLRecords;
     private Map<String, Map<Integer, List<Record>>> allRDBsRecords;
+    private Map<String, Map<Integer, List<Record>>> allSPARQLRecords;
 
     public RecordsFactory(DataFetcher dataFetcher) {
         this.dataFetcher = dataFetcher;
@@ -30,6 +28,7 @@ public class RecordsFactory {
         allJSONRecords = new HashMap<>();
         allXMLRecords = new HashMap<>();
         allRDBsRecords = new HashMap<>();
+        allSPARQLRecords = new HashMap<>();
     }
 
     public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
@@ -58,8 +57,7 @@ public class RecordsFactory {
             } else {
                 if (sources.get(0) instanceof Literal) {
                     String source = sources.get(0).getValue();
-
-                    switch(referenceFormulations.get(0).getValue()) {
+                    switch (referenceFormulations.get(0).getValue()) {
                         case NAMESPACES.QL + "CSV":
                             return getCSVRecords(source);
                         case NAMESPACES.QL + "XPath":
@@ -85,6 +83,15 @@ public class RecordsFactory {
                             }
 
                             return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, tables, referenceFormulations);
+                        case NAMESPACES.SD + "Service":  // SPARQL
+                            // Check if SPARQL Endpoint is given
+                            List<Term> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "endpoint"),
+                                    null));
+                            if (endpoint.isEmpty()) {
+                                throw new Error("No SPARQL endpoint detected.");
+                            }
+                            return getSPARQLRecords(rmlStore, source, logicalSource, triplesMap,
+                                    endpoint.get(0), iterators, referenceFormulations);
                         default:
                             throw new NotImplementedException();
 
@@ -233,6 +240,80 @@ public class RecordsFactory {
         } else {
             RDBs rdbs = new RDBs();
             return rdbs.get(dsn, database, username, password, query, referenceFormulations.get(0).getValue());
+        }
+    }
+
+    private List<Record> getSPARQLRecords(QuadStore rmlStore, Term source, Term logicalSource, Term triplesMap,
+                                       Term endpoint, List<Term> iterators, List<Term> referenceFormulations) {
+        if (!iterators.isEmpty()) {
+
+            // Get query
+            List<Term> query = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "query"), null));
+            if (query.isEmpty()) {
+                throw new Error("No SPARQL query detected");
+            }
+            String qs = query.get(0).getValue().replaceAll("[\r\n]+", " ").trim();
+
+            // Get result format
+            List<Term> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "resultFormat"), null));
+            SPARQL.ResultFormat resultFormat = getSPARQLResultFormat(resultFormatObject, referenceFormulations);
+
+            // Get iterator
+            String iterator = iterators.get(0).getValue();
+
+            // Create key to save in records map
+            // TODO: choose/discuss a better key
+            int key = Utils.getHash(qs);
+
+            if (allSPARQLRecords.containsKey(source.toString()) && allSPARQLRecords.get(source.toString()).containsKey(key)) {
+                return allSPARQLRecords.get(source.toString()).get(key);
+            } else {
+                SPARQL sparql = new SPARQL();
+                List<Record> records = sparql.get(endpoint.getValue(), qs, iterator, resultFormat, referenceFormulations.get(0).getValue());
+
+                if (allSPARQLRecords.containsKey(source.toString())) {
+                    allSPARQLRecords.get(source.toString()).put(key, records);
+                } else {
+                    Map<Integer, List<Record>> temp = new HashMap<>();
+                    temp.put(key, records);
+                    allSPARQLRecords.put(source.toString(), temp);
+                }
+                return records;
+            }
+        } else {
+            throw new Error("The Logical Source of " + triplesMap + " does not have iterator, while this is expected for SPARQL.");
+        }
+    }
+
+    private SPARQL.ResultFormat getSPARQLResultFormat(List<Term> resultFormat, List<Term> referenceFormulation) {
+        if (resultFormat.isEmpty() && referenceFormulation.isEmpty()) {     // This will never be called atm but may come in handy later
+            throw new Error("Please specify the sd:resultFormat of the SPARQL endpoint or a rml:referenceFormulation.");
+        } else if (referenceFormulation.isEmpty()) {
+            for (SPARQL.ResultFormat format: SPARQL.ResultFormat.values()) {
+                if (resultFormat.get(0).getValue().equals(format.getUri())) {
+                    return format;
+                }
+            }
+            // No matching SPARQL.ResultFormat found
+            throw new Error("Unsupported sd:resultFormat: " + resultFormat.get(0));
+
+        } else if (resultFormat.isEmpty()) {
+            for (SPARQL.ResultFormat format: SPARQL.ResultFormat.values()) {
+                if (format.getReferenceFormulations().contains(referenceFormulation.get(0).getValue())) {
+                    return format;
+                }
+            }
+            // No matching SPARQL.ResultFormat found
+            throw new Error("Unsupported rml:referenceFormulation for a SPARQL source.");
+
+        } else {
+            for (SPARQL.ResultFormat format : SPARQL.ResultFormat.values()) {
+                if (resultFormat.get(0).getValue().equals(format.getUri())
+                        && format.getReferenceFormulations().contains(referenceFormulation.get(0).getValue())) {
+                    return format;
+                }
+            }
+            throw new Error("Format specified in sd:resultFormat doesn't match the format specified in rml:referenceFormulation.");
         }
     }
 }
