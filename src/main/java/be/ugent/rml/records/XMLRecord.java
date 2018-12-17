@@ -27,7 +27,6 @@ public class XMLRecord implements Record {
             NodeList result = (NodeList) xPath.compile(value).evaluate(node, XPathConstants.NODESET);
 
             for (int i = 0; i < result.getLength(); i ++) {
-                Node item = result.item(i);
                 results.add(result.item(i).getTextContent());
             }
         } catch (XPathExpressionException e) {

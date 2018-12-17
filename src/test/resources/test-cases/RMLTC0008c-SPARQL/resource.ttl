@@ -1,0 +1,4 @@
+[] <http://xmlns.com/foaf/0.1/name> "Venus Williams" ;
+   <http://www.w3.org/1999/02/22-rdf-syntax-ns#ID> "10" ;
+   <http://example.com/plays>  [ a <http://example.com/Sport> ;
+                                   <http://xmlns.com/foaf/0.1/name> "Tennis" ] .
