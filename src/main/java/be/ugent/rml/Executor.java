@@ -263,7 +263,7 @@ public class Executor {
             List<Term> nodes = mapping.getSubjectMappingInfo().getTermGenerator().generate(record);
 
             if (!nodes.isEmpty()) {
-                //todo: only create metadata-test-cases when it's required
+                //todo: only create metadata when it's required
                 this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0), new Metadata(triplesMap, mapping.getSubjectMappingInfo().getTerm())));
             }
         }

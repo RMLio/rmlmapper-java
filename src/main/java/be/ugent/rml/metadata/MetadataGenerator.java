@@ -10,8 +10,8 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
- * Class that encapsulates the generation of metadata-test-cases.
- * (Does everything for metadata-test-cases generation)
+ * Class that encapsulates the generation of metadata.
+ * (Does everything for metadata generation)
  */
 public class MetadataGenerator {
 
@@ -36,7 +36,7 @@ public class MetadataGenerator {
     private QuadStore inputData;
     private String mappingFile;
     private List<Term> triplesMaps;
-    private List<BiConsumer<Term, ProvenancedQuad>> generationFunctions;    // Will contain different functions according to requested metadata-test-cases detail level
+    private List<BiConsumer<Term, ProvenancedQuad>> generationFunctions;    // Will contain different functions according to requested metadata detail level
     private List<Term> logicalSources;
     private Set<String> distinctSubjects;    // Used for counting number of distinct subjects
     private Set<String> distinctObjects;     // Used for counting number of distinct objects
@@ -104,7 +104,7 @@ public class MetadataGenerator {
     }
 
     /**
-     * Generates metadata-test-cases before the actual mapping.
+     * Generates metadata before the actual mapping.
      *
      * @param triplesMaps
      * @param mappingQuads
@@ -120,7 +120,7 @@ public class MetadataGenerator {
     }
 
     /**
-     * Generates metadata-test-cases after the actual mapping.
+     * Generates metadata after the actual mapping.
      *
      * @param startTimestamp
      * @param stopTimestamp

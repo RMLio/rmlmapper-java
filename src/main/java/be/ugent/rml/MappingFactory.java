@@ -1,7 +1,6 @@
 package be.ugent.rml;
 
 import be.ugent.rml.extractor.ConstantExtractor;
-import be.ugent.rml.extractor.Extractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.*;
 import be.ugent.rml.store.QuadStore;
@@ -12,7 +11,6 @@ import be.ugent.rml.termgenerator.BlankNodeGenerator;
 import be.ugent.rml.termgenerator.LiteralGenerator;
 import be.ugent.rml.termgenerator.NamedNodeGenerator;
 import be.ugent.rml.termgenerator.TermGenerator;
-import org.elasticsearch.cluster.routing.allocation.decider.Decision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
