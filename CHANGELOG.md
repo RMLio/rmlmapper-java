@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- SPARQL endpoint support
+
 ### Changed
 
 - rdf4j version bump to 2.4.1
