@@ -13,6 +13,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
  - XML files (XPath)
 - remote data sources:
  - relational databases (MySQL, PostgreSQL, and SQLServer)
+ - SPARQL endpoints
  - files via HTTP urls (via GET)
   - CSV files
   - JSON files (JSONPath)
@@ -29,7 +30,6 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 - data sources:
    - NoSQL databases
    - web APIs
-   - SPARQL endpoints
    - TPF servers
 
 ## Build
