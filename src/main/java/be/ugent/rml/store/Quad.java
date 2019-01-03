@@ -37,7 +37,7 @@ public class Quad implements Comparable<Quad> {
     public int compareTo(Quad o) {
         int comparison;
 
-        if (this.graph == null && o.getGraph() == null) {
+        if (this.graph == null || o.getGraph() == null) {
             comparison = 0;
         } else {
             if (this.graph == null) {

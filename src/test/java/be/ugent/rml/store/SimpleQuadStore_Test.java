@@ -1,12 +1,9 @@
-package be.ugent.rml;
+package be.ugent.rml.store;
 
-import be.ugent.rml.term.Term;
 import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.store.Quad;
-import be.ugent.rml.store.SimpleQuadStore;
-
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
 
 public class SimpleQuadStore_Test {
     @Test
