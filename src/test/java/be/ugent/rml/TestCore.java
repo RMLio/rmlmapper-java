@@ -123,6 +123,8 @@ abstract class TestCore {
             store = Utils.readTurtle(outputFile, RDFFormat.NQUADS);
         } else if (path.endsWith(".json")) {
             store = Utils.readTurtle(outputFile, RDFFormat.JSONLD);
+        } else if (path.endsWith(".trig")) {
+            store = Utils.readTurtle(outputFile, RDFFormat.TRIG);
         } else {
             store = Utils.readTurtle(outputFile);
         }

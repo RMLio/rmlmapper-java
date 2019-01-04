@@ -4,3 +4,4 @@ rmlmapper.iml
 .DS_Store
 .settings
 .vscode
+.attach_*

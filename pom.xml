@@ -42,6 +42,11 @@
             <version>1.4</version>
         </dependency>
         <dependency>
+            <groupId>com.github.jsonld-java.jsonld-java</groupId>
+            <artifactId>jsonld-java</artifactId>
+            <version>0.12.3</version>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-runtime</artifactId>
             <version>2.4.1</version>
@@ -166,7 +171,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.1</version>
+                <version>3.2.1</version>
                 <configuration>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
                     <transformers>
@@ -210,11 +215,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.17</version>
+                <version>3.0.0-M3</version>
                 <configuration>
-                    <useSystemClassLoader>false</useSystemClassLoader>
-                    <!--<parallel>methods</parallel>-->
-                    <!--<threadCount>10</threadCount>-->
+                    <useSystemClassLoader>true</useSystemClassLoader>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
+                    <!--&lt;!&ndash;<parallel>methods</parallel>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<threadCount>10</threadCount>&ndash;&gt;-->
                 </configuration>
             </plugin>
             <plugin>
