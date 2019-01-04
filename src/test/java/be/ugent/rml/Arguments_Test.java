@@ -111,6 +111,35 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
+    public void outputTrig() {
+        Main.main("-m ./argument/mapping.ttl -o ./generated_output.trig -s trig".split(" "));
+        compareFiles(
+                "argument/output-trig/target_output.trig",
+                "./generated_output.trig",
+                false
+        );
+
+        File outputFile;
+
+        try {
+            byte[] encoded = Files.readAllBytes(Paths.get("./generated_output.trig"));
+            String content = new String(encoded, StandardCharsets.UTF_8);
+
+            assertTrue(content.contains("{"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            outputFile = Utils.getFile("./generated_output.trig");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void outputHDT() throws IOException {
         Main.main("-m ./argument/mapping.ttl -o ./generated_output.hdt -s hdt".split(" "));
 

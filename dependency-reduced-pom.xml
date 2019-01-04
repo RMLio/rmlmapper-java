@@ -23,7 +23,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4.1</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <id>make-assembly</id>
@@ -59,9 +59,10 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.17</version>
+        <version>3.0.0-M3</version>
         <configuration>
-          <useSystemClassLoader>false</useSystemClassLoader>
+          <useSystemClassLoader>true</useSystemClassLoader>
+          <useManifestOnlyJar>false</useManifestOnlyJar>
         </configuration>
       </plugin>
       <plugin>
@@ -135,4 +136,3 @@
     <junit.version>4.12</junit.version>
   </properties>
 </project>
-
