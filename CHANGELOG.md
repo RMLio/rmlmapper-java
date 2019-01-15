@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.3.1] - 2019-01-15
+
+### Fixed
+
+- filtering of quads in SimpleQuadStore
+
 ## [4.3.0] - 2018-12-17
 
 ### Added
@@ -119,6 +125,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.3.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.0...v4.3.1
 [4.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.0.0...v4.1.0
