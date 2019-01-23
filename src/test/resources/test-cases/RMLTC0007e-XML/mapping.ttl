@@ -18,5 +18,10 @@
     rr:template "http://example.com/Student/{ID}/{FirstName}";
     rr:graph ex:PersonGraph ;
     rr:class foaf:Person
+  ];
+
+  rr:predicateObjectMap [ 
+    rr:predicate ex:id ;
+    rr:objectMap [ rml:reference "ID"; ]
   ].
 

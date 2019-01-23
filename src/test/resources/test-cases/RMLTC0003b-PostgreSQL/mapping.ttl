@@ -12,7 +12,7 @@
   rml:logicalSource [
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rr:query "SELECT id, lastname, concat_ws(firstname, '', lastname) as name FROM student";
+    rml:query "SELECT id, lastname, concat_ws(firstname, '', lastname) as name FROM student";
     rr:tableName "student";
   ];
 

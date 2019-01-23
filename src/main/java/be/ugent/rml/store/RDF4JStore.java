@@ -210,7 +210,7 @@ public class RDF4JStore extends QuadStore {
             Pattern pattern;
 
             if (str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"")) {
-                pattern = Pattern.compile("^\"([^\"]*)\"@<([^>]*)>");
+                pattern = Pattern.compile("^\"([^\"]*)\"@([^@]*)");
             } else if (str.contains("^^")) {
                 pattern = Pattern.compile("^\"([^\"]*)\"\\^\\^<([^>]*)>");
             } else {

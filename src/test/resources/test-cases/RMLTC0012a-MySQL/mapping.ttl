@@ -13,10 +13,10 @@
   rml:logicalSource [
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rr:tableName "persons";
+    rr:tableName "\"IOUs\"";
   ];
 	
-  rr:subjectMap [ rr:template "{fname}{lname}{amount}"; rr:termType rr:BlankNode; ];
+  rr:subjectMap [ rr:template "{\"fname\"}_{\"lname\"}_{\"amount\"}"; rr:termType rr:BlankNode; ];
 	
   rr:predicateObjectMap [ 
     rr:predicate foaf:name ; 
@@ -35,7 +35,7 @@
 
 
 <#DB_source> a d2rq:Database;
-  d2rq:jdbcDSN "CONNECTIONDSN"; # the "jbdc:mysql:// part is ignored
-  d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver"; # this is ignored
+  d2rq:jdbcDSN "CONNECTIONDSN";
+  d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver";
   d2rq:username "root";
   d2rq:password "" .

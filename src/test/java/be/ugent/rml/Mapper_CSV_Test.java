@@ -54,6 +54,11 @@ public class Mapper_CSV_Test extends TestCore {
     }
 
     @Test
+    public void evaluate_0005a_CSV() {
+        doMapping("./test-cases/RMLTC0005a-CSV/mapping.ttl", "./test-cases/RMLTC0005a-CSV/output.nq");
+    }
+
+    @Test
     public void evaluate_0006a_CSV() {
         doMapping("./test-cases/RMLTC0006a-CSV/mapping.ttl", "./test-cases/RMLTC0006a-CSV/output.nq");
     }
@@ -152,6 +157,47 @@ public class Mapper_CSV_Test extends TestCore {
     public void evaluate_0012b_CSV() {
         doMapping("./test-cases/RMLTC0012b-CSV/mapping.ttl", "./test-cases/RMLTC0012b-CSV/output.ttl");
     }
+
+    @Test
+    public void evaluate_0012c_CSV() {
+        doMappingExpectError("./test-cases/RMLTC0012c-CSV/mapping.ttl");
+    }
+
+    @Test
+    public void evaluate_0012d_CSV() {
+        doMappingExpectError("./test-cases/RMLTC0012d-CSV/mapping.ttl");
+    }
+
+    @Test
+    public void evaluate_0015a_CSV() {
+        doMapping("./test-cases/RMLTC0015a-CSV/mapping.ttl", "./test-cases/RMLTC0015a-CSV/output.nq");
+    }
+
+    @Test
+    public void evaluate_0015b_CSV() {
+        doMappingExpectError("./test-cases/RMLTC0015b-CSV/mapping.ttl");
+    }
+
+    @Test
+    public void evaluate_0019a_CSV() {
+        doMapping("./test-cases/RMLTC0019a-CSV/mapping.ttl", "./test-cases/RMLTC0019a-CSV/output.nq");
+    }
+
+    @Test
+    public void evaluate_0019b_CSV() {
+        doMapping("./test-cases/RMLTC0019b-CSV/mapping.ttl", "./test-cases/RMLTC0019b-CSV/output.nq");
+    }
+
+    @Test
+    public void evaluate_0020a_CSV() {
+        doMapping("./test-cases/RMLTC0020a-CSV/mapping.ttl", "./test-cases/RMLTC0020a-CSV/output.nq");
+    }
+
+    @Test
+    public void evaluate_0020b_CSV() {
+        doMapping("./test-cases/RMLTC0020b-CSV/mapping.ttl", "./test-cases/RMLTC0020b-CSV/output.nq");
+    }
+
 
     @Test
     public void evaluate_1003_CSV() {

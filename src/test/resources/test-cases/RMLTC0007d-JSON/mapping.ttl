@@ -29,6 +29,11 @@
   ];
 
   rr:predicateObjectMap [ 
+    rr:predicate ex:id;
+    rml:reference "ID" 
+  ];
+
+  rr:predicateObjectMap [ 
     rr:predicate foaf:name;
     rr:objectMap [ rml:reference "FirstName" ]
   ].

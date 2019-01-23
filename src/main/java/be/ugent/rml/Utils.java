@@ -11,6 +11,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.ParserConfig;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class Utils {
 
@@ -444,6 +446,33 @@ public class Utils {
             hdt.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static boolean isValidIRI(String iri) {
+        UrlValidator urlValidator = new UrlValidator();
+        return urlValidator.isValid(iri);
+    }
+
+    public static String getBaseDirectiveTurtle(File file) {
+        StringBuilder contentBuilder = new StringBuilder();
+        try (Stream<String> stream = Files.lines( Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)) {
+            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String turtle = contentBuilder.toString();
+
+        Pattern p = Pattern.compile("@base <([^<>]*)>");
+        Matcher m = p.matcher(turtle);
+
+        if (m.find()) {
+            return m.group(1);
+        } else {
+            return null;
         }
     }
 }

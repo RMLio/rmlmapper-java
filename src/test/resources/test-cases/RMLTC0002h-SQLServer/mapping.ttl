@@ -12,7 +12,7 @@
   rml:logicalSource [
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rr:query "SELECT Name, Name FROM student";
+    rml:query "SELECT Name, Name FROM student";
     rr:tableName "student";
   ];
 
