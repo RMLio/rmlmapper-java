@@ -54,6 +54,11 @@ public class Mapper_XML_Test extends TestCore {
     }
 
     @Test
+    public void evaluate_0005a_XML() {
+        doMapping("./test-cases/RMLTC0005a-XML/mapping.ttl", "./test-cases/RMLTC0005a-XML/output.nq");
+    }
+
+    @Test
     public void evaluate_0006a_XML() {
         doMapping("./test-cases/RMLTC0006a-XML/mapping.ttl", "./test-cases/RMLTC0006a-XML/output.nq");
     }
@@ -146,6 +151,46 @@ public class Mapper_XML_Test extends TestCore {
     @Test
     public void evaluate_0012b_XML() {
         doMapping("./test-cases/RMLTC0012b-XML/mapping.ttl", "./test-cases/RMLTC0012b-XML/output.ttl");
+    }
+
+    @Test
+    public void evaluate_0012c_XML() {
+        doMappingExpectError("./test-cases/RMLTC0012c-XML/mapping.ttl");
+    }
+
+    @Test
+    public void evaluate_0012d_XML() {
+        doMappingExpectError("./test-cases/RMLTC0012d-XML/mapping.ttl");
+    }
+
+    @Test
+    public void evaluate_0015a_XML() {
+        doMapping("./test-cases/RMLTC0015a-XML/mapping.ttl", "./test-cases/RMLTC0015a-XML/output.nq");
+    }
+
+    @Test
+    public void evaluate_0015b_XML() {
+        doMappingExpectError("./test-cases/RMLTC0015b-XML/mapping.ttl");
+    }
+
+    @Test
+    public void evaluate_0019a_XML() {
+        doMapping("./test-cases/RMLTC0019a-XML/mapping.ttl", "./test-cases/RMLTC0019a-XML/output.nq");
+    }
+
+    @Test
+    public void evaluate_0019b_XML() {
+        doMapping("./test-cases/RMLTC0019b-XML/mapping.ttl", "./test-cases/RMLTC0019b-XML/output.nq");
+    }
+
+    @Test
+    public void evaluate_0020a_XML() {
+        doMapping("./test-cases/RMLTC0020a-XML/mapping.ttl", "./test-cases/RMLTC0020a-XML/output.nq");
+    }
+
+    @Test
+    public void evaluate_0020b_XML() {
+        doMapping("./test-cases/RMLTC0020b-XML/mapping.ttl", "./test-cases/RMLTC0020b-XML/output.nq");
     }
 
     @Test

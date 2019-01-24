@@ -15,7 +15,7 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/Student/{ID}/{FirstName}";
+    rr:template "http://example.com/Student/{ID}/{Name}";
     rr:graph ex:PersonGraph ;
     rr:class foaf:Person
   ];
@@ -23,5 +23,11 @@
   rr:predicateObjectMap [ 
     rr:predicate ex:id ;
     rr:objectMap [ rml:reference "ID"; ]
-  ].
+  ];
+
+  rr:predicateObjectMap
+    [ 
+      rr:predicate		foaf:name ;
+      rr:objectMap		[ rml:reference "Name" ]
+    ].
 
