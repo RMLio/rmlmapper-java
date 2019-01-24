@@ -54,6 +54,11 @@ public class Mapper_JSON_Test extends TestCore {
     }
 
     @Test
+    public void evaluate_0005a_JSON() {
+        doMapping("./test-cases/RMLTC0005a-JSON/mapping.ttl", "./test-cases/RMLTC0005a-JSON/output.nq");
+    }
+
+    @Test
     public void evaluate_0006a_JSON() {
         doMapping("./test-cases/RMLTC0006a-JSON/mapping.ttl", "./test-cases/RMLTC0006a-JSON/output.nq");
     }
@@ -151,6 +156,51 @@ public class Mapper_JSON_Test extends TestCore {
     @Test
     public void evaluate_0012b_JSON() {
         doMapping("./test-cases/RMLTC0012b-JSON/mapping.ttl", "./test-cases/RMLTC0012b-JSON/output.ttl");
+    }
+
+    @Test
+    public void evaluate_0012c_JSON() {
+        doMappingExpectError("./test-cases/RMLTC0012c-JSON/mapping.ttl");
+    }
+
+    @Test
+    public void evaluate_0012d_JSON() {
+        doMappingExpectError("./test-cases/RMLTC0012d-JSON/mapping.ttl");
+    }
+
+    @Test
+    public void evaluate_0013a_JSON() {
+        doMapping("./test-cases/RMLTC0013a-JSON/mapping.ttl", "./test-cases/RMLTC0013a-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_0015a_JSON() {
+        doMapping("./test-cases/RMLTC0015a-JSON/mapping.ttl", "./test-cases/RMLTC0015a-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_0015b_JSON() {
+        doMappingExpectError("./test-cases/RMLTC0015b-JSON/mapping.ttl");
+    }
+
+    @Test
+    public void evaluate_0019a_JSON() {
+        doMapping("./test-cases/RMLTC0019a-JSON/mapping.ttl", "./test-cases/RMLTC0019a-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_0019b_JSON() {
+        doMapping("./test-cases/RMLTC0019b-JSON/mapping.ttl", "./test-cases/RMLTC0019b-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_0020a_JSON() {
+        doMapping("./test-cases/RMLTC0020a-JSON/mapping.ttl", "./test-cases/RMLTC0020a-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_0020b_JSON() {
+        doMapping("./test-cases/RMLTC0020b-JSON/mapping.ttl", "./test-cases/RMLTC0020b-JSON/output.nq");
     }
 
     @Test
