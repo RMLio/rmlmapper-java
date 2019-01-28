@@ -159,7 +159,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0000_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0000-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0000-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0000-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0000-MySQL/output.nq";
 
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
@@ -172,7 +172,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0001a_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0001a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0001a-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0001a-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0001a-MySQL/output.nq";
 
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
@@ -184,7 +184,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0001b_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0001b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0001b-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0001b-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0001b-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -195,7 +195,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0002a_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0002a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002a-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002a-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002a-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -206,7 +206,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0002b_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0002b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002b-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002b-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002b-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -217,7 +217,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0002c_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0002c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002c-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002c-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002c-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -228,7 +228,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0002e_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0002e-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002e-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002e-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002e-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -239,7 +239,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0002g_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0002g-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002g-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002g-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002g-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -250,7 +250,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0002h_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0002h-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002h-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002h-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002h-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -261,7 +261,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0002i_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0002i-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002i-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002i-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002i-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -272,7 +272,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0002j_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0002j-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002j-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002j-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002j-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -283,7 +283,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0003a_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0003a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003a-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0003a-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0003a-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -294,7 +294,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0003b_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0003b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003b-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0003b-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0003b-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -305,7 +305,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0003c_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0003c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003c-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0003c-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0003c-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -317,7 +317,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0004a_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0004a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0004a-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0004a-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0004a-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -329,7 +329,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0004b_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0004b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0004b-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0004b-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0004b-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -353,7 +353,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0007a_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0007a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007a-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0007a-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0007a-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -377,7 +377,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0007c_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0007c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007c-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0007c-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0007c-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -389,7 +389,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0007d_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0007d-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007d-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0007d-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0007d-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -425,7 +425,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0007g_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0007g-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0007g-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0007g-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0007g-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -461,7 +461,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0008b_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0008b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0008b-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0008b-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0008b-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -473,7 +473,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0008c_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0008c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0008c-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0008c-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0008c-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -485,7 +485,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0009a_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0009a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0009a-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0009a-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0009a-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -507,7 +507,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0010a_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0010a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0010a-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0010a-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0010a-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -519,7 +519,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0010b_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0010b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0010b-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0010b-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0010b-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -531,7 +531,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0010c_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0010c-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0010c-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0010c-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0010c-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -543,7 +543,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0011b_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0011b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0011b-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0011b-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0011b-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -555,7 +555,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0012a_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0012a-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0012a-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0012a-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0012a-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -567,7 +567,7 @@ public class Mapper_RDBs_Test extends TestCore {
     public void evaluate_0012b_RDBs_MySQL() throws Exception {
         String resourcePath = "./test-cases/RMLTC0012b-MySQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0012b-MySQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0012b-MySQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0012b-MySQL/output.nq";
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_MYSQL, CONNECTIONSTRING_MYSQL);
         mysqlDB.source(resourcePath);
         doMapping(tempMappingPath, outputPath);
@@ -668,7 +668,7 @@ public class Mapper_RDBs_Test extends TestCore {
         }
         String resourcePath = "test-cases/RMLTC0002c-PostgreSQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002c-PostgreSQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002c-PostgreSQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002c-PostgreSQL/output.nq";
 
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
 
@@ -691,7 +691,7 @@ public class Mapper_RDBs_Test extends TestCore {
         }
         String resourcePath = "test-cases/RMLTC0002e-PostgreSQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002e-PostgreSQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002e-PostgreSQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002e-PostgreSQL/output.nq";
 
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
 
@@ -714,7 +714,7 @@ public class Mapper_RDBs_Test extends TestCore {
         }
         String resourcePath = "test-cases/RMLTC0002i-PostgreSQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0002i-PostgreSQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0002i-PostgreSQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0002i-PostgreSQL/output.nq";
 
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
 
@@ -737,7 +737,7 @@ public class Mapper_RDBs_Test extends TestCore {
         }
         String resourcePath = "test-cases/RMLTC0003a-PostgreSQL/resource.sql";
         String mappingPath = "./test-cases/RMLTC0003a-PostgreSQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0003a-PostgreSQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0003a-PostgreSQL/output.nq";
 
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING_POSTGRESQL, CONNECTIONSTRING_POSTGRESQL_LOCAL);
 
@@ -856,7 +856,7 @@ public class Mapper_RDBs_Test extends TestCore {
         if (!LOCAL_TESTING) {
             String resourcePath = "test-cases/RMLTC0002c-SQLServer/resource.sql";
             String mappingPath = "./test-cases/RMLTC0002c-SQLServer/mapping.ttl";
-            String outputPath = "test-cases/RMLTC0002c-SQLServer/output.ttl";
+            String outputPath = "test-cases/RMLTC0002c-SQLServer/output.nq";
 
             executeSQL(sqlServerDB.connectionString, resourcePath);
 
@@ -875,7 +875,7 @@ public class Mapper_RDBs_Test extends TestCore {
         if (!LOCAL_TESTING) {
             String resourcePath = "test-cases/RMLTC0002e-SQLServer/resource.sql";
             String mappingPath = "./test-cases/RMLTC0002e-SQLServer/mapping.ttl";
-            String outputPath = "test-cases/RMLTC0002e-SQLServer/output.ttl";
+            String outputPath = "test-cases/RMLTC0002e-SQLServer/output.nq";
 
             executeSQL(sqlServerDB.connectionString, resourcePath);
 
@@ -894,7 +894,7 @@ public class Mapper_RDBs_Test extends TestCore {
         if (!LOCAL_TESTING) {
             String resourcePath = "test-cases/RMLTC0002i-SQLServer/resource.sql";
             String mappingPath = "./test-cases/RMLTC0002i-SQLServer/mapping.ttl";
-            String outputPath = "test-cases/RMLTC0002i-SQLServer/output.ttl";
+            String outputPath = "test-cases/RMLTC0002i-SQLServer/output.nq";
 
             executeSQL(sqlServerDB.connectionString, resourcePath);
 
@@ -913,7 +913,7 @@ public class Mapper_RDBs_Test extends TestCore {
         if (!LOCAL_TESTING) {
             String resourcePath = "test-cases/RMLTC0003a-SQLServer/resource.sql";
             String mappingPath = "./test-cases/RMLTC0003a-SQLServer/mapping.ttl";
-            String outputPath = "test-cases/RMLTC0003a-SQLServer/output.ttl";
+            String outputPath = "test-cases/RMLTC0003a-SQLServer/output.nq";
 
             executeSQL(sqlServerDB.connectionString, resourcePath);
 
