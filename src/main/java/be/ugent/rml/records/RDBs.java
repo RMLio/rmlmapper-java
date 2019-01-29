@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.sql.*;
+import java.util.Map;
 
-public class RDBs  {
+public class RDBs {
 
     /*
         This method adds the "jdbc:XXX://" prefix to the given dsn. This way the caller of this function doesn't need
@@ -49,7 +50,7 @@ public class RDBs  {
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
-            switch(referenceFormulation) {
+            switch (referenceFormulation) {
                 case NAMESPACES.QL + "CSV":
                     records = getCSVRecords(rs);
                     break;
@@ -72,15 +73,15 @@ public class RDBs  {
         } finally {
 
             // finally block used to close resources
-            try{
-                if(statement != null) {
+            try {
+                if (statement != null) {
                     statement.close();
                 }
             } catch (SQLException se2) {
             }// nothing we can do
 
-            try{
-                if(connection != null) {
+            try {
+                if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException se) {
@@ -98,22 +99,61 @@ public class RDBs  {
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
 
+        Map<String, String> datatypes = new HashMap<>();
+        boolean filledInDataTypes = false;
         // Extract data from result set
-        while(rs.next()){
+        while (rs.next()) {
             HashMap<String, List<Object>> values = new HashMap<>();
 
             // Iterate over column names
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = rsmd.getColumnName(i);
+                if (!filledInDataTypes) {
+                    String dataType = getColumnDataType(rsmd.getColumnTypeName(i));
+                    if (dataType != null) {
+                        datatypes.put(columnName, dataType);
+                    }
+                }
 
                 List<Object> temp = new ArrayList<>();
                 temp.add(rs.getString(columnName));
                 values.put(columnName, temp);
             }
+            filledInDataTypes = true;
 
-            records.add(new CSVRecord(values));
+            records.add(new CSVRecord(values, datatypes));
         }
         return records;
+    }
+
+    private String getColumnDataType(String type) {
+        switch (type) {
+            case "BINARY":
+            case "BINARY VARYING":
+            case "BINARY LARGE OBJECT":
+                return "http://www.w3.org/2001/XMLSchema#hexBinary";
+            case "NUMERIC":
+            case "DECIMAL":
+                return "http://www.w3.org/2001/XMLSchema#decimal";
+            case "SMALLINT":
+            case "INT":
+            case "INTEGER":
+            case "BIGINT":
+                return "http://www.w3.org/2001/XMLSchema#integer";
+            case "FLOAT":
+            case "REAL":
+            case "DOUBLE PRECISION":
+                return "http://www.w3.org/2001/XMLSchema#double";
+            case "BOOLEAN":
+                return "http://www.w3.org/2001/XMLSchema#boolean";
+            case "DATE":
+                return "http://www.w3.org/2001/XMLSchema#date";
+            case "TIME":
+                return "http://www.w3.org/2001/XMLSchema#time";
+            case "TIMESTAMP":
+                return "http://www.w3.org/2001/XMLSchema#dateTime";
+        }
+        return null;
     }
 
     private List<Record> getXMLRecords(ResultSet rs) throws SQLException {

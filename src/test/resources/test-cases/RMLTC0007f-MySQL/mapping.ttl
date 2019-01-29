@@ -27,12 +27,12 @@
 
   rr:predicateObjectMap [ 
     rr:predicate ex:id ;
-    rr:objectMap [ rml:reference "\"ID\"";  ]
+    rr:objectMap [ rml:reference "ID";  ]
   ];
 
   rr:predicateObjectMap [ 
     rr:predicate foaf:name ;
-    rr:objectMap [ rml:reference "\"FirstName\"" ]
+    rr:objectMap [ rml:reference "FirstName" ]
   ].
 
 <#DB_source> a d2rq:Database;

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JSONRecord implements Record {
+public class JSONRecord extends Record {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 

@@ -1,9 +1,11 @@
 package be.ugent.rml.termgenerator;
 
+import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
 import java.io.IOException;
@@ -41,14 +43,22 @@ public class LiteralGenerator extends TermGenerator {
         ArrayList<String> objectStrings = new ArrayList<>();
         FunctionUtils.functionObjectToList(this.functionExecutor.execute(record), objectStrings);
 
+        String dataTypeSource = null;
+        if (this.functionExecutor instanceof ReferenceExtractor) {
+            dataTypeSource = record.getDataType(((ReferenceExtractor) this.functionExecutor).reference);
+        }
+
         if (objectStrings.size() > 0) {
             //add language tag if present
+            String finalDataTypeSource = dataTypeSource;
             objectStrings.forEach(objectString -> {
                 if (language != null) {
                     objects.add(new Literal(objectString, language));
                 } else if (datatype != null) {
                     //add datatype if present; language and datatype can't be combined because the language tag implies langString as datatype
                     objects.add(new Literal(objectString, datatype));
+                } else if (finalDataTypeSource != null) {
+                    objects.add(new Literal(objectString, new NamedNode(finalDataTypeSource)));
                 } else {
                     objects.add(new Literal(objectString));
                 }
