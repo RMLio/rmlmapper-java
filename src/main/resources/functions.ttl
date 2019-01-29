@@ -148,11 +148,29 @@ idlab-fn:listContainsElement a fno:Function ;
     lib:method "listContainsElement"
   ].
 
+idlab-fn:dbpediaSpotlight a fno:Function ;
+  fno:name "DBpedia Spotlight annotate" ;
+  rdfs:label "DBpedia Spotlight annotate" ;
+  dcterms:description "Returns the DBpedia URLs of the detected entities in the input text" ;
+  fno:expects ( idlab-fn:_str idlab-fn:_endpoint ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "dbpediaSpotlight"
+  ].
+
 idlab-fn:_str a fno:Parameter ;
   fno:name "input string" ;
   rdfs:label "input string" ;
   fno:type xsd:string ;
   fno:predicate idlab-fn:str .
+
+idlab-fn:_endpoint a fno:Parameter ;
+  fno:name "endpoint url string" ;
+  rdfs:label "endpoint url string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:endpoint .
 
 idlab-fn:_otherStr a fno:Parameter ;
   fno:name "other input string" ;
@@ -165,6 +183,12 @@ idlab-fn:_list a fno:Parameter ;
   rdfs:label "list" ;
   fno:type rdf:List ;
   fno:predicate idlab-fn:list .
+
+idlab-fn:_listOut a fno:Parameter ;
+  fno:name "output list" ;
+  rdfs:label "output list" ;
+  fno:type rdf:List ;
+  fno:predicate idlab-fn:listOut .
 
 idlab-fn:_delimiter a fno:Parameter ;
   fno:name "delimiter" ;
