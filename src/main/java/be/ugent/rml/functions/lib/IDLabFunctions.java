@@ -3,6 +3,8 @@ package be.ugent.rml.functions.lib;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -14,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class IDLabFunctions {
+
+    private static final Logger logger = LoggerFactory.getLogger(IDLabFunctions.class);
 
     public static boolean stringContainsOtherString(String str, String otherStr, String delimiter) {
         String[] split = str.split(delimiter);
@@ -41,7 +45,7 @@ public class IDLabFunctions {
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
                 String inputLine;
-                StringBuffer content = new StringBuffer();
+                StringBuilder content = new StringBuilder();
 
                 while ((inputLine = in.readLine()) != null) {
                     content.append(inputLine);
@@ -51,12 +55,13 @@ public class IDLabFunctions {
                 con.disconnect();
 
                 Object document = Configuration.defaultConfiguration().jsonProvider().parse(content.toString());
-                List<String> test = JsonPath.parse(document).read("$.Resources[*].@URI");
-                return test;
+                return JsonPath.parse(document).read("$.Resources[*].@URI");
             } catch (PathNotFoundException e) {
                 // that means no result was found, so that is fine
+                logger.info(e.getMessage(), e);
             } catch (Exception e) {
-                System.out.println(e);
+                // that probably means smth is wrong with the DBpedia Spotlight endpoint, so that is fine: log and continue
+                logger.warn(e.getMessage(), e);
             }
         }
 
