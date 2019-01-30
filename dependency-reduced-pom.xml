@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>be.ugent.rml</groupId>
   <artifactId>rmlmapper</artifactId>
-  <version>4.3.0</version>
+  <version>4.3.1</version>
   <scm>
     <connection>scm:git:ssh://git@github.com:RMLio/rmlmapper-java.git</connection>
     <url>https://github.com/RMLio/rmlmapper-java</url>

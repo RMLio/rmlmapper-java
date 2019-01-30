@@ -67,4 +67,12 @@ public class IDLabFunctions {
 
         return new ArrayList<>();
     }
+
+    public static Object trueCondition(String bool, String value) {
+        if (bool.equals("true")) {
+            return value;
+        } else {
+            return null;
+        }
+    }
 }

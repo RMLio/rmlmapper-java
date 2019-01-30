@@ -160,11 +160,29 @@ idlab-fn:dbpediaSpotlight a fno:Function ;
     lib:method "dbpediaSpotlight"
   ].
 
+idlab-fn:trueCondition a fno:Function ;
+  fno:name "True condition" ;
+  rdfs:label "True condition" ;
+  dcterms:description "Returns the value if the given boolean is true, else null" ;
+  fno:expects ( idlab-fn:_strBoolean idlab-fn:_str ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "trueCondition"
+  ].
+
 idlab-fn:_str a fno:Parameter ;
   fno:name "input string" ;
   rdfs:label "input string" ;
   fno:type xsd:string ;
   fno:predicate idlab-fn:str .
+
+idlab-fn:_strBoolean a fno:Parameter ;
+  fno:name "boolean encoded as string" ;
+  rdfs:label "boolean encoded as string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:strBoolean .
 
 idlab-fn:_endpoint a fno:Parameter ;
   fno:name "endpoint url string" ;

@@ -41,4 +41,14 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
         assertTrue(libPath.contains("target"));
         assertTrue(libPath.endsWith("GrelFunctions.jar"));
     }
+
+    @Test
+    public void evaluate_A004() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA004/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA004/output.ttl");
+    }
+
+    @Test
+    public void evaluate_A004b() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA004b/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA004b/output.ttl");
+    }
 }
