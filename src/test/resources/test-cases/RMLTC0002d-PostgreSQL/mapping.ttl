@@ -12,17 +12,17 @@
   rml:logicalSource [
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rml:query "SELECT ('Student' || \"ID\" ) AS StudentId, \"ID\", \"Name\" FROM student";
+    rml:query "SELECT ('Student' || ID) AS StudentId, ID, Name FROM student";
     rml:referenceFormulation ql:CSV
   ];
 
   rr:subjectMap [
-      rml:reference "StudentId". rr:termType rr:BlankNode
+      rml:reference "StudentId"; rr:termType rr:BlankNode
     ];
 
     rr:predicateObjectMap [
       rr:predicate foaf:name ;
-      rr:objectMap [ rml:reference "\"Name\"" ]
+      rr:objectMap [ rml:reference "Name" ]
     ].
 
 <#DB_source> a d2rq:Database;

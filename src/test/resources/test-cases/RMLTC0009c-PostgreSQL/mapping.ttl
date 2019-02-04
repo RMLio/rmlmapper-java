@@ -15,19 +15,19 @@
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
     rml:query """
-        SELECT "Name", COUNT("Sport")
-        FROM "Student"
-        GROUP BY "Name"
-        """ ];
+        SELECT Name, COUNT(Sport)
+        FROM Student
+        GROUP BY Name
+        """ ;
     rml:referenceFormulation ql:CSV
   ];
 
-  rr:subjectMap [ rr:template "http://example.com/resource/student_{\"Name\"}"; ]; 
+  rr:subjectMap [ rr:template "http://example.com/resource/student_{Name}"; ];
 	
     rr:predicateObjectMap
     [ 
       rr:predicate	foaf:name ; 
-      rr:objectMap	[ rml:reference "\"Name\""; ];
+      rr:objectMap	[ rml:reference "Name"; ];
     ].
 
 <#DB_source> a d2rq:Database;

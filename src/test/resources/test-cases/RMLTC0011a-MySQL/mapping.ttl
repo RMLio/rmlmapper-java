@@ -54,20 +54,20 @@
 <TriplesMap2>
     a rr:TriplesMap;
 
-	rr:logicalTable [ rr:tableName  "\"Sport\"" ];
+	rr:logicalTable [ rr:tableName  "Sport" ];
 	
-    rr:subjectMap [ rr:template "http://example.com/{\"ID\"}/{\"Description\"}"; ];
+    rr:subjectMap [ rr:template "http://example.com/{ID}/{Description}"; ];
 
     rr:predicateObjectMap
     [ 
       rr:predicate	ex:id ; 
-      rr:objectMap	[ rml:reference "\"ID\""; ]
+      rr:objectMap	[ rml:reference "ID"; ]
     ];
 
     rr:predicateObjectMap
     [ 
       rr:predicate	ex:description ; 
-      rr:objectMap	[ rml:reference "\"Description\"" ]
+      rr:objectMap	[ rml:reference "Description" ]
     ]
     .
 

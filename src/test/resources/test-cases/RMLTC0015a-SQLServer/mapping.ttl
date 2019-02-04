@@ -4,6 +4,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
 @base <http://example.com/base/> .
 
 <TriplesMap1>
@@ -13,20 +14,20 @@
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
     rml:query """
-        SELECT "Code", "Name", "Lan"
-        FROM "Country"
-        WHERE "Lan" = 'EN';
+        SELECT Code, Name, Lan
+        FROM Country
+        WHERE Lan = 'EN';
        """
   ];
 
   rr:subjectMap [
-    rr:template "http://example.com/{\"Code\"}"
+    rr:template "http://example.com/{Code}"
   ];
 
   rr:predicateObjectMap [
     rr:predicate rdfs:label ;
     rr:objectMap [
-      rml:reference "\"Name\"";
+      rml:reference "Name";
       rr:language "en"
     ]
   ].
@@ -45,13 +46,13 @@
   ];
 
   rr:subjectMap [
-    rr:template "http://example.com/{\"Code\"}"
+    rr:template "http://example.com/{Code}"
   ];
 
   rr:predicateObjectMap [
     rr:predicate rdfs:label ;
     rr:objectMap [
-      rml:reference "\"Name\"";
+      rml:reference "Name";
       rr:language "es"
     ]
   ].
@@ -61,4 +62,3 @@
   d2rq:jdbcDriver "com.microsoft.sqlserver.jdbc.SQLServerDriver";
   d2rq:username "sa";
   d2rq:password "YourSTRONG!Passw0rd;" .
-

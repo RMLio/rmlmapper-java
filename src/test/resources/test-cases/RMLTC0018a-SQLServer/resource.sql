@@ -1,7 +1,10 @@
-CREATE TABLE "Student" (
-"ID" INTEGER,
-"Name" CHAR(15)
+USE test;
+DROP TABLE IF EXISTS test.Student;
+
+CREATE TABLE Student (
+ID INTEGER,
+Name CHAR(15)
 );
-INSERT INTO "Student" ("ID","Name") VALUES (10,'Venus');
-INSERT INTO "Student" ("ID","Name") VALUES (20,'Fernando');
-INSERT INTO "Student" ("ID","Name") VALUES (30,'David');
+INSERT INTO Student (ID,Name) VALUES (10,'Venus');
+INSERT INTO Student (ID,Name) VALUES (20,'Fernando');
+INSERT INTO Student (ID,Name) VALUES (30,'David');
