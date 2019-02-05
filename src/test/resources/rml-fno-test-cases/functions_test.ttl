@@ -186,3 +186,21 @@ idlab-fn:_stringOut a fno:Output ;
   rdfs:label "output string" ;
   fno:type xsd:string ;
   fno:predicate idlab-fn:stringOut .
+
+idlab-fn:trueCondition a fno:Function ;
+  fno:name "True condition" ;
+  rdfs:label "True condition" ;
+  dcterms:description "Returns the value if the given boolean is true, else null" ;
+  fno:expects ( idlab-fn:_strBoolean idlab-fn:_str ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "trueCondition"
+  ].
+
+idlab-fn:_strBoolean a fno:Parameter ;
+  fno:name "boolean encoded as string" ;
+  rdfs:label "boolean encoded as string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:strBoolean .

@@ -28,4 +28,16 @@ public class BuildInFunctions extends TestCore {
 
         assertThat(entities, CoreMatchers.is(expected));
     }
+
+    @Test
+    public void trueCondition() {
+        Object result = IDLabFunctions.trueCondition("true", "hello");
+        assertEquals("hello", result);
+
+        result = IDLabFunctions.trueCondition("false", "hello");
+        assertNull(result);
+
+        result = IDLabFunctions.trueCondition("test", "hello");
+        assertNull(result);
+    }
 }
