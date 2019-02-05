@@ -148,13 +148,25 @@ idlab-fn:listContainsElement a fno:Function ;
     lib:method "listContainsElement"
   ].
 
+idlab-fn:decide a fno:Function ;
+  fno:name "decide" ;
+  rdfs:label "decide" ;
+  dcterms:description "Returns a given value if input is equal to another given value" ;
+  fno:expects ( idlab-fn:_str idlab-fn:_expectedStr idlab-fn:_result ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "decide"
+  ].
+
 idlab-fn:dbpediaSpotlight a fno:Function ;
   fno:name "DBpedia Spotlight annotate" ;
   rdfs:label "DBpedia Spotlight annotate" ;
   dcterms:description "Returns the DBpedia URLs of the detected entities in the input text" ;
   fno:expects ( idlab-fn:_str idlab-fn:_endpoint ) ;
-  fno:returns ( idlab-fn:_stringOut ) ;
-  lib:providedBy [
+  fno:returns ( idlab-fn:_stringOut ) ;    
+    lib:providedBy [
     lib:localLibrary "IDLabFunctions.jar";
     lib:class "IDLabFunctions";
     lib:method "dbpediaSpotlight"
@@ -177,6 +189,18 @@ idlab-fn:_otherStr a fno:Parameter ;
   rdfs:label "other input string" ;
   fno:type xsd:string ;
   fno:predicate idlab-fn:otherStr .
+
+idlab-fn:_expectedStr a fno:Parameter ;
+  fno:name "expected input string" ;
+  rdfs:label "expected input string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:expectedStr .
+
+idlab-fn:_result a fno:Parameter ;
+  fno:name "result string" ;
+  rdfs:label "result string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:result .
 
 idlab-fn:_list a fno:Parameter ;
   fno:name "list" ;

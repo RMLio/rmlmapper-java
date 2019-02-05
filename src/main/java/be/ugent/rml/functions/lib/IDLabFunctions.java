@@ -67,4 +67,12 @@ public class IDLabFunctions {
 
         return new ArrayList<>();
     }
+
+    public static String decide(String input, String expected, String result) {
+        if (input != null && input.equals(expected)) {
+            return result;
+        } else {
+            return null;
+        }
+    }
 }
