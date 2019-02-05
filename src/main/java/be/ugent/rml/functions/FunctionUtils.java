@@ -66,6 +66,8 @@ public class FunctionUtils {
                 ((List) o).forEach(item -> {
                     functionObjectToList(item, result);
                 });
+            } else if (o instanceof Boolean) {
+                result.add(o.toString());
             }
         }
     }

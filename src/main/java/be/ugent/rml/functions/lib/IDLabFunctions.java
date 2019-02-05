@@ -69,10 +69,10 @@ public class IDLabFunctions {
     }
 
     public static Object trueCondition(String bool, String value) {
-        if (bool.equals("true")) {
-            return value;
-        } else {
+        if (bool == null || !bool.equals("true")) {
             return null;
+        } else {
+            return value;
         }
     }
 }
