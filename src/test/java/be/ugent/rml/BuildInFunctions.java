@@ -40,4 +40,13 @@ public class BuildInFunctions extends TestCore {
         result = IDLabFunctions.trueCondition("test", "hello");
         assertNull(result);
     }
+
+    @Test
+    public void getMIMEType() {
+        String result = IDLabFunctions.getMIMEType("test.csv");
+        assertEquals("text/csv", result);
+
+        result = IDLabFunctions.getMIMEType("test.json");
+        assertEquals("application/json", result);
+    }
 }

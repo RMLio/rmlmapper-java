@@ -204,3 +204,15 @@ idlab-fn:_strBoolean a fno:Parameter ;
   rdfs:label "boolean encoded as string" ;
   fno:type xsd:string ;
   fno:predicate idlab-fn:strBoolean .
+
+idlab-fn:getMIMEType a fno:Function ;
+  fno:name "getMIMEType" ;
+  rdfs:label "getMIMEType" ;
+  dcterms:description "Returns the MIME Type of a filename" ;
+  fno:expects ( idlab-fn:_str ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "getMIMEType"
+  ].

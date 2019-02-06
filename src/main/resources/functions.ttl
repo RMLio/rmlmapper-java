@@ -160,6 +160,18 @@ idlab-fn:listContainsElement a fno:Function ;
     lib:method "listContainsElement"
   ].
 
+idlab-fn:getMIMEType a fno:Function ;
+  fno:name "getMIMEType" ;
+  rdfs:label "getMIMEType" ;
+  dcterms:description "Returns the MIME Type of a filename" ;
+  fno:expects ( idlab-fn:_str ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "getMIMEType"
+  ].
+
 idlab-fn:decide a fno:Function ;
   fno:name "decide" ;
   rdfs:label "decide" ;
