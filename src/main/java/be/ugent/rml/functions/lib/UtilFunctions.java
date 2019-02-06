@@ -9,4 +9,8 @@ public class UtilFunctions {
             return str1.equals(str2);
         }
     }
+
+    public static boolean notEqual(String str1, String str2) {
+        return !equal(str1, str2);
+    }
 }

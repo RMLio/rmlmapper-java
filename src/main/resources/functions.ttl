@@ -96,6 +96,18 @@ idlab-fn:equal a fno:Function ;
     lib:method "equal"
   ].
 
+idlab-fn:notEqual a fno:Function ;
+  fno:name "not equal" ;
+  rdfs:label "not equal" ;
+  dcterms:description "Returns true if strings are not equal." ;
+  fno:expects ( grel:valueParam grel:valueParam2 ) ;
+  fno:returns ( grel:stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "UtilFunctions.jar";
+    lib:class "UtilFunctions";
+    lib:method "notEqual"
+  ].
+
 grel:valueParam a fno:Parameter ;
   fno:name "input value" ;
   rdfs:label "input value" ;
