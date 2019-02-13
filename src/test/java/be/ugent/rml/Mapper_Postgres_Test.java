@@ -106,7 +106,7 @@ public class Mapper_Postgres_Test extends TestCore {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Parameterized.Parameters(name = "{index}: mySQL{0}")
+    @Parameterized.Parameters(name = "{index}: Postgres_{0}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 // scenarios:
@@ -182,13 +182,18 @@ public class Mapper_Postgres_Test extends TestCore {
             thrown.expect(expectedException);
         }
 
+        if (LOCAL_TESTING) {
+            if (expectedException != null) {
+                throw new Error();
+            } else {
+                return;
+            }
+        }
+
         mappingTest(testCaseName);
     }
 
     private void mappingTest(String testCaseName) throws Exception {
-        if (LOCAL_TESTING) {
-            return;
-        }
 
         String resourcePath = "test-cases/" + testCaseName + "-PostgresQL/resource.sql";
         String mappingPath = "./test-cases/" + testCaseName + "-PostgresQL/mapping.ttl";

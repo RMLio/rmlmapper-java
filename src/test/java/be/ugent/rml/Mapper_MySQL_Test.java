@@ -82,7 +82,7 @@ public class Mapper_MySQL_Test extends TestCore {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Parameterized.Parameters(name = "{index}: mySQL{0}")
+    @Parameterized.Parameters(name = "{index}: mySQL_{0}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 // scenarios:
