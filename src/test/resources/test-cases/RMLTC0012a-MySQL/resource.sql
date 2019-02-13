@@ -1,4 +1,6 @@
 USE test;
+DROP TABLE IF EXISTS test.IOUs;
+DROP TABLE IF EXISTS test.Lives;
 
 CREATE TABLE IOUs (
       fname VARCHAR(20),

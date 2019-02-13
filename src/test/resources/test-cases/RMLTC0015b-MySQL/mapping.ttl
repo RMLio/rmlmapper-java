@@ -17,7 +17,8 @@
         SELECT Code, Name, Lan
         FROM Country
         WHERE Lan = 'EN';
-       """
+       """ ;
+     rml:referenceFormulation ql:CSV
   ];
 
   rr:subjectMap [

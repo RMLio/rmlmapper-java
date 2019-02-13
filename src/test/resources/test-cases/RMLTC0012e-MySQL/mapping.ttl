@@ -10,15 +10,15 @@
 @base <http://example.com/base/> .
 
 <TriplesMap1>
-  a rr:TriplesMap;
+    a rr:TriplesMap;
 
-  rml:logicalSource [
-    rml:source <#DB_source>;
-    rr:sqlVersion rr:SQL2008;
-    rr:tableName "IOUs";
-  ];
+    rml:logicalSource [
+        rml:source <#DB_source>;
+        rr:sqlVersion rr:SQL2008;
+        rr:tableName "IOUs";
+    ];
 
-  rr:subjectMap [ rr:template "{fname}_{lname}_{amount}"; rr:termType rr:BlankNode; ];
+    rr:subjectMap [ rr:template "{fname}_{lname}_{amount}"; rr:termType rr:BlankNode; ];
     
     rr:predicateObjectMap [
     	rr:predicate rdf:type;
@@ -47,7 +47,11 @@
 <TriplesMap2>
     a rr:TriplesMap;
 
-	rml:logicalSource [ rr:tableName  "Lives" ];
+	rml:logicalSource [
+	    rml:source <#DB_source>;
+        rr:sqlVersion rr:SQL2008;
+	    rr:tableName  "Lives"
+    ];
 	
     rr:subjectMap [ rr:template "{fname}_{lname}_{city}"; rr:termType rr:BlankNode; ];
     

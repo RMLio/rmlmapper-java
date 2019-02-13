@@ -301,7 +301,7 @@ public class Utils {
     // todo: Take subquerries into account
     public static int selectedColumnHash(String query) {
         Pattern p = Pattern.compile("^SELECT(.*)FROM");
-        Matcher m = p.matcher(query);
+        Matcher m = p.matcher(query.replace("\n", " ").replace("\r", " ").trim());
 
         if (m.find()) {
             String columns = m.group(1);
