@@ -181,7 +181,8 @@ public class MappingFactory {
         List<Term> parentTermMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "parentTermMap"), null));
 
         if (functionValues.isEmpty()) {
-            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, false);
+            boolean encodeIRI = termType != null && termType.getValue().equals(NAMESPACES.RR + "IRI");
+            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, encodeIRI);
 
             if (executor != null) {
                 TermGenerator oGen;
