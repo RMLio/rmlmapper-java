@@ -1,5 +1,4 @@
-USE test;
-DROP TABLE IF EXISTS test.Country;
+DROP TABLE IF EXISTS Country;
 
 CREATE TABLE Country (
   Code VARCHAR(2),

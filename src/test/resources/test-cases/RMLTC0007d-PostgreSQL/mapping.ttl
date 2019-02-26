@@ -31,7 +31,7 @@
 
   rr:predicateObjectMap [ 
     rr:predicate ex:id;
-    rml:reference "\"ID\"" 
+    rr:objectMap [ rml:reference "ID" ]
   ];
 
   rr:predicateObjectMap [

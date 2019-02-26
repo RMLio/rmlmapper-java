@@ -19,15 +19,16 @@
         SELECT ID, FirstName, LastName
         FROM Employee
         WHERE ID < 30
-     """
+     """ ;
+     rml:referenceFormulation ql:CSV
   ];
 
-  rr:subjectMap [ rml:reference "FirstName" ];
+  rr:subjectMap [ rml:reference "firstname" ];
 
   rr:predicateObjectMap [
     rr:predicate foaf:name;
     rr:objectMap [
-      rml:reference "FirstName"
+      rml:reference "firstname"
     ]
   ] .
 

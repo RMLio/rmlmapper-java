@@ -1,8 +1,10 @@
 package be.ugent.rml;
 
-import ch.vorburger.exec.ManagedProcessException;
+import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.messages.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -21,9 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 
 @RunWith(Parameterized.class)
@@ -33,8 +33,8 @@ public class Mapper_Postgres_Test extends TestCore {
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_Postgres_Test.class);
 
-    private static String CONNECTIONSTRING_LOCAL = "jdbc:postgresql://0.0.0.0:%d/postgres?user=postgres";
-    private static String CONNECTIONSTRING = "jdbc:postgresql://postgres/postgres?user=postgres";
+    private static String CONNECTIONSTRING_LOCAL = "jdbc:postgresql://dia.test.iminds.be:8970/postgres?user=postgres&password=YourSTRONG!Passw0rd";
+    private static String CONNECTIONSTRING = "jdbc:postgresql://postgres/postgres?user=postgres&password=YourSTRONG!Passw0rd";
 
     private static HashSet<String> tempFiles = new HashSet<>();
 
@@ -57,25 +57,19 @@ public class Mapper_Postgres_Test extends TestCore {
     }
 
     @BeforeClass
-    public static void startDBs() throws Exception {
-        int PORTNUMBER;
-        try {
-            PORTNUMBER = Utils.getFreePortNumber();
-        } catch (Exception ex) {
-            throw new Error("Could not find a free port number for RDBs testing.");
-        }
-
-        CONNECTIONSTRING_LOCAL = String.format(CONNECTIONSTRING_LOCAL, PORTNUMBER);
-        CONNECTIONSTRING = String.format(CONNECTIONSTRING, PORTNUMBER);
-
+    public static void startDBs() {
         if (!LOCAL_TESTING) {
             postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING); // see .gitlab-ci.yml file
+        } else {
+            postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_LOCAL);
         }
     }
 
     @AfterClass
-    public static void stopDBs() throws ManagedProcessException {
-        closeDocker(postgreSQLDB);
+    public static void stopDBs() {
+        if (!LOCAL_TESTING) {
+            closeDocker(postgreSQLDB);
+        }
 
         // Make sure all tempFiles are removed
         int counter = 0;
@@ -182,14 +176,6 @@ public class Mapper_Postgres_Test extends TestCore {
             thrown.expect(expectedException);
         }
 
-        if (LOCAL_TESTING) {
-            if (expectedException != null) {
-                throw new Error();
-            } else {
-                return;
-            }
-        }
-
         mappingTest(testCaseName);
     }
 
@@ -265,5 +251,4 @@ public class Mapper_Postgres_Test extends TestCore {
             }
         }
     }
-
 }

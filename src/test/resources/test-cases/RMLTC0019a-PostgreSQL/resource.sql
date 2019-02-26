@@ -1,5 +1,4 @@
-USE test;
-DROP TABLE IF EXISTS test.Employee;
+DROP TABLE IF EXISTS Employee;
 
 CREATE TABLE Employee (
 ID INTEGER,

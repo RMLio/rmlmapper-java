@@ -17,12 +17,12 @@
   ];
 
   rr:subjectMap [
-      rml:reference "StudentId"; rr:termType rr:BlankNode
+      rml:reference "studentid"; rr:termType rr:BlankNode
     ];
 
     rr:predicateObjectMap [
       rr:predicate foaf:name ;
-      rr:objectMap [ rml:reference "Name" ]
+      rr:objectMap [ rml:reference "name" ]
     ].
 
 <#DB_source> a d2rq:Database;

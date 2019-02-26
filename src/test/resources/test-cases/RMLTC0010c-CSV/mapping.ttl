@@ -11,13 +11,13 @@
   a rr:TriplesMap;
 
   rml:logicalSource [
-    rml:source "country info.csv";
+    rml:source "country_info.csv";
     rml:referenceFormulation ql:CSV
   ];
 
   rr:subjectMap [ rr:template "http://example.com/{Country Code}/{Name}" ];
-	
-  rr:predicateObjectMap [ 
+
+  rr:predicateObjectMap [
     rr:predicate ex:code ;
     rr:objectMap [ rr:template "\{\{\{ {ISO 3166} \}\}\}"; rr:termType rr:Literal]
   ] .

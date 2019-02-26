@@ -1,6 +1,5 @@
-USE test;
-DROP TABLE IF EXISTS test.Student;
-DROP TABLE IF EXISTS test.Sport;
+DROP TABLE IF EXISTS Student;
+DROP TABLE IF EXISTS Sport;
 
 CREATE TABLE Sport (
 ID integer,

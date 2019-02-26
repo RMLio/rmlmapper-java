@@ -1,5 +1,5 @@
-USE test;
-DROP TABLE IF EXISTS test.Student;
+USE TestDB;
+DROP TABLE IF EXISTS Student;
 
 CREATE TABLE Student (
 Name VARCHAR(50)

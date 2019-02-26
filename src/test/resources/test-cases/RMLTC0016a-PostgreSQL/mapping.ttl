@@ -15,7 +15,7 @@
 
 	rml:logicalSource [ rml:source <#DB_source>; rr:sqlVersion rr:SQL2008; rr:tableName "Patient" ];
 
-    rr:subjectMap [ rr:template "http://example.com/Patient/{ID}"; ];
+    rr:subjectMap [ rr:template "http://example.com/Patient/{id}"; ];
 
     rr:predicateObjectMap
     [
@@ -26,25 +26,25 @@
     rr:predicateObjectMap
     [
 		rr:predicate	ex:id ;
-		rr:objectMap    [ rml:reference "ID"; ]
+		rr:objectMap    [ rml:reference "id"; ]
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		ex:firstName;
-      rr:objectMap		[ rml:reference "FirstName"; ]
+      rr:objectMap		[ rml:reference "firstname"; ]
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		ex:lastName;
-      rr:objectMap		[ rml:reference "LastName"; ]
+      rr:objectMap		[ rml:reference "lastname"; ]
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		ex:gender;
-      rr:objectMap		[ rml:reference "Sex"; ]
+      rr:objectMap		[ rml:reference "sex"; ]
     ];
 
     .

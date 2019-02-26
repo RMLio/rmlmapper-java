@@ -127,7 +127,8 @@ public class RDBs {
     }
 
     private String getColumnDataType(String type) {
-        switch (type) {
+        switch (type.toUpperCase()) {
+            case "BYTEA":
             case "BINARY":
             case "BINARY VARYING":
             case "BINARY LARGE OBJECT":
@@ -137,13 +138,18 @@ public class RDBs {
                 return "http://www.w3.org/2001/XMLSchema#decimal";
             case "SMALLINT":
             case "INT":
+            case "INT4":
+            case "INT8":
             case "INTEGER":
             case "BIGINT":
                 return "http://www.w3.org/2001/XMLSchema#integer";
             case "FLOAT":
+            case "FLOAT4":
+            case "FLOAT8":
             case "REAL":
             case "DOUBLE PRECISION":
                 return "http://www.w3.org/2001/XMLSchema#double";
+            case "BOOL":
             case "BOOLEAN":
                 return "http://www.w3.org/2001/XMLSchema#boolean";
             case "DATE":

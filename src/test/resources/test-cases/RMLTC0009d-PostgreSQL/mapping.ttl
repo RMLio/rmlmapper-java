@@ -22,18 +22,18 @@
     rml:referenceFormulation ql:CSV
   ];
 
-  rr:subjectMap [ rr:template "http://example.com/resource/student_{Name}"; ];
+  rr:subjectMap [ rr:template "http://example.com/resource/student_{name}"; ];
 	
     rr:predicateObjectMap
     [ 
       rr:predicate	foaf:name ; 
-      rr:objectMap	[ rml:reference "Name"; ];
+      rr:objectMap	[ rml:reference "name"; ];
     ];
 
     rr:predicateObjectMap
     [ 
 		rr:predicate	ex:numSport ; 
-		rr:objectMap	[ rml:reference "SPORTCOUNT"; ];
+		rr:objectMap	[ rml:reference "sportcount"; ];
     ].
 
 <#DB_source> a d2rq:Database;

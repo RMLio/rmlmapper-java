@@ -18,12 +18,12 @@
      rr:tableName "Employee"
   ];
 
-  rr:subjectMap [ rml:reference "FirstName" ];
+  rr:subjectMap [ rml:reference "firstname" ];
 
   rr:predicateObjectMap [
     rr:predicate foaf:name;
     rr:objectMap [
-      rml:reference "FirstName"
+      rml:reference "firstname"
     ]
   ] .
 

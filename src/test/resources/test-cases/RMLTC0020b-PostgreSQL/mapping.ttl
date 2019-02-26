@@ -17,7 +17,7 @@
     rr:tableName "Student"
   ];
     
-    rr:subjectMap [ rml:reference "Name"; rr:termType rr:IRI; ];
+    rr:subjectMap [ rml:reference "name"; rr:termType rr:IRI; ];
     
     rr:predicateObjectMap 
     [

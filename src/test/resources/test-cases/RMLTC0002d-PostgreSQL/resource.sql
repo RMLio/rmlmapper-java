@@ -1,5 +1,4 @@
-USE test;
-DROP TABLE IF EXISTS test.student;
+DROP TABLE IF EXISTS student;
 CREATE TABLE student (
   ID INTEGER,
   Name VARCHAR(50)

@@ -34,7 +34,7 @@ public class Mapper_SQLServer_Test extends TestCore {
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_SQLServer_Test.class);
 
-    private static String CONNECTIONSTRING_LOCAL = "jdbc:sqlserver://localhost;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
+    private static String CONNECTIONSTRING_LOCAL = "jdbc:sqlserver://dia.test.iminds.be:8971;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
     private static String CONNECTIONSTRING = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
 
     private static HashSet<String> tempFiles = new HashSet<>();
@@ -59,33 +59,27 @@ public class Mapper_SQLServer_Test extends TestCore {
 
     @BeforeClass
     public static void startDBs() throws Exception {
-        int PORTNUMBER;
-        try {
-            PORTNUMBER = Utils.getFreePortNumber();
-        } catch (Exception ex) {
-            throw new Error("Could not find a free port number for RDBs testing.");
-        }
-
-        CONNECTIONSTRING_LOCAL = String.format(CONNECTIONSTRING_LOCAL, PORTNUMBER);
-        CONNECTIONSTRING = String.format(CONNECTIONSTRING, PORTNUMBER);
-
         if (!LOCAL_TESTING) {
             sqlServerDB = new DockerDBInfo(CONNECTIONSTRING); // see .gitlab-ci.yml file
-            // Creates testing db
-            try {
-                // Can't set DB yet in connection string --> remove here
-                final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString.substring(0, sqlServerDB.connectionString.lastIndexOf("databaseName=")));
-                conn.createStatement().execute("CREATE DATABASE TestDB");
-                conn.close();
-            } catch (SQLException ex) {
-                // Doesn't matter
-            }
+        } else {
+            sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_LOCAL);
+        }
+        // Creates testing db
+        try {
+            // Can't set DB yet in connection string --> remove here
+            final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString.substring(0, sqlServerDB.connectionString.lastIndexOf("databaseName=")));
+            conn.createStatement().execute("CREATE DATABASE TestDB");
+            conn.close();
+        } catch (SQLException ex) {
+            // Doesn't matter
         }
     }
 
     @AfterClass
-    public static void stopDBs() throws ManagedProcessException {
-        closeDocker(sqlServerDB);
+    public static void stopDBs() {
+        if (!LOCAL_TESTING) {
+            closeDocker(sqlServerDB);
+        }
 
         // Make sure all tempFiles are removed
         int counter = 0;
@@ -190,14 +184,6 @@ public class Mapper_SQLServer_Test extends TestCore {
         //setup expected exception
         if (expectedException != null) {
             thrown.expect(expectedException);
-        }
-
-        if (LOCAL_TESTING) {
-            if (expectedException != null) {
-                throw new Error();
-            } else {
-                return;
-            }
         }
 
         mappingTest(testCaseName);

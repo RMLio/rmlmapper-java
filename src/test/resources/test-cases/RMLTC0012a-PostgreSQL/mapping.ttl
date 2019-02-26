@@ -13,10 +13,10 @@
   rml:logicalSource [
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rr:tableName "\"IOUs\"";
+    rr:tableName "IOUs";
   ];
 	
-  rr:subjectMap [ rr:template "{\"fname\"}_{\"lname\"}_{\"amount\"}"; rr:termType rr:BlankNode; ];
+  rr:subjectMap [ rr:template "{fname}_{lname}_{amount}"; rr:termType rr:BlankNode; ];
 	
   rr:predicateObjectMap [ 
     rr:predicate foaf:name ; 
