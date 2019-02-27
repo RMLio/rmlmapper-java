@@ -17,17 +17,18 @@
         SELECT Code, Name, Lan
         FROM Country
         WHERE Lan = 'EN';
-       """
+       """ ;
+     rml:referenceFormulation ql:CSV
   ];
 
   rr:subjectMap [
-    rr:template "http://example.com/{Code}"
+    rr:template "http://example.com/{code}"
   ];
 
   rr:predicateObjectMap [
     rr:predicate rdfs:label ;
     rr:objectMap [
-      rml:reference "Name";
+      rml:reference "name";
       rr:language "en"
     ]
   ].
@@ -38,21 +39,22 @@
   rml:logicalSource [
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-        rml:query """
-            SELECT "Code", "Name", "Lan"
-            FROM "Country"
-            WHERE "Lan" = 'ES';
-           """
+    rml:query """
+        SELECT "Code", "Name", "Lan"
+        FROM "Country"
+        WHERE "Lan" = 'ES';
+       """ ;
+    rml:referenceFormulation ql:CSV
   ];
 
   rr:subjectMap [
-    rr:template "http://example.com/{Code}"
+    rr:template "http://example.com/{code}"
   ];
 
   rr:predicateObjectMap [
     rr:predicate rdfs:label ;
     rr:objectMap [
-      rml:reference "Name";
+      rml:reference "name";
       rr:language "es"
     ]
   ].

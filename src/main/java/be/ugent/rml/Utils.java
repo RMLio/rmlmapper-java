@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.URL;
@@ -36,10 +37,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -474,5 +474,54 @@ public class Utils {
         } else {
             return null;
         }
+    }
+
+    public static String transformDatatypeString(String input, String datatype) {
+        switch (datatype) {
+            case "http://www.w3.org/2001/XMLSchema#hexBinary":
+                // TODO
+                return input;
+            case "http://www.w3.org/2001/XMLSchema#decimal":
+                return "" + Double.parseDouble(input);
+            case "http://www.w3.org/2001/XMLSchema#integer":
+                return "" + Integer.parseInt(input);
+            case "http://www.w3.org/2001/XMLSchema#double":
+                return formatToScientific(Double.parseDouble(input));
+            case "http://www.w3.org/2001/XMLSchema#boolean":
+                switch(input) {
+                    case "t":
+                    case "true":
+                    case "TRUE":
+                    case "1":
+                        return "true";
+                    default:
+                        return "false";
+                }
+            case "http://www.w3.org/2001/XMLSchema#date":
+                return input;
+            case "http://www.w3.org/2001/XMLSchema#time":
+                return input;
+            case "http://www.w3.org/2001/XMLSchema#dateTime":
+                return input.replace(" ", "T");
+            default:
+                return input;
+        }
+
+    }
+
+    private static String formatToScientific(Double d) {
+        BigDecimal input = BigDecimal.valueOf(d).stripTrailingZeros();
+        int precision = input.scale() < 0
+                ? input.precision() - input.scale()
+                : input.precision();
+        StringBuilder s = new StringBuilder("0.0");
+        for (int i = 2; i < precision; i++) {
+            s.append("#");
+        }
+        s.append("E0");
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+        DecimalFormat df = (DecimalFormat)nf;
+        df.applyPattern(s.toString());
+        return df.format(d);
     }
 }

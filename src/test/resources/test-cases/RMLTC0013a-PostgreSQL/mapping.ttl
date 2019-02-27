@@ -17,7 +17,7 @@
   ];
 	
   rr:subjectMap [
-    rr:template "http://example.com/Person/{ID}/{Name}/{DateOfBirth}"
+    rr:template "http://example.com/Person/{id}/{name}/{DateOfBirth}"
   ];
 	
   rr:predicateObjectMap [ 

@@ -15,14 +15,14 @@
        rml:source <#DB_source>;
        rr:sqlVersion rr:SQL2008;
        rml:query """
-       SELECT "Student"."ID" as ID,
-              "Student"."FirstName" as FirstName,
-              "Student"."LastName" as LastName,
-              "Sport"."Description" as Description,
-              "Sport"."ID" as Sport_ID
-       FROM "Student","Sport","Student_Sport"
-       WHERE "Student"."ID" = "Student_Sport"."ID_Student"
-       AND "Sport"."ID" = "Student_Sport"."ID_Sport";
+       SELECT Student.ID as ID,
+              Student.FirstName as FirstName,
+              Student.LastName as LastName,
+              Sport.Description as Description,
+              Sport.ID as Sport_ID
+       FROM Student,Sport,Student_Sport
+       WHERE Student.ID = Student_Sport.ID_Student
+       AND Sport.ID = Student_Sport.ID_Sport;
        """ ;
        rml:referenceFormulation ql:CSV
    ];
@@ -75,7 +75,7 @@
     .
 
 <#DB_source> a d2rq:Database;
-  d2rq:jdbcDSN "CONNECTIONDSN"; 
+  d2rq:jdbcDSN "CONNECTIONDSN";
   d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver";
   d2rq:username "root";
   d2rq:password "" .

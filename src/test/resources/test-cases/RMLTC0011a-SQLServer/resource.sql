@@ -1,7 +1,6 @@
-USE test;
-DROP TABLE IF EXISTS test.Student_Sport;
-DROP TABLE IF EXISTS test.Sport;
-DROP TABLE IF EXISTS test.Student;
+USE TestDB;
+EXEC sp_msforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT all'
+EXEC sp_msforeachtable 'DROP TABLE ?'
 
 CREATE TABLE Student (
 ID integer PRIMARY KEY,

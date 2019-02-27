@@ -104,8 +104,8 @@ public class Mapper_MySQL_Test extends TestCore {
                 {"RMLTC0003c", null},
                 {"RMLTC0004a", null},
                 {"RMLTC0004b", null},
-//                {"RMLTC0005a", null},
-//                {"RMLTC0005b", null},
+                {"RMLTC0005a", null},
+                {"RMLTC0005b", null},
                 {"RMLTC0006a", null},
                 {"RMLTC0007a", null},
                 {"RMLTC0007b", null},
@@ -133,13 +133,13 @@ public class Mapper_MySQL_Test extends TestCore {
                 {"RMLTC0012d", Error.class},
 //                {"RMLTC0012e", null},
 //                {"RMLTC0013a", null},
-//                {"RMLTC0014d", null},
+                {"RMLTC0014d", null},
 //                {"RMLTC0015a", null},
                 {"RMLTC0015b", Error.class},
                 {"RMLTC0016a", null},
-//                {"RMLTC0016b", null},
-//                {"RMLTC0016c", null},
-//                {"RMLTC0016d", null},
+                {"RMLTC0016b", null},
+                {"RMLTC0016c", null},
+                {"RMLTC0016d", null},
 //                {"RMLTC0016e", null},
 //                {"RMLTC0018a", null},
                 {"RMLTC0019a", null},
@@ -167,9 +167,14 @@ public class Mapper_MySQL_Test extends TestCore {
         String outputPath = "test-cases/" + testCaseName + "-MySQL/output.nq";
 
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING);
+
+        // Get SQL resource
         mysqlDB.source(resourcePath);
+
+        // mapping
         doMapping(tempMappingPath, outputPath);
         deleteTempMappingFile(tempMappingPath);
+
     }
 
     // Utils -----------------------------------------------------------------------------------------------------------

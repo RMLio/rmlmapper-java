@@ -15,18 +15,18 @@
 
 	rml:logicalSource [ rml:source <#DB_source>; rr:sqlVersion rr:SQL2008; rr:tableName "Student" ];
 
-    rr:subjectMap [ rr:template "http://example.com/{ID}"; rr:class foaf:Person];
+    rr:subjectMap [ rr:template "http://example.com/{id}"; rr:class foaf:Person];
 
     rr:predicateObjectMap
     [
       rr:predicate		ex:id ;
-      rr:objectMap		[ rml:reference "ID"; ]
+      rr:objectMap		[ rml:reference "id"; ]
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		foaf:name ;
-      rr:objectMap		[ rml:reference "Name" ]
+      rr:objectMap		[ rml:reference "name" ]
     ]
     .
 

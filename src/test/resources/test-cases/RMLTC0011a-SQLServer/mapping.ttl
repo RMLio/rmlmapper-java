@@ -4,6 +4,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
 
 @base <http://example.com/base/> .
 
@@ -14,15 +15,17 @@
        rml:source <#DB_source>;
        rr:sqlVersion rr:SQL2008;
        rml:query """
-       SELECT "Student"."ID" as ID,
-              "Student"."FirstName" as FirstName,
-              "Student"."LastName" as LastName,
-              "Sport"."Description" as Description,
-              "Sport"."ID" as Sport_ID
-       FROM "Student","Sport","Student_Sport"
-       WHERE "Student"."ID" = "Student_Sport"."ID_Student"
-       AND "Sport"."ID" = "Student_Sport"."ID_Sport";
-       """; ];
+       SELECT Student.ID as ID,
+              Student.FirstName as FirstName,
+              Student.LastName as LastName,
+              Sport.Description as Description,
+              Sport.ID as Sport_ID
+       FROM Student,Sport,Student_Sport
+       WHERE Student.ID = Student_Sport.ID_Student
+       AND Sport.ID = Student_Sport.ID_Sport;
+       """ ;
+       rml:referenceFormulation ql:CSV
+   ];
 
     rr:subjectMap [ rr:template "http://example.com/{ID}/{FirstName};{LastName}" ];
 	

@@ -47,7 +47,11 @@
 <TriplesMap2>
     a rr:TriplesMap;
 
-	rml:logicalSource [ rr:tableName  "Lives" ];
+	rml:logicalSource [
+	    rml:source <#DB_source>;
+        rr:sqlVersion rr:SQL2008;
+	    rr:tableName  "Lives"
+    ];
 	
     rr:subjectMap [ rr:template "{fname}_{lname}_{city}"; rr:termType rr:BlankNode; ];
     

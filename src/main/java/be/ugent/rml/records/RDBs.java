@@ -132,6 +132,7 @@ public class RDBs {
             case "BINARY":
             case "BINARY VARYING":
             case "BINARY LARGE OBJECT":
+            case "VARBINARY":
                 return "http://www.w3.org/2001/XMLSchema#hexBinary";
             case "NUMERIC":
             case "DECIMAL":
@@ -147,8 +148,10 @@ public class RDBs {
             case "FLOAT4":
             case "FLOAT8":
             case "REAL":
+            case "DOUBLE":
             case "DOUBLE PRECISION":
                 return "http://www.w3.org/2001/XMLSchema#double";
+            case "BIT":
             case "BOOL":
             case "BOOLEAN":
                 return "http://www.w3.org/2001/XMLSchema#boolean";
@@ -157,6 +160,7 @@ public class RDBs {
             case "TIME":
                 return "http://www.w3.org/2001/XMLSchema#time";
             case "TIMESTAMP":
+            case "DATETIME":
                 return "http://www.w3.org/2001/XMLSchema#dateTime";
         }
         return null;

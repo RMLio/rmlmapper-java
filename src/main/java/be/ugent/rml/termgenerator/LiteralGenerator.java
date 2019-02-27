@@ -1,5 +1,6 @@
 package be.ugent.rml.termgenerator;
 
+import be.ugent.rml.Utils;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
@@ -58,6 +59,9 @@ public class LiteralGenerator extends TermGenerator {
                     //add datatype if present; language and datatype can't be combined because the language tag implies langString as datatype
                     objects.add(new Literal(objectString, datatype));
                 } else if (finalDataTypeSource != null) {
+                    if (this.functionExecutor instanceof ReferenceExtractor) {
+                        objectString = Utils.transformDatatypeString(objectString, finalDataTypeSource);
+                    }
                     objects.add(new Literal(objectString, new NamedNode(finalDataTypeSource)));
                 } else {
                     objects.add(new Literal(objectString));

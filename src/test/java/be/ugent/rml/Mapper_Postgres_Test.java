@@ -1,10 +1,7 @@
 package be.ugent.rml;
 
-import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -33,12 +30,13 @@ public class Mapper_Postgres_Test extends TestCore {
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_Postgres_Test.class);
 
-    private static String CONNECTIONSTRING_LOCAL = "jdbc:postgresql://dia.test.iminds.be:8970/postgres?user=postgres&password=YourSTRONG!Passw0rd";
-    private static String CONNECTIONSTRING = "jdbc:postgresql://postgres/postgres?user=postgres&password=YourSTRONG!Passw0rd";
+    private static String CONNECTIONSTRING = LOCAL_TESTING ?
+            "jdbc:postgresql://dia.test.iminds.be:8970/postgres?user=postgres&password=YourSTRONG!Passw0rd" :
+            "jdbc:postgresql://postgres/postgres?user=postgres&password=YourSTRONG!Passw0rd";
 
     private static HashSet<String> tempFiles = new HashSet<>();
 
-    private static DockerDBInfo postgreSQLDB;
+    private static DockerDBInfo remoteDB;
 
     private static class DockerDBInfo {
         String connectionString;
@@ -58,17 +56,13 @@ public class Mapper_Postgres_Test extends TestCore {
 
     @BeforeClass
     public static void startDBs() {
-        if (!LOCAL_TESTING) {
-            postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING); // see .gitlab-ci.yml file
-        } else {
-            postgreSQLDB = new DockerDBInfo(CONNECTIONSTRING_LOCAL);
-        }
+        remoteDB = new DockerDBInfo(CONNECTIONSTRING); // see .gitlab-ci.yml file
     }
 
     @AfterClass
     public static void stopDBs() {
         if (!LOCAL_TESTING) {
-            closeDocker(postgreSQLDB);
+            closeDocker(remoteDB);
         }
 
         // Make sure all tempFiles are removed
@@ -122,8 +116,8 @@ public class Mapper_Postgres_Test extends TestCore {
                 {"RMLTC0003c", null},
                 {"RMLTC0004a", null},
                 {"RMLTC0004b", null},
-//                {"RMLTC0005a", null},
-//                {"RMLTC0005b", null},
+                {"RMLTC0005a", null},
+                {"RMLTC0005b", null},
                 {"RMLTC0006a", null},
                 {"RMLTC0007a", null},
                 {"RMLTC0007b", null},
@@ -149,17 +143,17 @@ public class Mapper_Postgres_Test extends TestCore {
                 {"RMLTC0012b", null},
                 {"RMLTC0012c", Error.class},
                 {"RMLTC0012d", Error.class},
-//                {"RMLTC0012e", null},
+                {"RMLTC0012e", null},
 //                {"RMLTC0013a", null},
-//                {"RMLTC0014d", null},
+                {"RMLTC0014d", null},
 //                {"RMLTC0015a", null},
                 {"RMLTC0015b", Error.class},
                 {"RMLTC0016a", null},
 //                {"RMLTC0016b", null},
-//                {"RMLTC0016c", null},
-//                {"RMLTC0016d", null},
+                {"RMLTC0016c", null},
+                {"RMLTC0016d", null},
 //                {"RMLTC0016e", null},
-//                {"RMLTC0018a", null},
+                {"RMLTC0018a", null},
                 {"RMLTC0019a", null},
                 {"RMLTC0019b", null},
                 {"RMLTC0020a", null},
@@ -185,14 +179,10 @@ public class Mapper_Postgres_Test extends TestCore {
         String mappingPath = "./test-cases/" + testCaseName + "-PostgresQL/mapping.ttl";
         String outputPath = "test-cases/" + testCaseName + "-PostgresQL/output.nq";
 
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING, CONNECTIONSTRING_LOCAL);
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING);
 
         // Execute SQL
-        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(resourcePath, null).getAbsolutePath())), StandardCharsets.UTF_8);
-        sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(postgreSQLDB.connectionString);
-        conn.createStatement().execute(sql);
-        conn.close();
+        executeSQL(remoteDB.connectionString, resourcePath);
 
         // mapping
         doMapping(tempMappingPath, outputPath);
@@ -202,15 +192,13 @@ public class Mapper_Postgres_Test extends TestCore {
 
     // Utils -----------------------------------------------------------------------------------------------------------
 
-    private static String replaceDSNInMappingFile(String path, String connectionString, String connectionStringLocal) {
+    private static String replaceDSNInMappingFile(String path, String connectionString) {
         try {
             // Read mapping file
             String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
 
-            String dsn = LOCAL_TESTING ? connectionStringLocal : connectionString;
-
             // Replace "PORT" in mapping file by new port
-            mapping = mapping.replace("CONNECTIONDSN", dsn);
+            mapping = mapping.replace("CONNECTIONDSN", connectionString);
 
             // Write to temp mapping file
 
@@ -250,5 +238,14 @@ public class Mapper_Postgres_Test extends TestCore {
                 logger.warn("Could not kill the database container with connection string: " + dockerDBInfo.connectionString + "!", ex);
             }
         }
+    }
+
+    private static void executeSQL(String connectionString, String sqlFile) throws Exception {
+        // Execute SQL
+        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(sqlFile, null).getAbsolutePath())), StandardCharsets.UTF_8);
+        sql = sql.replaceAll("\n", "");
+        final Connection conn = DriverManager.getConnection(connectionString);
+        conn.createStatement().execute(sql);
+        conn.close();
     }
 }

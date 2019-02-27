@@ -15,7 +15,7 @@
 
 	rml:logicalSource [ rml:source <#DB_source>; rr:sqlVersion rr:SQL2008; rr:tableName "Patient" ];
 
-    rr:subjectMap [ rr:template "http://example.com/Patient{ID}"; ];
+    rr:subjectMap [ rr:template "http://example.com/Patient{id}"; ];
 
     rr:predicateObjectMap
     [
@@ -26,7 +26,7 @@
     rr:predicateObjectMap
     [
       rr:predicate		ex:paid;
-      rr:objectMap		[ rml:reference "PaidInAdvance";  ]
+      rr:objectMap		[ rml:reference "paidinadvance";  ]
     ];
     .
 

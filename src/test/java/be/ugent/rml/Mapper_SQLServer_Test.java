@@ -1,6 +1,5 @@
 package be.ugent.rml;
 
-import ch.vorburger.exec.ManagedProcessException;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import org.junit.AfterClass;
@@ -34,12 +33,13 @@ public class Mapper_SQLServer_Test extends TestCore {
 
     private static Logger logger = LoggerFactory.getLogger(Mapper_SQLServer_Test.class);
 
-    private static String CONNECTIONSTRING_LOCAL = "jdbc:sqlserver://dia.test.iminds.be:8971;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
-    private static String CONNECTIONSTRING = "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
+    private static String CONNECTIONSTRING = LOCAL_TESTING ?
+            "jdbc:sqlserver://dia.test.iminds.be:8971;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;" :
+            "jdbc:sqlserver://sqlserver;user=sa;password=YourSTRONG!Passw0rd;databaseName=TestDB;";
 
     private static HashSet<String> tempFiles = new HashSet<>();
 
-    private static DockerDBInfo sqlServerDB;
+    private static DockerDBInfo remoteDB;
 
     private static class DockerDBInfo {
         String connectionString;
@@ -58,16 +58,13 @@ public class Mapper_SQLServer_Test extends TestCore {
     }
 
     @BeforeClass
-    public static void startDBs() throws Exception {
-        if (!LOCAL_TESTING) {
-            sqlServerDB = new DockerDBInfo(CONNECTIONSTRING); // see .gitlab-ci.yml file
-        } else {
-            sqlServerDB = new DockerDBInfo(CONNECTIONSTRING_LOCAL);
-        }
+    public static void startDBs() {
+        remoteDB = new DockerDBInfo(CONNECTIONSTRING); // see .gitlab-ci.yml file
+
         // Creates testing db
         try {
             // Can't set DB yet in connection string --> remove here
-            final Connection conn = DriverManager.getConnection(sqlServerDB.connectionString.substring(0, sqlServerDB.connectionString.lastIndexOf("databaseName=")));
+            final Connection conn = DriverManager.getConnection(remoteDB.connectionString.substring(0, remoteDB.connectionString.lastIndexOf("databaseName=")));
             conn.createStatement().execute("CREATE DATABASE TestDB");
             conn.close();
         } catch (SQLException ex) {
@@ -78,7 +75,7 @@ public class Mapper_SQLServer_Test extends TestCore {
     @AfterClass
     public static void stopDBs() {
         if (!LOCAL_TESTING) {
-            closeDocker(sqlServerDB);
+            closeDocker(remoteDB);
         }
 
         // Make sure all tempFiles are removed
@@ -132,8 +129,8 @@ public class Mapper_SQLServer_Test extends TestCore {
                 {"RMLTC0003c", null},
                 {"RMLTC0004a", null},
                 {"RMLTC0004b", null},
-//                {"RMLTC0005a", null},
-//                {"RMLTC0005b", null},
+                {"RMLTC0005a", null},
+                {"RMLTC0005b", null},
                 {"RMLTC0006a", null},
                 {"RMLTC0007a", null},
                 {"RMLTC0007b", null},
@@ -161,15 +158,15 @@ public class Mapper_SQLServer_Test extends TestCore {
                 {"RMLTC0012d", Error.class},
 //                {"RMLTC0012e", null},
 //                {"RMLTC0013a", null},
-//                {"RMLTC0014d", null},
+                {"RMLTC0014d", null},
 //                {"RMLTC0015a", null},
                 {"RMLTC0015b", Error.class},
                 {"RMLTC0016a", null},
-//                {"RMLTC0016b", null},
+                {"RMLTC0016b", null},
 //                {"RMLTC0016c", null},
-//                {"RMLTC0016d", null},
+                {"RMLTC0016d", null},
 //                {"RMLTC0016e", null},
-//                {"RMLTC0018a", null},
+                {"RMLTC0018a", null},
                 {"RMLTC0019a", null},
                 {"RMLTC0019b", null},
                 {"RMLTC0020a", null},
@@ -195,10 +192,10 @@ public class Mapper_SQLServer_Test extends TestCore {
         String mappingPath = "./test-cases/" + testCaseName + "-SQLServer/mapping.ttl";
         String outputPath = "test-cases/" + testCaseName + "-SQLServer/output.nq";
 
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING, CONNECTIONSTRING_LOCAL);
+        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING);
 
         // Execute SQL
-        executeSQL(sqlServerDB.connectionString, resourcePath);
+        executeSQL(remoteDB.connectionString, resourcePath);
 
         // mapping
         doMapping(tempMappingPath, outputPath);
@@ -208,15 +205,13 @@ public class Mapper_SQLServer_Test extends TestCore {
 
     // Utils -----------------------------------------------------------------------------------------------------------
 
-    private static String replaceDSNInMappingFile(String path, String connectionString, String connectionStringLocal) {
+    private static String replaceDSNInMappingFile(String path, String connectionString) {
         try {
             // Read mapping file
             String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
 
-            String dsn = LOCAL_TESTING ? connectionStringLocal : connectionString;
-
             // Replace "PORT" in mapping file by new port
-            mapping = mapping.replace("CONNECTIONDSN", dsn);
+            mapping = mapping.replace("CONNECTIONDSN", connectionString);
 
             // Write to temp mapping file
 
