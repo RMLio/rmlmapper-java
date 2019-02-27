@@ -175,9 +175,9 @@ public class Mapper_Postgres_Test extends TestCore {
 
     private void mappingTest(String testCaseName) throws Exception {
 
-        String resourcePath = "test-cases/" + testCaseName + "-PostgresQL/resource.sql";
-        String mappingPath = "./test-cases/" + testCaseName + "-PostgresQL/mapping.ttl";
-        String outputPath = "test-cases/" + testCaseName + "-PostgresQL/output.nq";
+        String resourcePath = "test-cases/" + testCaseName + "-PostgreSQL/resource.sql";
+        String mappingPath = "./test-cases/" + testCaseName + "-PostgreSQL/mapping.ttl";
+        String outputPath = "test-cases/" + testCaseName + "-PostgreSQL/output.nq";
 
         String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING);
 
