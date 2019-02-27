@@ -10,7 +10,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-public class XMLRecord implements Record {
+public class XMLRecord extends Record {
 
     private Node node;
 

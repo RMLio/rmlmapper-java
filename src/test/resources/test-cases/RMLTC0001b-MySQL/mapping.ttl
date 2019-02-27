@@ -14,7 +14,7 @@
   rml:logicalSource [ 
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rr:query "SELECT Name FROM student";
+    rml:query "SELECT Name FROM student";
     rml:referenceFormulation ql:CSV
   ];
 

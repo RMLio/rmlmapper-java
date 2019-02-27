@@ -19,7 +19,7 @@ abstract class TestCore {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    Executor createExecutor(String mapPath) throws IOException {
+    Executor createExecutor(String mapPath) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
         URL url = classLoader.getResource(mapPath);
@@ -30,17 +30,17 @@ abstract class TestCore {
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
         return new Executor(rmlStore,
-                new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
+                new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)), Utils.getBaseDirectiveTurtle(mappingFile));
     }
 
-    Executor createExecutor(String mapPath, FunctionLoader functionLoader) throws IOException {
+    Executor createExecutor(String mapPath, FunctionLoader functionLoader) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
         File mappingFile = new File(classLoader.getResource(mapPath).getFile());
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
         return new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)),
-                functionLoader);
+                functionLoader, Utils.getBaseDirectiveTurtle(mappingFile));
     }
 
     Executor doMapping(String mapPath, String outPath) {
@@ -48,7 +48,7 @@ abstract class TestCore {
             Executor executor = this.createExecutor(mapPath);
             doMapping(executor, outPath);
             return executor;
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             fail();
         }
@@ -75,9 +75,9 @@ abstract class TestCore {
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
         try {
-            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)));
+            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)), Utils.getBaseDirectiveTurtle(mappingFile));
             QuadStore result = executor.execute(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             // I expected you!
         }
     }

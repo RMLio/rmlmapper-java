@@ -27,7 +27,7 @@ abstract class TestFunctionCore extends TestCore {
             Executor executor = this.createExecutor(mapPath, functionLoader);
             doMapping(executor, outPath);
             return executor;
-        } catch (IOException | URISyntaxException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             fail();
         }

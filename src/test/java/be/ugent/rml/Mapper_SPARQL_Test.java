@@ -104,28 +104,28 @@ public class Mapper_SPARQL_Test extends TestCore {
     }
 
     @TestWith({
-            "RMLTC0000-SPARQL, ttl",
-            "RMLTC0001a-SPARQL, ttl",
-            "RMLTC0001b-SPARQL, ttl",
-            "RMLTC0002a-SPARQL, ttl",
-            "RMLTC0002b-SPARQL, ttl",
-            "RMLTC0002h-SPARQL, ttl",
-            "RMLTC0003c-SPARQL, ttl",
-            "RMLTC0004a-SPARQL, ttl",
-            "RMLTC0004b-SPARQL, ttl",
+            "RMLTC0000-SPARQL, nq",
+            "RMLTC0001a-SPARQL, nq",
+            "RMLTC0001b-SPARQL, nq",
+            "RMLTC0002a-SPARQL, nq",
+            "RMLTC0002b-SPARQL, nq",
+            "RMLTC0002h-SPARQL, nq",
+            "RMLTC0003c-SPARQL, nq",
+            "RMLTC0004a-SPARQL, nq",
+            "RMLTC0004b-SPARQL, nq",
             "RMLTC0006a-SPARQL, nq",
-            "RMLTC0007a-SPARQL, ttl",
+            "RMLTC0007a-SPARQL, nq",
             "RMLTC0007b-SPARQL, nq",
-            "RMLTC0007c-SPARQL, ttl",
-            "RMLTC0007d-SPARQL, ttl",
+            "RMLTC0007c-SPARQL, nq",
+            "RMLTC0007d-SPARQL, nq",
             "RMLTC0007e-SPARQL, nq",
             "RMLTC0007f-SPARQL, nq",
-            "RMLTC0007g-SPARQL, ttl",
+            "RMLTC0007g-SPARQL, nq",
             "RMLTC0007h-SPARQL, nq",
             "RMLTC0008a-SPARQL, nq",
-            "RMLTC0008b-SPARQL, ttl",
-            "RMLTC0008c-SPARQL, ttl",
-            "RMLTC0012a-SPARQL, ttl",
+            "RMLTC0008b-SPARQL, nq",
+            "RMLTC0008c-SPARQL, nq",
+            "RMLTC0012a-SPARQL, nq",
     })
     public void evaluate_XXXX_SPARQL(String resourceDir, String outputExtension) {
         String resourcePath = "test-cases/" + resourceDir + "/resource.ttl";
@@ -147,7 +147,7 @@ public class Mapper_SPARQL_Test extends TestCore {
     @Test
     public void evaluate_0009a_SPARQL() throws Exception {
         String mappingPath = "test-cases/RMLTC0009a-SPARQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0009a-SPARQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0009a-SPARQL/output.nq";
 
         List<String> resources = new ArrayList<>();
         resources.add("test-cases/RMLTC0009a-SPARQL/resource1.ttl");
@@ -171,7 +171,7 @@ public class Mapper_SPARQL_Test extends TestCore {
     @Test
     public void evaluate_00012b_SPARQL() throws Exception {
         String mappingPath = "test-cases/RMLTC0012b-SPARQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0012b-SPARQL/output.ttl";
+        String outputPath = "test-cases/RMLTC0012b-SPARQL/output.nq";
 
         List<String> resources = new ArrayList<>();
         resources.add("test-cases/RMLTC0012b-SPARQL/resource1.ttl");

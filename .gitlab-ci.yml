@@ -8,7 +8,7 @@ variables:
   # Postgres
   POSTGRES_DB: postgres
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: ""
+  POSTGRES_PASSWORD: "YourSTRONG!Passw0rd"
   # SQLServer
   ACCEPT_EULA: Y
   SA_PASSWORD: "YourSTRONG!Passw0rd"

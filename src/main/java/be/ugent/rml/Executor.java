@@ -34,20 +34,22 @@ public class Executor {
     private RecordsFactory recordsFactory;
     private static int blankNodeCounter = 0;
     private HashMap<Term, Mapping> mappings;
+    private String baseIRI;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
-        this(rmlStore, recordsFactory, null, null);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI) throws Exception {
+        this(rmlStore, recordsFactory, null, null, baseIRI);
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) throws IOException {
-        this(rmlStore, recordsFactory, functionLoader, null);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, String baseIRI) throws Exception {
+        this(rmlStore, recordsFactory, functionLoader, null, baseIRI);
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads) throws IOException {
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI) throws Exception {
         this.initializer = new Initializer(rmlStore, functionLoader);
         this.mappings = this.initializer.getMappings();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
+        this.baseIRI = baseIRI;
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
 
@@ -92,6 +94,22 @@ public class Executor {
                 Record record = records.get(j);
                 ProvenancedTerm subject = getSubject(triplesMap, mapping, record, j);
 
+                if (subject != null && subject.getTerm() instanceof NamedNode && !Utils.isValidIRI(subject.getTerm().getValue())) {
+                    if (this.baseIRI == null) {
+                        subject = null;
+                    } else {
+                        String newSubject = this.baseIRI + subject.getTerm().getValue();
+
+                        if (Utils.isValidIRI(newSubject)) {
+                            subject = new ProvenancedTerm(new NamedNode(newSubject), subject.getMetadata());
+                        } else {
+                            subject = null;
+                        }
+                    }
+                }
+
+                final ProvenancedTerm finalSubject = subject;
+
                 //TODO validate subject or check if blank node
                 if (subject != null) {
                     List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
@@ -114,7 +132,7 @@ public class Executor {
 
                     List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
-                    pogs.forEach(pog -> pogFunction.accept(subject, pog));
+                    pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
                 }
             }
         }

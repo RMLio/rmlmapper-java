@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ReferenceExtractor implements Extractor, SingleRecordFunctionExecutor {
 
-    private String reference;
+    public String reference;
 
     public ReferenceExtractor(String reference) {
         this.reference = reference;

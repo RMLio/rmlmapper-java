@@ -146,6 +146,13 @@
             <artifactId>hdt-java</artifactId>
             <version>hdt-2.2-SNAPSHOT</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.6</version>
+        </dependency>
+
         <!--<dependency>-->
             <!--<groupId>org.rdfhdt</groupId>-->
             <!--<artifactId>hdt-java-core</artifactId>-->

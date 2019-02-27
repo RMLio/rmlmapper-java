@@ -10,15 +10,15 @@
 <TriplesMap1>
   a rr:TriplesMap;
 
-  rml:logicalSource [ 
-    rml:source "country info.xml";
+  rml:logicalSource [
+    rml:source "country_info.xml";
     rml:referenceFormulation ql:XPath;
     rml:iterator "/countries/country"
   ];
 
   rr:subjectMap [ rr:template "http://example.com/{CountryCode}/{Name}" ];
-	
-  rr:predicateObjectMap [ 
+
+  rr:predicateObjectMap [
     rr:predicate ex:code ;
     rr:objectMap [ rr:template "\{\{\{ {ISO3166} \}\}\}"; rr:termType rr:Literal]
   ] .

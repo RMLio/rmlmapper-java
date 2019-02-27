@@ -201,7 +201,7 @@ public class RecordsFactory {
 
         // - SQL query
         String query;
-        List<Term> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "query"), null));
+        List<Term> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "query"), null));
 
         if (queryObject.isEmpty()) {
             if (table.isEmpty()) {
