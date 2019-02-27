@@ -224,7 +224,9 @@ The RMLMapper's XML parsing implementation (`javax.xml.parsers`) has been chosen
 This implementation causes a large memory consumption (up to ten times larger than the original XML file size).
 However, the RMLMapper can be easily adapted to use a different XML parsing implementation that might be better suited for a specific use case.
 
-## UML Diagrams
+# UML Diagrams
+
+## Architecture UML Diagram
 ### How to generate with IntelliJ IDEA
 (Requires Ultimate edition)
 
@@ -232,3 +234,10 @@ However, the RMLMapper can be easily adapted to use a different XML parsing impl
 * Diagrams > Show Diagram > Java Class Diagrams
 * Choose what properties of the classes you want to show in the upper left corner
 * Export to file > .png  | Save diagram > .uml
+<<<<<<< README.md
+
+## Sequence Diagram
+### Edit on [draw.io](https://www.draw.io)
+* Go to [draw.io](https://www.draw.io)
+* Click on 'Open Existing Diagram' and choose the .html file
+=======
