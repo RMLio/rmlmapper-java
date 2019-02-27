@@ -10,15 +10,15 @@
 <TriplesMap1>
   a rr:TriplesMap;
 
-  rml:logicalSource [ 
-    rml:source "country info.json";
+  rml:logicalSource [
+    rml:source "country_info.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.countries[*]"
   ];
 
   rr:subjectMap [ rr:template "http://example.com/{Country Code}/{Name}" ];
-	
-  rr:predicateObjectMap [ 
+
+  rr:predicateObjectMap [
     rr:predicate ex:name ;
     rr:objectMap [ rml:reference "Name" ]
   ] .

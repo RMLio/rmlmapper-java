@@ -11,7 +11,7 @@
     
   rml:logicalSource [
     rml:source <#DB_source>;
-    rr:query "SELECT FirstName, LastName FROM student";
+    rml:query "SELECT FirstName, LastName FROM student";
     rr:tableName "student";
   ];
 
@@ -25,7 +25,7 @@
     ].
 
 <#DB_source> a d2rq:Database;
-  d2rq:jdbcDSN "jdbc:mysql://localhost:50898/test"; # the "jbdc:mysql:// part is ignored
+  d2rq:jdbcDSN "CONNECTIONDSN"; # the "jbdc:mysql:// part is ignored
   d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver"; # this is ignored
   d2rq:username "root";
   d2rq:password "" .

@@ -8,10 +8,11 @@
 @prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
 
 <TriplesMap1> a rr:TriplesMap;
-    
+
   rml:logicalSource [
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
+    rr:tableName "\"Students\""
   ];
 
   rr:subjectMap [
@@ -24,7 +25,7 @@
     ].
 
 <#DB_source> a d2rq:Database;
-  d2rq:jdbcDSN "jdbc:postgresql://postgres/postgres";
+  d2rq:jdbcDSN "CONNECTIONDSN";
   d2rq:jdbcDriver "org.postgresql.Driver";
   d2rq:username "postgres";
   d2rq:password "" .

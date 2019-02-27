@@ -1,121 +1,252 @@
 package be.ugent.rml.cli;
 
-import be.ugent.rml.DataFetcher;
-import be.ugent.rml.Executor;
-import be.ugent.rml.Utils;
+import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
+import be.ugent.rml.functions.lib.GrelProcessor;
+import be.ugent.rml.functions.lib.IDLabFunctions;
+import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.TriplesQuads;
+import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.store.SimpleQuadStore;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String [] args) {
+    public static void main(String[] args) {
         Options options = new Options();
-        Option mappingdoc = Option.builder("m")
-                .longOpt( "mapping" )
+        Option mappingdocOption = Option.builder("m")
+                .longOpt("mappingfile")
                 .hasArg()
-                .desc(  "path to mapping document" )
+                .desc("path to mapping document")
                 .build();
-        Option outputfile = Option.builder("o")
-                .longOpt( "outputfile" )
+        Option outputfileOption = Option.builder("o")
+                .longOpt("outputfile")
                 .hasArg()
-                .desc(  "path to output file" )
+                .desc("path to output file (default: stdout)")
                 .build();
-        Option functionfile = Option.builder("f")
+        Option functionfileOption = Option.builder("f")
                 .longOpt("functionfile")
                 .hasArg()
                 .desc("path to functions.ttl file (dynamic functions are found relative to functions.ttl)")
                 .build();
-        Option triplesmaps = Option.builder("t")
-                .longOpt( "triplesmaps" )
+        Option triplesmapsOption = Option.builder("t")
+                .longOpt("triplesmaps")
                 .hasArg()
-                .desc(  "IRIs of the triplesmaps that should be executed (default is all triplesmaps)" )
+                .desc("IRIs of the triplesmaps that should be executed in order, split by ',' (default is all triplesmaps)")
                 .build();
-        Option removeduplicates = Option.builder("d")
-                .longOpt( "duplicates" )
-                .desc(  "remove duplicates" )
+        Option removeduplicatesOption = Option.builder("d")
+                .longOpt("duplicates")
+                .desc("remove duplicates in the output")
                 .build();
-        options.addOption(mappingdoc);
-        options.addOption(outputfile);
-        options.addOption(functionfile);
-        options.addOption(removeduplicates);
-        options.addOption(triplesmaps);
-        options.addOption("v", "verbose", false, "verbose");
-        options.addOption("h", "help", false, "get help info");
+        Option configfileOption = Option.builder("c")
+                .longOpt("configfile")
+                .hasArg()
+                .desc("path to configuration file")
+                .build();
+        Option helpOption = Option.builder("h")
+                .longOpt("help")
+                .desc("show help info")
+                .build();
+        Option verboseOption = Option.builder("v")
+                .longOpt("verbose")
+                .desc("show more details in debugging output")
+                .build();
+        Option metadataOption = Option.builder("e")
+                .longOpt("metadatafile")
+                .hasArg()
+                .desc("path to output metadata file")
+                .build();
+        Option metadataDetailLevelOption = Option.builder("l")
+                .longOpt("metadataDetailLevel")
+                .hasArg()
+                .desc("generate metadata on given detail level (dataset - triple - term)")
+                .build();
+        Option serializationFormatOption = Option.builder("s")
+                .longOpt( "serialization" )
+                .desc( "serialization format (nquads (default), trig, trix, jsonld, hdt)" )
+                .hasArg()
+                .build();
+        options.addOption(mappingdocOption);
+        options.addOption(outputfileOption);
+        options.addOption(functionfileOption);
+        options.addOption(removeduplicatesOption);
+        options.addOption(triplesmapsOption);
+        options.addOption(configfileOption);
+        options.addOption(helpOption);
+        options.addOption(verboseOption);
+        options.addOption(serializationFormatOption);
+        options.addOption(metadataOption);
+        options.addOption(metadataDetailLevelOption);
 
-        // create the parser
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
-            CommandLine line = parser.parse( options, args );
+            CommandLine lineArgs = parser.parse(options, args);
 
-            if (line.hasOption("h")) {
+            // Check if config file is given
+            Properties configFile = null;
+            if (lineArgs.hasOption("c")) {
+                configFile = new Properties();
+                configFile.load(Utils.getReaderFromLocation(lineArgs.getOptionValue("c")));
+            }
+
+            if (checkOptionPresence(helpOption, lineArgs, configFile)) {
                 printHelp(options);
                 return;
             }
 
-            if (line.hasOption("v")) {
+            if (checkOptionPresence(verboseOption, lineArgs, configFile)) {
                 setLoggerLevel(Level.DEBUG);
             } else {
                 setLoggerLevel(Level.ERROR);
             }
 
-            if (line.hasOption("m")){// Let's map!
-                File mappingFile = Utils.getFile(line.getOptionValue("m"));
-                QuadStore rmlStore = Utils.readTurtle(mappingFile);
+            String mOptionValue = getPriorityOptionValue(mappingdocOption, lineArgs, configFile);
+            if (mOptionValue == null) {
+                printHelp(options);
+            } else {
+                File mappingFile = Utils.getFile(mOptionValue);
+                RDF4JStore rmlStore = Utils.readTurtle(mappingFile);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
+
+                String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
+                QuadStore outputStore;
+
+                if (outputFormat == null || outputFormat.equals("nquads") || outputFormat.equals("hdt")) {
+                    outputStore = new SimpleQuadStore();
+                } else {
+                    outputStore = new RDF4JStore();
+                }
+
                 Executor executor;
 
-                if (line.hasOption("f")) {
-                    File functionFile = Utils.getFile(line.getOptionValue("f"));
-                    FunctionLoader functionLoader = new FunctionLoader(functionFile);
-                    executor = new Executor(rmlStore, factory, functionLoader);
+                // Extract required information and create the MetadataGenerator
+                MetadataGenerator metadataGenerator = null;
+                String metadataFile = getPriorityOptionValue(metadataOption, lineArgs, configFile);
+                String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
+
+                if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
+                    if (requestedDetailLevel != null) {
+                        MetadataGenerator.DETAIL_LEVEL detailLevel;
+                        switch (requestedDetailLevel) {
+                            case "dataset":
+                                detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
+                                break;
+                            case "triple":
+                                detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
+                                break;
+                            case "term":
+                                detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
+                                break;
+                            default:
+                                logger.error("Unknown metadata detail level option. Use the -h flag for more info.");
+                                return;
+                        }
+                        metadataGenerator = new MetadataGenerator(
+                                detailLevel,
+                                getPriorityOptionValue(metadataOption, lineArgs, configFile),
+                                mOptionValue,
+                                rmlStore
+                        );
+                    } else {
+                        logger.error("Please specify the detail level when requesting metadata generation. Use the -h flag for more info.");
+                    }
+                }
+
+                String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
+                FunctionLoader functionLoader;
+
+                Map<String, Class> libraryMap = new HashMap<>();
+                libraryMap.put("GrelFunctions", GrelProcessor.class);
+                libraryMap.put("IDLabFunctions", IDLabFunctions.class);
+
+                if (fOptionValue == null) {
+                    functionLoader = new FunctionLoader(null, null, libraryMap);
                 } else {
-                    executor = new Executor(rmlStore, factory);
+                    functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
                 }
 
-                List<String> triplesMaps = new ArrayList<>();
+                executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingFile));
 
-                if (line.hasOption("t")) {
-                    triplesMaps = Arrays.asList(line.getOptionValue("t").split(","));
+                List<Term> triplesMaps = new ArrayList<>();
+
+                String tOptionValue = getPriorityOptionValue(triplesmapsOption, lineArgs, configFile);
+                if (tOptionValue != null) {
+                    List<String> triplesMapsIRI = Arrays.asList(tOptionValue.split(","));
+                    triplesMapsIRI.forEach(iri -> {
+                        triplesMaps.add(new NamedNode(iri));
+                    });
                 }
 
-                QuadStore result = executor.execute(triplesMaps, line.hasOption("d"));
-
-                TriplesQuads tq = Utils.getTriplesAndQuads(result.getQuads(null, null, null, null));
-
-                if (!tq.getTriples().isEmpty()) {
-                    //write triples
-                    writeOutput("triple", tq.getTriples(), "nt", line);
+                if (metadataGenerator != null) {
+                    metadataGenerator.preMappingGeneration(triplesMaps.isEmpty() ?
+                            executor.getTriplesMaps() : triplesMaps, rmlStore);
                 }
 
-                if (!tq.getQuads().isEmpty()) {
+                // Get start timestamp for post mapping metadata
+                String startTimestamp = Instant.now().toString();
+
+                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                        metadataGenerator);
+
+                // Get stop timestamp for post mapping metadata
+                String stopTimestamp = Instant.now().toString();
+
+                // Generate post mapping metadata and output all metadata
+                if (metadataGenerator != null) {
+                    metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
+                            result);
+
+                    writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
+                }
+
+                String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
+
+                if (!result.isEmpty()) {
                     //write quads
-                    writeOutput("quad", tq.getQuads(), "nq", line);
+                    result.setNamespaces(rmlStore.getNamespaces());
+                    writeOutput(result, outputFile, outputFormat);
                 }
-            } else {
-                printHelp(options);
             }
-        }
-        catch( ParseException exp ) {
+        } catch (ParseException exp) {
             // oops, something went wrong
             logger.error("Parsing failed. Reason: " + exp.getMessage());
             printHelp(options);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        }
+    }
+
+    private static boolean checkOptionPresence(Option option, CommandLine lineArgs, Properties properties) {
+        return lineArgs.hasOption(option.getOpt()) || (properties != null
+                && properties.getProperty(option.getLongOpt()) != null
+                && !properties.getProperty(option.getLongOpt()).equals("false"));  // ex: 'help = false' in the config file shouldn't return the help text
+    }
+
+    private static String getPriorityOptionValue(Option option, CommandLine lineArgs, Properties properties) {
+        if (lineArgs.hasOption(option.getOpt())) {
+            return lineArgs.getOptionValue(option.getOpt());
+        } else if (properties != null && properties.getProperty(option.getLongOpt()) != null) {
+            return properties.getProperty(option.getLongOpt());
+        } else {
+            return null;
         }
     }
 
@@ -129,42 +260,73 @@ public class Main {
         ((ch.qos.logback.classic.Logger) root).setLevel(level);
     }
 
-    private static void writeOutput(String what, List<Quad> output, String extension, CommandLine line) {
-        if (output.size() > 1) {
-            logger.info(output.size() + " " + what + "s were generated");
+    private static void writeOutput(QuadStore store, String outputFile, String format) {
+        boolean hdt = format != null && format.equals("hdt");
+
+        if (hdt) {
+            try {
+                format = "nquads";
+                File tmpFile = File.createTempFile("file", ".nt");
+                tmpFile.deleteOnExit();
+                String uncompressedOutputFile = tmpFile.getAbsolutePath();
+
+                File nquadsFile = writeOutputUncompressed(store, uncompressedOutputFile, format);
+                Utils.ntriples2hdt(uncompressedOutputFile, outputFile);
+                nquadsFile.deleteOnExit();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
-            logger.info(output.size() + " " + what + " was generated");
-        }
-
-        //if output file provided, write to triples output file
-        if (line.hasOption("o")) {
-            File outputFile = new File(line.getOptionValue("o") + "." + extension);
-            logger.info("Writing " + what + " to " + outputFile.getPath() + "...");
-
-            if (!outputFile.isAbsolute()) {
-                outputFile = new File(System.getProperty("user.dir") + "/" + line.getOptionValue("o") + "." +  extension);
+            if (format != null) {
+                format = format.toLowerCase();
+            } else {
+                format = "nquads";
             }
 
-            try {
-                BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
+            writeOutputUncompressed(store, outputFile, format);
+        }
+    }
 
-                if (what.equals("triple")) {
-                    Utils.toNTriples(output, out);
-                } else {
-                    Utils.toNQuads(output, out);
+    private static File writeOutputUncompressed(QuadStore store, String outputFile, String format) {
+        File targetFile = null;
+
+        if (store.size() > 1) {
+            logger.info(store.size() + " quads were generated");
+        } else {
+            logger.info(store.size() + " quad was generated");
+        }
+
+        try {
+            BufferedWriter out;
+            String doneMessage = null;
+
+            //if output file provided, write to triples output file
+            if (outputFile != null) {
+                targetFile = new File(outputFile);
+                logger.info("Writing quads to " + targetFile.getPath() + "...");
+
+                if (!targetFile.isAbsolute()) {
+                    targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);
                 }
 
-                out.close();
-                logger.info("Writing to " + outputFile.getPath() + " is done.");
-            } catch(IOException e) {
-                System.err.println( "Writing output to file failed. Reason: " + e.getMessage() );
-            }
-        } else {
-            if (what.equals("triple")) {
-                System.out.println(Utils.toNTriples(output));
+                doneMessage = "Writing to " + targetFile.getPath() + " is done.";
+
+                out = new BufferedWriter(new FileWriter(targetFile));
+
             } else {
-                System.out.println(Utils.toNQuads(output));
+                out = new BufferedWriter(new OutputStreamWriter(System.out));
             }
+
+            store.write(out, format);
+            out.close();
+
+            if (doneMessage != null) {
+                logger.info(doneMessage);
+            }
+        } catch(IOException e) {
+            System.err.println( "Writing output failed. Reason: " + e.getMessage() );
         }
+
+        return targetFile;
     }
 }

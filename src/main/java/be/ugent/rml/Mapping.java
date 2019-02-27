@@ -4,19 +4,25 @@ import java.util.List;
 
 public class Mapping {
 
-    private TripleElement subject;
-    private List<PredicateObject> predicateObjects;
+    private MappingInfo subjectMappingInfo;
+    private List<PredicateObjectGraphMapping> predicateObjectGraphMappings;
+    private List<MappingInfo> graphMappingInfos;
 
-    public Mapping(TripleElement subject, List<PredicateObject> predicateObjects) {
-        this.subject = subject;
-        this.predicateObjects = predicateObjects;
+    public Mapping(MappingInfo subjectMappingInfo, List<PredicateObjectGraphMapping> predicateObjectGraphMappings, List<MappingInfo> graphMappingInfos) {
+        this.subjectMappingInfo = subjectMappingInfo;
+        this.predicateObjectGraphMappings = predicateObjectGraphMappings;
+        this.graphMappingInfos = graphMappingInfos;
     }
 
-    public TripleElement getSubject() {
-        return subject;
+    public MappingInfo getSubjectMappingInfo() {
+        return subjectMappingInfo;
     }
 
-    public List<PredicateObject> getPredicateObjects() {
-        return predicateObjects;
+    public List<PredicateObjectGraphMapping> getPredicateObjectGraphMappings() {
+        return predicateObjectGraphMappings;
+    }
+
+    public List<MappingInfo> getGraphMappingInfos() {
+        return graphMappingInfos;
     }
 }

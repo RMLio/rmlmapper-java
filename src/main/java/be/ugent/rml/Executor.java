@@ -1,186 +1,240 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.JoinConditionFunction;
+import be.ugent.rml.functions.FunctionUtils;
+import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
+import be.ugent.rml.metadata.Metadata;
+import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.SimpleQuadStore;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.ProvenancedTerm;
+import be.ugent.rml.term.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiConsumer;
 
 public class Executor {
 
+    private static final Logger logger = LoggerFactory.getLogger(Executor.class);
+
     private Initializer initializer;
-    private HashMap<String, List<Record>> recordsHolders;
-    private HashMap<String, HashMap<Integer, String>> subjects;
-    private QuadStore resultingTriples;
+    private HashMap<Term, List<Record>> recordsHolders;
+    // this map stores for every Triples Map, which is a Term, a map with the record index and the record's corresponding subject,
+    // which is a ProvenancedTerm.
+    private HashMap<Term, HashMap<Integer, ProvenancedTerm>> subjectCache;
+    private QuadStore resultingQuads;
     private QuadStore rmlStore;
     private RecordsFactory recordsFactory;
-    private int blankNodeCounter;
-    private HashMap<String, Mapping> mappings;
+    private static int blankNodeCounter = 0;
+    private HashMap<Term, Mapping> mappings;
+    private String baseIRI;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory) throws IOException {
-        this(rmlStore, recordsFactory, null);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI) throws Exception {
+        this(rmlStore, recordsFactory, null, null, baseIRI);
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader) throws IOException {
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, String baseIRI) throws Exception {
+        this(rmlStore, recordsFactory, functionLoader, null, baseIRI);
+    }
+
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI) throws Exception {
         this.initializer = new Initializer(rmlStore, functionLoader);
         this.mappings = this.initializer.getMappings();
-        this.resultingTriples = new SimpleQuadStore();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
-        this.blankNodeCounter = 0;
-        this.recordsHolders = new HashMap<String, List<Record>>();
-        this.subjects = new HashMap<String, HashMap<Integer, String>>();
+        this.baseIRI = baseIRI;
+        this.recordsHolders = new HashMap<Term, List<Record>>();
+        this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
+
+        if (resultingQuads == null) {
+            this.resultingQuads = new SimpleQuadStore();
+        } else {
+            this.resultingQuads = resultingQuads;
+        }
     }
 
-    public QuadStore execute(List<String> triplesMaps, boolean removeDuplicates) throws IOException {
+    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws IOException {
 
+        BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
+
+        if (metadataGenerator != null && metadataGenerator.getDetailLevel().getLevel() >= MetadataGenerator.DETAIL_LEVEL.TRIPLE.getLevel()) {
+            pogFunction = (subject, pog) -> {
+                generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
+                metadataGenerator.insertQuad(new ProvenancedQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph()));
+            };
+        } else {
+            pogFunction = (subject, pog) -> {
+                generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
+            };
+        }
+
+        return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
+    }
+
+    public QuadStore executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws IOException {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
         }
 
         //we execute every mapping
-        for (String triplesMap : triplesMaps) {
+        for (Term triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
 
             List<Record> records = this.getRecords(triplesMap);
 
             for (int j = 0; j < records.size(); j++) {
                 Record record = records.get(j);
-                String subject = getSubject(triplesMap, mapping, record, j);
+                ProvenancedTerm subject = getSubject(triplesMap, mapping, record, j);
+
+                if (subject != null && subject.getTerm() instanceof NamedNode && !Utils.isValidIRI(subject.getTerm().getValue())) {
+                    if (this.baseIRI == null) {
+                        subject = null;
+                    } else {
+                        String newSubject = this.baseIRI + subject.getTerm().getValue();
+
+                        if (Utils.isValidIRI(newSubject)) {
+                            subject = new ProvenancedTerm(new NamedNode(newSubject), subject.getMetadata());
+                        } else {
+                            subject = null;
+                        }
+                    }
+                }
+
+                final ProvenancedTerm finalSubject = subject;
 
                 //TODO validate subject or check if blank node
                 if (subject != null) {
-                    this.generatePredicateObjectsForSubject(subject, mapping, record);
+                    List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
+
+                    mapping.getGraphMappingInfos().forEach(mappingInfo -> {
+                        List<Term> terms = null;
+                        try {
+                            terms = mappingInfo.getTermGenerator().generate(record);
+                        } catch (IOException e) {
+                            //todo be more nice and gentle
+                            e.printStackTrace();
+                        }
+
+                        terms.forEach(term -> {
+                            if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                                subjectGraphs.add(new ProvenancedTerm(term));
+                            }
+                        });
+                    });
+
+                    List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
+
+                    pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
                 }
             }
         }
 
         if (removeDuplicates) {
-            this.resultingTriples.removeDuplicates();
+            this.resultingQuads.removeDuplicates();
         }
 
-        return resultingTriples;
+        return resultingQuads;
     }
 
-    public QuadStore execute(List<String> triplesMaps) throws IOException {
-        return this.execute(triplesMaps, false);
+    public QuadStore execute(List<Term> triplesMaps) throws IOException {
+        return this.execute(triplesMaps, false, null);
     }
 
-    private void generatePredicateObjectsForSubject(String subject, Mapping mapping, Record record) throws IOException {
-        ArrayList<String> subjectGraphs = new ArrayList<String>();
 
-        for (Template graph: mapping.getSubject().getGraphs()) {
-            List<String> strings = Utils.applyTemplate(graph, record, true);
+    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record, List<ProvenancedTerm> alreadyNeededGraphs) throws IOException {
+        ArrayList<PredicateObjectGraph> results = new ArrayList<>();
 
-            if (!strings.isEmpty() && !strings.get(0).equals(NAMESPACES.RR + "defaultGraph")) {
-                subjectGraphs.add(strings.get(0));
-            }
-        }
+        List<PredicateObjectGraphMapping> predicateObjectGraphMappings = mapping.getPredicateObjectGraphMappings();
 
-        List<PredicateObject> predicateObjects = mapping.getPredicateObjects();
+        for (PredicateObjectGraphMapping pogMapping : predicateObjectGraphMappings) {
+            ArrayList<ProvenancedTerm> predicates = new ArrayList<>();
+            ArrayList<ProvenancedTerm> poGraphs = new ArrayList<>();
+            poGraphs.addAll(alreadyNeededGraphs);
 
-        for (PredicateObject po : predicateObjects) {
-            ArrayList<String> poGraphs = new ArrayList<String>();
-
-            for (Template graph : po.getGraphs()) {
-                String g = Utils.applyTemplate(graph, record, true).get(0);
-
-                if (!g.equals(NAMESPACES.RR + "defaultGraph")) {
-                    poGraphs.add(g);
-                }
+            if (pogMapping.getGraphMappingInfo() != null && pogMapping.getGraphMappingInfo().getTermGenerator() != null) {
+                pogMapping.getGraphMappingInfo().getTermGenerator().generate(record).forEach(term -> {
+                    if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                        poGraphs.add(new ProvenancedTerm(term));
+                    }
+                });
             }
 
-            List<String> combinedGraphs = new ArrayList<String>();
-            combinedGraphs.addAll(subjectGraphs);
-            combinedGraphs.addAll(poGraphs);
+            pogMapping.getPredicateMappingInfo().getTermGenerator().generate(record).forEach(p -> {
+                predicates.add(new ProvenancedTerm(p, pogMapping.getPredicateMappingInfo()));
+            });
 
-            if (po.getFunction() != null) {
-                List<String> objects = (List<String>) po.getFunction().execute(record);
+            if (pogMapping.getObjectMappingInfo() != null && pogMapping.getObjectMappingInfo().getTermGenerator() != null) {
+                List<Term> objects = pogMapping.getObjectMappingInfo().getTermGenerator().generate(record);
+                ArrayList<ProvenancedTerm> provenancedObjects = new ArrayList<>();
+
+                objects.forEach(object -> {
+                    provenancedObjects.add(new ProvenancedTerm(object, pogMapping.getObjectMappingInfo()));
+                });
 
                 if (objects.size() > 0) {
-                    if (po.getTermType().equals(NAMESPACES.RR + "IRI")) {
-                        for (String object : objects) {
-                            //todo check valid IRI
-                        }
-                    } else {
-                        //is Literal
-                        for (int i = 0; i < objects.size(); i++) {
-                            objects.set(i, "\"" + objects.get(i) + "\"");
-
-                            //add language tag if present
-                            if (po.getLanguage() != null) {
-                                objects.set(i, objects.get(i) + "@" + po.getLanguage());
-                            } else if (po.getDataType() != null) {
-                                //add datatype if present; language and datatype can't be combined because the language tag implies langString as datatype
-                                objects.set(i, objects.get(i) + "^^<" + po.getDataType() + ">");
-                            }
-                        }
-                    }
-
-
-                    //generate the triples
-                    this.generateTriples(subject, po.getPredicates(), objects, record, combinedGraphs);
+                    //add pogs
+                    results.addAll(combineMultiplePOGs(predicates, provenancedObjects, poGraphs));
                 }
 
                 //check if we are dealing with a parentTriplesMap (RefObjMap)
-            } else if (po.getParentTriplesMap() != null) {
+            } else if (pogMapping.getParentTriplesMap() != null) {
+                List<ProvenancedTerm> objects;
+
                 //check if need to apply a join condition
-                if (!po.getJoinConditions().isEmpty()) {
-                    List<String> objects = this.getIRIsWithConditions(record, po.getParentTriplesMap(), po.getJoinConditions());
-                    this.generateTriples(subject, po.getPredicates(), objects, record, combinedGraphs);
+                if (!pogMapping.getJoinConditions().isEmpty()) {
+                    objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
+                    //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
                 } else {
-                    List<String> objects = this.getAllIRIs(po.getParentTriplesMap());
-                    this.generateTriples(subject, po.getPredicates(), objects, record, combinedGraphs);
+                    objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
                 }
+
+                results.addAll(combineMultiplePOGs(predicates, objects, poGraphs));
             }
+        }
+
+        return results;
+    }
+
+    private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
+        Term g = null;
+
+        if (graph != null) {
+            g = graph.getTerm();
+        }
+
+
+        if (subject != null && predicate != null & object != null) {
+            this.resultingQuads.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
         }
     }
 
-    private void generateTriples(String subject, List<Template> predicates, List<String> objects, Record record, List<String> graphs) {
-        for (Template p : predicates) {
-            List<String> realPredicates = Utils.applyTemplate(p, record);
+    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws IOException {
+        ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<ProvenancedTerm>();
+        ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
 
-            for (String predicate : realPredicates) {
-                for (String object : objects) {
-                    if (object != null) {
-                        if (graphs.size() > 0) {
-                            for (String graph : graphs) {
-                                this.resultingTriples.addQuad(subject, predicate, object, graph);
-                            }
-                        } else {
-                            this.resultingTriples.addTriple(subject, predicate, object);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private List<String> getIRIsWithConditions(Record record, String triplesMap, List<JoinConditionFunction> conditions) throws IOException {
-        ArrayList<String> goodIRIs = new ArrayList<String>();
-        ArrayList<List<String>> allIRIs = new ArrayList<List<String>>();
-
-        for (JoinConditionFunction condition : conditions) {
+        for (MultipleRecordsFunctionExecutor condition : conditions) {
             allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
         }
 
-        if (allIRIs.size() > 0) {
-            for (String iri : allIRIs.get(0)) {
-                int i = 1;
+        if (!allIRIs.isEmpty()) {
+            goodIRIs.addAll(allIRIs.get(0));
 
-                while (i < allIRIs.size() && !allIRIs.get(i).contains(iri)) {
-                    i++;
-                }
+            for(int i = 1; i < allIRIs.size(); i ++) {
+                List<ProvenancedTerm> list = allIRIs.get(i);
 
-                if (i == allIRIs.size()) {
-                    goodIRIs.add(iri);
+                for (int j = 0; j < goodIRIs.size(); j ++) {
+                    if (!list.contains(goodIRIs.get(j))) {
+                        goodIRIs.remove(j);
+                        j --;
+                    }
                 }
             }
         }
@@ -188,66 +242,62 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<String> getIRIsWithTrueCondition(Record child, String triplesMap, JoinConditionFunction condition) throws IOException {
+    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Term triplesMap, MultipleRecordsFunctionExecutor condition) throws IOException {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
         List<Record> records = this.getRecords(triplesMap);
         //this array contains all the IRIs that are valid regarding @path and @values
-        ArrayList<String> iris = new ArrayList<String>();
+        ArrayList<ProvenancedTerm> iris = new ArrayList<ProvenancedTerm>();
 
         for (int i = 0; i < records.size(); i++) {
             Record parent = records.get(i);
 
-            if (condition.execute(child, parent)) {
-                String subject = this.getSubject(triplesMap, mapping, parent, i);
-                iris.add(subject);
+            HashMap<String, Record> recordsMap = new HashMap<>();
+            recordsMap.put("child", child);
+            recordsMap.put("parent", parent);
+
+            Object expectedBoolean = condition.execute(recordsMap);
+
+            if (expectedBoolean instanceof Boolean) {
+                if ((boolean) expectedBoolean) {
+                    ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
+                    iris.add(subject);
+                }
+            } else {
+                logger.warn("The used condition with the Parent Triples Map does not return a boolean.");
             }
         }
 
         return iris;
     }
 
-    private String getSubject(String triplesMap, Mapping mapping, Record record, int i) {
-        if (!this.subjects.containsKey(triplesMap)) {
-            this.subjects.put(triplesMap, new HashMap<Integer, String>());
+    private ProvenancedTerm getSubject(Term triplesMap, Mapping mapping, Record record, int i) throws IOException {
+        if (!this.subjectCache.containsKey(triplesMap)) {
+            this.subjectCache.put(triplesMap, new HashMap<Integer, ProvenancedTerm>());
         }
 
-        if (!this.subjects.get(triplesMap).containsKey(i)) {
-            //we want a IRI and not a Blank Node
-            if (mapping.getSubject().getTermType().equals(NAMESPACES.RR + "IRI")) {
-                List<String> subjects = (List<String>) mapping.getSubject().getFunction().execute(record);
-                String subject = null;
+        if (!this.subjectCache.get(triplesMap).containsKey(i)) {
+            List<Term> nodes = mapping.getSubjectMappingInfo().getTermGenerator().generate(record);
 
-                if (!subjects.isEmpty()) {
-                    subject = subjects.get(0);
-                }
-
-                this.subjects.get(triplesMap).put(i,subject);
-            } else {
-                //we want a Blank Node
-
-                if (mapping.getSubject().getFunction() != null) {
-                    this.subjects.get(triplesMap).put(i, "_:" + mapping.getSubject().getFunction().execute(record).get(0));
-                } else {
-                    this.subjects.get(triplesMap).put(i, "_:b" + this.blankNodeCounter);
-                    this.blankNodeCounter++;
-                }
+            if (!nodes.isEmpty()) {
+                //todo: only create metadata when it's required
+                this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0), new Metadata(triplesMap, mapping.getSubjectMappingInfo().getTerm())));
             }
         }
 
-        return this.subjects.get(triplesMap).get(i);
+        return this.subjectCache.get(triplesMap).get(i);
     }
 
-    private List<String> getAllIRIs(String triplesMap) throws IOException {
+    private List<ProvenancedTerm> getAllIRIs(Term triplesMap) throws IOException {
         Mapping mapping = this.mappings.get(triplesMap);
 
         List<Record> records = getRecords(triplesMap);
-        ArrayList<String> iris = new ArrayList<String>();
+        ArrayList<ProvenancedTerm> iris = new ArrayList<ProvenancedTerm>();
 
-        for (int i = 0; i < records.size(); i ++) {
+        for (int i = 0; i < records.size(); i++) {
             Record record = records.get(i);
-            String subject = getSubject(triplesMap, mapping, record, i);
+            ProvenancedTerm subject = getSubject(triplesMap, mapping, record, i);
 
             iris.add(subject);
         }
@@ -255,7 +305,7 @@ public class Executor {
         return iris;
     }
 
-    private List<Record> getRecords(String triplesMap) throws IOException {
+    private List<Record> getRecords(Term triplesMap) throws IOException {
         if (!this.recordsHolders.containsKey(triplesMap)) {
             this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
         }
@@ -265,5 +315,34 @@ public class Executor {
 
     public FunctionLoader getFunctionLoader() {
         return this.initializer.getFunctionLoader();
+    }
+
+    private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, List<ProvenancedTerm> objects, List<ProvenancedTerm> graphs) {
+        ArrayList<PredicateObjectGraph> results = new ArrayList<>();
+
+        if (graphs.isEmpty()) {
+            graphs.add(null);
+        }
+
+        predicates.forEach(p -> {
+            objects.forEach(o -> {
+                graphs.forEach(g -> {
+                    results.add(new PredicateObjectGraph(p, o, g));
+                });
+            });
+        });
+
+        return results;
+    }
+
+    public static String getNewBlankNodeID() {
+        String temp = "" + Executor.blankNodeCounter;
+        Executor.blankNodeCounter++;
+
+        return temp;
+    }
+
+    public List<Term> getTriplesMaps() {
+        return initializer.getTriplesMaps();
     }
 }

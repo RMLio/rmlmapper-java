@@ -1,33 +1,48 @@
 package be.ugent.rml;
 
-import be.ugent.rml.records.Record;
+import be.ugent.rml.extractor.ConstantExtractor;
+import be.ugent.rml.extractor.Extractor;
+import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.TriplesQuads;
 import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.ParserConfig;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
+import org.rdfhdt.hdt.enums.RDFNotation;
+import org.rdfhdt.hdt.hdt.HDT;
+import org.rdfhdt.hdt.hdt.HDTManager;
+import org.rdfhdt.hdt.options.HDTSpecification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
+import java.net.ServerSocket;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.security.SecureRandom;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class Utils {
 
@@ -51,7 +66,7 @@ public class Utils {
     }
 
     public static InputStream getInputStreamFromLocation(String location) throws IOException {
-        return getInputStreamFromLocation(location,null,"");
+        return getInputStreamFromLocation(location, null, "");
     }
 
     public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
@@ -101,6 +116,7 @@ public class Utils {
             }
         }
 
+        logger.debug("Looking for file " + path + " in basePath " + basePath);
 
         // Relative from user dir?
         f = new File(basePath, path);
@@ -165,78 +181,8 @@ public class Utils {
         return location.startsWith("https://") || location.startsWith("http://");
     }
 
-    public static List<String> applyTemplate(Template template, Record record) {
-        return Utils.applyTemplate(template, record, false);
-    }
-
-    public static List<String> applyTemplate(Template template, Record record, boolean encodeURIEnabled) {
-        List<String> result = new ArrayList<String>();
-        result.add("");
-        //we only return a result when all elements of the template are found
-        boolean allValuesFound = true;
-
-        //we iterate over all elements of the template, unless one is not found
-        for (int i = 0; allValuesFound && i < template.getTemplateElements().size(); i++) {
-            TemplateElement element = template.getTemplateElements().get(i);
-            //if the element is constant, we don't need to look at the data, so we can just add it to the result
-            if (element.getType() == TEMPLATETYPE.CONSTANT) {
-                for (int j = 0; j < result.size(); j ++) {
-                    result.set(j, result.get(j) + element.getValue());
-                }
-            } else {
-                //we need to get the variables from the data
-                //we also need to keep all combinations of multiple results are returned for variable; pretty tricky business
-                List<String> temp = new ArrayList<>();
-                List<String> values = record.get(element.getValue());
-
-                for (String value : values) {
-
-                    if (encodeURIEnabled) {
-                        value = Utils.encodeURI(value);
-                    }
-
-                    for (String aResult : result) {
-                        temp.add(aResult + value);
-                    }
-                }
-
-                if (!values.isEmpty()) {
-                    result = temp;
-                }
-
-                if (values.isEmpty()) {
-                    logger.warn("Not all values for a template where found. More specific, the variable " + element.getValue() + " did not provide any results.");
-                    allValuesFound = false;
-                }
-            }
-        }
-
-        if (allValuesFound) {
-            if (template.countVariables() > 0) {
-                String emptyTemplate = getEmptyTemplate(template);
-                result.removeIf(s -> s.equals(emptyTemplate));
-            }
-
-            return result;
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    private static String getEmptyTemplate(Template template) {
-        String output = "";
-
-        for (TemplateElement t : template.getTemplateElements()) {
-            if (t.getType() == TEMPLATETYPE.CONSTANT) {
-                output += t.getValue();
-            }
-        }
-
-        return output;
-    }
-
-    public static List<String> getSubjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> subjects = new ArrayList<String>();
+    public static List<Term> getSubjectsFromQuads(List<Quad> quads) {
+        ArrayList<Term> subjects = new ArrayList<>();
 
         for (Quad quad : quads) {
             subjects.add(quad.getSubject());
@@ -245,8 +191,8 @@ public class Utils {
         return subjects;
     }
 
-    public static List<String> getObjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> objects = new ArrayList<String>();
+    public static List<Term> getObjectsFromQuads(List<Quad> quads) {
+        ArrayList<Term> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
             objects.add(quad.getObject());
@@ -256,48 +202,31 @@ public class Utils {
     }
 
     public static List<String> getLiteralObjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> objects = new ArrayList<String>();
+        ArrayList<String> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
-            objects.add(getLiteral(quad.getObject()));
+            objects.add(((Literal) quad.getObject()).getValue());
         }
 
         return objects;
     }
 
-    public static String getLiteral(String value) {
-        Pattern pattern = Pattern.compile("^\"(.*)\"");
-        Matcher matcher = pattern.matcher(value);
+    public static List<Term> getList(QuadStore store, Term first) {
+        List<Term> list = new ArrayList<>();
 
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-
-        throw new Error("Invalid Literal: " + value);
-    }
-
-    public static boolean isLiteral(String value) {
-        try {
-            getLiteral(value);
-            return true;
-        } catch (Error e){
-            return false;
-        }
-    }
-
-    public static List<String> getList(QuadStore store, String first) {
-        List<String> list = new ArrayList<>();
         return getList(store, first, list);
     }
 
-    public static List<String> getList(QuadStore store, String first, List<String> list) {
-        if (first.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+    public static List<Term> getList(QuadStore store, Term first, List<Term> list) {
+        if (first.equals(new NamedNode(NAMESPACES.RDF + "nil"))) {
             return list;
         }
-        String value = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#first", null)).get(0);
-        String next = Utils.getObjectsFromQuads(store.getQuads(first, "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest", null)).get(0);
+
+        Term value = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode(NAMESPACES.RDF + "first"), null)).get(0);
+        Term next = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode(NAMESPACES.RDF + "rest"), null)).get(0);
         list.add(value);
-        if (next.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil")) {
+
+        if (next.equals(new NamedNode(NAMESPACES.RDF + "nil"))) {
             return list;
         } else {
             list = getList(store, next, list);
@@ -305,7 +234,7 @@ public class Utils {
         return list;
     }
 
-    public static QuadStore readTurtle(File file, RDFFormat format) {
+    public static RDF4JStore readTurtle(File file, RDFFormat format) {
         InputStream is;
         Model model = null;
         try {
@@ -314,112 +243,22 @@ public class Utils {
 
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+            logger.debug("Reading from " + file.getAbsolutePath());
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
-        } catch (IOException e) {
+        } catch (IOException | RDFParseException e) {
             e.printStackTrace();
         }
         return new RDF4JStore(model);
     }
 
-    public static QuadStore readTurtle(File mappingFile) {
+    public static RDF4JStore readTurtle(File mappingFile) {
         return Utils.readTurtle(mappingFile, RDFFormat.TURTLE);
-    }
-
-    public static boolean isBlankNode(String value) {
-        return value.startsWith("_:");
-    }
-
-    public static String toNTriples(List<Quad> quads) {
-        StringBuilder output = new StringBuilder();
-
-        for (Quad q : quads) {
-            output.append(Utils.getNTripleOfQuad(q) + "\n");
-        }
-
-        return output.toString();
-    }
-
-    public static String toNQuads(List<Quad> quads) {
-        StringBuilder output = new StringBuilder();
-
-        for (Quad q : quads) {
-            output.append(Utils.getNQuadOfQuad(q) + "\n");
-        }
-
-        return output.toString();
-    }
-
-    public static void toNTriples(List<Quad> quads, Writer out) throws IOException {
-        for (Quad q : quads) {
-            out.write(Utils.getNTripleOfQuad(q) + "\n");
-        }
-    }
-
-    public static void toNQuads(List<Quad> quads, Writer out) throws IOException {
-        for (Quad q : quads) {
-            out.write(Utils.getNQuadOfQuad(q) + "\n");
-        }
-    }
-
-    public static TriplesQuads getTriplesAndQuads(List<Quad> all) {
-        List<Quad> triples = new ArrayList<>();
-        List<Quad> quads = new ArrayList<>();
-
-        for (Quad q: all) {
-            if (q.getGraph() == null || q.getGraph().equals("")) {
-                triples.add(q);
-            } else {
-                quads.add(q);
-            }
-        }
-
-        return new TriplesQuads(triples, quads);
-    }
-
-    private static String getNTripleOfQuad(Quad q) {
-        String s = q.getSubject();
-
-        if (!Utils.isBlankNode(s)) {
-            s = "<" + s + ">";
-        }
-
-        String p = "<" + q.getPredicate() + ">";
-        String o = q.getObject();
-
-        if (!Utils.isBlankNode(o) && !Utils.isLiteral(o)) {
-            o = "<" + o + ">";
-        }
-
-        return s + " " + p + " " + o + ".";
-    }
-
-    private static String getNQuadOfQuad(Quad q) {
-        String s = q.getSubject();
-        String p = "<" + q.getPredicate() + ">";
-
-        if (!Utils.isBlankNode(s)) {
-            s = "<" + s + ">";
-        }
-
-        String o = q.getObject();
-
-        if (!Utils.isBlankNode(o) && !Utils.isLiteral(o)) {
-            o = "<" + o + ">";
-        }
-
-        String g = q.getGraph();
-
-        if (!Utils.isBlankNode(g)) {
-            g = "<" + g + ">";
-        }
-
-        return s + " " + p + " " + o + " " + g + ".";
     }
 
     public static String encodeURI(String url) {
         Escaper escaper = UrlEscapers.urlFragmentEscaper();
-        String result =  escaper.escape(url);
+        String result = escaper.escape(url);
 
         result = result.replaceAll("!", "%21");
         result = result.replaceAll("#", "%23");
@@ -443,6 +282,17 @@ public class Utils {
         return result;
     }
 
+    public static String fileToString(File file) throws IOException {
+        Reader reader = getReaderFromFile(file);
+        int intValueOfChar;
+        String targetString = "";
+        while ((intValueOfChar = reader.read()) != -1) {
+            targetString += (char) intValueOfChar;
+        }
+        reader.close();
+        return targetString;
+    }
+
     /*
         Extracts the selected columns from the SQL query
         Orders them alphabetically
@@ -451,7 +301,7 @@ public class Utils {
     // todo: Take subquerries into account
     public static int selectedColumnHash(String query) {
         Pattern p = Pattern.compile("^SELECT(.*)FROM");
-        Matcher m = p.matcher(query);
+        Matcher m = p.matcher(query.replace("\n", " ").replace("\r", " ").trim());
 
         if (m.find()) {
             String columns = m.group(1);
@@ -463,6 +313,11 @@ public class Utils {
         throw new Error("Invalid query: " + query);
     }
 
+    // Simpler version of above method. Hashes the whole query.
+    public static int getHash(String query) {
+        return query.hashCode();
+    }
+
     public static String readFile(String path, Charset encoding) throws IOException
     {
         if (encoding == null) {
@@ -470,5 +325,203 @@ public class Utils {
         }
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
+    }
+
+    public static String getURLParamsString(Map<String, String> params)
+            throws UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            result.append("&");
+        }
+
+        String resultString = result.toString();
+        return resultString.length() > 0
+                ? resultString.substring(0, resultString.length() - 1) // remove final '&'
+                : resultString;
+    }
+
+    public static int getFreePortNumber() throws IOException {
+        ServerSocket temp = new ServerSocket(0);
+        temp.setReuseAddress(true);
+        int portNumber = temp.getLocalPort();
+        temp.close();
+        return portNumber;
+
+    }
+
+    /**
+     * This method parse the generic template and returns a list of Extractors
+     * that can later be used by the executor
+     * to get the data values from the records.
+     **/
+    public static List<Extractor> parseTemplate(String template) {
+        ArrayList<Extractor> extractors = new ArrayList<>();
+        String current = "";
+        boolean previousWasBackslash = false;
+        boolean variableBusy = false;
+
+        if (template != null) {
+            for (Character c : template.toCharArray()) {
+
+                if (c == '{') {
+                    if (previousWasBackslash) {
+                        current += c;
+                        previousWasBackslash = false;
+                    } else if (variableBusy) {
+                        throw new Error("Parsing of template failed. Probably a { was followed by a second { without first closing the first {. Make sure that you use { and } correctly.");
+                    } else {
+                        variableBusy = true;
+
+                        if (!current.equals("")) {
+                            extractors.add(new ConstantExtractor(current));
+                        }
+
+                        current = "";
+                    }
+                } else if (c == '}') {
+                    if (previousWasBackslash) {
+                        current += c;
+                        previousWasBackslash = false;
+                    } else if (variableBusy){
+                        extractors.add(new ReferenceExtractor(current));
+                        current = "";
+                        variableBusy = false;
+                    } else {
+                        throw new Error("Parsing of template failed. Probably a } as used before a { was used. Make sure that you use { and } correctly.");
+                    }
+                } else if (c == '\\') {
+                    if (previousWasBackslash) {
+                        previousWasBackslash = false;
+                        current += c;
+                    } else {
+                        previousWasBackslash = true;
+                    }
+                } else {
+                    current += c;
+                }
+            }
+
+            if (!current.equals("")) {
+                extractors.add(new ConstantExtractor(current));
+            }
+        }
+
+        return extractors;
+    }
+
+    public static String randomString(int len) {
+        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        SecureRandom rnd = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
+
+    }
+
+    public static String hashCode(String s) {
+        int hash = 0;
+        for (int i = 0; i < s.toCharArray().length; i++) {
+            hash += s.toCharArray()[i] * 31 ^ (s.toCharArray().length - 1 - i);
+        }
+        return Integer.toString(Math.abs(hash));
+    }
+
+    public static void ntriples2hdt(String rdfInputPath, String hdtOutputPath) {
+        // Configuration variables
+        String baseURI = "http://example.com/mydataset";
+        String inputType = "ntriples";
+
+        try {
+            // Create HDT from RDF file
+            HDT hdt = HDTManager.generateHDT(rdfInputPath, baseURI, RDFNotation.parse(inputType), new HDTSpecification(), null);
+            // Save generated HDT to a file
+            hdt.saveToHDT(hdtOutputPath, null);
+            // IMPORTANT: Free resources
+            hdt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean isValidIRI(String iri) {
+        UrlValidator urlValidator = new UrlValidator();
+        return urlValidator.isValid(iri);
+    }
+
+    public static String getBaseDirectiveTurtle(File file) {
+        StringBuilder contentBuilder = new StringBuilder();
+        try (Stream<String> stream = Files.lines( Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)) {
+            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String turtle = contentBuilder.toString();
+
+        Pattern p = Pattern.compile("@base <([^<>]*)>");
+        Matcher m = p.matcher(turtle);
+
+        if (m.find()) {
+            return m.group(1);
+        } else {
+            return null;
+        }
+    }
+
+    public static String transformDatatypeString(String input, String datatype) {
+        switch (datatype) {
+            case "http://www.w3.org/2001/XMLSchema#hexBinary":
+                // TODO
+                return input;
+            case "http://www.w3.org/2001/XMLSchema#decimal":
+                return "" + Double.parseDouble(input);
+            case "http://www.w3.org/2001/XMLSchema#integer":
+                return "" + Integer.parseInt(input);
+            case "http://www.w3.org/2001/XMLSchema#double":
+                return formatToScientific(Double.parseDouble(input));
+            case "http://www.w3.org/2001/XMLSchema#boolean":
+                switch(input) {
+                    case "t":
+                    case "true":
+                    case "TRUE":
+                    case "1":
+                        return "true";
+                    default:
+                        return "false";
+                }
+            case "http://www.w3.org/2001/XMLSchema#date":
+                return input;
+            case "http://www.w3.org/2001/XMLSchema#time":
+                return input;
+            case "http://www.w3.org/2001/XMLSchema#dateTime":
+                return input.replace(" ", "T");
+            default:
+                return input;
+        }
+
+    }
+
+    private static String formatToScientific(Double d) {
+        BigDecimal input = BigDecimal.valueOf(d).stripTrailingZeros();
+        int precision = input.scale() < 0
+                ? input.precision() - input.scale()
+                : input.precision();
+        StringBuilder s = new StringBuilder("0.0");
+        for (int i = 2; i < precision; i++) {
+            s.append("#");
+        }
+        s.append("E0");
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+        DecimalFormat df = (DecimalFormat)nf;
+        df.applyPattern(s.toString());
+        return df.format(d);
     }
 }

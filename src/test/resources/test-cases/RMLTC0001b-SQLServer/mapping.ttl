@@ -14,16 +14,16 @@
   rml:logicalSource [ 
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rr:query "SELECT \"Name\" FROM student";
+    rml:query "SELECT Name FROM student";
     rml:referenceFormulation ql:CSV
   ];
 
-  rr:subjectMap [ 
-    rr:template "http://example.com/{Name}" 
-  ]; 
-	
-  rr:predicateObjectMap [ 
-    rr:predicate foaf:name; 
+  rr:subjectMap [
+    rr:template "http://example.com/{Name}"
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate foaf:name;
     rr:objectMap [
       rml:reference "Name"
     ]
@@ -31,7 +31,7 @@
 
 										
 <#DB_source> a d2rq:Database;
-  d2rq:jdbcDSN "jdbc:sqlserver://sqlserver;databaseName=TestDB";
+  d2rq:jdbcDSN "CONNECTIONDSN";
   d2rq:jdbcDriver "com.microsoft.sqlserver.jdbc.SQLServerDriver";
   d2rq:username "sa";
   d2rq:password "YourSTRONG!Passw0rd;" .

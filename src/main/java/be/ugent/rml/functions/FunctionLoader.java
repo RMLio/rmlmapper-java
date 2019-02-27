@@ -1,5 +1,7 @@
 package be.ugent.rml.functions;
 
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import be.ugent.rml.Utils;
 import be.ugent.rml.functions.lib.UtilFunctions;
 import be.ugent.rml.store.QuadStore;
@@ -39,7 +41,7 @@ public class FunctionLoader {
     /**
      * Cache for loaded functions
      */
-    private Map<String, FunctionModel> loadedMethods;
+    private Map<Term, FunctionModel> loadedMethods;
 
     public FunctionLoader() {
         this(null, null, null);
@@ -96,17 +98,17 @@ public class FunctionLoader {
         this.loadedMethods = new HashMap<>();
     }
 
-    public FunctionModel getFunction(String iri) throws IOException {
-        if (!this.loadedMethods.containsKey(iri)) {
-            List<String> libraries = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(iri, libraryNamespace + "providedBy", null));
+    public FunctionModel getFunction(Term iri) throws IOException {
+        if (!this.loadedMethods.containsKey(iri.getValue())) {
+            List<Term> libraries = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(iri, new NamedNode(libraryNamespace + "providedBy"), null));
 
             if (libraries.size() > 0) {
-                List<String> pathNames = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(libraries.get(0), libraryNamespace + "localLibrary", null));
-                List<String> classes = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(libraries.get(0), libraryNamespace + "class", null));
+                List<Term> pathNames = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(libraries.get(0), new NamedNode(libraryNamespace + "localLibrary"), null));
+                List<Term> classes = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(libraries.get(0), new NamedNode(libraryNamespace + "class"), null));
 
                 if (pathNames.size() > 0 && classes.size() > 0) {
-                    String pathName = Utils.getLiteral(pathNames.get(0));
-                    String className = Utils.getLiteral(classes.get(0));
+                    String pathName = pathNames.get(0).getValue();
+                    String className = classes.get(0).getValue();
                     Class cls;
                     if (this.classMap.containsKey(className)) {
                         cls = this.classMap.get(className);
@@ -117,25 +119,28 @@ public class FunctionLoader {
                         this.libraryMap.put(className, functionFile.getCanonicalPath());
                     }
 
-                    List<String> parameters = new ArrayList<>();
-                    List<String> expectList = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(iri, "http://semweb.datasciencelab.be/ns/function#expects", null));
+                    List<Term> parameters = new ArrayList<>();
+                    List<Term> expectList = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(iri, new NamedNode("http://semweb.datasciencelab.be/ns/function#expects"), null));
+
                     if (expectList.size() > 0) {
                         parameters = Utils.getList(this.functionDescriptionTriples, expectList.get(0));
                     }
-                    Class<?>[] orderedParameters = FunctionUtils.parseFunctionParameters(this.functionDescriptionTriples, parameters);
-                    List<String> methods = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(libraries.get(0), libraryNamespace + "method", null));
 
-                    List<String> outputs = Utils.getList(this.functionDescriptionTriples, Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(iri, "http://semweb.datasciencelab.be/ns/function#returns", null)).get(0));
-                    List<String> fnParameterUris = FunctionUtils.getFunctionParameterUris(this.functionDescriptionTriples, parameters);
-                    List<String> fnOutputUris = FunctionUtils.getFunctionParameterUris(this.functionDescriptionTriples, outputs);
+                    Class<?>[] orderedParameters = FunctionUtils.parseFunctionParameters(this.functionDescriptionTriples, parameters);
+                    List<Term> methods = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(libraries.get(0), new NamedNode(libraryNamespace + "method"), null));
+
+                    List<Term> outputs = Utils.getList(this.functionDescriptionTriples, Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(iri, new NamedNode("http://semweb.datasciencelab.be/ns/function#returns"), null)).get(0));
+                    List<Term> fnParameterUris = FunctionUtils.getFunctionParameterUris(this.functionDescriptionTriples, parameters);
+                    List<Term> fnOutputUris = FunctionUtils.getFunctionParameterUris(this.functionDescriptionTriples, outputs);
 
                     if (methods.size() > 0) {
                         Method fn = null;
                         try {
-                            fn = cls.getDeclaredMethod(Utils.getLiteral(methods.get(0)), orderedParameters);
+                            fn = cls.getDeclaredMethod(methods.get(0).getValue(), orderedParameters);
                         } catch (NoSuchMethodException e) {
-                            throw new IOException("Declared method " + methods.get(0) + "does not exist for class " + classes.get(0) + ".");
+                            throw new IOException("Declared method " + methods.get(0) + " does not exist for class " + classes.get(0) + ".");
                         }
+
                         FunctionModel fnm = new FunctionModel(iri, fn, fnParameterUris, fnOutputUris);
 
                         this.loadedMethods.put(iri, fnm);

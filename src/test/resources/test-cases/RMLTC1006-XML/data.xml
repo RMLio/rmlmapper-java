@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<directors>
+  <director id="dir_AAA">
+  	<firstname>Frank</firstname>
+  	<lastname>Darabont</lastname>
+  	<dateofbirth>28-01-1959</dateofbirth>
+  	<country>France</country>
+  </director>
+  <director id="dir_AAB">
+  	<firstname>Francis Ford</firstname>
+  	<lastname>Coppolla</lastname>
+  	<dateofbirth>07-04-1939</dateofbirth>
+  	<country>USA</country>
+  </director>
+  <director id="dir_AAC">
+  	<firstname>Christopher</firstname>
+  	<lastname>Nolan</lastname>
+  	<dateofbirth>30-07-1970</dateofbirth>
+  	<country>UK</country>
+  </director>
+  <director id="dir_AAD">
+  	<firstname>Sidney</firstname>
+  	<lastname>Lumet</lastname>
+  	<dateofbirth>25-06-1924</dateofbirth>
+  	<country>USA</country>
+  </director>
+</directors>
+

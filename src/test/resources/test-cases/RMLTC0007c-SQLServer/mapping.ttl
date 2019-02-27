@@ -21,12 +21,17 @@
   ];
 
   rr:predicateObjectMap [ 
+    rr:predicate ex:id ;
+    rr:objectMap [ rml:reference "ID"; ]
+  ];
+
+  rr:predicateObjectMap [ 
     rr:predicate foaf:name;
     rr:objectMap [ rml:reference "FirstName" ]
   ].
 
 <#DB_source> a d2rq:Database;
-  d2rq:jdbcDSN "jdbc:sqlserver://sqlserver;databaseName=TestDB";
+  d2rq:jdbcDSN "CONNECTIONDSN";
   d2rq:jdbcDriver "com.microsoft.sqlserver.jdbc.SQLServerDriver";
   d2rq:username "sa";
   d2rq:password "YourSTRONG!Passw0rd;" .

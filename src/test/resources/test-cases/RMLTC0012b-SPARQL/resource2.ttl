@@ -1,0 +1,11 @@
+[] <http://xmlns.com/foaf/0.1/firstName> "Bob" ;
+   <http://xmlns.com/foaf/0.1/lastName> "Smith" ;
+   <http://example.com/city> "London" .
+
+[] <http://xmlns.com/foaf/0.1/firstName> "Sue" ;
+   <http://xmlns.com/foaf/0.1/lastName> "Jones" ;
+   <http://example.com/city> "Madrid" .
+
+[] <http://xmlns.com/foaf/0.1/firstName> "Bob" ;
+   <http://xmlns.com/foaf/0.1/lastName> "Smith" ;
+   <http://example.com/city> "London" .
