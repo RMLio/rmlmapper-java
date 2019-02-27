@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+
+- Works with @base in mapping
+- Use Exception instead of Error (almost everywhere)
+- Validate URI
+- Transform data from databases according to their datatypes, where applicable
+- `rml:query` instead of `rr:query`
+- support for -- and updates of -- a whole lot more test cases
+
 ## [4.3.1] - 2019-01-15
 
 ### Fixed
