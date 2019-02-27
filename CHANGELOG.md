@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- DBpedia spotlight can be used as a default NER function within a mapping document
+
 ### Fixed
 
 - Works with @base in mapping
@@ -15,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Transform data from databases according to their datatypes, where applicable
 - `rml:query` instead of `rr:query`
 - support for -- and updates of -- a whole lot more test cases
+- maven dependency before jitpack dependency to prevent json-ld conflict ([#19](https://github.com/RMLio/rmlmapper-java/pull/19))
 
 ## [4.3.1] - 2019-01-15
 
