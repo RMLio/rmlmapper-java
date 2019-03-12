@@ -34,7 +34,7 @@ public class MappingFactory {
         this.functionLoader = functionLoader;
     }
 
-    public Mapping createMapping(Term triplesMap, QuadStore store) throws IOException {
+    public Mapping createMapping(Term triplesMap, QuadStore store) throws Exception {
         this.triplesMap = triplesMap;
         this.store = store;
         this.subjectMappingInfo = null;
@@ -50,7 +50,7 @@ public class MappingFactory {
         return new Mapping(subjectMappingInfo, predicateObjectGraphMappings, graphMappingInfos);
     }
 
-    private void parseSubjectMap() throws IOException {
+    private void parseSubjectMap() throws Exception {
         if (this.subjectMappingInfo == null) {
             TermGenerator generator;
             List<Term> subjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"), null));
@@ -103,7 +103,7 @@ public class MappingFactory {
 
                 }
             } else {
-                throw new Error(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");
+                throw new Exception(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");
             }
         }
     }
@@ -181,7 +181,8 @@ public class MappingFactory {
         List<Term> parentTermMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "parentTermMap"), null));
 
         if (functionValues.isEmpty()) {
-            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, false);
+            boolean encodeIRI = termType != null && termType.getValue().equals(NAMESPACES.RR + "IRI");
+            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, encodeIRI);
 
             if (executor != null) {
                 TermGenerator oGen;

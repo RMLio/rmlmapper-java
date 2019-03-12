@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>be.ugent.rml</groupId>
     <artifactId>rmlmapper</artifactId>
-    <version>4.3.1</version>
+    <version>4.3.2</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.12</junit.version>
@@ -146,6 +146,13 @@
             <artifactId>hdt-java</artifactId>
             <version>hdt-2.2-SNAPSHOT</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.6</version>
+        </dependency>
+
         <!--<dependency>-->
             <!--<groupId>org.rdfhdt</groupId>-->
             <!--<artifactId>hdt-java-core</artifactId>-->

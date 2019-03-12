@@ -1,0 +1,2 @@
+<http://example.com/Student/10> <http://example.com/Sport> "Tennis".
+<http://example.com/Student/10> <http://example.com/Sport> "Soccer".

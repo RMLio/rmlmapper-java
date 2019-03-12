@@ -183,7 +183,7 @@ public class Main {
                     functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
                 }
 
-                executor = new Executor(rmlStore, factory, functionLoader, outputStore);
+                executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingFile));
 
                 List<Term> triplesMaps = new ArrayList<>();
 
@@ -229,7 +229,7 @@ public class Main {
             // oops, something went wrong
             logger.error("Parsing failed. Reason: " + exp.getMessage());
             printHelp(options);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }

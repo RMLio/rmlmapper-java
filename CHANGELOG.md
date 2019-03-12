@@ -7,13 +7,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.3.2] - 2019-02-27
+
 ### Added
 
 - DBpedia spotlight can be used as a default NER function within a mapping document
+- functions added, to be used for conditions
 
 ### Fixed
 
-- maven dependency before jitpack dependency to prevent json-ld conflict ([#19](https://github.com/RMLio/rmlmapper-java/pull/19))
+- updated UML diagrams
+- fixed [#21](https://github.com/RMLio/rmlmapper-java/issues/21) (thanks @mariapoveda)
+- support for -- and updates of -- a whole lot more test cases
+- Transform data from databases according to their datatypes, where applicable
+- Works with @base in mapping
+- Use Exception instead of Error (almost everywhere)
+- Validate URI
+- `rml:query` instead of `rr:query`
+- maven dependency before jitpack dependency to prevent json-ld conflict ([#19](https://github.com/RMLio/rmlmapper-java/pull/19) thanks @duschu)
 
 ## [4.3.1] - 2019-01-15
 
@@ -133,6 +144,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.3.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.1...v4.3.2
 [4.3.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.0...v4.3.1
 [4.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.1.0...v4.2.0

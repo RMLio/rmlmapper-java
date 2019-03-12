@@ -30,12 +30,12 @@ public class CSV {
         CSVReader csvReader = new CSVReader(reader);
 
         List<String[]> myEntries = csvReader.readAll();
-        List<Record> records = new ArrayList<Record>();
+        List<Record> records = new ArrayList<>();
 
         String[] headers = myEntries.get(0);
 
         for (int i = 1; i < myEntries.size(); i ++) {
-            HashMap<String, List<Object>> values = new HashMap<String, List<Object>>();
+            HashMap<String, List<Object>> values = new HashMap<>();
 
             for (int j = 0; j < headers.length; j ++) {
                 List<Object> temp = new ArrayList<>();

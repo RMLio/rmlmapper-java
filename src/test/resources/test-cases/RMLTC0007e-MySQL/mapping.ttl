@@ -19,6 +19,16 @@
     rr:template "http://example.com/Student/{ID}/{FirstName}";
     rr:graph ex:PersonGraph ;
     rr:class foaf:Person
+  ];
+
+  rr:predicateObjectMap [ 
+    rr:predicate ex:id ;
+    rr:objectMap [ rml:reference "ID"; ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate foaf:name ;
+    rr:objectMap [ rml:reference "FirstName"; ]
   ].
 
 <#DB_source> a d2rq:Database;

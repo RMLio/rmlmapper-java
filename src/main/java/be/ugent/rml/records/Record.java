@@ -2,7 +2,11 @@ package be.ugent.rml.records;
 
 import java.util.List;
 
-public interface Record {
+public abstract class Record {
 
-    List<Object> get(String value);
+    public abstract List<Object> get(String value);
+
+    public String getDataType(String value) {
+        return null;
+    }
 }

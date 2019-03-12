@@ -18,7 +18,7 @@ public class Initializer {
     private List<Term> triplesMaps;
     private HashMap<Term, Mapping> mappings;
 
-    public Initializer(QuadStore rmlStore, FunctionLoader functionLoader) throws IOException {
+    public Initializer(QuadStore rmlStore, FunctionLoader functionLoader) throws Exception {
         this.rmlStore = rmlStore;
         //we get all the TriplesMaps from the mapping
         this.triplesMaps = this.getAllTriplesMaps();
@@ -34,7 +34,7 @@ public class Initializer {
         extractMappings();
     }
 
-    private void extractMappings() throws IOException {
+    private void extractMappings() throws Exception {
         for (Term triplesMap : triplesMaps) {
             this.mappings.put(triplesMap, factory.createMapping(triplesMap, rmlStore));
         }

@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS student;
+DROP TABLE IF EXISTS student CASCADE ;
 CREATE TABLE student (
   id INTEGER,
   firstname VARCHAR(50),
