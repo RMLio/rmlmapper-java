@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.3.3] - 2019-03-15
+
+### Added
+
+- Non-equals function and getMimeType function
+- LICENSE file (MIT) (fixes [#25](https://github.com/RMLio/rmlmapper-java/issues/25))
+
+### Fixed
+
+- rdf prefix in some test cases
+- specified turtle output in cli help and readme (fixes [#23](https://github.com/RMLio/rmlmapper-java/issues/23))
+
 ## [4.3.2] - 2019-02-27
 
 ### Added
@@ -144,6 +156,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.3.3]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.2...v4.3.3
 [4.3.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.1...v4.3.2
 [4.3.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.0...v4.3.1
 [4.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.2.0...v4.3.0
