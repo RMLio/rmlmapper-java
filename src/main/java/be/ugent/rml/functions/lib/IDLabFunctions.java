@@ -3,6 +3,7 @@ package be.ugent.rml.functions.lib;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class IDLabFunctions {
@@ -75,11 +77,37 @@ public class IDLabFunctions {
             return value;
         }
     }
+
     public static String decide(String input, String expected, String result) {
         if (input != null && input.equals(expected)) {
             return result;
         } else {
             return null;
+        }
+    }
+
+    public static String getMIMEType(String filename) {
+        if (filename == null) {
+            return null;
+        } else {
+            HashMap<String, String> map = new HashMap<>();
+
+            // Put elements in the hashMap
+            map.put("csv", "text/csv");
+            map.put("json", "application/json");
+            map.put("xml", "application/xml");
+            map.put("nt", "application/n-triples");
+            map.put("ttl", "text/turtle");
+            map.put("nq", "application/n-quads");
+            map.put("sql", "application/sql");
+
+            String extension = FilenameUtils.getExtension(filename);
+
+            if (map.containsKey(extension)) {
+                return map.get(extension);
+            } else {
+                return null;
+            }
         }
     }
 }
