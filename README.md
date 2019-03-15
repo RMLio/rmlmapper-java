@@ -21,7 +21,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 - functions (most cases)
 - configuration file
 - metadata generation
-- output formats: turtle, trig, trix, jsonld, nquads
+- output formats: nquads (default), turtle, trig, trix, jsonld, hdt
 - join conditions
 
 ### Future
@@ -59,7 +59,7 @@ options:
  -l,--metadataDetailLevel <arg>   generate metadata-test-cases on given detail level (dataset - triple - term)
  -m,--mappingfile <arg>           path to mapping document
  -o,--outputfile <arg>            path to output file (default: stdout)
- -s,--serialization <arg>         serialization format (nquads (default), trig, trix, jsonld, hdt)
+ -s,--serialization <arg>         serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)
  -t,--triplesmaps <arg>           IRIs of the triplesmaps that should be executed in order, split by ',' (default is all triplesmaps)
  -v,--verbose                     show more details in debugging output
 ```

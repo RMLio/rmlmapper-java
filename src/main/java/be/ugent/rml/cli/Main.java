@@ -80,7 +80,7 @@ public class Main {
                 .build();
         Option serializationFormatOption = Option.builder("s")
                 .longOpt( "serialization" )
-                .desc( "serialization format (nquads (default), trig, trix, jsonld, hdt)" )
+                .desc( "serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)" )
                 .hasArg()
                 .build();
         options.addOption(mappingdocOption);
