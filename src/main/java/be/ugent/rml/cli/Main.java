@@ -26,8 +26,6 @@ import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
 
-import static be.ugent.rml.Utils.getReaderFromLocation;
-
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -82,8 +80,8 @@ public class Main {
                 .desc("generate metadata on given detail level (dataset - triple - term)")
                 .build();
         Option serializationFormatOption = Option.builder("s")
-                .longOpt( "serialization" )
-                .desc( "serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)" )
+                .longOpt("serialization")
+                .desc("serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)")
                 .hasArg()
                 .build();
         options.addOption(mappingdocOption);
@@ -107,7 +105,7 @@ public class Main {
             Properties configFile = null;
             if (lineArgs.hasOption("c")) {
                 configFile = new Properties();
-                configFile.load(getReaderFromLocation(lineArgs.getOptionValue("c")));
+                configFile.load(Utils.getReaderFromLocation(lineArgs.getOptionValue("c")));
             }
 
             if (checkOptionPresence(helpOption, lineArgs, configFile)) {
@@ -326,8 +324,8 @@ public class Main {
             if (doneMessage != null) {
                 logger.info(doneMessage);
             }
-        } catch(IOException e) {
-            System.err.println( "Writing output failed. Reason: " + e.getMessage() );
+        } catch (IOException e) {
+            System.err.println("Writing output failed. Reason: " + e.getMessage());
         }
 
         return targetFile;

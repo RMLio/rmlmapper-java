@@ -85,6 +85,7 @@ abstract class TestCore {
     private void compareStores(QuadStore store1, QuadStore store2) {
         String string1 = store1.toSortedString();
         String string2 = store2.toSortedString();
+
         assertEquals(string2, string1);
     }
 

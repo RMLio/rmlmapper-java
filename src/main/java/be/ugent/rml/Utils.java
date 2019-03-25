@@ -485,9 +485,9 @@ public class Utils {
         return Utils.getBaseDirectiveTurtle(turtle);
     }
 
-    public static String getBaseDirectiveTurtle(String s) {
+    public static String getBaseDirectiveTurtle(String turtle) {
         Pattern p = Pattern.compile("@base <([^<>]*)>");
-        Matcher m = p.matcher(s);
+        Matcher m = p.matcher(turtle);
 
         if (m.find()) {
             return m.group(1);
