@@ -239,6 +239,7 @@ public class Utils {
         Model model = null;
         try {
             //model = Rio.parse(mappingStream, "", format);
+
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
@@ -325,8 +326,7 @@ public class Utils {
         return query.hashCode();
     }
 
-    public static String readFile(String path, Charset encoding) throws IOException
-    {
+    public static String readFile(String path, Charset encoding) throws IOException {
         if (encoding == null) {
             encoding = StandardCharsets.UTF_8;
         }
@@ -393,7 +393,7 @@ public class Utils {
                     if (previousWasBackslash) {
                         current += c;
                         previousWasBackslash = false;
-                    } else if (variableBusy){
+                    } else if (variableBusy) {
                         extractors.add(new ReferenceExtractor(current));
                         current = "";
                         variableBusy = false;
@@ -463,11 +463,9 @@ public class Utils {
 
     public static String getBaseDirectiveTurtle(File file) {
         StringBuilder contentBuilder = new StringBuilder();
-        try (Stream<String> stream = Files.lines( Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)) {
+        try (Stream<String> stream = Files.lines(Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)) {
             stream.forEach(s -> contentBuilder.append(s).append("\n"));
-        }
-
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -508,7 +506,7 @@ public class Utils {
             case "http://www.w3.org/2001/XMLSchema#double":
                 return formatToScientific(Double.parseDouble(input));
             case "http://www.w3.org/2001/XMLSchema#boolean":
-                switch(input) {
+                switch (input) {
                     case "t":
                     case "true":
                     case "TRUE":
@@ -540,7 +538,7 @@ public class Utils {
         }
         s.append("E0");
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
-        DecimalFormat df = (DecimalFormat)nf;
+        DecimalFormat df = (DecimalFormat) nf;
         df.applyPattern(s.toString());
         return df.format(d);
     }
