@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JSONRecord implements Record {
+public class JSONRecord extends Record {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -21,8 +21,8 @@ public class JSONRecord implements Record {
     }
 
     @Override
-    public List<String> get(String value) {
-        List<String> results = new ArrayList<>();
+    public List<Object> get(String value) {
+        List<Object> results = new ArrayList<>();
 
         try {
             if (value.contains(" ")) {
@@ -33,10 +33,13 @@ public class JSONRecord implements Record {
 
             if (t instanceof JSONArray) {
                 JSONArray array = (JSONArray) t;
+                ArrayList<String> tempList = new ArrayList<>();
 
                 for (int i = 0; i < array.size(); i ++) {
-                    results.add(array.get(i).toString());
+                    tempList.add(array.get(i).toString());
                 }
+
+                results.add(tempList);
             } else {
                 if (t != null) {
                     results.add(t.toString());

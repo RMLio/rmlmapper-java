@@ -13,44 +13,62 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
  - XML files (XPath)
 - remote data sources:
  - relational databases (MySQL, PostgreSQL, and SQLServer)
+ - SPARQL endpoints
  - files via HTTP urls (via GET)
   - CSV files
   - JSON files (JSONPath)
   - XML files (XPath)
 - functions (most cases)
-- output formats: ntriples and nquads
+- configuration file
+- metadata generation
+- output formats: nquads (default), turtle, trig, trix, jsonld, hdt
+- join conditions
 
 ### Future
 - functions (all cases)
-- conditions
+- conditions (all cases)
 - data sources:
- - NoSQL databases
- - web APIs
-- output formats: turtle, trig
+   - NoSQL databases
+   - web APIs
+   - TPF servers
 
 ## Build
-The RMLMaper is build using Maven: `mvn install`.
+The RMLMapper is build using Maven: `mvn install`.
 A standalone jar can be found in `/target`.
 
 ## Usage
 
 ### CLI
-The following options are available.
+The following options are most common.
 
 - `-m, --mapping <arg>`: path to mapping document
 - `-o, --output <arg>`: path to output file
-- `-t, --functionfile <arg>`: path to functions.ttl file
-- `-c, --configfile <arg>`: path to config file
-- `-d, --duplicates`: remove duplicates in the output
-- `-f, --functionfile <arg>`: path to functions.ttl file (dynamic functions are found relative to functions.ttl)
-- `-v, --verbose`: show more details
-- `-h, --help`: show help
+- `-s,--serialization <arg>`: serialization format (nquads (default), trig, trix, jsonld, hdt)
+
+All options can be found when executing `java -jar rmlmapper.jar --help`,
+that output is found below.
+
+```
+usage: java -jar mapper.jar <options>
+options:
+ -c,--configfile <arg>            path to configuration file
+ -d,--duplicates                  remove duplicates in the output
+ -e,--metadatafile <arg>          path to metadata-test-cases file
+ -f,--functionfile <arg>          path to functions.ttl file (dynamic functions are found relative to functions.ttl)
+ -h,--help                        show help info
+ -l,--metadataDetailLevel <arg>   generate metadata-test-cases on given detail level (dataset - triple - term)
+ -m,--mappingfile <arg>           path to mapping document
+ -o,--outputfile <arg>            path to output file (default: stdout)
+ -s,--serialization <arg>         serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)
+ -t,--triplesmaps <arg>           IRIs of the triplesmaps that should be executed in order, split by ',' (default is all triplesmaps)
+ -v,--verbose                     show more details in debugging output
+```
 
 ### Library
 
 An example of how you can use the RMLMapper as an external library can be found below.
 
-```
+```java
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
@@ -61,17 +79,29 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.QuadStore;
 
-boolean removeDuplicates = false; //set to true if you want to remove duplicates triples/quads from the output
-String cwd = "/home/rml"; //path to default directory for local files
-String mappingFile = "/home/rml/mapping.rml.ttl" //path to the mapping file that needs to be executed
-List<String> triplesMaps = new ArrayList<>(); //list of triplesmaps to execute. When this list is empty all triplesmaps in the mapping file are executed
+import java.io.FileInputStream;
+import java.io.InputStream;
 
-InputStream mappingStream = new FileInputStream(mappingFile);
-Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
-RDF4JStore rmlStore = new RDF4JStore(model);
 
-Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(cwd, rmlStore)));
-QuadStore result = executor.execute(triplesMaps, removeDuplicates);
+class Main {
+
+    public static void main(String[] args) {
+
+        String cwd = "/home/rml"; //path to default directory for local files
+        String mappingFile = "/home/rml/mapping.rml.ttl"; //path to the mapping file that needs to be executed
+        
+        try {
+            InputStream mappingStream = new FileInputStream(mappingFile);
+            Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
+            RDF4JStore rmlStore = new RDF4JStore(model);
+
+            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(cwd, rmlStore)));
+            QuadStore result = executor.execute(null);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    } 
+}
 ```
 
 ### Including functions
@@ -113,38 +143,59 @@ You can change the functions.ttl path using a commandline-option (`-f`).
 This overrides the dynamic loading.
 See the snippet below for an example of how to do it.
 
-```
+```java
+package be.ugent.rml;
+
+import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.GrelProcessor;
+import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.QuadStore;
+import com.google.common.io.Resources;
 
-String mapPath = "path/to/mapping/file";
-String outPath = "path/to/where/the/output/triples/should/be/written";
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-Map<String, Class> libraryMap = new HashMap<>();
-libraryMap.put("GrelFunctions.jar", GrelProcessor.class);
-FunctionLoader functionLoader = new FunctionLoader(libraryMap);
-try {
-    Executor executor = this.createExecutor(mapPath, functionLoader);
-    doMapping(executor, outPath);
-} catch (IOException e) {
-    logger.error(e.getMessage(), e);
+
+class Main {
+
+    public static void main(String[] args) {
+        String mapPath = "path/to/mapping/file";
+        String functionPath = "path/to/functions.ttl/file";
+
+        URL url = Resources.getResource(functionPath);
+        
+        Map<String, Class> libraryMap = new HashMap<>();
+        libraryMap.put("GrelFunctions.jar", GrelProcessor.class);
+        try {
+            File functionsFile = new File(url.toURI());
+            FunctionLoader functionLoader = new FunctionLoader(functionsFile, null, libraryMap);
+            ClassLoader classLoader = Main.class.getClassLoader();
+            // execute mapping file
+            File mappingFile = new File(classLoader.getResource(mapPath).getFile());
+            QuadStore rmlStore = Utils.readTurtle(mappingFile);
+            
+            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)),
+                functionLoader);
+            QuadStore result = executor.execute(null);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
 ```
 
 ### Testing
+
 #### RDBs
 Make sure you have [Docker](https://www.docker.com) running.
 
-Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```true``` for testing locally. 
-This causes the creation of the required Docker containers and adds the right connection string to the mapping files.
-
-Set the boolean constant ```LOCAL_TESTING``` in the file 'Mapper_RDBs_Test' to ```false``` for testing on / pushing to GitLab. 
-This makes sure that the containers running on GitLab are used and adds the right connection strings to the mapping files.
-
 ##### Problems
-* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests have been turned off.
-* A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on windows 7 machines.
+* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests will always succeed locally.
+* A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on Windows 7 machines.
 
-# Dependencies
+## Dependencies
 
 |             Dependency             | License                                                            |
 |:----------------------------------:|--------------------------------------------------------------------|
@@ -163,12 +214,30 @@ This makes sure that the containers running on GitLab are used and adds the righ
 | com.opencsv opencsv                | Apache License 2.0                                                 |
 | commons-lang                       | Apache License 2.0                                                 |
 | ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
+| org.rdfhdt.hdt-jena                | GNU Lesser General Public License v3.0                             |
+
+## Remarks
+
+### XML file parsing performance
+
+The RMLMapper's XML parsing implementation (`javax.xml.parsers`) has been chosen to support full XPath.
+This implementation causes a large memory consumption (up to ten times larger than the original XML file size).
+However, the RMLMapper can be easily adapted to use a different XML parsing implementation that might be better suited for a specific use case.
 
 # UML Diagrams
-## How to generate with IntelliJ IDEA
+
+## Architecture UML Diagram
+### How to generate with IntelliJ IDEA
 (Requires Ultimate edition)
 
 * Right click on package: "be.ugent.rml"
 * Diagrams > Show Diagram > Java Class Diagrams
 * Choose what properties of the classes you want to show in the upper left corner
 * Export to file > .png  | Save diagram > .uml
+<<<<<<< README.md
+
+## Sequence Diagram
+### Edit on [draw.io](https://www.draw.io)
+* Go to [draw.io](https://www.draw.io)
+* Click on 'Open Existing Diagram' and choose the .html file
+=======

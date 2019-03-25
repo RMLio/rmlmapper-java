@@ -96,6 +96,18 @@ idlab-fn:equal a fno:Function ;
     lib:method "equal"
   ].
 
+idlab-fn:notEqual a fno:Function ;
+  fno:name "not equal" ;
+  rdfs:label "not equal" ;
+  dcterms:description "Returns true if strings are not equal." ;
+  fno:expects ( grel:valueParam grel:valueParam2 ) ;
+  fno:returns ( grel:stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "UtilFunctions.jar";
+    lib:class "UtilFunctions";
+    lib:method "notEqual"
+  ].
+
 grel:valueParam a fno:Parameter ;
   fno:name "input value" ;
   rdfs:label "input value" ;
@@ -119,3 +131,139 @@ grel:stringOut a fno:Output ;
   rdfs:label "output string" ;
   fno:type xsd:string ;
   fno:predicate grel:stringOutput .
+
+#######################
+### IDLab Functions ###
+#######################
+
+idlab-fn:stringContainsOtherString a fno:Function ;
+  fno:name "stringContainsOtherString" ;
+  rdfs:label "stringContainsOtherString" ;
+  dcterms:description "Returns true if a string is found in a delimited string." ;
+  fno:expects ( idlab-fn:_str idlab-fn:_otherStr idlab-fn:_delimiter ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "stringContainsOtherString"
+  ].
+
+idlab-fn:listContainsElement a fno:Function ;
+  fno:name "listContainsElement" ;
+  rdfs:label "listContainsElement" ;
+  dcterms:description "Returns true if the string is found in the list" ;
+  fno:expects ( idlab-fn:_list idlab-fn:_str ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "listContainsElement"
+  ].
+
+idlab-fn:getMIMEType a fno:Function ;
+  fno:name "getMIMEType" ;
+  rdfs:label "getMIMEType" ;
+  dcterms:description "Returns the MIME Type of a filename" ;
+  fno:expects ( idlab-fn:_str ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "getMIMEType"
+  ].
+
+idlab-fn:decide a fno:Function ;
+  fno:name "decide" ;
+  rdfs:label "decide" ;
+  dcterms:description "Returns a given value if input is equal to another given value" ;
+  fno:expects ( idlab-fn:_str idlab-fn:_expectedStr idlab-fn:_result ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "decide"
+  ].
+
+idlab-fn:dbpediaSpotlight a fno:Function ;
+  fno:name "DBpedia Spotlight annotate" ;
+  rdfs:label "DBpedia Spotlight annotate" ;
+  dcterms:description "Returns the DBpedia URLs of the detected entities in the input text" ;
+  fno:expects ( idlab-fn:_str idlab-fn:_endpoint ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;    
+    lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "dbpediaSpotlight"
+  ].
+
+idlab-fn:trueCondition a fno:Function ;
+  fno:name "True condition" ;
+  rdfs:label "True condition" ;
+  dcterms:description "Returns the value if the given boolean is true, else null" ;
+  fno:expects ( idlab-fn:_strBoolean idlab-fn:_str ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "trueCondition"
+  ].
+
+idlab-fn:_str a fno:Parameter ;
+  fno:name "input string" ;
+  rdfs:label "input string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:str .
+
+idlab-fn:_strBoolean a fno:Parameter ;
+  fno:name "boolean encoded as string" ;
+  rdfs:label "boolean encoded as string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:strBoolean .
+
+idlab-fn:_endpoint a fno:Parameter ;
+  fno:name "endpoint url string" ;
+  rdfs:label "endpoint url string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:endpoint .
+
+idlab-fn:_otherStr a fno:Parameter ;
+  fno:name "other input string" ;
+  rdfs:label "other input string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:otherStr .
+
+idlab-fn:_expectedStr a fno:Parameter ;
+  fno:name "expected input string" ;
+  rdfs:label "expected input string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:expectedStr .
+
+idlab-fn:_result a fno:Parameter ;
+  fno:name "result string" ;
+  rdfs:label "result string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:result .
+
+idlab-fn:_list a fno:Parameter ;
+  fno:name "list" ;
+  rdfs:label "list" ;
+  fno:type rdf:List ;
+  fno:predicate idlab-fn:list .
+
+idlab-fn:_listOut a fno:Parameter ;
+  fno:name "output list" ;
+  rdfs:label "output list" ;
+  fno:type rdf:List ;
+  fno:predicate idlab-fn:listOut .
+
+idlab-fn:_delimiter a fno:Parameter ;
+  fno:name "delimiter" ;
+  rdfs:label "delimiter" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:delimiter .
+
+idlab-fn:_stringOut a fno:Output ;
+  fno:name "output string" ;
+  rdfs:label "output string" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:stringOut .

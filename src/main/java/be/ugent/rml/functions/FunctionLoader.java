@@ -138,7 +138,7 @@ public class FunctionLoader {
                         try {
                             fn = cls.getDeclaredMethod(methods.get(0).getValue(), orderedParameters);
                         } catch (NoSuchMethodException e) {
-                            throw new IOException("Declared method " + methods.get(0) + "does not exist for class " + classes.get(0) + ".");
+                            throw new IOException("Declared method " + methods.get(0) + " does not exist for class " + classes.get(0) + ".");
                         }
 
                         FunctionModel fnm = new FunctionModel(iri, fn, fnParameterUris, fnOutputUris);

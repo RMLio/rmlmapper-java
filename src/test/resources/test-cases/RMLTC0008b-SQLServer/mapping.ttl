@@ -56,7 +56,6 @@
     rr:objectMap <RefObjectMap1>
   ] .
 
- 
 <RefObjectMap1>
   a rr:RefObjectMap;
   rr:parentTriplesMap <TriplesMap2> .

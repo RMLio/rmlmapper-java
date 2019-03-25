@@ -15,14 +15,14 @@
     rr:sqlVersion rr:SQL2008;
     rr:tableName "persons";
   ];
-	
+
   rr:subjectMap [
     rr:template "{fname}{lname}";
     rr:termType rr:BlankNode ;
   ];
-	
-  rr:predicateObjectMap [ 
-    rr:predicate foaf:name ; 
+
+  rr:predicateObjectMap [
+    rr:predicate foaf:name ;
     rr:objectMap [
       rr:template "{fname} {lname}";
       rr:termType rr:Literal ;
@@ -54,7 +54,7 @@
 .
 
 <#DB_source> a d2rq:Database;
-  d2rq:jdbcDSN "CONNECTIONDSN"; # the "jbdc:mysql:// part is ignored
-  d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver"; # this is ignored
+  d2rq:jdbcDSN "CONNECTIONDSN";
+  d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver";
   d2rq:username "root";
   d2rq:password "" .

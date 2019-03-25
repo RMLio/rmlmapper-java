@@ -7,10 +7,92 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-- support for NoSQL databases
-- support for Web APIs
-- support for SPARQL endpoints
-- support for TPF servers
+## [4.3.3] - 2019-03-15
+
+### Added
+
+- Non-equals function and getMimeType function
+- LICENSE file (MIT) (fixes [#25](https://github.com/RMLio/rmlmapper-java/issues/25))
+
+### Fixed
+
+- rdf prefix in some test cases
+- specified turtle output in cli help and readme (fixes [#23](https://github.com/RMLio/rmlmapper-java/issues/23))
+
+## [4.3.2] - 2019-02-27
+
+### Added
+
+- DBpedia spotlight can be used as a default NER function within a mapping document
+- functions added, to be used for conditions
+
+### Fixed
+
+- updated UML diagrams
+- fixed [#21](https://github.com/RMLio/rmlmapper-java/issues/21) (thanks @mariapoveda)
+- support for -- and updates of -- a whole lot more test cases
+- Transform data from databases according to their datatypes, where applicable
+- Works with @base in mapping
+- Use Exception instead of Error (almost everywhere)
+- Validate URI
+- `rml:query` instead of `rr:query`
+- maven dependency before jitpack dependency to prevent json-ld conflict ([#19](https://github.com/RMLio/rmlmapper-java/pull/19) thanks @duschu)
+
+## [4.3.1] - 2019-01-15
+
+### Fixed
+
+- filtering of quads in SimpleQuadStore
+
+## [4.3.0] - 2018-12-17
+
+### Added
+
+- SPARQL endpoint support
+
+### Changed
+
+- rdf4j version bump to 2.4.1
+
+## [4.2.0] - 2018-11-14
+
+### Added
+
+- support for SPARQL
+- output format: hdt
+
+### Fixed
+
+- local build on Windows 7 works
+- object with template with an array as input ? return multiple objects
+
+## [4.1.0] - 2018-10-15
+
+### Added
+
+- output formats: turtle, trig, trix, jsonld
+- functions with list input
+- metadata generation
+
+### Changed
+
+- use environment variable for RDB testing
+- all (including templating) works with function generators
+
+### Fixed
+
+- double join condition
+- support quote in literal
+- function file path not passed on to the function loader when using the CLI
+- when parsing a string into an RDF term, take into account @ is not always a language tag
+- parenttriplesmap handling null values
+- config file
+
+## [4.0.0] - 2018-09-03
+
+### Added
+- support for config file
+- no difference between triples and quads when writing output to file
 
 ## [0.2.1] - 2018-08-14
 
@@ -74,6 +156,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.3.3]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.2...v4.3.3
+[4.3.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.1...v4.3.2
+[4.3.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.0...v4.3.1
+[4.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.2.0...v4.3.0
+[4.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.1.0...v4.2.0
+[4.1.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.0.0...v4.1.0
+[4.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v0.2.1...v4.0.0
 [0.2.1]: https://github.com/RMLio/rmlmapper-java/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.6...v0.2.0
 [0.1.6]: https://github.com/RMLio/rmlmapper-java/compare/v0.1.5...v0.1.6

@@ -35,37 +35,42 @@ public class Quad implements Comparable<Quad> {
 
     @Override
     public int compareTo(Quad o) {
-        int compareGraph;
-        String oGraph = null;
+        int comparison;
 
-        if (o.getGraph() != null) {
-            oGraph = o.getGraph().toString();
-        }
-
-        if (this.graph == null && oGraph == null) {
-            compareGraph = 0;
+        if (this.graph == null || o.getGraph() == null) {
+            comparison = 0;
         } else {
             if (this.graph == null) {
-                compareGraph = -1;
-            } else if (oGraph == null) {
-                compareGraph = 1;
+                comparison = -1;
+            } else if (o.getGraph() == null) {
+                comparison = 1;
             } else {
-                compareGraph = this.graph.toString().compareTo(oGraph);
+                comparison = this.graph.toString().compareTo(o.getGraph().toString());
             }
         }
-        if (compareGraph == 0) {
-            int compareSubject = this.subject.toString().compareTo(o.getSubject().toString());
-            if (compareSubject == 0) {
-                int comparePredicate = this.predicate.toString().compareTo(o.getPredicate().toString());
-                if (comparePredicate == 0) {
-                    return this.object.toString().compareTo(o.getObject().toString());
+
+        if (comparison == 0) {
+            comparison = compareTerms(this.subject, o.getSubject());
+            if (comparison == 0) {
+                comparison = compareTerms(this.predicate, o.getPredicate());
+                if (comparison == 0) {
+                    return compareTerms(this.object, o.getObject());
+                } else {
+                    return comparison;
                 }
-                return comparePredicate;
             } else {
-                return compareSubject;
+                return comparison;
             }
         } else {
-            return compareGraph;
+            return comparison;
+        }
+    }
+
+    private int compareTerms(Term t1, Term t2) {
+        if (t1 == null || t2 == null) {
+            return 0;
+        } else {
+            return t1.toString().compareTo(t2.toString());
         }
     }
 }

@@ -10,7 +10,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-public class XMLRecord implements Record {
+public class XMLRecord extends Record {
 
     private Node node;
 
@@ -19,15 +19,14 @@ public class XMLRecord implements Record {
     }
 
     @Override
-    public List<String> get(String value) {
-        List<String> results = new ArrayList<>();
+    public List<Object> get(String value) {
+        List<Object> results = new ArrayList<>();
         XPath xPath = XPathFactory.newInstance().newXPath();
 
         try {
             NodeList result = (NodeList) xPath.compile(value).evaluate(node, XPathConstants.NODESET);
 
             for (int i = 0; i < result.getLength(); i ++) {
-                Node item = result.item(i);
                 results.add(result.item(i).getTextContent());
             }
         } catch (XPathExpressionException e) {

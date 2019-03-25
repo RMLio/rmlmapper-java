@@ -15,14 +15,14 @@
     rr:sqlVersion rr:SQL2008;
     rr:tableName "persons";
   ];
-	
+
   rr:subjectMap [
     rr:template "{fname}{lname}";
     rr:termType rr:BlankNode ;
   ];
-	
-  rr:predicateObjectMap [ 
-    rr:predicate foaf:name ; 
+
+  rr:predicateObjectMap [
+    rr:predicate foaf:name ;
     rr:objectMap [
       rr:template "{fname} {lname}";
       rr:termType rr:Literal ;
@@ -55,7 +55,6 @@
 
 <#DB_source> a d2rq:Database;
   d2rq:jdbcDSN "CONNECTIONDSN";
-
   d2rq:jdbcDriver "com.microsoft.sqlserver.jdbc.SQLServerDriver";
   d2rq:username "sa";
   d2rq:password "YourSTRONG!Passw0rd;" .

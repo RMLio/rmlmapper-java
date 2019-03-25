@@ -17,20 +17,20 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/student/{ID}";
+    rr:template "http://example.com/student/{id}";
   ]; 
 	
   rr:predicateObjectMap [ 
     rr:predicate ex:firstName; 
     rr:objectMap [
-      rml:reference "FirstName"
+      rml:reference "firstname"
     ]
   ]; 
 	
   rr:predicateObjectMap [ 
     rr:predicate ex:lastName; 
     rr:objectMap [
-      rml:reference "LastName"
+      rml:reference "lastname"
     ]
   ].
 
@@ -44,20 +44,20 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/sport/{ID}";
+    rr:template "http://example.com/sport/{id}";
   ]; 
 	
   rr:predicateObjectMap [ 
     rr:predicate ex:id; 
     rr:objectMap [
-      rml:reference "ID"
+      rml:reference "id"
     ]
   ]; 
 	
   rr:predicateObjectMap [ 
     rr:predicate ex:description; 
     rr:objectMap [
-      rml:reference "Description"
+      rml:reference "description"
     ]
   ].
 
@@ -71,13 +71,13 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/student/{ID_Student}";
+    rr:template "http://example.com/student/{id_student}";
   ]; 
 	
   rr:predicateObjectMap [ 
     rr:predicate ex:plays; 
     rr:objectMap [
-      rr:template "http://example.com/sport/{ID_Sport}"
+      rr:template "http://example.com/sport/{id_sport}"
     ]
   ].									
 

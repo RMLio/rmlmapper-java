@@ -26,19 +26,19 @@ public class CSV {
         return _get(reader);
     }
 
-    private List<Record> _get(Reader reader) throws IOException {
+    public List<Record> _get(Reader reader) throws IOException {
         CSVReader csvReader = new CSVReader(reader);
 
         List<String[]> myEntries = csvReader.readAll();
-        List<Record> records = new ArrayList<Record>();
+        List<Record> records = new ArrayList<>();
 
         String[] headers = myEntries.get(0);
 
         for (int i = 1; i < myEntries.size(); i ++) {
-            HashMap<String, List<String>> values = new HashMap<String, List<String>>();
+            HashMap<String, List<Object>> values = new HashMap<>();
 
             for (int j = 0; j < headers.length; j ++) {
-                List<String> temp = new ArrayList<String>();
+                List<Object> temp = new ArrayList<>();
                 temp.add(myEntries.get(i)[j]);
                 values.put(headers[j], temp);
             }
