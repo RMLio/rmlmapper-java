@@ -13,6 +13,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,8 +80,8 @@ public class Main {
                 .desc("generate metadata on given detail level (dataset - triple - term)")
                 .build();
         Option serializationFormatOption = Option.builder("s")
-                .longOpt( "serialization" )
-                .desc( "serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)" )
+                .longOpt("serialization")
+                .desc("serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)")
                 .hasArg()
                 .build();
         options.addOption(mappingdocOption);
@@ -122,8 +123,8 @@ public class Main {
             if (mOptionValue == null) {
                 printHelp(options);
             } else {
-                File mappingFile = Utils.getFile(mOptionValue);
-                RDF4JStore rmlStore = Utils.readTurtle(mappingFile);
+                InputStream is = Utils.getInputStreamFromLocation(mOptionValue, null, "application/rdf+xml");
+                RDF4JStore rmlStore = Utils.readTurtle(is, RDFFormat.TURTLE);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
 
                 String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
@@ -183,7 +184,7 @@ public class Main {
                     functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
                 }
 
-                executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingFile));
+                executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(is));
 
                 List<Term> triplesMaps = new ArrayList<>();
 
@@ -323,8 +324,8 @@ public class Main {
             if (doneMessage != null) {
                 logger.info(doneMessage);
             }
-        } catch(IOException e) {
-            System.err.println( "Writing output failed. Reason: " + e.getMessage() );
+        } catch (IOException e) {
+            System.err.println("Writing output failed. Reason: " + e.getMessage());
         }
 
         return targetFile;

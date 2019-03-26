@@ -11,6 +11,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -234,22 +235,29 @@ public class Utils {
         return list;
     }
 
-    public static RDF4JStore readTurtle(File file, RDFFormat format) {
-        InputStream is;
+    public static RDF4JStore readTurtle(InputStream is, RDFFormat format) {
         Model model = null;
         try {
-            is = new FileInputStream(file);
             //model = Rio.parse(mappingStream, "", format);
 
             ParserConfig config = new ParserConfig();
             config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
-            logger.debug("Reading from " + file.getAbsolutePath());
             model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
             is.close();
         } catch (IOException | RDFParseException e) {
             e.printStackTrace();
         }
         return new RDF4JStore(model);
+    }
+
+    public static RDF4JStore readTurtle(File file, RDFFormat format) {
+        try {
+            logger.debug("Reading from " + file.getAbsolutePath());
+            return readTurtle(getInputStreamFromFile(file), format);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return new RDF4JStore(null);
+        }
     }
 
     public static RDF4JStore readTurtle(File mappingFile) {
@@ -318,8 +326,7 @@ public class Utils {
         return query.hashCode();
     }
 
-    public static String readFile(String path, Charset encoding) throws IOException
-    {
+    public static String readFile(String path, Charset encoding) throws IOException {
         if (encoding == null) {
             encoding = StandardCharsets.UTF_8;
         }
@@ -386,7 +393,7 @@ public class Utils {
                     if (previousWasBackslash) {
                         current += c;
                         previousWasBackslash = false;
-                    } else if (variableBusy){
+                    } else if (variableBusy) {
                         extractors.add(new ReferenceExtractor(current));
                         current = "";
                         variableBusy = false;
@@ -456,16 +463,27 @@ public class Utils {
 
     public static String getBaseDirectiveTurtle(File file) {
         StringBuilder contentBuilder = new StringBuilder();
-        try (Stream<String> stream = Files.lines( Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)) {
+        try (Stream<String> stream = Files.lines(Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)) {
             stream.forEach(s -> contentBuilder.append(s).append("\n"));
-        }
-
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         String turtle = contentBuilder.toString();
+        return Utils.getBaseDirectiveTurtle(turtle);
+    }
 
+    public static String getBaseDirectiveTurtle(InputStream is) {
+        String turtle = null;
+        try {
+            turtle = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            turtle = "";
+        }
+        return Utils.getBaseDirectiveTurtle(turtle);
+    }
+
+    public static String getBaseDirectiveTurtle(String turtle) {
         Pattern p = Pattern.compile("@base <([^<>]*)>");
         Matcher m = p.matcher(turtle);
 
@@ -488,7 +506,7 @@ public class Utils {
             case "http://www.w3.org/2001/XMLSchema#double":
                 return formatToScientific(Double.parseDouble(input));
             case "http://www.w3.org/2001/XMLSchema#boolean":
-                switch(input) {
+                switch (input) {
                     case "t":
                     case "true":
                     case "TRUE":
@@ -520,7 +538,7 @@ public class Utils {
         }
         s.append("E0");
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
-        DecimalFormat df = (DecimalFormat)nf;
+        DecimalFormat df = (DecimalFormat) nf;
         df.applyPattern(s.toString());
         return df.format(d);
     }
