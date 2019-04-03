@@ -11,6 +11,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -254,7 +255,10 @@ public class AccessFactory {
             password = passwordObject.get(0).getValue();
         }
 
-        return new RDBAccess(dsn, database, username, password, query, "text/csv");
+        // - ContentType
+        List<Term> contentType = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
+
+        return new RDBAccess(dsn, database, username, password, query, (contentType.isEmpty()? "text/csv" : contentType.get(0).getValue()));
     }
 
     /**

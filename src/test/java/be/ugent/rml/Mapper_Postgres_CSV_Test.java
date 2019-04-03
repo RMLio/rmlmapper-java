@@ -16,11 +16,11 @@ import static be.ugent.rml.TestStrictMode.*;
 
 
 @RunWith(Parameterized.class)
-public class Mapper_Postgres_Test extends PostgresTestCore {
+public class Mapper_Postgres_CSV_Test extends PostgresTestCore {
 
     @BeforeClass
     public static void before() {
-        logger = LoggerFactory.getLogger(Mapper_Postgres_Test.class);
+        logger = LoggerFactory.getLogger(Mapper_Postgres_CSV_Test.class);
         startDBs();
     }
 
@@ -41,7 +41,7 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Parameterized.Parameters(name = "{index}: Postgres_{0}")
+    @Parameterized.Parameters(name = "{index}: Postgres_CSV_Test_{0}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 // scenarios:

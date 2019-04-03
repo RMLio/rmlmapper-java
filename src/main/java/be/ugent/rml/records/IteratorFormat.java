@@ -48,8 +48,12 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
             String iterator = iterators.get(0).getValue();
             return getRecordsFromDocument(documentMap.get(access), iterator);
         } else {
-            // TODO better message
-            throw new Error("An iterator is missing.");
+            /* 
+             * PostgresSQL builds its XML on the fly and can be accessed 
+             * with a fixed XPath iterator '/Results/row'
+             */
+            String iterator = "/Results/row";
+            return getRecordsFromDocument(documentMap.get(access), iterator);
         }
     }
 

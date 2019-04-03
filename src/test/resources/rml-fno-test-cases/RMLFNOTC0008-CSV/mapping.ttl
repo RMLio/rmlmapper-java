@@ -29,11 +29,11 @@
     rr:objectMap [
       fnml:functionValue [
         rr:predicateObjectMap [
-        rr:predicate fno:executes ;
+            rr:predicate fno:executes ;
             rr:objectMap [ rr:constant grel:toUpperCase ] ] ;
-          rr:predicateObjectMap [
+        rr:predicateObjectMap [
             rr:predicate grel:valueParameter ;
-        rr:objectMap [ rr:template "Name: {Name}" ] ]
-        ]
+            rr:objectMap [ rr:template "Name: {Name}" ] ]
       ]
-    ].
+    ]
+  ].

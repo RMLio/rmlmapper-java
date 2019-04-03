@@ -1,15 +1,24 @@
 package be.ugent.rml.access;
 
+import be.ugent.rml.NAMESPACES;
+import be.ugent.rml.records.XMLRecord;
+import com.opencsv.CSVReader;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
+import java.nio.Buffer;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.IntStream;
 
 import static be.ugent.rml.Utils.getHashOfString;
 
@@ -112,8 +121,14 @@ public class RDBAccess implements Access {
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
-            // Turn the Results Set into a CSV stream.
-            inputStream = getCSVInputStream(rs);
+            switch (contentType) {
+                case NAMESPACES.QL + "XPath" :
+                    inputStream = getXMLInputStream(rs);
+                    break;
+                default:
+                    inputStream = getCSVInputStream(rs);
+            }
+
 
             // Clean-up environment
             rs.close();
@@ -214,6 +229,50 @@ public class RDBAccess implements Access {
         // Get InputStream from StringWriter.
         return new ByteArrayInputStream(writer.toString().getBytes());
     }
+
+    private InputStream getXMLInputStream(ResultSet rs) throws SQLException {
+        // Get number of requested columns
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+
+        StringWriter writer = new StringWriter();
+
+        // Create document
+        DocumentBuilder builder;
+        try {
+            builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.newDocument();
+
+            Element rootElement = doc.createElement("Results");
+            doc.appendChild(rootElement);
+            // Extract data from result set
+            while (rs.next()) {
+                Element row = doc.createElement("row");
+                rootElement.appendChild(row);
+
+                // Iterate over column names
+                for (int i = 1; i <= columnCount; i++) {
+                    Element el = doc.createElement(rsmd.getColumnName(i));
+                    el.appendChild(doc.createTextNode(rs.getObject(i).toString()));
+                    row.appendChild(el);
+                }
+            }
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+
+            transformer.transform(new DOMSource(doc), new StreamResult(writer));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Get InputStream from StringWriter.
+        return new ByteArrayInputStream(writer.toString().getBytes());
+
+    }
+
 
     /**
      * This method returns the corresponding datatype for a SQL datatype.
