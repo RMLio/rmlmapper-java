@@ -13,29 +13,67 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.ReaderInputStream;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.reflect.Array;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
+    // convert InputStream to String
+    private static String getStringFromInputStream(InputStream is) {
+
+        BufferedReader br = null;
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+
+            br = new BufferedReader(new InputStreamReader(is));
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return sb.toString();
+
+    }
 
     public static void main(String[] args) {
         Options options = new Options();
         Option mappingdocOption = Option.builder("m")
                 .longOpt("mappingfile")
                 .hasArg()
+                .numberOfArgs(Option.UNLIMITED_VALUES)
                 .desc("path to mapping document")
+                .build();
+        Option rawmappingOption = Option.builder("r")
+                .longOpt("rawmapping")
+                .hasArg()
+                .desc("mapping fragment in Turtle syntax")
                 .build();
         Option outputfileOption = Option.builder("o")
                 .longOpt("outputfile")
@@ -85,6 +123,7 @@ public class Main {
                 .hasArg()
                 .build();
         options.addOption(mappingdocOption);
+        options.addOption(rawmappingOption);
         options.addOption(outputfileOption);
         options.addOption(functionfileOption);
         options.addOption(removeduplicatesOption);
@@ -119,11 +158,24 @@ public class Main {
                 setLoggerLevel(Level.ERROR);
             }
 
-            String mOptionValue = getPriorityOptionValue(mappingdocOption, lineArgs, configFile);
-            if (mOptionValue == null) {
+            String[] mOptionValue = getOptionValues(mappingdocOption, lineArgs, configFile);
+            String rOptionValue = getPriorityOptionValue(rawmappingOption, lineArgs, configFile);
+            if (mOptionValue == null && rOptionValue == null) {
                 printHelp(options);
             } else {
-                InputStream is = Utils.getInputStreamFromLocation(mOptionValue, null, "application/rdf+xml");
+                List<InputStream> lis = new ArrayList<>();
+                if (mOptionValue != null) {
+                    List<InputStream> mis = Arrays.stream(mOptionValue)
+                            .map(l -> Utils.getInputStreamFromLocation(l,null, "application/rdf+xml"))
+                            .collect(Collectors.toList());
+                    lis.addAll(mis);
+                }
+                if (rOptionValue != null) {
+                    InputStream ris = IOUtils.toInputStream(rOptionValue + "\n\032", StandardCharsets.UTF_8);
+                    lis.add(ris);
+                }
+                InputStream is = new SequenceInputStream(Collections.enumeration(lis));
+                String r = getStringFromInputStream(is);
                 RDF4JStore rmlStore = Utils.readTurtle(is, RDFFormat.TURTLE);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
 
@@ -163,7 +215,7 @@ public class Main {
                         metadataGenerator = new MetadataGenerator(
                                 detailLevel,
                                 getPriorityOptionValue(metadataOption, lineArgs, configFile),
-                                mOptionValue,
+                                String.join(" ", mOptionValue),
                                 rmlStore
                         );
                     } else {
@@ -250,6 +302,17 @@ public class Main {
             return null;
         }
     }
+
+    private static String[] getOptionValues(Option option, CommandLine lineArgs, Properties properties) {
+        if (lineArgs.hasOption(option.getOpt())) {
+            return lineArgs.getOptionValues(option.getOpt());
+        } else if (properties != null && properties.getProperty(option.getLongOpt()) != null) {
+            return properties.getProperty(option.getLongOpt()).split(" ");
+        } else {
+            return null;
+        }
+    }
+
 
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();

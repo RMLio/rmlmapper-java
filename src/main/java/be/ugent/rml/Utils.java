@@ -43,6 +43,7 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Utils {
@@ -70,16 +71,16 @@ public class Utils {
         return getInputStreamFromLocation(location, null, "");
     }
 
-    public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
-        if (isRemoteFile(location)) {
-            try {
+    public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) {
+        try {
+            if (isRemoteFile(location)) {
                 return getInputStreamFromURL(new URL(location), contentType);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
+            } else {
+                return getInputStreamFromFile(getFile(location, basePath));
             }
-        } else {
-            return getInputStreamFromFile(getFile(location, basePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

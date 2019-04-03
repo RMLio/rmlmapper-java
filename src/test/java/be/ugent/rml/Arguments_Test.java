@@ -10,6 +10,11 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -39,6 +44,36 @@ public class Arguments_Test extends TestCore {
         Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq".split(" "));
         compareFiles(
                 "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void multipleConfigFiles() {
+        Pattern pattern = Pattern.compile("([^\\\\]\".*?[^\\\\]\"|\\S+)");
+        List<String> list = new ArrayList<>();
+        Matcher m = pattern.matcher("-m \"./argument-config-file-test-cases/mapping.ttl\" -r \"\n<LogicalSource1> rml:source 'student2.csv';\nrml:referenceFormulation ql:CSV .\" -o ./generated_output.nq");
+        while (m.find()) {
+            String s = m.group();
+            // trim
+            s = s.replaceAll("(\")* *$", "");
+            s = s.replaceAll("^ *(\")*", "");
+            list.add(s);
+        }
+        String[] args = new String[list.size()];
+        args = list.toArray(args);
+        Main.main(args);
+        compareFiles(
+                "argument-config-file-test-cases/target_output2.nq",
                 "./generated_output.nq",
                 false
         );
