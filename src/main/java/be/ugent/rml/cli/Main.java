@@ -28,39 +28,11 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static be.ugent.rml.Utils.getInputStreamFromMOptionValue;
+
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-
-    // convert InputStream to String
-    private static String getStringFromInputStream(InputStream is) {
-
-        BufferedReader br = null;
-        StringBuilder sb = new StringBuilder();
-
-        String line;
-        try {
-
-            br = new BufferedReader(new InputStreamReader(is));
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return sb.toString();
-
-    }
 
     public static void main(String[] args) {
         Options options = new Options();
@@ -68,12 +40,7 @@ public class Main {
                 .longOpt("mappingfile")
                 .hasArg()
                 .numberOfArgs(Option.UNLIMITED_VALUES)
-                .desc("path to mapping document")
-                .build();
-        Option rawmappingOption = Option.builder("r")
-                .longOpt("rawmapping")
-                .hasArg()
-                .desc("mapping fragment in Turtle syntax")
+                .desc("one or more mapping file paths and/or strings. Multiple values are concatenated.")
                 .build();
         Option outputfileOption = Option.builder("o")
                 .longOpt("outputfile")
@@ -123,7 +90,6 @@ public class Main {
                 .hasArg()
                 .build();
         options.addOption(mappingdocOption);
-        options.addOption(rawmappingOption);
         options.addOption(outputfileOption);
         options.addOption(functionfileOption);
         options.addOption(removeduplicatesOption);
@@ -159,23 +125,13 @@ public class Main {
             }
 
             String[] mOptionValue = getOptionValues(mappingdocOption, lineArgs, configFile);
-            String rOptionValue = getPriorityOptionValue(rawmappingOption, lineArgs, configFile);
-            if (mOptionValue == null && rOptionValue == null) {
+            if (mOptionValue == null) {
                 printHelp(options);
             } else {
-                List<InputStream> lis = new ArrayList<>();
-                if (mOptionValue != null) {
-                    List<InputStream> mis = Arrays.stream(mOptionValue)
-                            .map(l -> Utils.getInputStreamFromLocation(l,null, "application/rdf+xml"))
-                            .collect(Collectors.toList());
-                    lis.addAll(mis);
-                }
-                if (rOptionValue != null) {
-                    InputStream ris = IOUtils.toInputStream(rOptionValue + "\n\032", StandardCharsets.UTF_8);
-                    lis.add(ris);
-                }
+                List<InputStream> lis = Arrays.stream(mOptionValue)
+                        .map(Utils::getInputStreamFromMOptionValue)
+                        .collect(Collectors.toList());
                 InputStream is = new SequenceInputStream(Collections.enumeration(lis));
-                String r = getStringFromInputStream(is);
                 RDF4JStore rmlStore = Utils.readTurtle(is, RDFFormat.TURTLE);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
 

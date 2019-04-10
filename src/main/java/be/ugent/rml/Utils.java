@@ -71,17 +71,28 @@ public class Utils {
         return getInputStreamFromLocation(location, null, "");
     }
 
-    public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) {
-        try {
-            if (isRemoteFile(location)) {
-                return getInputStreamFromURL(new URL(location), contentType);
-            } else {
-                return getInputStreamFromFile(getFile(location, basePath));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
+        if (isRemoteFile(location)) {
+            return getInputStreamFromURL(new URL(location), contentType);
+        } else {
+            return getInputStreamFromFile(getFile(location, basePath));
         }
+    }
+
+    public static InputStream getInputStreamFromMOptionValue(String mOptionValue) {
+        InputStream out;
+        try {
+            out = getInputStreamFromLocation(mOptionValue, null, "application/rdf+xml");
+        } catch (IOException e) {
+            try {
+                // raw mapping input string
+                out = IOUtils.toInputStream(mOptionValue, "UTF-8");
+            } catch (IOException e2) {
+                logger.error("Cannot read mapping option {}", mOptionValue);
+                out = new ByteArrayInputStream(new byte[0]);
+            }
+        }
+        return out;
     }
 
     /**

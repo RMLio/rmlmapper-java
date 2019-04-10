@@ -58,22 +58,59 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void multipleConfigFiles() {
-        Pattern pattern = Pattern.compile("([^\\\\]\".*?[^\\\\]\"|\\S+)");
-        List<String> list = new ArrayList<>();
-        Matcher m = pattern.matcher("-m \"./argument-config-file-test-cases/mapping.ttl\" -r \"\n<LogicalSource1> rml:source 'student2.csv';\nrml:referenceFormulation ql:CSV .\" -o ./generated_output.nq");
-        while (m.find()) {
-            String s = m.group();
-            // trim
-            s = s.replaceAll("(\")* *$", "");
-            s = s.replaceAll("^ *(\")*", "");
-            list.add(s);
-        }
-        String[] args = new String[list.size()];
-        args = list.toArray(args);
+    public void mappingFileAndRawMappingString() {
+//        Pattern pattern = Pattern.compile("([^\\\\]\".*?[^\\\\]\"|\\S+)");
+//        List<String> list = new ArrayList<>();
+//        Matcher m = pattern.matcher("-m \"./argument-config-file-test-cases/mapping_base.ttl\" \"<LogicalSource1>\n" +
+//                "    rml:source \"src/test/resources/argument-config-file-test-cases/student.json\";\n" +
+//                "    rml:referenceFormulation ql:JSONPath;\n" +
+//                "    rml:iterator \"$.students[*]\".\n" +
+//                "\n" +
+//                "<LogicalSource2>\n" +
+//                "    rml:source \"src/test/resources/argument-config-file-test-cases/sport.json\";\n" +
+//                "    rml:referenceFormulation ql:JSONPath;\n" +
+//                "    rml:iterator \"$.sports[*]\".\" -o ./generated_output.nq");
+//        while (m.find()) {
+//            String s = m.group();
+//            // trim
+//            s = s.replaceAll("(\")* *$", "");
+//            s = s.replaceAll("^ *(\")*", "");
+//            list.add(s);
+//        }
+//        String[] args = new String[list.size()];
+//        args = list.toArray(args);
+        String arg1 = "./argument-config-file-test-cases/mapping_base.ttl";
+        String arg2 = "<LogicalSource1>\n" +
+                "    rml:source \"src/test/resources/argument-config-file-test-cases/student.json\";\n" +
+                "    rml:referenceFormulation ql:JSONPath;\n" +
+                "    rml:iterator \"$.students[*]\".\n" +
+                "\n" +
+                "<LogicalSource2>\n" +
+                "    rml:source \"src/test/resources/argument-config-file-test-cases/sport.json\";\n" +
+                "    rml:referenceFormulation ql:JSONPath;\n" +
+                "    rml:iterator \"$.sports[*]\".";
+        String[] args = {"-m", arg1, arg2, "-o" , "./generated_output.nq"};
         Main.main(args);
         compareFiles(
-                "argument-config-file-test-cases/target_output2.nq",
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void multipleMappingFiles() {
+        Main.main("-m ./argument-config-file-test-cases/mapping_base.ttl ./argument-config-file-test-cases/mapping1.ttl -o ./generated_output.nq".split(" "));
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
                 "./generated_output.nq",
                 false
         );
