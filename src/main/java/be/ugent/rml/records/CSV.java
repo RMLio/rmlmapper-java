@@ -1,7 +1,9 @@
 package be.ugent.rml.records;
 
 import be.ugent.rml.Utils;
+import com.opencsv.CSVParser;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,18 +19,36 @@ public class CSV {
     }
 
     public List<Record> get(String path) throws IOException {
-        return get(path, System.getProperty("user.dir"));
+        return get(path, System.getProperty("user.dir"), new CSVParser());
     }
 
     public List<Record> get(String path, String cwd) throws IOException {
         Reader reader = Utils.getReaderFromLocation(path, new File(cwd), getContentType());
-
         return _get(reader);
+    }
+
+    public List<Record> get(String path, CSVParser parser) throws IOException {
+        return get(path, System.getProperty("user.dir"), parser);
+    }
+
+    public List<Record> get(String path, String cwd, CSVParser parser) throws IOException {
+        Reader reader = Utils.getReaderFromLocation(path, new File(cwd), getContentType());
+        return _get(reader, parser);
+    }
+
+    public List<Record> _get(Reader reader, CSVParser parser) throws IOException {
+        CSVReader csvReader = new CSVReaderBuilder(reader)
+                .withCSVParser(parser)
+                .build();
+        return _get(csvReader);
     }
 
     public List<Record> _get(Reader reader) throws IOException {
         CSVReader csvReader = new CSVReader(reader);
+        return _get(csvReader);
+    }
 
+    public List<Record> _get(CSVReader csvReader) throws IOException {
         List<String[]> myEntries = csvReader.readAll();
         List<Record> records = new ArrayList<>();
 

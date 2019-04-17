@@ -13,4 +13,5 @@ public class NAMESPACES {
     public static final String PROV = "http://www.w3.org/ns/prov#";
     public static final String VOID = "http://rdfs.org/ns/void#";
     public static final String XSD = "http://www.w3.org/2001/XMLSchema#";
+    public static final String CSVW = "http://www.w3.org/ns/csvw#";
 }

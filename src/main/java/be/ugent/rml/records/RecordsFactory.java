@@ -8,6 +8,8 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
@@ -59,7 +61,7 @@ public class RecordsFactory {
                     String source = sources.get(0).getValue();
                     switch (referenceFormulations.get(0).getValue()) {
                         case NAMESPACES.QL + "CSV":
-                            return getCSVRecords(source);
+                            return getCSVRecords(source, iterators, triplesMap);
                         case NAMESPACES.QL + "XPath":
                             return getXMLRecords(source, iterators, triplesMap);
                         case NAMESPACES.QL + "JSONPath":
@@ -92,6 +94,8 @@ public class RecordsFactory {
                             }
                             return getSPARQLRecords(rmlStore, source, logicalSource, triplesMap,
                                     endpoint.get(0), iterators, referenceFormulations);
+                        case NAMESPACES.CSVW + "Table": // CSVW
+                            return getCSVRecords(rmlStore, source, iterators, triplesMap);
                         default:
                             throw new NotImplementedException();
 
@@ -100,6 +104,16 @@ public class RecordsFactory {
             }
         } else {
             throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
+        }
+    }
+
+    // TODO refactor getCSVRecords functions
+    // CSV for filepath
+    private List<Record> getCSVRecords(String source, List<Term> iterators, Term triplesMap) throws IOException {
+        if (!iterators.isEmpty()) {
+            throw new NotImplementedException();
+        } else {
+            return getCSVRecords(source);
         }
     }
 
@@ -113,8 +127,84 @@ public class RecordsFactory {
             } catch (IOException e) {
                 throw e;
             }
-
             return allCSVRecords.get(source);
+        }
+    }
+
+    // CSVW
+    private List<Record> getCSVRecords(QuadStore rmlStore, Term source, List<Term> iterators, Term triplesMap) throws IOException {
+        List<Term> url = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "url"), null));
+        if (!iterators.isEmpty()) {
+            // TODO implement CSV iterator
+            throw new NotImplementedException();
+//            String iterator = iterators.get(0).getValue();
+//
+//            if (allCSVRecords.containsKey(source) && allCSVRecords.get(source).containsKey(iterator)) {
+//                return allCSVRecords.get(source).get(iterator);
+//            } else {
+//                try {
+//                    XML xml = new XML();
+//                    List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
+//
+//                    if (allCSVRecords.containsKey(source)) {
+//                        allCSVRecords.get(source).put(iterator, records);
+//                    } else {
+//                        Map<String, List<Record>> temp = new HashMap<>();
+//                        temp.put(iterator, records);
+//                        allCSVRecords.put(source, temp);
+//                    }
+//                    return records;
+//                } catch (IOException e) {
+//                    throw e;
+//                }
+//            }
+        } else {
+            String path = url.get(0).getValue();
+            CSVParserBuilder parserBuilder =
+                    new CSVParserBuilder();
+            // CSVW Dialect options
+            List<Term> dialectTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "dialect"), null));
+            if (!dialectTerms.isEmpty()) {
+                Term dialect = dialectTerms.get(0);
+                // TODO refactor getCSVRecords to set parser and reader from dialect terms
+                // TODO implement rest of https://www.w3.org/TR/tabular-metadata/#dialect-descriptions
+                // TODO refactor if statements
+                // Delimiter
+                // TODO must be a string
+                List<Term> delimiterTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "delimiter"), null));
+                if (!delimiterTerms.isEmpty()) {
+                    String delimiter = delimiterTerms.get(0).getValue();
+                    parserBuilder.withSeparator(delimiter.toCharArray()[0]);
+                }
+                // Encoding
+                // TODO refactor file Utils to set encoding
+                // TODO Validate encoding with http://www.w3.org/TR/encoding/
+                // withQuoteChar
+                List<Term> quoteTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "quoteChar"), null));
+                if (!quoteTerms.isEmpty()) {
+                    String quote = quoteTerms.get(0).getValue();
+                    parserBuilder.withQuoteChar(quote.toCharArray()[0]);
+                }
+                // withEscapeChar
+                List<Term> escapeTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "escapeChar"), null));
+                if (!escapeTerms.isEmpty()) {
+                    String escape = escapeTerms.get(0).getValue();
+                    parserBuilder.withEscapeChar(escape.toCharArray()[0]);
+                }
+                // commentPrefix
+            }
+
+            if (allCSVRecords.containsKey(path)){
+                return allCSVRecords.get(path);
+            } else {
+                try {
+                    CSV csv = new CSV();
+                    allCSVRecords.put(path, csv.get(path, dataFetcher.getCwd(), parserBuilder.build()));
+                } catch (IOException e) {
+                    throw e;
+                }
+                return allCSVRecords.get(path);
+            }
         }
     }
 
