@@ -138,7 +138,7 @@ public class Utils {
             // Too bad
         }
 
-        throw new FileNotFoundException();
+        throw new FileNotFoundException(path);
     }
 
     public static Reader getReaderFromURL(URL url) throws IOException {
