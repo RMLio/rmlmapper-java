@@ -10,7 +10,9 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.lang.NotImplementedException;
+import org.eclipse.rdf4j.query.resultio.text.BooleanTextParser;
 
 import java.io.IOException;
 import java.util.*;
@@ -169,6 +171,8 @@ public class RecordsFactory {
                 // TODO refactor getCSVRecords to set parser and reader from dialect terms
                 // TODO implement rest of https://www.w3.org/TR/tabular-metadata/#dialect-descriptions
                 // TODO refactor if statements
+
+                // commentPrefix
                 // Delimiter
                 // TODO must be a string
                 List<Term> delimiterTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "delimiter"), null));
@@ -176,22 +180,33 @@ public class RecordsFactory {
                     String delimiter = delimiterTerms.get(0).getValue();
                     parserBuilder.withSeparator(delimiter.toCharArray()[0]);
                 }
+                // doubleQuote
+                List<Term> doubleQuoteTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "doubleQuote"), null));
+                if (!doubleQuoteTerms.isEmpty()) {
+                    String doubleQuoteString = doubleQuoteTerms.get(0).getValue();
+                    boolean doubleQuote = doubleQuoteString.equals("true");
+                    parserBuilder.withEscapeChar(doubleQuote ? '\\' : '"');
+                }
                 // Encoding
                 // TODO refactor file Utils to set encoding
                 // TODO Validate encoding with http://www.w3.org/TR/encoding/
+
+                // header
+                // headerRowCount
+                // lineTerminators
                 // withQuoteChar
                 List<Term> quoteTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "quoteChar"), null));
                 if (!quoteTerms.isEmpty()) {
                     String quote = quoteTerms.get(0).getValue();
                     parserBuilder.withQuoteChar(quote.toCharArray()[0]);
                 }
-                // withEscapeChar
-                List<Term> escapeTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "escapeChar"), null));
-                if (!escapeTerms.isEmpty()) {
-                    String escape = escapeTerms.get(0).getValue();
-                    parserBuilder.withEscapeChar(escape.toCharArray()[0]);
-                }
-                // commentPrefix
+                // skipBlankRows
+                // skipColumns
+                // skipInitialSpace
+                // skipRows
+                // trim TODO not supported by opencsv, look at commons CSV or super CSV
+                // @id
+                // @type
             }
 
             if (allCSVRecords.containsKey(path)){
