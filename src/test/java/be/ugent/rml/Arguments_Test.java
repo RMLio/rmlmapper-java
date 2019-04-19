@@ -70,6 +70,14 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
+    public void testWithCustomFunctionFile() {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(stdout));
+        Main.main("-f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        assertThat(stdout.toString(), not(containsString("Using custom path to functions.ttl file: ")));
+    }
+
+    @Test
     public void outputTurtle() {
         Main.main("-m ./argument/mapping.ttl -o ./generated_output.ttl -s turtle".split(" "));
         compareFiles(
