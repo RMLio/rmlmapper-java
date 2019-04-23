@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+
+- Print function-file path when doing verbose debugging
+
 ### Fixed
 
 - FileNotFoundException: actually show which file wasn't found
+- Non-conforming language tags are detected
 
 ## [4.3.3] - 2019-03-15
 
