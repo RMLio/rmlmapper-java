@@ -79,7 +79,10 @@ abstract class TestCore {
             QuadStore result = executor.execute(null);
         } catch (Exception e) {
             // I expected you!
+            logger.warn(e.getMessage(), e);
+            return;
         }
+        fail("Expecting error not found");
     }
 
     private void compareStores(QuadStore store1, QuadStore store2) {
