@@ -54,6 +54,55 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
+    public void mappingFileAndRawMappingString() {
+        String arg1 = "./argument-config-file-test-cases/mapping_base.ttl";
+        String arg2 = "@prefix rml: <http://semweb.mmlab.be/ns/rml#> .\n" +
+                "@prefix ql: <http://semweb.mmlab.be/ns/ql#> .\n\n" +
+                "<LogicalSource1>\n" +
+                "    rml:source \"src/test/resources/argument-config-file-test-cases/student.json\";\n" +
+                "    rml:referenceFormulation ql:JSONPath;\n" +
+                "    rml:iterator \"$.students[*]\".\n" +
+                "\n" +
+                "<LogicalSource2>\n" +
+                "    rml:source \"src/test/resources/argument-config-file-test-cases/sport.json\";\n" +
+                "    rml:referenceFormulation ql:JSONPath;\n" +
+                "    rml:iterator \"$.sports[*]\".";
+        String[] args = {"-m", arg1, arg2, "-o" , "./generated_output.nq"};
+        Main.main(args);
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void multipleMappingFiles() {
+        Main.main("-m ./argument-config-file-test-cases/mapping_base.ttl ./argument-config-file-test-cases/mapping1.ttl -o ./generated_output.nq".split(" "));
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testVerboseWithCustomFunctionFile() {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         System.setOut(new PrintStream(stdout));
