@@ -56,7 +56,7 @@ public class Arguments_Test extends TestCore {
     @Test
     public void testVerboseWithCustomFunctionFile() {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(stdout));
+        System.setErr(new PrintStream(stdout));
         Main.main("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
         assertThat(stdout.toString(), containsString("Using custom path to functions.ttl file: "));
     }
@@ -64,7 +64,7 @@ public class Arguments_Test extends TestCore {
     @Test
     public void testVerboseWithoutCustomFunctionFile() {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(stdout));
+        System.setErr(new PrintStream(stdout));
         Main.main("-v -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
         assertThat(stdout.toString(), not(containsString("Using custom path to functions.ttl file: ")));
     }
@@ -72,7 +72,7 @@ public class Arguments_Test extends TestCore {
     @Test
     public void testWithCustomFunctionFile() {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(stdout));
+        System.setErr(new PrintStream(stdout));
         Main.main("-f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
         assertThat(stdout.toString(), not(containsString("Using custom path to functions.ttl file: ")));
     }
