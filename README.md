@@ -224,6 +224,11 @@ The RMLMapper's XML parsing implementation (`javax.xml.parsers`) has been chosen
 This implementation causes a large memory consumption (up to ten times larger than the original XML file size).
 However, the RMLMapper can be easily adapted to use a different XML parsing implementation that might be better suited for a specific use case.
 
+### Language tag support
+
+The processor checks whether correct language tags are not, using a regular expression.
+The regex has no support for languages of length 5-8, but this currently only applies to 'qaa..qtz'.
+
 # UML Diagrams
 
 ## Architecture UML Diagram

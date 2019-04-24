@@ -1,0 +1,16 @@
+de
+i-enochian
+zh-Hant
+zh-cmn-Hans-CN
+zh-Hans-CN
+sl-rozaj
+sl-rozaj-biske
+de-CH-1901
+sl-IT-nedis
+de-DE
+es-419
+de-CH-x-phonebk
+az-Arab-x-AZE-derbend
+x-whatever
+qaa-Qaaa-QM-x-southern
+de-Qaaa

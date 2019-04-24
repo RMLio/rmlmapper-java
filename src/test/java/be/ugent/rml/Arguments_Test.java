@@ -16,8 +16,9 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.*;
 
 public class Arguments_Test extends TestCore {
 
@@ -122,6 +123,30 @@ public class Arguments_Test extends TestCore {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testVerboseWithCustomFunctionFile() {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(stdout));
+        Main.main("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        assertThat(stdout.toString(), containsString("Using custom path to functions.ttl file: "));
+    }
+
+    @Test
+    public void testVerboseWithoutCustomFunctionFile() {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(stdout));
+        Main.main("-v -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        assertThat(stdout.toString(), not(containsString("Using custom path to functions.ttl file: ")));
+    }
+
+    @Test
+    public void testWithCustomFunctionFile() {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(stdout));
+        Main.main("-f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        assertThat(stdout.toString(), not(containsString("Using custom path to functions.ttl file: ")));
     }
 
     @Test
