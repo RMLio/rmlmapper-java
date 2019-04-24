@@ -10,11 +10,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
@@ -60,28 +55,10 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void mappingFileAndRawMappingString() {
-//        Pattern pattern = Pattern.compile("([^\\\\]\".*?[^\\\\]\"|\\S+)");
-//        List<String> list = new ArrayList<>();
-//        Matcher m = pattern.matcher("-m \"./argument-config-file-test-cases/mapping_base.ttl\" \"<LogicalSource1>\n" +
-//                "    rml:source \"src/test/resources/argument-config-file-test-cases/student.json\";\n" +
-//                "    rml:referenceFormulation ql:JSONPath;\n" +
-//                "    rml:iterator \"$.students[*]\".\n" +
-//                "\n" +
-//                "<LogicalSource2>\n" +
-//                "    rml:source \"src/test/resources/argument-config-file-test-cases/sport.json\";\n" +
-//                "    rml:referenceFormulation ql:JSONPath;\n" +
-//                "    rml:iterator \"$.sports[*]\".\" -o ./generated_output.nq");
-//        while (m.find()) {
-//            String s = m.group();
-//            // trim
-//            s = s.replaceAll("(\")* *$", "");
-//            s = s.replaceAll("^ *(\")*", "");
-//            list.add(s);
-//        }
-//        String[] args = new String[list.size()];
-//        args = list.toArray(args);
         String arg1 = "./argument-config-file-test-cases/mapping_base.ttl";
-        String arg2 = "<LogicalSource1>\n" +
+        String arg2 = "@prefix rml: <http://semweb.mmlab.be/ns/rml#> .\n" +
+                "@prefix ql: <http://semweb.mmlab.be/ns/ql#> .\n\n" +
+                "<LogicalSource1>\n" +
                 "    rml:source \"src/test/resources/argument-config-file-test-cases/student.json\";\n" +
                 "    rml:referenceFormulation ql:JSONPath;\n" +
                 "    rml:iterator \"$.students[*]\".\n" +

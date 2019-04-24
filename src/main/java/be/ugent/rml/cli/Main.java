@@ -13,22 +13,14 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.ReaderInputStream;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static be.ugent.rml.Utils.getInputStreamFromMOptionValue;
 
 public class Main {
 
@@ -40,7 +32,7 @@ public class Main {
                 .longOpt("mappingfile")
                 .hasArg()
                 .numberOfArgs(Option.UNLIMITED_VALUES)
-                .desc("one or more mapping file paths and/or strings. Multiple values are concatenated.")
+                .desc("one or more mapping file paths and/or strings (multiple values are concatenated)")
                 .build();
         Option outputfileOption = Option.builder("o")
                 .longOpt("outputfile")
@@ -171,7 +163,7 @@ public class Main {
                         metadataGenerator = new MetadataGenerator(
                                 detailLevel,
                                 getPriorityOptionValue(metadataOption, lineArgs, configFile),
-                                String.join(" ", mOptionValue),
+                                mOptionValue,
                                 rmlStore
                         );
                     } else {

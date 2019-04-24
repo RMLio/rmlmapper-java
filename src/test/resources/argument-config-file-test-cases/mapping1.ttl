@@ -1,3 +1,6 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+
 <LogicalSource1>
     rml:source "src/test/resources/argument-config-file-test-cases/student.json";
     rml:referenceFormulation ql:JSONPath;
