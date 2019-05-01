@@ -6,6 +6,7 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CSVBuilder {
 
@@ -54,9 +56,11 @@ public class CSVBuilder {
                 this.csvFormat = this.csvFormat.withEscape(doubleQuote ? '\\' : '"');
             }
             // Encoding
-            // TODO refactor file Utils to set encoding
-            // TODO Validate encoding with http://www.w3.org/TR/encoding/
-
+            List<Term> encodingTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "encoding"), null));
+            if (!encodingTerms.isEmpty()) {
+                String encodingString = encodingTerms.get(0).getValue();
+                this.csvCharset = Charset.forName(encodingString);
+            }
             // header
             // headerRowCount
             // lineTerminators
@@ -70,14 +74,24 @@ public class CSVBuilder {
             // skipColumns
             // skipInitialSpace
             // skipRows
-            // trim TODO not supported by opencsv, look at commons CSV or super CSV
+            // trim
+            List<Term> trimTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "trim"), null));
+            if (!trimTerms.isEmpty()) {
+                String trimString = trimTerms.get(0).getValue();
+                boolean trim = trimString.equals("true");
+                this.csvFormat = this.csvFormat.withTrim(trim);
+            }
             // @id
             // @type
         }
     }
 
     List<Record> getRecords() throws IOException {
-        return CSV.get(is, csvCharset, csvFormat);
+        CSVParser parser = CSVParser.parse(is, csvCharset, csvFormat);
+        List<org.apache.commons.csv.CSVRecord> myEntries = parser.getRecords();
+        return myEntries.stream()
+                .map(CSVRecordAdapter::new)
+                .collect(Collectors.toList());
     }
 
 }
