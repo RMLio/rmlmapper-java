@@ -8,11 +8,7 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.lang.NotImplementedException;
-import org.eclipse.rdf4j.query.resultio.text.BooleanTextParser;
 
 import java.io.IOException;
 import java.util.*;
@@ -124,8 +120,8 @@ public class RecordsFactory {
             return allCSVRecords.get(source);
         } else {
             try {
-                CSV csv = new CSV();
-                allCSVRecords.put(source, csv.get(source, dataFetcher.getCwd()));
+                CSVBuilder csvBuilder = new CSVBuilder(source, dataFetcher.getCwd());
+                allCSVRecords.put(source, csvBuilder.getRecords());
             } catch (IOException e) {
                 throw e;
             }
@@ -162,59 +158,16 @@ public class RecordsFactory {
 //            }
         } else {
             String path = url.get(0).getValue();
-            CSVParserBuilder parserBuilder =
-                    new CSVParserBuilder();
-            // CSVW Dialect options
-            List<Term> dialectTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "dialect"), null));
-            if (!dialectTerms.isEmpty()) {
-                Term dialect = dialectTerms.get(0);
-                // TODO refactor getCSVRecords to set parser and reader from dialect terms
-                // TODO implement rest of https://www.w3.org/TR/tabular-metadata/#dialect-descriptions
-                // TODO refactor if statements
 
-                // commentPrefix
-                // Delimiter
-                // TODO must be a string
-                List<Term> delimiterTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "delimiter"), null));
-                if (!delimiterTerms.isEmpty()) {
-                    String delimiter = delimiterTerms.get(0).getValue();
-                    parserBuilder.withSeparator(delimiter.toCharArray()[0]);
-                }
-                // doubleQuote
-                List<Term> doubleQuoteTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "doubleQuote"), null));
-                if (!doubleQuoteTerms.isEmpty()) {
-                    String doubleQuoteString = doubleQuoteTerms.get(0).getValue();
-                    boolean doubleQuote = doubleQuoteString.equals("true");
-                    parserBuilder.withEscapeChar(doubleQuote ? '\\' : '"');
-                }
-                // Encoding
-                // TODO refactor file Utils to set encoding
-                // TODO Validate encoding with http://www.w3.org/TR/encoding/
-
-                // header
-                // headerRowCount
-                // lineTerminators
-                // withQuoteChar
-                List<Term> quoteTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "quoteChar"), null));
-                if (!quoteTerms.isEmpty()) {
-                    String quote = quoteTerms.get(0).getValue();
-                    parserBuilder.withQuoteChar(quote.toCharArray()[0]);
-                }
-                // skipBlankRows
-                // skipColumns
-                // skipInitialSpace
-                // skipRows
-                // trim TODO not supported by opencsv, look at commons CSV or super CSV
-                // @id
-                // @type
-            }
 
             if (allCSVRecords.containsKey(path)){
                 return allCSVRecords.get(path);
             } else {
                 try {
-                    CSV csv = new CSV();
-                    allCSVRecords.put(path, csv.get(path, dataFetcher.getCwd(), parserBuilder.build()));
+                    CSVBuilder csvBuilder = new CSVBuilder(path, dataFetcher.getCwd());
+                    csvBuilder.setOptions(rmlStore, source, iterators, triplesMap);
+                    List<Record> records = csvBuilder.getRecords();
+                    allCSVRecords.put(path, records);
                 } catch (IOException e) {
                     throw e;
                 }

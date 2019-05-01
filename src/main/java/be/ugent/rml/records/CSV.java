@@ -1,46 +1,42 @@
 package be.ugent.rml.records;
 
 import be.ugent.rml.Utils;
-import com.opencsv.CSVParser;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.nio.charset.Charset;
+import java.util.*;
 
 public class CSV {
 
-    protected String getContentType() {
-        return "text/csv";
-    }
+    public static List<Record> get(InputStream inputStream, Charset charset, CSVFormat format) throws IOException {
+        CSVParser parser = CSVParser.parse(inputStream, charset, format);
 
-    public List<Record> get(String path) throws IOException {
-        return get(path, System.getProperty("user.dir"), new CSVParser());
-    }
+        List<org.apache.commons.csv.CSVRecord> myEntries = parser.getRecords();
+        List<Record> records = new ArrayList<>();
 
-    public List<Record> get(String path, String cwd) throws IOException {
-        Reader reader = Utils.getReaderFromLocation(path, new File(cwd), getContentType());
-        return _get(reader);
-    }
+        Set<String> headerSet = myEntries.get(0).toMap().keySet();
+        String[] headers = headerSet.toArray(new String[headerSet.size()]);
 
-    public List<Record> get(String path, CSVParser parser) throws IOException {
-        return get(path, System.getProperty("user.dir"), parser);
-    }
+        for (org.apache.commons.csv.CSVRecord myEntry : myEntries) {
+            HashMap<String, List<Object>> values = new HashMap<>();
 
-    public List<Record> get(String path, String cwd, CSVParser parser) throws IOException {
-        Reader reader = Utils.getReaderFromLocation(path, new File(cwd), getContentType());
-        return _get(reader, parser);
-    }
+            for (int j = 0; j < headers.length; j++) {
+                List<Object> temp = new ArrayList<>();
+                temp.add(myEntry.get(j));
+                values.put(headers[j], temp);
+            }
 
-    public List<Record> _get(Reader reader, CSVParser parser) throws IOException {
-        CSVReader csvReader = new CSVReaderBuilder(reader)
-                .withCSVParser(parser)
-                .build();
-        return _get(csvReader);
+            records.add(new CSVRecord(values));
+        }
+
+        return records;
     }
 
     public List<Record> _get(Reader reader) throws IOException {

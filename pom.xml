@@ -36,9 +36,9 @@
             <version>2.6</version>
         </dependency>
         <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>4.0</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
