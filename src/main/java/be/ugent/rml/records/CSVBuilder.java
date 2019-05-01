@@ -7,7 +7,6 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CSVBuilder {
+class CSVBuilder {
 
     private String getContentType() {
         return "text/csv";
@@ -27,62 +26,109 @@ public class CSVBuilder {
     private Charset csvCharset = StandardCharsets.UTF_8;
     private InputStream is;
 
+    private QuadStore rmlStore;
+    private List<Term> iterators;
+    private Term triplesMap;
+    private Term dialect;
+
     CSVBuilder(String path, String cwd) throws IOException {
         this.is = Utils.getInputStreamFromLocation(path, new File(cwd), getContentType());
     }
+    
+    private String helper(String term) {
+        List<Term> terms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.dialect, new NamedNode(NAMESPACES.CSVW + term), null));
+        if (!terms.isEmpty()) {
+            return  terms.get(0).getValue();
+        }
+        return null;
+    }
+
+    private Character computeCommentPrefix() {
+        String output = helper("commentPrefix");
+        if (output == null) {
+            return this.csvFormat.getCommentMarker();
+        } else {
+            return output.toCharArray()[0];
+        }
+    }
+
+    private boolean computeTrim() {
+        String output = helper("trim");
+        if (output == null) {
+            return this.csvFormat.getTrim();
+        } else {
+            return output.equals("true");
+        }
+    }
+
+    private Character computeDelimiter() {
+        String output = helper("delimiter");
+        if (output == null) {
+            return this.csvFormat.getDelimiter();
+        } else {
+            return output.toCharArray()[0];
+        }
+    }
+
+    private Character computeDoubleQuote() {
+        String output = helper("doubleQuote");
+        if (output == null) {
+            return this.csvFormat.getEscapeCharacter();
+        } else {
+            return output.equals("true") ? '\\' : '"';
+        }
+    }
+
+    private Character computeQuote() {
+        String output = helper("quoteChar");
+        if (output == null) {
+            return this.csvFormat.getQuoteCharacter();
+        } else {
+            return output.toCharArray()[0];
+        }
+    }
 
     void setOptions(QuadStore rmlStore, Term source, List<Term> iterators, Term triplesMap) {
+
+        this.rmlStore = rmlStore;
+        this.iterators = iterators;
+        this.triplesMap = triplesMap;
+
         // CSVW Dialect options
         List<Term> dialectTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "dialect"), null));
         if (!dialectTerms.isEmpty()) {
-            Term dialect = dialectTerms.get(0);
-            // TODO refactor getCSVRecords to set parser and reader from dialect terms
-            // TODO implement rest of https://www.w3.org/TR/tabular-metadata/#dialect-descriptions
-            // TODO refactor if statements
 
-            // commentPrefix
-            // Delimiter
-            // TODO must be a string
-            List<Term> delimiterTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "delimiter"), null));
-            if (!delimiterTerms.isEmpty()) {
-                String delimiter = delimiterTerms.get(0).getValue();
-                this.csvFormat = this.csvFormat.withDelimiter(delimiter.toCharArray()[0]);
-            }
-            // doubleQuote
-            List<Term> doubleQuoteTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "doubleQuote"), null));
-            if (!doubleQuoteTerms.isEmpty()) {
-                String doubleQuoteString = doubleQuoteTerms.get(0).getValue();
-                boolean doubleQuote = doubleQuoteString.equals("true");
-                this.csvFormat = this.csvFormat.withEscape(doubleQuote ? '\\' : '"');
-            }
+            this.dialect = dialectTerms.get(0);
+
+            // TODO implement rest of https://www.w3.org/TR/tabular-metadata/#dialect-descriptions
+            // TODO refactor to CSVFormatBuilder
+            this.csvFormat = this.csvFormat
+                    // commentPrefix
+                    .withCommentMarker(computeCommentPrefix())
+                    // delimiter
+                    .withDelimiter(computeDelimiter())
+                    // doubleQuote
+                    .withEscape(computeDoubleQuote())
+                    // header
+                    // headerRowCount
+                    // lineTerminators
+                    // trim
+                    .withTrim(computeTrim())
+                    // skipBlankRows
+                    // skipColumns
+                    // skipInitialSpace
+                    // skipRows
+                    // @id
+                    // @type
+                    // withQuoteChar
+                    .withQuote(computeQuote())
+            ;
+
             // Encoding
-            List<Term> encodingTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "encoding"), null));
-            if (!encodingTerms.isEmpty()) {
-                String encodingString = encodingTerms.get(0).getValue();
-                this.csvCharset = Charset.forName(encodingString);
+            String encoding = helper("encoding");
+            if (encoding != null) {
+                this.csvCharset = Charset.forName(encoding);
             }
-            // header
-            // headerRowCount
-            // lineTerminators
-            // withQuoteChar
-            List<Term> quoteTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "quoteChar"), null));
-            if (!quoteTerms.isEmpty()) {
-                String quote = quoteTerms.get(0).getValue();
-                this.csvFormat = this.csvFormat.withQuote(quote.toCharArray()[0]);
-            }
-            // skipBlankRows
-            // skipColumns
-            // skipInitialSpace
-            // skipRows
-            // trim
-            List<Term> trimTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "trim"), null));
-            if (!trimTerms.isEmpty()) {
-                String trimString = trimTerms.get(0).getValue();
-                boolean trim = trimString.equals("true");
-                this.csvFormat = this.csvFormat.withTrim(trim);
-            }
-            // @id
-            // @type
         }
     }
 
