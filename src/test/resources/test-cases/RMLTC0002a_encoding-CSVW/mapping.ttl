@@ -31,6 +31,5 @@
 <#CSVW_source> a csvw:Table;
    csvw:url "student.csv" ;
    csvw:dialect [ a csvw:Dialect;
-       csvw:delimiter ";";
-       csvw:encoding "UTF-8"
+       csvw:encoding "UTF-16"
    ] .

@@ -120,8 +120,8 @@ public class RecordsFactory {
             return allCSVRecords.get(source);
         } else {
             try {
-                CSVBuilder csvBuilder = new CSVBuilder(source, dataFetcher.getCwd());
-                allCSVRecords.put(source, csvBuilder.getRecords());
+                CSVW CSVW = new CSVW(source, dataFetcher.getCwd());
+                allCSVRecords.put(source, CSVW.getRecords());
             } catch (IOException e) {
                 throw e;
             }
@@ -164,9 +164,9 @@ public class RecordsFactory {
                 return allCSVRecords.get(path);
             } else {
                 try {
-                    CSVBuilder csvBuilder = new CSVBuilder(path, dataFetcher.getCwd());
-                    csvBuilder.setOptions(rmlStore, source, iterators, triplesMap);
-                    List<Record> records = csvBuilder.getRecords();
+                    CSVW CSVW = new CSVW(path, dataFetcher.getCwd());
+                    CSVW.setOptions(rmlStore, source, iterators, triplesMap);
+                    List<Record> records = CSVW.getRecords();
                     allCSVRecords.put(path, records);
                 } catch (IOException e) {
                     throw e;

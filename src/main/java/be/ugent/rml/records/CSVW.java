@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class CSVBuilder {
+class CSVW {
 
     private String getContentType() {
         return "text/csv";
@@ -31,7 +31,7 @@ class CSVBuilder {
     private Term triplesMap;
     private Term dialect;
 
-    CSVBuilder(String path, String cwd) throws IOException {
+    CSVW(String path, String cwd) throws IOException {
         this.is = Utils.getInputStreamFromLocation(path, new File(cwd), getContentType());
     }
     
