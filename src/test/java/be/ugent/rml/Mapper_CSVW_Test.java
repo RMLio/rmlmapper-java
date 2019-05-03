@@ -17,7 +17,8 @@ public class Mapper_CSVW_Test extends TestCore {
         return Arrays.asList(new Object[][]{
                 {"delimiter"},
                 {"encoding"},
-                {"tabs"}
+                {"tabs"},
+                {"trim"}
         });
 
     }

@@ -123,6 +123,7 @@ class CSVW {
                     // headerRowCount
                     // lineTerminators
                     // trim
+                    // TODO Commons CSV doesn't support start or end trimming
                     .withTrim(computeTrim())
                     // skipBlankRows
                     // skipColumns
