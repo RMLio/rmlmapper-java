@@ -32,5 +32,4 @@
    csvw:url "student.csv" ;
    csvw:dialect [ a csvw:Dialect;
        csvw:delimiter " ";
-       csvw:encoding "UTF-8"
    ] .

@@ -52,6 +52,15 @@ class CSVW {
         }
     }
 
+    private boolean computeSkipHeader() {
+        String output = helper("header");
+        if (output == null) {
+            return this.csvFormat.getSkipHeaderRecord();
+        } else {
+            return output.equals("true");
+        }
+    }
+
     private boolean computeTrim() {
         String output = helper("trim");
         if (output == null) {
@@ -101,7 +110,7 @@ class CSVW {
             this.dialect = dialectTerms.get(0);
 
             // TODO implement rest of https://www.w3.org/TR/tabular-metadata/#dialect-descriptions
-            // TODO refactor to CSVFormatBuilder
+            // TODO implement CSVW Schema class to add header types
             this.csvFormat = this.csvFormat
                     // commentPrefix
                     .withCommentMarker(computeCommentPrefix())
@@ -110,6 +119,7 @@ class CSVW {
                     // doubleQuote
                     .withEscape(computeDoubleQuote())
                     // header
+                    .withSkipHeaderRecord(computeSkipHeader())
                     // headerRowCount
                     // lineTerminators
                     // trim
