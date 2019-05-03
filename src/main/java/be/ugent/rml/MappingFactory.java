@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import static be.ugent.rml.Utils.isValidrrLanguage;
+
 public class MappingFactory {
     private final FunctionLoader functionLoader;
     private MappingInfo subjectMappingInfo;
@@ -57,7 +59,7 @@ public class MappingFactory {
 
             if (!subjectmaps.isEmpty()) {
                 if (subjectmaps.size() > 1) {
-                    logger.warn(triplesMap + " has " + subjectmaps.size() + "Subject Maps. You can only have one. A random one is taken.");
+                    throw new Exception(String.format("%s has %d Subject Maps. You can only have one.", triplesMap, subjectmaps.size()));
                 }
 
                 Term subjectmap = subjectmaps.get(0);
@@ -179,6 +181,11 @@ public class MappingFactory {
         List<Term> languages = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "language"), null));
         List<Term> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), null));
         List<Term> parentTermMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "parentTermMap"), null));
+
+        // validate languages
+        languages.stream().map(Term::getValue).forEach(language -> {if (! isValidrrLanguage(language)) {
+            throw new RuntimeException(String.format("Language tag \"%s\" does not conform to BCP 47 standards", language));
+        }});
 
         if (functionValues.isEmpty()) {
             boolean encodeIRI = termType != null && termType.getValue().equals(NAMESPACES.RR + "IRI");

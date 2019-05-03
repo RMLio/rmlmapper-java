@@ -11,8 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.*;
 
 public class Arguments_Test extends TestCore {
 
@@ -50,6 +51,79 @@ public class Arguments_Test extends TestCore {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void mappingFileAndRawMappingString() {
+        String arg1 = "./argument-config-file-test-cases/mapping_base.ttl";
+        String arg2 = "@prefix rml: <http://semweb.mmlab.be/ns/rml#> .\n" +
+                "@prefix ql: <http://semweb.mmlab.be/ns/ql#> .\n\n" +
+                "<LogicalSource1>\n" +
+                "    rml:source \"src/test/resources/argument-config-file-test-cases/student.json\";\n" +
+                "    rml:referenceFormulation ql:JSONPath;\n" +
+                "    rml:iterator \"$.students[*]\".\n" +
+                "\n" +
+                "<LogicalSource2>\n" +
+                "    rml:source \"src/test/resources/argument-config-file-test-cases/sport.json\";\n" +
+                "    rml:referenceFormulation ql:JSONPath;\n" +
+                "    rml:iterator \"$.sports[*]\".";
+        String[] args = {"-m", arg1, arg2, "-o" , "./generated_output.nq"};
+        Main.main(args);
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void multipleMappingFiles() {
+        Main.main("-m ./argument-config-file-test-cases/mapping_base.ttl ./argument-config-file-test-cases/mapping1.ttl -o ./generated_output.nq".split(" "));
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testVerboseWithCustomFunctionFile() {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(stdout));
+        Main.main("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        assertThat(stdout.toString(), containsString("Using custom path to functions.ttl file: "));
+    }
+
+    @Test
+    public void testVerboseWithoutCustomFunctionFile() {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(stdout));
+        Main.main("-v -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        assertThat(stdout.toString(), not(containsString("Using custom path to functions.ttl file: ")));
+    }
+
+    @Test
+    public void testWithCustomFunctionFile() {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(stdout));
+        Main.main("-f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        assertThat(stdout.toString(), not(containsString("Using custom path to functions.ttl file: ")));
     }
 
     @Test

@@ -67,6 +67,7 @@ public class FunctionLoader {
         } else {
             this.functionsFile = functionsFile;
             this.basePath = this.functionsFile.getParentFile();
+            logger.debug("Using custom path to functions.ttl file: " + this.functionsFile.toString());
         }
 
         if (functionDescriptionTriples == null) {

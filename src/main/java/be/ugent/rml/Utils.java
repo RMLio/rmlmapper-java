@@ -48,6 +48,8 @@ import java.util.stream.Stream;
 public class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+    // Without support for custom registered languages of length 5-8 of the IANA language-subtag-registry
+    private static final Pattern regexPatternLanguageTag = Pattern.compile("^((?:(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?:([A-Za-z]{2,3}(-(?:[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4})(-(?:[A-Za-z]{4}))?(-(?:[A-Za-z]{2}|[0-9]{3}))?(-(?:[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?:[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?:x(-[A-Za-z0-9]{1,8})+))?)|(?:x(-[A-Za-z0-9]{1,8})+))$");
 
     public static Reader getReaderFromLocation(String location) throws IOException {
         return getReaderFromLocation(location, null, "");
@@ -72,15 +74,26 @@ public class Utils {
 
     public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
         if (isRemoteFile(location)) {
-            try {
-                return getInputStreamFromURL(new URL(location), contentType);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
+            return getInputStreamFromURL(new URL(location), contentType);
         } else {
             return getInputStreamFromFile(getFile(location, basePath));
         }
+    }
+
+    public static InputStream getInputStreamFromMOptionValue(String mOptionValue) {
+        InputStream out;
+        try {
+            out = getInputStreamFromLocation(mOptionValue, null, "application/rdf+xml");
+        } catch (IOException e) {
+            try {
+                // raw mapping input string
+                out = IOUtils.toInputStream(mOptionValue, "UTF-8");
+            } catch (IOException e2) {
+                logger.error("Cannot read mapping option {}", mOptionValue);
+                out = new ByteArrayInputStream(new byte[0]);
+            }
+        }
+        return out;
     }
 
     /**
@@ -138,7 +151,7 @@ public class Utils {
             // Too bad
         }
 
-        throw new FileNotFoundException();
+        throw new FileNotFoundException(path);
     }
 
     public static Reader getReaderFromURL(URL url) throws IOException {
@@ -248,6 +261,16 @@ public class Utils {
             e.printStackTrace();
         }
         return new RDF4JStore(model);
+    }
+
+    /**
+     * Check if conforming to https://tools.ietf.org/html/bcp47#section-2.2.9
+     *
+     * @param s language tag
+     * @return True if valid language tag according to BCP 47
+     */
+    public static boolean isValidrrLanguage(String s) {
+        return regexPatternLanguageTag.matcher(s).matches();
     }
 
     public static RDF4JStore readTurtle(File file, RDFFormat format) {
