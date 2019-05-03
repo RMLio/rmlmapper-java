@@ -229,6 +229,12 @@ However, the RMLMapper can be easily adapted to use a different XML parsing impl
 The processor checks whether correct language tags are not, using a regular expression.
 The regex has no support for languages of length 5-8, but this currently only applies to 'qaa..qtz'.
 
+# Documentation
+Generate static files at /docs/apidocs with:
+```
+mvn javadoc:javadoc
+```
+
 # UML Diagrams
 
 ## Architecture UML Diagram
@@ -239,10 +245,8 @@ The regex has no support for languages of length 5-8, but this currently only ap
 * Diagrams > Show Diagram > Java Class Diagrams
 * Choose what properties of the classes you want to show in the upper left corner
 * Export to file > .png  | Save diagram > .uml
-<<<<<<< README.md
 
 ## Sequence Diagram
 ### Edit on [draw.io](https://www.draw.io)
 * Go to [draw.io](https://www.draw.io)
 * Click on 'Open Existing Diagram' and choose the .html file
-=======
