@@ -19,12 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -35,7 +31,8 @@ public class Main {
         Option mappingdocOption = Option.builder("m")
                 .longOpt("mappingfile")
                 .hasArg()
-                .desc("path to mapping document")
+                .numberOfArgs(Option.UNLIMITED_VALUES)
+                .desc("one or more mapping file paths and/or strings (multiple values are concatenated)")
                 .build();
         Option outputfileOption = Option.builder("o")
                 .longOpt("outputfile")
@@ -119,11 +116,14 @@ public class Main {
                 setLoggerLevel(Level.ERROR);
             }
 
-            String mOptionValue = getPriorityOptionValue(mappingdocOption, lineArgs, configFile);
+            String[] mOptionValue = getOptionValues(mappingdocOption, lineArgs, configFile);
             if (mOptionValue == null) {
                 printHelp(options);
             } else {
-                InputStream is = Utils.getInputStreamFromLocation(mOptionValue, null, "application/rdf+xml");
+                List<InputStream> lis = Arrays.stream(mOptionValue)
+                        .map(Utils::getInputStreamFromMOptionValue)
+                        .collect(Collectors.toList());
+                InputStream is = new SequenceInputStream(Collections.enumeration(lis));
                 RDF4JStore rmlStore = Utils.readTurtle(is, RDFFormat.TURTLE);
                 RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
 
@@ -250,6 +250,17 @@ public class Main {
             return null;
         }
     }
+
+    private static String[] getOptionValues(Option option, CommandLine lineArgs, Properties properties) {
+        if (lineArgs.hasOption(option.getOpt())) {
+            return lineArgs.getOptionValues(option.getOpt());
+        } else if (properties != null && properties.getProperty(option.getLongOpt()) != null) {
+            return properties.getProperty(option.getLongOpt()).split(" ");
+        } else {
+            return null;
+        }
+    }
+
 
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
