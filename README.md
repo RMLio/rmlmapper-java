@@ -150,7 +150,7 @@ import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
-import com.google.common.io.Resources;
+import be.ugent.rml.Utils;
 
 import java.io.File;
 import java.net.URL;
@@ -164,16 +164,14 @@ class Main {
         String mapPath = "path/to/mapping/file";
         String functionPath = "path/to/functions.ttl/file";
 
-        URL url = Resources.getResource(functionPath);
-        
         Map<String, Class> libraryMap = new HashMap<>();
         libraryMap.put("GrelFunctions.jar", GrelProcessor.class);
         try {
-            File functionsFile = new File(url.toURI());
+            File functionsFile = Utils.getFile(functionPath);
             FunctionLoader functionLoader = new FunctionLoader(functionsFile, null, libraryMap);
             ClassLoader classLoader = Main.class.getClassLoader();
             // execute mapping file
-            File mappingFile = new File(classLoader.getResource(mapPath).getFile());
+            File mappingFile = Utils.getFile(mapPath);
             QuadStore rmlStore = Utils.readTurtle(mappingFile);
             
             Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)),

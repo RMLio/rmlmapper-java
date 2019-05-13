@@ -1,6 +1,5 @@
 package be.ugent.rml;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class Custom_RML_FnO_Mapper_JSON_Test extends TestFunctionCore {

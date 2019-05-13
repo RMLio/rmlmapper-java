@@ -1,7 +1,6 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
