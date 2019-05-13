@@ -4,7 +4,6 @@ import be.ugent.rml.records.Record;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 public abstract class AbstractSingleRecordFunctionExecutor implements SingleRecordFunctionExecutor {
 

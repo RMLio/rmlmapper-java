@@ -1,10 +1,7 @@
 package be.ugent.rml.functions;
 
 import be.ugent.rml.Template;
-import be.ugent.rml.Utils;
-import be.ugent.rml.records.Record;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

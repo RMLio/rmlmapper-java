@@ -1,11 +1,9 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
-import com.google.common.io.Resources;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,9 +13,8 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
 
     @Test
     public void evaluate_A001() {
-        URL url = Resources.getResource("rml-fno-test-cases/functions_dynamic.ttl");
         try {
-            File myFile = new File(url.toURI());
+            File myFile = Utils.getFile("rml-fno-test-cases/functions_dynamic.ttl");
             FunctionLoader functionLoader = new FunctionLoader(myFile);
             Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionLoader);
             doMapping(executor, "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");

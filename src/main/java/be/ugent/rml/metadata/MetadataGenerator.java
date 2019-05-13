@@ -34,7 +34,7 @@ public class MetadataGenerator {
     private DETAIL_LEVEL detailLevel;
     private String outputFile;
     private QuadStore inputData;
-    private String mappingFile;
+    private String[] mappingFiles;
     private List<Term> triplesMaps;
     private List<BiConsumer<Term, ProvenancedQuad>> generationFunctions;    // Will contain different functions according to requested metadata detail level
     private List<Term> logicalSources;
@@ -50,12 +50,12 @@ public class MetadataGenerator {
     private Term rdfDatasetGeneration;
     private Term rmlMapper;
 
-    public MetadataGenerator(DETAIL_LEVEL detailLevel, String outputFile, String mappingFile, QuadStore inputData) {
+    public MetadataGenerator(DETAIL_LEVEL detailLevel, String outputFile, String[] mappingFiles, QuadStore inputData) {
         mdStore = new SimpleQuadStore();
         this.detailLevel = detailLevel;
         this.outputFile = outputFile;
         this.inputData = inputData;
-        this.mappingFile = mappingFile;
+        this.mappingFiles = mappingFiles;
 
         distinctSubjects = new HashSet<>();
         distinctObjects = new HashSet<>();
@@ -129,7 +129,7 @@ public class MetadataGenerator {
     public void postMappingGeneration(String startTimestamp, String stopTimestamp, QuadStore result) {
         if (detailLevel.getLevel() >= DETAIL_LEVEL.DATASET.getLevel()) {
             DatasetLevelMetadataGenerator.createMetadata(rdfDataset, rdfDatasetGeneration, rmlMapper,
-                    mdStore, getLogicalSources(triplesMaps, inputData), startTimestamp, stopTimestamp, mappingFile);
+                    mdStore, getLogicalSources(triplesMaps, inputData), startTimestamp, stopTimestamp, mappingFiles);
             if (detailLevel.getLevel() >= DETAIL_LEVEL.TRIPLE.getLevel()) {
                 generatePostTripleLevelDetailMetadata(result);
             }

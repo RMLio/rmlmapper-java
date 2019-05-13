@@ -14,7 +14,7 @@ public class DatasetLevelMetadataGenerator {
 
     public static void createMetadata(Term rdfDataset, Term rdfDatasetGeneration, Term rmlMapper,
                                       QuadStore result, List<Term> logicalSources,
-                                      String startTimestamp, String stopTimestamp, String mappingFile) {
+                                      String startTimestamp, String stopTimestamp, String[] mappingFiles) {
         // <#RDF_Dataset>
         result.addTriple(rdfDataset, new NamedNode(NAMESPACES.RDF + "type"),
                 new NamedNode(NAMESPACES.PROV + "Entity"));
@@ -42,8 +42,10 @@ public class DatasetLevelMetadataGenerator {
                 new Literal(startTimestamp, new NamedNode(NAMESPACES.XSD + "dateTime")));
         result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "endedAtTime"),
                 new Literal(stopTimestamp, new NamedNode(NAMESPACES.XSD + "dateTime")));
-        result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
+        for (String mappingFile : mappingFiles) {
+            result.addTriple(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
                 new NamedNode(String.format("file://%s", mappingFile)));
+        }
         for (Term logicalSource : logicalSources) {
             result.addTriple(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
                     logicalSource);
