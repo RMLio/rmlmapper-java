@@ -111,6 +111,16 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
+    public void testStdOut() {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(stdout));
+        Main.main("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl".split(" "));
+        assertThat(stdout.toString(), containsString("<http://example.com/10> <http://xmlns.com/foaf/0.1/name> \"Venus\\\"\"."));
+        assertThat(stdout.toString(), containsString("<http://example.com/10> <http://example.com/id> \"10\"."));
+        assertThat(stdout.toString(), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>."));
+    }
+
+    @Test
     public void testVerboseWithoutCustomFunctionFile() {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         System.setErr(new PrintStream(stdout));
