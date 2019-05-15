@@ -1,12 +1,9 @@
 package be.ugent.rml.records;
 
-import be.ugent.rml.Utils;
 import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
