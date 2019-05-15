@@ -34,7 +34,7 @@ public class Mapper_CSVW_Test extends TestCore {
     }
 
     private void doCSVWTest(String name) {
-        String base = "./test-cases/RMLTC0002a_" + name + "-CSVW/";
+        String base = "./test-cases-CSVW/RMLTC0002a_" + name + "-CSVW/";
         doMapping(base + "mapping.ttl", base + "output.nq");
     }
 }
