@@ -16,7 +16,27 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 public class XML extends IteratorFormat {
+
+    // Avoid downloading external DTDs (and entities) found in XMLs,
+    // if those files can be found in the classpath.
+    public class LocalEntityResolver implements EntityResolver {
+        @Override
+        public InputSource resolveEntity(String publicId, String systemId)
+            throws SAXException, IOException {
+            String fileName = systemId.substring(systemId.lastIndexOf("/") + 1);
+            if (getClass().getClassLoader().getResource(fileName) != null) {
+                return new InputSource(getClass().getClassLoader().getResourceAsStream(fileName));
+            } else {
+                // if a local file is not found, use the default behaviour
+                return null;
+            }
+        }
+    }
 
     protected String getContentType() {
         return "application/xml";
@@ -28,7 +48,9 @@ public class XML extends IteratorFormat {
 
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setValidating(false);
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            builder.setEntityResolver(new LocalEntityResolver());
             Document xmlDocument = builder.parse(stream);
 
             XPath xPath = XPathFactory.newInstance().newXPath();
