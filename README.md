@@ -73,7 +73,6 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 
-import be.ugent.rml.DataFetcher;
 import be.ugent.rml.Executor;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JStore;
@@ -95,7 +94,7 @@ class Main {
             Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
             RDF4JStore rmlStore = new RDF4JStore(model);
 
-            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(cwd, rmlStore)));
+            Executor executor = new Executor(rmlStore, new RecordsFactory(cwd));
             QuadStore result = executor.execute(null);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -174,7 +173,7 @@ class Main {
             File mappingFile = Utils.getFile(mapPath);
             QuadStore rmlStore = Utils.readTurtle(mappingFile);
             
-            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)),
+            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent())),
                 functionLoader);
             QuadStore result = executor.execute(null);
         } catch (Exception e) {

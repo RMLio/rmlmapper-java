@@ -98,7 +98,7 @@ public class SPARQL {
         try {
             return csv._get(new StringReader(content));
         } catch (IOException ex) {
-            throw new Error("Could not convert XML into XMLRecords. Error message: " + ex.getMessage());
+            throw new Error("Could not convert CSV into CSVRecords. Error message: " + ex.getMessage());
         }
     }
 

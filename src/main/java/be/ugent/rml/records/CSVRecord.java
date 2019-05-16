@@ -16,6 +16,10 @@ public class CSVRecord extends Record {
         this.datatypes = new HashMap<>();
     }
 
+    public CSVRecord(org.apache.commons.csv.CSVRecord csvRecord) {
+        this.datatypes = new HashMap<>();
+    }
+
     public CSVRecord(Map<String, List<Object>> values, Map<String, String> datatypes) {
         this.values = values;
         this.datatypes = datatypes;
