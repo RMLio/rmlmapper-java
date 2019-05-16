@@ -8,7 +8,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 
 ### Supported
 - local data sources:
- - CSV files
+ - CSV files (including CSVW)
  - JSON files (JSONPath)
  - XML files (XPath)
 - remote data sources:
