@@ -125,7 +125,7 @@ public class Main {
                         .collect(Collectors.toList());
                 InputStream is = new SequenceInputStream(Collections.enumeration(lis));
                 RDF4JStore rmlStore = Utils.readTurtle(is, RDFFormat.TURTLE);
-                RecordsFactory factory = new RecordsFactory(System.getProperty("user.dir"));
+                RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
 
                 String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
                 QuadStore outputStore;

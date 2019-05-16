@@ -30,7 +30,7 @@ abstract class TestCore {
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
         return new Executor(rmlStore,
-                new RecordsFactory(mappingFile.getParent()), Utils.getBaseDirectiveTurtle(mappingFile));
+                new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)), Utils.getBaseDirectiveTurtle(mappingFile));
     }
 
     Executor createExecutor(String mapPath, FunctionLoader functionLoader) throws Exception {
@@ -39,7 +39,7 @@ abstract class TestCore {
         File mappingFile = new File(classLoader.getResource(mapPath).getFile());
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
-        return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()),
+        return new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)),
                 functionLoader, Utils.getBaseDirectiveTurtle(mappingFile));
     }
 
@@ -75,7 +75,7 @@ abstract class TestCore {
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
 
         try {
-            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), Utils.getBaseDirectiveTurtle(mappingFile));
+            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)), Utils.getBaseDirectiveTurtle(mappingFile));
             QuadStore result = executor.execute(null);
         } catch (Exception e) {
             // I expected you!

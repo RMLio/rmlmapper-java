@@ -1,6 +1,7 @@
 package be.ugent.rml.records;
 
 import be.ugent.rml.DatabaseType;
+import be.ugent.rml.DataFetcher;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
@@ -14,25 +15,20 @@ import java.util.*;
 
 public class RecordsFactory {
 
-    private String cwd;
+    private DataFetcher dataFetcher;
     private Map<String, List<Record>> allCSVRecords;
     private Map<String, Map<String, List<Record>>> allJSONRecords;
     private Map<String, Map<String, List<Record>>> allXMLRecords;
     private Map<String, Map<Integer, List<Record>>> allRDBsRecords;
     private Map<String, Map<Integer, List<Record>>> allSPARQLRecords;
-    /**
-     * map: data source -> logical source -> list of records
-     */
-    private Map<String, Map<String, List<Record>>> allRecords;
 
-    public RecordsFactory(String cwd) {
-        this.cwd = cwd;
+    public RecordsFactory(DataFetcher dataFetcher) {
+        this.dataFetcher = dataFetcher;
         allCSVRecords = new HashMap<>();
         allJSONRecords = new HashMap<>();
         allXMLRecords = new HashMap<>();
         allRDBsRecords = new HashMap<>();
         allSPARQLRecords = new HashMap<>();
-        allRecords = new HashMap<>();
     }
 
     public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
@@ -124,7 +120,7 @@ public class RecordsFactory {
             return allCSVRecords.get(source);
         } else {
             try {
-                CSVW CSVW = new CSVW(source, this.cwd);
+                CSVW CSVW = new CSVW(source, dataFetcher.getCwd());
                 allCSVRecords.put(source, CSVW.getRecords());
             } catch (IOException e) {
                 throw e;
@@ -146,7 +142,7 @@ public class RecordsFactory {
 //            } else {
 //                try {
 //                    XML xml = new XML();
-//                    List<Record> records = xml.get(source, iterator, this.cwd);
+//                    List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
 //
 //                    if (allCSVRecords.containsKey(source)) {
 //                        allCSVRecords.get(source).put(iterator, records);
@@ -168,7 +164,7 @@ public class RecordsFactory {
                 return allCSVRecords.get(path);
             } else {
                 try {
-                    CSVW CSVW = new CSVW(path, this.cwd);
+                    CSVW CSVW = new CSVW(path, dataFetcher.getCwd());
                     CSVW.setOptions(rmlStore, source, iterators, triplesMap);
                     List<Record> records = CSVW.getRecords();
                     allCSVRecords.put(path, records);
@@ -189,7 +185,7 @@ public class RecordsFactory {
             } else {
                 try {
                     XML xml = new XML();
-                    List<Record> records = xml.get(source, iterator, this.cwd);
+                    List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
 
                     if (allXMLRecords.containsKey(source)) {
                         allXMLRecords.get(source).put(iterator, records);
@@ -218,7 +214,7 @@ public class RecordsFactory {
             } else {
                 try {
                     JSON json = new JSON();
-                    List<Record> records = json.get(source, iterator, this.cwd);
+                    List<Record> records = json.get(source, iterator, dataFetcher.getCwd());
 
                     if (allJSONRecords.containsKey(source)) {
                         allJSONRecords.get(source).put(iterator, records);
