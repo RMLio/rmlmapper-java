@@ -35,6 +35,10 @@ class CSVW {
         this.is = Utils.getInputStreamFromLocation(path, new File(cwd), getContentType());
     }
     
+    CSVW(InputStream inputStream) throws IOException {
+        this.is = inputStream;
+    }
+    
     private String helper(String term) {
         List<Term> terms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.dialect, new NamedNode(NAMESPACES.CSVW + term), null));
         if (!terms.isEmpty()) {
