@@ -11,6 +11,7 @@ import be.ugent.rml.term.Term;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 public class RecordsFactory {
@@ -21,9 +22,9 @@ public class RecordsFactory {
     private Map<String, Map<String, List<Record>>> allXMLRecords;
     private Map<String, Map<Integer, List<Record>>> allRDBsRecords;
     private Map<String, Map<Integer, List<Record>>> allSPARQLRecords;
+    private Map<String, InputStream> labeledFilesMap;
 
-    public RecordsFactory(DataFetcher dataFetcher) {
-        this.dataFetcher = dataFetcher;
+    private void Init() {
         allCSVRecords = new HashMap<>();
         allJSONRecords = new HashMap<>();
         allXMLRecords = new HashMap<>();
@@ -31,6 +32,22 @@ public class RecordsFactory {
         allSPARQLRecords = new HashMap<>();
     }
 
+    public RecordsFactory(DataFetcher dataFetcher) {    	
+        this.dataFetcher = dataFetcher;
+        this.Init();
+    }
+
+    public RecordsFactory(Map<String, InputStream> labeledFilesMap) {
+    	this.labeledFilesMap = labeledFilesMap;
+    	this.Init();
+    }
+    
+    public RecordsFactory(DataFetcher dataFetcher, Map<String, InputStream> streamsMap) {
+    	this.dataFetcher = dataFetcher;
+    	this.labeledFilesMap = streamsMap;
+    	this.Init();
+    }
+    
     public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
         //get logical source
         List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
@@ -120,7 +137,12 @@ public class RecordsFactory {
             return allCSVRecords.get(source);
         } else {
             try {
-                CSVW CSVW = new CSVW(source, dataFetcher.getCwd());
+            	CSVW CSVW;
+            	if(Utils.isLabeledFile(source)) {
+            		CSVW = new CSVW(this.labeledFilesMap.get(source));
+            	} else {
+            		CSVW = new CSVW(source, dataFetcher.getCwd());	
+            	}                
                 allCSVRecords.put(source, CSVW.getRecords());
             } catch (IOException e) {
                 throw e;
@@ -185,7 +207,12 @@ public class RecordsFactory {
             } else {
                 try {
                     XML xml = new XML();
-                    List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
+                    List<Record> records = new ArrayList<>();
+                    if(Utils.isLabeledFile(source)) {
+                    	records = xml.get(this.labeledFilesMap.get(source), iterator);
+                    } else {
+                    	records = xml.get(source, iterator, dataFetcher.getCwd());
+                    }
 
                     if (allXMLRecords.containsKey(source)) {
                         allXMLRecords.get(source).put(iterator, records);
@@ -213,8 +240,13 @@ public class RecordsFactory {
                 return allJSONRecords.get(source).get(iterator);
             } else {
                 try {
-                    JSON json = new JSON();
-                    List<Record> records = json.get(source, iterator, dataFetcher.getCwd());
+                	JSON json = new JSON();
+                    List<Record> records = new ArrayList<>();
+                    if(Utils.isLabeledFile(source)) {
+                    	records = json.get(this.labeledFilesMap.get(source), iterator);
+                    } else {
+                    	records = json.get(source, iterator, dataFetcher.getCwd());
+                    }   
 
                     if (allJSONRecords.containsKey(source)) {
                         allJSONRecords.get(source).put(iterator, records);

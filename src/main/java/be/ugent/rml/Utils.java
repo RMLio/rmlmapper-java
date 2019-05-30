@@ -195,6 +195,10 @@ public class Utils {
         return location.startsWith("https://") || location.startsWith("http://");
     }
 
+    public static boolean isLabeledFile(String location) {
+        return location.startsWith("label://");
+    }
+    
     public static List<Term> getSubjectsFromQuads(List<Quad> quads) {
         ArrayList<Term> subjects = new ArrayList<>();
 

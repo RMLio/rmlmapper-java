@@ -23,6 +23,10 @@ public abstract class IteratorFormat {
         return _get(stream, iterator);
     }
 
+    public List<Record> get(InputStream stream, String iterator) throws IOException {
+        return _get(stream, iterator);
+    }    
+    
     abstract List<Record> _get(InputStream stream, String iterator) throws IOException;
 
     abstract String getContentType();
