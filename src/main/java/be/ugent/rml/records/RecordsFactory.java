@@ -21,6 +21,7 @@ public class RecordsFactory {
     private Map<String, Map<String, List<Record>>> allXMLRecords;
     private Map<String, Map<Integer, List<Record>>> allRDBsRecords;
     private Map<String, Map<Integer, List<Record>>> allSPARQLRecords;
+    private XML xml;
 
     public RecordsFactory(DataFetcher dataFetcher) {
         this.dataFetcher = dataFetcher;
@@ -29,6 +30,7 @@ public class RecordsFactory {
         allXMLRecords = new HashMap<>();
         allRDBsRecords = new HashMap<>();
         allSPARQLRecords = new HashMap<>();
+        this.xml = XML.getInstance();
     }
 
     public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
@@ -184,7 +186,6 @@ public class RecordsFactory {
                 return allXMLRecords.get(source).get(iterator);
             } else {
                 try {
-                    XML xml = new XML();
                     List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
 
                     if (allXMLRecords.containsKey(source)) {
@@ -213,7 +214,7 @@ public class RecordsFactory {
                 return allJSONRecords.get(source).get(iterator);
             } else {
                 try {
-                    JSON json = new JSON();
+                    JSON json = JSON.getInstance();
                     List<Record> records = json.get(source, iterator, dataFetcher.getCwd());
 
                     if (allJSONRecords.containsKey(source)) {

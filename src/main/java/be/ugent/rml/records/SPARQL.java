@@ -74,9 +74,10 @@ public class SPARQL {
 
     private List<Record> getXMLRecords(String endpoint, String qs, String iterator, String referenceFormulation) {
         String content = getSPARQLResults(endpoint, qs, ResultFormat.XML);
-        XML xml = new XML();
+        XML xml = XML.getInstance();
+
         try {
-            return xml._get(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), iterator);
+            return xml.getRecordsFromDocument(xml.getDocumentFromStream(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))), iterator);
         } catch (IOException ex) {
             throw new Error("Could not convert XML into XMLRecords. Error message: " + ex.getMessage());
         }
@@ -84,9 +85,10 @@ public class SPARQL {
 
     private List<Record> getJSONRecords(String endpoint, String qs, String iterator, String referenceFormulation) {
         String content = getSPARQLResults(endpoint, qs, ResultFormat.JSON);
-        JSON json = new JSON();
+        JSON json = JSON.getInstance();
+
         try {
-            return json._get(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), iterator);
+            return json.getRecordsFromDocument(json.getDocumentFromStream(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))), iterator);
         } catch (IOException ex) {
             throw new Error("Could not convert XML into XMLRecords. Error message: " + ex.getMessage());
         }

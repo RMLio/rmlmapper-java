@@ -6,16 +6,23 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JSON extends IteratorFormat {
+public class JSON extends IteratorFormat<Object> {
 
-    protected String getContentType() {
-        return "application/json";
+    private static JSON json;
+
+    private JSON(){}
+
+    public static JSON getInstance() {
+        if (json == null) {
+            json = new JSON();
+        }
+
+        return json;
     }
 
-    protected List<Record> _get(InputStream stream, String iterator) throws IOException {
+    @Override
+    List<Record> getRecordsFromDocument(Object document, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
-
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(stream, "utf-8");
 
         Configuration conf = Configuration.builder()
                 .options(Option.AS_PATH_LIST).build();
@@ -31,5 +38,14 @@ public class JSON extends IteratorFormat {
         }
 
         return records;
+    }
+
+    @Override
+    Object getDocumentFromStream(InputStream stream) throws IOException {
+        return Configuration.defaultConfiguration().jsonProvider().parse(stream, "utf-8");
+    }
+
+    protected String getContentType() {
+        return "application/json";
     }
 }

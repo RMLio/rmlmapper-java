@@ -16,31 +16,52 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XML extends IteratorFormat {
+public class XML extends IteratorFormat<Document> {
 
     protected String getContentType() {
         return "application/xml";
     }
+    private static XML xml;
+
+    private XML(){}
+
+    public static XML getInstance() {
+        if (xml == null) {
+            xml = new XML();
+        }
+
+        return xml;
+    }
 
     @Override
-    List<Record> _get(InputStream stream, String iterator) throws IOException {
+    List<Record> getRecordsFromDocument(Document document, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
 
         try {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            Document xmlDocument = builder.parse(stream);
-
             XPath xPath = XPathFactory.newInstance().newXPath();
-            NodeList result = (NodeList) xPath.compile(iterator).evaluate(xmlDocument, XPathConstants.NODESET);
+            NodeList result = (NodeList) xPath.compile(iterator).evaluate(document, XPathConstants.NODESET);
 
             for (int i = 0; i < result.getLength(); i ++) {
                 records.add(new XMLRecord(result.item(i)));
             }
-        } catch (XPathExpressionException | SAXException | ParserConfigurationException e) {
+        } catch (XPathExpressionException e) {
             e.printStackTrace();
         }
 
         return records;
+    }
+
+    @Override
+    Document getDocumentFromStream(InputStream stream) throws IOException {
+        try {
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+
+            return builder.parse(stream);
+        } catch (SAXException | ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }
