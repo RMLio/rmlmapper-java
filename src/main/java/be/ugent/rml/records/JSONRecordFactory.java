@@ -6,19 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JSON extends IteratorFormat<Object> {
-
-    private static JSON json;
-
-    private JSON(){}
-
-    public static JSON getInstance() {
-        if (json == null) {
-            json = new JSON();
-        }
-
-        return json;
-    }
+public class JSONRecordFactory extends IteratorFormat<Object> {
 
     @Override
     List<Record> getRecordsFromDocument(Object document, String iterator) throws IOException {

@@ -16,21 +16,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XML extends IteratorFormat<Document> {
+public class XMLRecordFactory extends IteratorFormat<Document> {
 
     protected String getContentType() {
         return "application/xml";
-    }
-    private static XML xml;
-
-    private XML(){}
-
-    public static XML getInstance() {
-        if (xml == null) {
-            xml = new XML();
-        }
-
-        return xml;
     }
 
     @Override

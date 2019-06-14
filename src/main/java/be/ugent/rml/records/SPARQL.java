@@ -13,11 +13,11 @@ public class SPARQL {
 
     // The first referenceFormulation is seen as default
     public enum ResultFormat {
-        XML ("XML", "http://www.w3.org/ns/formats/SPARQL_Results_XML", "application/sparql-results+xml",
+        XML ("XMLRecordFactory", "http://www.w3.org/ns/formats/SPARQL_Results_XML", "application/sparql-results+xml",
                 // referenceFormulations:
                 "http://semweb.mmlab.be/ns/ql#XPath"
         ),
-        JSON ("JSON", "http://www.w3.org/ns/formats/SPARQL_Results_JSON", "application/sparql-results+json",
+        JSON ("JSONRecordFactory", "http://www.w3.org/ns/formats/SPARQL_Results_JSON", "application/sparql-results+json",
                 // referenceFormulations:
                 "http://semweb.mmlab.be/ns/ql#JSONPath"
         ),
@@ -50,6 +50,14 @@ public class SPARQL {
         }
     }
 
+    private XMLRecordFactory xmlRecordFactory;
+    private JSONRecordFactory jsonRecordFactory;
+
+    public SPARQL(XMLRecordFactory xmlRecordFactory, JSONRecordFactory jsonRecordFactory) {
+        this.xmlRecordFactory = xmlRecordFactory;
+        this.jsonRecordFactory = jsonRecordFactory;
+    }
+
     /**
      *
      * @param endpoint SPARQL endpoint
@@ -74,23 +82,21 @@ public class SPARQL {
 
     private List<Record> getXMLRecords(String endpoint, String qs, String iterator, String referenceFormulation) {
         String content = getSPARQLResults(endpoint, qs, ResultFormat.XML);
-        XML xml = XML.getInstance();
 
         try {
-            return xml.getRecordsFromDocument(xml.getDocumentFromStream(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))), iterator);
+            return xmlRecordFactory.getRecordsFromDocument(xmlRecordFactory.getDocumentFromStream(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))), iterator);
         } catch (IOException ex) {
-            throw new Error("Could not convert XML into XMLRecords. Error message: " + ex.getMessage());
+            throw new Error("Could not convert XMLRecordFactory into XMLRecords. Error message: " + ex.getMessage());
         }
     }
 
     private List<Record> getJSONRecords(String endpoint, String qs, String iterator, String referenceFormulation) {
         String content = getSPARQLResults(endpoint, qs, ResultFormat.JSON);
-        JSON json = JSON.getInstance();
 
         try {
-            return json.getRecordsFromDocument(json.getDocumentFromStream(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))), iterator);
+            return jsonRecordFactory.getRecordsFromDocument(jsonRecordFactory.getDocumentFromStream(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))), iterator);
         } catch (IOException ex) {
-            throw new Error("Could not convert XML into XMLRecords. Error message: " + ex.getMessage());
+            throw new Error("Could not convert XMLRecordFactory into XMLRecords. Error message: " + ex.getMessage());
         }
     }
 

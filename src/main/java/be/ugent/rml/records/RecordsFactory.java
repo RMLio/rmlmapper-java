@@ -21,7 +21,8 @@ public class RecordsFactory {
     private Map<String, Map<String, List<Record>>> allXMLRecords;
     private Map<String, Map<Integer, List<Record>>> allRDBsRecords;
     private Map<String, Map<Integer, List<Record>>> allSPARQLRecords;
-    private XML xml;
+    private XMLRecordFactory xmlRecordFactory;
+    private JSONRecordFactory jsonRecordFactory;
 
     public RecordsFactory(DataFetcher dataFetcher) {
         this.dataFetcher = dataFetcher;
@@ -30,7 +31,8 @@ public class RecordsFactory {
         allXMLRecords = new HashMap<>();
         allRDBsRecords = new HashMap<>();
         allSPARQLRecords = new HashMap<>();
-        this.xml = XML.getInstance();
+        xmlRecordFactory = new XMLRecordFactory();
+        jsonRecordFactory = new JSONRecordFactory();
     }
 
     public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
@@ -143,8 +145,8 @@ public class RecordsFactory {
 //                return allCSVRecords.get(source).get(iterator);
 //            } else {
 //                try {
-//                    XML xml = new XML();
-//                    List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
+//                    XMLRecordFactory xmlRecordFactory = new XMLRecordFactory();
+//                    List<Record> records = xmlRecordFactory.get(source, iterator, dataFetcher.getCwd());
 //
 //                    if (allCSVRecords.containsKey(source)) {
 //                        allCSVRecords.get(source).put(iterator, records);
@@ -186,7 +188,7 @@ public class RecordsFactory {
                 return allXMLRecords.get(source).get(iterator);
             } else {
                 try {
-                    List<Record> records = xml.get(source, iterator, dataFetcher.getCwd());
+                    List<Record> records = xmlRecordFactory.get(source, iterator, dataFetcher.getCwd());
 
                     if (allXMLRecords.containsKey(source)) {
                         allXMLRecords.get(source).put(iterator, records);
@@ -214,8 +216,7 @@ public class RecordsFactory {
                 return allJSONRecords.get(source).get(iterator);
             } else {
                 try {
-                    JSON json = JSON.getInstance();
-                    List<Record> records = json.get(source, iterator, dataFetcher.getCwd());
+                    List<Record> records = jsonRecordFactory.get(source, iterator, dataFetcher.getCwd());
 
                     if (allJSONRecords.containsKey(source)) {
                         allJSONRecords.get(source).put(iterator, records);
@@ -327,7 +328,7 @@ public class RecordsFactory {
             if (allSPARQLRecords.containsKey(source.toString()) && allSPARQLRecords.get(source.toString()).containsKey(key)) {
                 return allSPARQLRecords.get(source.toString()).get(key);
             } else {
-                SPARQL sparql = new SPARQL();
+                SPARQL sparql = new SPARQL(xmlRecordFactory, jsonRecordFactory);
                 List<Record> records = sparql.get(endpoint.getValue(), qs, iterator, resultFormat, referenceFormulations.get(0).getValue());
 
                 if (allSPARQLRecords.containsKey(source.toString())) {
