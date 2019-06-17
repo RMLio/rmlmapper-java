@@ -11,7 +11,8 @@
     ],
     "http://xmlns.com/foaf/0.1/name": [
       {
-        "@value": "Venus"
+        "@value": "Venus",
+        "@language": "en"
       }
     ]
   }
