@@ -53,10 +53,10 @@ usage: java -jar mapper.jar <options>
 options:
  -c,--configfile <arg>            path to configuration file
  -d,--duplicates                  remove duplicates in the output
- -e,--metadatafile <arg>          path to metadata-test-cases file
+ -e,--metadatafile <arg>          path to metadata file
  -f,--functionfile <arg>          path to functions.ttl file (dynamic functions are found relative to functions.ttl)
  -h,--help                        show help info
- -l,--metadataDetailLevel <arg>   generate metadata-test-cases on given detail level (dataset - triple - term)
+ -l,--metadataDetailLevel <arg>   generate metadata on given detail level (dataset - triple - term)
  -m,--mappingfile <arg>           one or more mapping file paths and/or strings (multiple values are concatenated)
  -o,--outputfile <arg>            path to output file (default: stdout)
  -s,--serialization <arg>         serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)
@@ -237,10 +237,8 @@ The regex has no support for languages of length 5-8, but this currently only ap
 * Diagrams > Show Diagram > Java Class Diagrams
 * Choose what properties of the classes you want to show in the upper left corner
 * Export to file > .png  | Save diagram > .uml
-<<<<<<< README.md
 
 ## Sequence Diagram
 ### Edit on [draw.io](https://www.draw.io)
 * Go to [draw.io](https://www.draw.io)
 * Click on 'Open Existing Diagram' and choose the .html file
-=======
