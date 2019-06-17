@@ -25,6 +25,6 @@
 
   rr:predicateObjectMap [ 
     rr:predicate foaf:name ; 
-    rr:objectMap [ rml:reference "Name" ]
+    rr:objectMap [ rml:reference "Name" ; rr:language "en" ]
   ].
 

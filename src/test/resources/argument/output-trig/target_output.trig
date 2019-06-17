@@ -8,5 +8,5 @@
 {
   <http://example.com/10/Venus> ex:id "10";
     a foaf:Person;
-    foaf:name "Venus" .
+    foaf:name "Venus"@en .
 }
