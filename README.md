@@ -227,6 +227,12 @@ However, the RMLMapper can be easily adapted to use a different XML parsing impl
 The processor checks whether correct language tags are not, using a regular expression.
 The regex has no support for languages of length 5-8, but this currently only applies to 'qaa..qtz'.
 
+# Documentation
+Generate static files at /docs/apidocs with:
+```
+mvn javadoc:javadoc
+```
+
 # UML Diagrams
 
 ## Architecture UML Diagram

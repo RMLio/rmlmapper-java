@@ -1,0 +1,10 @@
+be.ugent.rml
+be.ugent.rml.cli
+be.ugent.rml.extractor
+be.ugent.rml.functions
+be.ugent.rml.functions.lib
+be.ugent.rml.metadata
+be.ugent.rml.records
+be.ugent.rml.store
+be.ugent.rml.term
+be.ugent.rml.termgenerator

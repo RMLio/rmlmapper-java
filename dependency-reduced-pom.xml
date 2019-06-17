@@ -15,10 +15,32 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.1</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.source}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <phase>install</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+            <configuration>
+              <show>public</show>
+              <reportOutputDirectory>docs</reportOutputDirectory>
+              <failOnError>false</failOnError>
+              <doclint>none</doclint>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <reportOutputDirectory>docs</reportOutputDirectory>
         </configuration>
       </plugin>
       <plugin>
@@ -154,6 +176,8 @@
     </dependency>
   </dependencies>
   <properties>
+    <maven.compiler.target>8</maven.compiler.target>
+    <maven.compiler.source>8</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.version>4.12</junit.version>
   </properties>
