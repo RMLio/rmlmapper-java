@@ -96,21 +96,10 @@ public class Utils {
         return out;
     }
 
-    /**
-     * @param path
-     * @return
-     * @throws IOException
-     */
     public static File getFile(String path) throws IOException {
         return Utils.getFile(path, null);
     }
 
-    /**
-     * @param path
-     * @param basePath
-     * @return
-     * @throws IOException
-     */
     public static File getFile(String path, File basePath) throws IOException {
         // Absolute path?
         File f = new File(path);
@@ -387,6 +376,9 @@ public class Utils {
      * This method parse the generic template and returns a list of Extractors
      * that can later be used by the executor
      * to get the data values from the records.
+     *
+     * @param template template string
+     * @return list of extractors
      **/
     public static List<Extractor> parseTemplate(String template) {
         ArrayList<Extractor> extractors = new ArrayList<>();

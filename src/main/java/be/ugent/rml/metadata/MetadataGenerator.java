@@ -83,7 +83,7 @@ public class MetadataGenerator {
      * Creates a node representing the quad.
      * Applies the metadatageneration functions to the given quad.
      *
-     * @param provenancedQuad
+     * @param provenancedQuad provenanced Quad
      */
     public void insertQuad(ProvenancedQuad provenancedQuad) {
         if (provenancedQuad.getSubject() != null & provenancedQuad.getPredicate() != null & provenancedQuad.getObject() != null) {
@@ -106,8 +106,8 @@ public class MetadataGenerator {
     /**
      * Generates metadata before the actual mapping.
      *
-     * @param triplesMaps
-     * @param mappingQuads
+     * @param triplesMaps list of tripleMap terms
+     * @param mappingQuads mapping quadstore
      */
     public void preMappingGeneration(List<Term> triplesMaps, QuadStore mappingQuads) {
         this.triplesMaps = triplesMaps;
@@ -122,9 +122,9 @@ public class MetadataGenerator {
     /**
      * Generates metadata after the actual mapping.
      *
-     * @param startTimestamp
-     * @param stopTimestamp
-     * @param result
+     * @param startTimestamp string of starting timestamp
+     * @param stopTimestamp string of stopping timestamp
+     * @param result result quadstore
      */
     public void postMappingGeneration(String startTimestamp, String stopTimestamp, QuadStore result) {
         if (detailLevel.getLevel() >= DETAIL_LEVEL.DATASET.getLevel()) {
@@ -245,9 +245,9 @@ public class MetadataGenerator {
     /**
      * Creates a list of all source terms.
      *
-     * @param triplesMaps
-     * @param rmlStore
-     * @return
+     * @param triplesMaps list of triplemap terms
+     * @param rmlStore mapping quadstore
+     * @return list of logical sources of the triplesmaps
      */
     private List<Term> getLogicalSources(List<Term> triplesMaps, QuadStore rmlStore) {
         if (logicalSources == null) {
