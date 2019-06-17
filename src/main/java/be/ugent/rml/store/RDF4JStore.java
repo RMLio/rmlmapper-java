@@ -190,7 +190,15 @@ public class RDF4JStore extends QuadStore {
             if (object instanceof BlankNode) {
                 return vf.createBNode(object.getValue());
             } else if (object instanceof Literal) {
-                return vf.createLiteral(object.getValue());
+                Literal literal = (Literal) object;
+
+                if (literal.getDatatype() != null) {
+                    return vf.createLiteral(object.getValue(), vf.createIRI(literal.getDatatype().getValue()));
+                } else if (literal.getLanguage() != null) {
+                    return vf.createLiteral(object.getValue(), literal.getLanguage());
+                } else {
+                    return vf.createLiteral(object.getValue());
+                }
             } else {
                 return vf.createIRI(object.getValue());
             }

@@ -21,6 +21,14 @@ public class Literal extends AbstractTerm {
         this.datatype = datatype;
     }
 
+    public String getLanguage() {
+        return language;
+    }
+
+    public Term getDatatype() {
+        return datatype;
+    }
+
     @Override
     public String toString() {
         String temp = "\"" + escapeValue(this.getValue()) + "\"";
