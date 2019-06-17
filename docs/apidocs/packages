@@ -12,7 +12,6 @@ be.ugent.rml.functions
 be.ugent.rml.functions
 be.ugent.rml.functions
 be.ugent.rml.functions
-be.ugent.rml.functions
 be.ugent.rml.functions.lib
 be.ugent.rml.functions.lib
 be.ugent.rml.functions.lib
@@ -31,13 +30,13 @@ be.ugent.rml
 be.ugent.rml.metadata
 be.ugent.rml.metadata
 be.ugent.rml.metadata
-be.ugent.rml.model
-be.ugent.rml.model
 be.ugent.rml
 be.ugent.rml
 be.ugent.rml
 be.ugent.rml
 be.ugent.rml
+be.ugent.rml.records
+be.ugent.rml.records
 be.ugent.rml.records
 be.ugent.rml.records
 be.ugent.rml.records
