@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<students>
+  <student>
+    <Name>http://example.com/company/Alice</Name>
+    <Address>
+      <Street>12th Avenue</Street>
+      <City>New York</City>
+      <Number>254</Number>
+    </Address>
+  </student>
+  <student><Name>Bob</Name>
+    <Address>
+      <Street>15th Avenue</Street>
+      <City>Atlanta</City>
+      <Number>291</Number>
+    </Address>
+  </student>
+  <student><Name>Bob/Charles</Name></student>
+  <student><Name>path/../Danny</Name></student>
+  <student><Name>Emily Smith</Name></student>
+</students>
