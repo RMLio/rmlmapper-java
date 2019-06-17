@@ -1,7 +1,7 @@
 # RMLMapper
 
 The RMLMapper execute RML rules to generate Linked Data.
-It is a Java library, which is available via the command line ([API docs online](rmlio.github.io/rmlmapper-java/apidocs)).
+It is a Java library, which is available via the command line ([API docs online](https://rmlio.github.io/rmlmapper-java/apidocs/)).
 The RMLMapper loads all data in memory, so be aware when working with big datasets.
 
 ## Features
