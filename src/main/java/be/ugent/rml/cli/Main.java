@@ -184,6 +184,13 @@ public class Main {
                     functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
                 }
 
+                // We have to get the InputStreams of the RML documents again,
+                // because we can only use an InputStream once.
+                lis = Arrays.stream(mOptionValue)
+                        .map(Utils::getInputStreamFromMOptionValue)
+                        .collect(Collectors.toList());
+                is = new SequenceInputStream(Collections.enumeration(lis));
+
                 executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(is));
 
                 List<Term> triplesMaps = new ArrayList<>();
