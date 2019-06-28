@@ -89,7 +89,7 @@ class Main {
 
         String cwd = "/home/rml"; //path to default directory for local files
         String mappingFile = "/home/rml/mapping.rml.ttl"; //path to the mapping file that needs to be executed
-        
+
         try {
             InputStream mappingStream = new FileInputStream(mappingFile);
             Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
@@ -100,16 +100,26 @@ class Main {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    } 
+    }
 }
 ```
+
+### Docker
+
+You can use Docker to run the RMLMapper by following these steps:
+
+- Build the Docker image: `docker build -t rmlmapper .`.
+- Run a Docker container: `docker run --rm -v $(pwd):/data rmlmapper -m mapping.ttl`.
+
+The same parameters are available as via the CLI.
+The RMLMapper is executed in the `/data` folder in the Docker container.
 
 ### Including functions
 
 There are two ways to include (new) functions within the RML Mapper
   * dynamic loading: you add links to java files or jar files, and those files are loaded dynamically at runtime
   * preloading: you register functionality via code, and you need to rebuild the mapper to use that functionality
-  
+
 Registration of functions is done using a Turtle file, which you can find in `src/main/resources/functions.ttl`
 
 The snippet below for example links an fno:function to a library, provided by a jar-file (`GrelFunctions.jar`).
@@ -173,7 +183,7 @@ class Main {
             // execute mapping file
             File mappingFile = Utils.getFile(mapPath);
             QuadStore rmlStore = Utils.readTurtle(mappingFile);
-            
+
             Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)),
                 functionLoader);
             QuadStore result = executor.execute(null);
