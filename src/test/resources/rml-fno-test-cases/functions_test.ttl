@@ -157,6 +157,24 @@ idlab-fn:listContainsElement a fno:Function ;
     lib:method "listContainsElement"
   ].
 
+idlab-fn:readFile a fno:Function ;
+  fno:name "Read local file as string" ;
+  rdfs:label "Read local file as string" ;
+  dcterms:description "Returns the content of a local file as string" ;
+  fno:expects ( idlab-fn:_path ) ;
+  fno:returns ( idlab-fn:_stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "IDLabFunctions.jar";
+    lib:class "IDLabFunctions";
+    lib:method "readFile"
+  ].
+
+idlab-fn:_path a fno:Parameter ;
+  fno:name "input path" ;
+  rdfs:label "input path" ;
+  fno:type xsd:string ;
+  fno:predicate idlab-fn:path .
+
 idlab-fn:_str a fno:Parameter ;
   fno:name "input string" ;
   rdfs:label "input string" ;
