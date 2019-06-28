@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [4.4.2] - 2019-XX-XX
 
+### Added
+
+- Configure [no-response bot](https://github.com/probot/no-response) for Github ([issue 35](https://github.com/RMLio/rmlmapper-java/issues/35))
+
 ### Fixed
 
 - Base IRI is read from the mapping doc when using CLI
