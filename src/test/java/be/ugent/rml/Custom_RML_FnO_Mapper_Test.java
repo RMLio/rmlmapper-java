@@ -48,4 +48,12 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     public void evaluate_A004b() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA004b/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA004b/output.ttl");
     }
+
+    /**
+      Tests whether the function idlab-fn:readFile is supported correctly by the mapper
+     */
+    @Test
+    public void evaluate_A005() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA005/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA005/output.ttl");
+    }
 }
