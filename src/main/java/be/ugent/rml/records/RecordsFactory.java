@@ -6,6 +6,7 @@ import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.access.Access;
 import be.ugent.rml.access.AccessFactory;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
@@ -15,10 +16,6 @@ import java.util.*;
 
 public class RecordsFactory {
 
-    private DataFetcher dataFetcher;
-    private Map<String, List<Record>> allCSVRecords;
-    private Map<String, Map<String, List<Record>>> allJSONRecords;
-    private Map<String, Map<String, List<Record>>> allXMLRecords;
     private Map<String, Map<Integer, List<Record>>> allRDBsRecords;
     private Map<String, Map<Integer, List<Record>>> allSPARQLRecords;
     private Map<Access, Map<String, Map<String, List<Record>>>> recordCache;
@@ -28,20 +25,15 @@ public class RecordsFactory {
     private Map<String, ReferenceFormulationRecordFactory> referenceFormulationRecordFactoryMap;
 
     public RecordsFactory(DataFetcher dataFetcher) {
-        this.dataFetcher = dataFetcher;
-        allCSVRecords = new HashMap<>();
-        allJSONRecords = new HashMap<>();
-        allXMLRecords = new HashMap<>();
         allRDBsRecords = new HashMap<>();
         allSPARQLRecords = new HashMap<>();
-        xmlRecordFactory = new XMLRecordFactory();
-        jsonRecordFactory = new JSONRecordFactory();
         accessFactory = new AccessFactory(dataFetcher.getCwd());
         recordCache = new HashMap<>();
 
         referenceFormulationRecordFactoryMap = new HashMap<>();
-        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "XPath", xmlRecordFactory);
-        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "JSONPath", jsonRecordFactory);
+        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "XPath", new XMLRecordFactory());
+        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "JSONPath", new JSONRecordFactory());
+        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "CSV", new CSVRecordFactory());
     }
 
     public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
@@ -55,8 +47,6 @@ public class RecordsFactory {
 
             // Get logicalSource information
             List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
-            List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
-            List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "iterator"), null));
             List<Term> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "tableName"), null));
 
             // If no rml:referenceFormulation is given, but a table is given --> CSV
@@ -68,33 +58,27 @@ public class RecordsFactory {
             if (referenceFormulations.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
             } else {
-                String source = sources.get(0).getValue();
                 String referenceFormulation = referenceFormulations.get(0).getValue();
-                String iterator = "";
 
-                if (!iterators.isEmpty()) {
-                    iterator = iterators.get(0).getValue();
-                }
-
-                return getRecords(access, referenceFormulation, iterator);
+                return getRecords(access, logicalSource, referenceFormulation, rmlStore);
             }
         } else {
             throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
         }
     }
 
-    private List<Record> getRecordsFromCache(Access access, String referenceFormulation, String iterator) {
+    private List<Record> getRecordsFromCache(Access access, String referenceFormulation, String hash) {
         if (recordCache.containsKey(access)
                 && recordCache.get(access).containsKey(referenceFormulation)
-                && recordCache.get(access).get(referenceFormulation).containsKey(iterator)
+                && recordCache.get(access).get(referenceFormulation).containsKey(hash)
         ) {
-            return recordCache.get(access).get(referenceFormulation).get(iterator);
+            return recordCache.get(access).get(referenceFormulation).get(hash);
         } else {
             return null;
         }
     }
 
-    private void putRecordsIntoCache(Access access, String referenceFormulation, String iterator, List<Record> records) {
+    private void putRecordsIntoCache(Access access, String referenceFormulation, String hash, List<Record> records) {
         if (!recordCache.containsKey(access)) {
             recordCache.put(access, new HashMap<>());
         }
@@ -103,27 +87,42 @@ public class RecordsFactory {
             recordCache.get(access).put(referenceFormulation, new HashMap<>());
         }
 
-        recordCache.get(access).get(referenceFormulation).put(iterator, records);
+        recordCache.get(access).get(referenceFormulation).put(hash, records);
 
     }
 
-    private List<Record> getRecords(Access access, String referenceFormulation, String iterator) throws IOException {
-            List<Record> records = getRecordsFromCache(access, referenceFormulation, iterator);
+    private List<Record> getRecords(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws IOException {
+        String logicalSourceHash = hashLogicalSource(logicalSource, rmlStore);
+        List<Record> records = getRecordsFromCache(access, referenceFormulation, logicalSourceHash);
 
-            if (records == null) {
-                try {
-                    ReferenceFormulationRecordFactory factory = referenceFormulationRecordFactoryMap.get(referenceFormulation);
-                    records = factory.getRecords(access, iterator);
+        if (records == null) {
+            try {
+                ReferenceFormulationRecordFactory factory = referenceFormulationRecordFactoryMap.get(referenceFormulation);
+                records = factory.getRecords(access, logicalSource, rmlStore);
 
-                    putRecordsIntoCache(access, referenceFormulation, iterator, records);
+                putRecordsIntoCache(access, referenceFormulation, logicalSourceHash, records);
 
-                    return records;
-                } catch (IOException e) {
-                    throw e;
-                }
+                return records;
+            } catch (IOException e) {
+                throw e;
             }
+        }
 
-            return records;
+        return records;
+    }
+
+    private String hashLogicalSource(Term logicalSource, QuadStore rmlStore) {
+        List<Quad> quads = rmlStore.getQuads(logicalSource, null, null);
+        final String[] hash = {""};
+
+        quads.forEach(quad -> {
+            if (!quad.getPredicate().getValue().equals(NAMESPACES.RML + "source")
+                    && !quad.getPredicate().getValue().equals(NAMESPACES.RML + "referenceFormulation") ) {
+                hash[0] += quad.getObject().getValue();
+            }
+        });
+
+        return hash[0];
     }
 
     private List<Record> getRDBsRecords(QuadStore rmlStore, Term source, Term logicalSource, Term triplesMap,

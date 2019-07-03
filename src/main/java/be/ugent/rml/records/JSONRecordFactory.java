@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.rml.store.QuadStore;
 import com.jayway.jsonpath.*;
 
 import java.io.*;
@@ -33,7 +34,7 @@ public class JSONRecordFactory extends IteratorFormat<Object> implements Referen
         return Configuration.defaultConfiguration().jsonProvider().parse(stream, "utf-8");
     }
 
-    protected String getContentType() {
-        return "application/json";
-    }
+//    protected String getContentType() {
+//        return "application/json";
+//    }
 }

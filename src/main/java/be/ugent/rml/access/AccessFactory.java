@@ -23,7 +23,7 @@ public class AccessFactory {
 
     public Access getAccess(Term logicalSource, QuadStore rmlStore) {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
-        Access access;
+        Access access = null;
 
         if (!sources.isEmpty()) {
             Term source = sources.get(0);
@@ -51,6 +51,7 @@ public class AccessFactory {
                         // TODO support RDBs
 
                         //return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, tables, referenceFormulations);
+                        break;
                     case NAMESPACES.SD + "Service":  // SPARQL
                         // Check if SPARQL Endpoint is given
                         List<Term> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "endpoint"),
@@ -75,6 +76,8 @@ public class AccessFactory {
                         String queryString = query.get(0).getValue().replaceAll("[\r\n]+", " ").trim();
 
                         access = new SPARQLEndpointAccess(resultFormat.getMediaType(), endpoint.get(0).getValue(), queryString);;
+
+                        break;
                     case NAMESPACES.CSVW + "Table": // CSVW
                         List<Term> urls = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "url"), null));
 
@@ -86,6 +89,8 @@ public class AccessFactory {
                         } else {
                             access = new LocalFileAccess(value, this.basePath);
                         }
+
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
