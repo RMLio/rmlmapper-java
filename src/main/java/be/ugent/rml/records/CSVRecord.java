@@ -1,44 +1,39 @@
 package be.ugent.rml.records;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CSVRecord extends Record {
 
-    private Map<String, List<Object>> values;
+    private org.apache.commons.csv.CSVRecord record;
     private Map<String, String> datatypes;
 
-
-    public CSVRecord(Map<String, List<Object>> values) {
-        this.values = values;
-        this.datatypes = new HashMap<>();
-    }
-
-    public CSVRecord(org.apache.commons.csv.CSVRecord csvRecord) {
-        this.datatypes = new HashMap<>();
-    }
-
-    public CSVRecord(Map<String, List<Object>> values, Map<String, String> datatypes) {
-        this.values = values;
+    CSVRecord(org.apache.commons.csv.CSVRecord record, Map<String, String> datatypes) {
+        this.record = record;
         this.datatypes = datatypes;
     }
 
-    public List<Object> get(String value) {
-        List<Object> result = values.get(value);
+    public String getDataType(String value) {
+        String datatype = null;
 
-        if (result == null) {
-            result =  new ArrayList<>();
+        if (datatypes != null) {
+            datatype = datatypes.get(value);
         }
 
-        return result;
+        return datatype;
     }
 
-    public String getDataType(String value) {
-        if (this.datatypes.containsKey(value)) {
-            return this.datatypes.get(value);
+    @Override
+    public List<Object> get(String value) {
+        List<Object> result = new ArrayList<>();
+        Object obj;
+        try {
+            obj = this.record.get(value);
+            result.add(obj);
+        } catch (Exception e) {
+            return result;
         }
-        return null;
+        return result;
     }
 }

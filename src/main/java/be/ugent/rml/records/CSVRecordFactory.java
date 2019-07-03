@@ -11,7 +11,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,16 +38,32 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
             }
         }
 
-        List<org.apache.commons.csv.CSVRecord> myEntries = parser.getRecords();
+        if (parser != null) {
 
-        return myEntries.stream()
-                .map(CSVRecordAdapter::new)
-                .collect(Collectors.toList());
+            List<org.apache.commons.csv.CSVRecord> myEntries = parser.getRecords();
+
+            return myEntries.stream()
+                    .map(record -> new CSVRecord(record, access.getDataTypes()))
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
     }
 
 
     private CSVParser getParserForNormalCSV(Access access) throws IOException {
         CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false);
-        return CSVParser.parse(access.getInputStream(), StandardCharsets.UTF_8, csvFormat);
+        InputStream inputStream = access.getInputStream();
+
+        if (inputStream != null) {
+            try {
+                return CSVParser.parse(inputStream, StandardCharsets.UTF_8, csvFormat);
+            } catch (IllegalArgumentException e) {
+                // TODO give warning to user
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 }

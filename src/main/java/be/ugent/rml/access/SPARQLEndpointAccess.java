@@ -57,6 +57,11 @@ public class SPARQLEndpointAccess implements Access {
         }
     }
 
+    @Override
+    public Map<String, String> getDataTypes() {
+        return null;
+    }
+
     public String getContentType() {
         return contentType;
     }

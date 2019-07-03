@@ -3,6 +3,7 @@ package be.ugent.rml.access;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Map;
 
 import static be.ugent.rml.Utils.getInputStreamFromURL;
 
@@ -23,6 +24,11 @@ public class RemoteFileAccess implements Access {
     @Override
     public InputStream getInputStream() throws IOException {
         return getInputStreamFromURL(new URL(location), contentType);
+    }
+
+    @Override
+    public Map<String, String> getDataTypes() {
+        return null;
     }
 
     @Override
