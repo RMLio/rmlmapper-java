@@ -4,11 +4,11 @@ import be.ugent.rml.DatabaseType;
 import be.ugent.rml.DataFetcher;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
+import be.ugent.rml.access.Access;
+import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,8 +21,11 @@ public class RecordsFactory {
     private Map<String, Map<String, List<Record>>> allXMLRecords;
     private Map<String, Map<Integer, List<Record>>> allRDBsRecords;
     private Map<String, Map<Integer, List<Record>>> allSPARQLRecords;
+    private Map<Access, Map<String, Map<String, List<Record>>>> recordCache;
     private XMLRecordFactory xmlRecordFactory;
     private JSONRecordFactory jsonRecordFactory;
+    private AccessFactory accessFactory;
+    private Map<String, ReferenceFormulationRecordFactory> referenceFormulationRecordFactoryMap;
 
     public RecordsFactory(DataFetcher dataFetcher) {
         this.dataFetcher = dataFetcher;
@@ -33,6 +36,12 @@ public class RecordsFactory {
         allSPARQLRecords = new HashMap<>();
         xmlRecordFactory = new XMLRecordFactory();
         jsonRecordFactory = new JSONRecordFactory();
+        accessFactory = new AccessFactory(dataFetcher.getCwd());
+        recordCache = new HashMap<>();
+
+        referenceFormulationRecordFactoryMap = new HashMap<>();
+        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "XPath", xmlRecordFactory);
+        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "JSONPath", jsonRecordFactory);
     }
 
     public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
@@ -41,6 +50,8 @@ public class RecordsFactory {
 
         if (!logicalSources.isEmpty()) {
             Term logicalSource = logicalSources.get(0);
+
+            Access access = accessFactory.getAccess(logicalSource, rmlStore);
 
             // Get logicalSource information
             List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
@@ -56,184 +67,63 @@ public class RecordsFactory {
 
             if (referenceFormulations.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
-            } else if (sources.isEmpty()) {
-                throw new Error("The Logical Source of " + triplesMap + " does not have a source.");
             } else {
-                if (sources.get(0) instanceof Literal) {
-                    String source = sources.get(0).getValue();
-                    switch (referenceFormulations.get(0).getValue()) {
-                        case NAMESPACES.QL + "CSV":
-                            return getCSVRecords(source, iterators, triplesMap);
-                        case NAMESPACES.QL + "XPath":
-                            return getXMLRecords(source, iterators, triplesMap);
-                        case NAMESPACES.QL + "JSONPath":
-                            return getJSONRecords(source, iterators, triplesMap);
-                        default:
-                            throw new NotImplementedException();
-                    }
+                String source = sources.get(0).getValue();
+                String referenceFormulation = referenceFormulations.get(0).getValue();
+                String iterator = "";
 
-                } else {
-                    Term source = sources.get(0);
-
-                    List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
-
-                    switch(sourceType.get(0).getValue()) {
-                        case NAMESPACES.D2RQ + "Database":  // RDBs
-                            // Check if SQL version is given
-                            List<Term> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "sqlVersion"), null));
-
-                            if (sqlVersion.isEmpty()) {
-                                throw new Error("No SQL version identifier detected.");
-                            }
-
-                            return getRDBsRecords(rmlStore, source, logicalSource, triplesMap, tables, referenceFormulations);
-                        case NAMESPACES.SD + "Service":  // SPARQL
-                            // Check if SPARQL Endpoint is given
-                            List<Term> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "endpoint"),
-                                    null));
-                            if (endpoint.isEmpty()) {
-                                throw new Error("No SPARQL endpoint detected.");
-                            }
-                            return getSPARQLRecords(rmlStore, source, logicalSource, triplesMap,
-                                    endpoint.get(0), iterators, referenceFormulations);
-                        case NAMESPACES.CSVW + "Table": // CSVW
-                            return getCSVRecords(rmlStore, source, iterators, triplesMap);
-                        default:
-                            throw new NotImplementedException();
-
-                    }
+                if (!iterators.isEmpty()) {
+                    iterator = iterators.get(0).getValue();
                 }
+
+                return getRecords(access, referenceFormulation, iterator);
             }
         } else {
             throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
         }
     }
 
-    // TODO refactor getCSVRecords functions
-    // CSV for filepath
-    private List<Record> getCSVRecords(String source, List<Term> iterators, Term triplesMap) throws IOException {
-        if (!iterators.isEmpty()) {
-            throw new NotImplementedException();
+    private List<Record> getRecordsFromCache(Access access, String referenceFormulation, String iterator) {
+        if (recordCache.containsKey(access)
+                && recordCache.get(access).containsKey(referenceFormulation)
+                && recordCache.get(access).get(referenceFormulation).containsKey(iterator)
+        ) {
+            return recordCache.get(access).get(referenceFormulation).get(iterator);
         } else {
-            return getCSVRecords(source);
+            return null;
         }
     }
 
-    private List<Record> getCSVRecords(String source) throws IOException {
-        if (allCSVRecords.containsKey(source)){
-            return allCSVRecords.get(source);
-        } else {
-            try {
-                CSVW CSVW = new CSVW(source, dataFetcher.getCwd());
-                allCSVRecords.put(source, CSVW.getRecords());
-            } catch (IOException e) {
-                throw e;
-            }
-            return allCSVRecords.get(source);
+    private void putRecordsIntoCache(Access access, String referenceFormulation, String iterator, List<Record> records) {
+        if (!recordCache.containsKey(access)) {
+            recordCache.put(access, new HashMap<>());
         }
+
+        if (!recordCache.get(access).containsKey(referenceFormulation)) {
+            recordCache.get(access).put(referenceFormulation, new HashMap<>());
+        }
+
+        recordCache.get(access).get(referenceFormulation).put(iterator, records);
+
     }
 
-    // CSVW
-    private List<Record> getCSVRecords(QuadStore rmlStore, Term source, List<Term> iterators, Term triplesMap) throws IOException {
-        List<Term> url = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "url"), null));
-        if (!iterators.isEmpty()) {
-            // TODO implement CSV iterator
-            throw new NotImplementedException();
-//            String iterator = iterators.get(0).getValue();
-//
-//            if (allCSVRecords.containsKey(source) && allCSVRecords.get(source).containsKey(iterator)) {
-//                return allCSVRecords.get(source).get(iterator);
-//            } else {
-//                try {
-//                    XMLRecordFactory xmlRecordFactory = new XMLRecordFactory();
-//                    List<Record> records = xmlRecordFactory.get(source, iterator, dataFetcher.getCwd());
-//
-//                    if (allCSVRecords.containsKey(source)) {
-//                        allCSVRecords.get(source).put(iterator, records);
-//                    } else {
-//                        Map<String, List<Record>> temp = new HashMap<>();
-//                        temp.put(iterator, records);
-//                        allCSVRecords.put(source, temp);
-//                    }
-//                    return records;
-//                } catch (IOException e) {
-//                    throw e;
-//                }
-//            }
-        } else {
-            String path = url.get(0).getValue();
+    private List<Record> getRecords(Access access, String referenceFormulation, String iterator) throws IOException {
+            List<Record> records = getRecordsFromCache(access, referenceFormulation, iterator);
 
-
-            if (allCSVRecords.containsKey(path)){
-                return allCSVRecords.get(path);
-            } else {
+            if (records == null) {
                 try {
-                    CSVW CSVW = new CSVW(path, dataFetcher.getCwd());
-                    CSVW.setOptions(rmlStore, source, iterators, triplesMap);
-                    List<Record> records = CSVW.getRecords();
-                    allCSVRecords.put(path, records);
-                } catch (IOException e) {
-                    throw e;
-                }
-                return allCSVRecords.get(path);
-            }
-        }
-    }
+                    ReferenceFormulationRecordFactory factory = referenceFormulationRecordFactoryMap.get(referenceFormulation);
+                    records = factory.getRecords(access, iterator);
 
-    private List<Record> getXMLRecords(String source, List<Term> iterators, Term triplesMap) throws IOException {
-        if (!iterators.isEmpty()) {
-            String iterator = iterators.get(0).getValue();
-
-            if (allXMLRecords.containsKey(source) && allXMLRecords.get(source).containsKey(iterator)) {
-                return allXMLRecords.get(source).get(iterator);
-            } else {
-                try {
-                    List<Record> records = xmlRecordFactory.get(source, iterator, dataFetcher.getCwd());
-
-                    if (allXMLRecords.containsKey(source)) {
-                        allXMLRecords.get(source).put(iterator, records);
-                    } else {
-                        Map<String, List<Record>> temp = new HashMap<>();
-                        temp.put(iterator, records);
-                        allXMLRecords.put(source, temp);
-                    }
+                    putRecordsIntoCache(access, referenceFormulation, iterator, records);
 
                     return records;
                 } catch (IOException e) {
                     throw e;
                 }
             }
-        } else {
-            throw new Error("The Logical Source of " + triplesMap + " does not have iterator, while this is expected for XPath.");
-        }
-    }
 
-    private List<Record> getJSONRecords(String source, List<Term> iterators, Term triplesMap) throws IOException {
-        if (!iterators.isEmpty()) {
-            String iterator = iterators.get(0).getValue();
-
-            if (allJSONRecords.containsKey(source) && allJSONRecords.get(source).containsKey(iterator)) {
-                return allJSONRecords.get(source).get(iterator);
-            } else {
-                try {
-                    List<Record> records = jsonRecordFactory.get(source, iterator, dataFetcher.getCwd());
-
-                    if (allJSONRecords.containsKey(source)) {
-                        allJSONRecords.get(source).put(iterator, records);
-                    } else {
-                        Map<String, List<Record>> temp = new HashMap<>();
-                        temp.put(iterator, records);
-                        allJSONRecords.put(source, temp);
-                    }
-
-                    return records;
-                } catch (IOException e) {
-                    throw e;
-                }
-            }
-        } else {
-            throw new Error("The Logical Source of " + triplesMap + "does not have iterator, while this is expected for JSONPath.");
-        }
+            return records;
     }
 
     private List<Record> getRDBsRecords(QuadStore rmlStore, Term source, Term logicalSource, Term triplesMap,

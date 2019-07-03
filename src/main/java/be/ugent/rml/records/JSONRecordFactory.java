@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JSONRecordFactory extends IteratorFormat<Object> {
+public class JSONRecordFactory extends IteratorFormat<Object> implements ReferenceFormulationRecordFactory {
 
     @Override
     List<Record> getRecordsFromDocument(Object document, String iterator) throws IOException {

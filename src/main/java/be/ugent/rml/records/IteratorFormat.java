@@ -1,32 +1,29 @@
 package be.ugent.rml.records;
 
 import be.ugent.rml.Utils;
+import be.ugent.rml.access.Access;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
-public abstract class IteratorFormat<DocumentClass> {
+public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulationRecordFactory {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
-    private HashMap<String, DocumentClass> documentMap = new HashMap<>();
+    private HashMap<Access, DocumentClass> documentMap = new HashMap<>();
 
-    public List<Record> get(String location, String iterator) throws IOException {
-        return get(location, iterator, System.getProperty("user.dir"));
-    }
-
-    public List<Record> get(String location, String iterator, String cwd) throws IOException {
-        if (! documentMap.containsKey(location)) {
-            logger.debug("No document found for {}. Creating new one", location);
-            InputStream stream = Utils.getInputStreamFromLocation(location, new File(cwd), getContentType());
-            documentMap.put(location, getDocumentFromStream(stream));
+    @Override
+    public List<Record> getRecords(Access access, String iterator) throws IOException {
+        if (! documentMap.containsKey(access)) {
+            logger.debug("No document found for {}. Creating new one", access);
+            InputStream stream = access.getInputStream();
+            documentMap.put(access, getDocumentFromStream(stream));
         }
 
-        return getRecordsFromDocument(documentMap.get(location), iterator);
+        return getRecordsFromDocument(documentMap.get(access), iterator);
     }
 
     abstract List<Record> getRecordsFromDocument(DocumentClass document, String iterator) throws IOException;

@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XMLRecordFactory extends IteratorFormat<Document> {
+public class XMLRecordFactory extends IteratorFormat<Document> implements ReferenceFormulationRecordFactory {
 
     protected String getContentType() {
         return "application/xml";
