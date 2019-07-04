@@ -113,9 +113,14 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void testStdOut() {
+        String cwd = (new File( "./src/test/resources/argument/quote-in-literal")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String functionsFilePath = (new File( "./src/test/resources/rml-fno-test-cases/functions_test.ttl")).getAbsolutePath();
+
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         System.setOut(new PrintStream(stdout));
-        Main.main("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl".split(" "));
+        Main.main(("-v -f " + functionsFilePath + " -m " + mappingFilePath).split(" "), cwd);
+
         assertThat(stdout.toString(), containsString("<http://example.com/10> <http://xmlns.com/foaf/0.1/name> \"Venus\\\"\"."));
         assertThat(stdout.toString(), containsString("<http://example.com/10> <http://example.com/id> \"10\"."));
         assertThat(stdout.toString(), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>."));
