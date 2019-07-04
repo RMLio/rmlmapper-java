@@ -7,6 +7,9 @@ import java.util.Map;
 
 import static be.ugent.rml.Utils.getInputStreamFromURL;
 
+/**
+ * This class represents access to a remote file.
+ */
 public class RemoteFileAccess implements Access {
 
     private String location;
@@ -16,6 +19,11 @@ public class RemoteFileAccess implements Access {
         this(location, "");
     }
 
+    /**
+     * This constructor of RemoteFileAccess taking location and content type as arguments.
+     * @param location: the location of the remote file.
+     * @param contentType: the content type of the remote file.
+     */
     public RemoteFileAccess(String location, String contentType) {
         this.location = location;
         this.contentType = contentType;
@@ -26,6 +34,11 @@ public class RemoteFileAccess implements Access {
         return getInputStreamFromURL(new URL(location), contentType);
     }
 
+    /**
+     * This methods returns the datatypes of the file.
+     * This method always returns null, because the datatypes can't be determined from a remote file for the moment.
+     * @return
+     */
     @Override
     public Map<String, String> getDataTypes() {
         return null;
@@ -41,10 +54,18 @@ public class RemoteFileAccess implements Access {
         }
     }
 
+    /**
+     * The method returns the location of the remote file.
+     * @return the location.
+     */
     public String getLocation() {
         return location;
     }
 
+    /**
+     * This method returns the content type of the remote file.
+     * @return the content type.
+     */
     public String getContentType() {
         return contentType;
     }
