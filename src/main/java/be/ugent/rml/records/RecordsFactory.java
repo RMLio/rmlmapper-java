@@ -1,6 +1,5 @@
 package be.ugent.rml.records;
 
-import be.ugent.rml.DataFetcher;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.access.Access;
@@ -22,8 +21,8 @@ public class RecordsFactory {
     private AccessFactory accessFactory;
     private Map<String, ReferenceFormulationRecordFactory> referenceFormulationRecordFactoryMap;
 
-    public RecordsFactory(DataFetcher dataFetcher) {
-        accessFactory = new AccessFactory(dataFetcher.getCwd());
+    public RecordsFactory(String basePath) {
+        accessFactory = new AccessFactory(basePath);
         recordCache = new HashMap<>();
 
         referenceFormulationRecordFactoryMap = new HashMap<>();
