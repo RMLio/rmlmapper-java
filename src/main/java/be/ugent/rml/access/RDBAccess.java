@@ -9,6 +9,8 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static be.ugent.rml.Utils.getHashOfString;
+
 /**
  * This class represents the access to a relational database.
  */
@@ -248,6 +250,11 @@ public class RDBAccess implements Access {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return getHashOfString(getDSN() + getDatabase() + getUsername() + getPassword() + getQuery() + getContentType());
     }
 
     /**

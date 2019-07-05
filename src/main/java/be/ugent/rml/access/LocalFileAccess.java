@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import static be.ugent.rml.Utils.getHashOfString;
 import static be.ugent.rml.Utils.getInputStreamFromFile;
 import static org.apache.commons.io.FileUtils.getFile;
 
@@ -38,7 +39,7 @@ public class LocalFileAccess implements Access {
     /**
      * This methods returns the datatypes of the file.
      * This method always returns null, because the datatypes can't be determined from a local file for the moment.
-     * @return
+     * @return the datatypes of the file.
      */
     @Override
     public Map<String, String> getDataTypes() {
@@ -53,6 +54,11 @@ public class LocalFileAccess implements Access {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return getHashOfString(getPath() + getBasePath());
     }
 
     /**

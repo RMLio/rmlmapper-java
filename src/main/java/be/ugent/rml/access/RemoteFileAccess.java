@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
+import static be.ugent.rml.Utils.getHashOfString;
 import static be.ugent.rml.Utils.getInputStreamFromURL;
 
 /**
@@ -52,6 +53,11 @@ public class RemoteFileAccess implements Access {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return getHashOfString(getLocation() + getContentType());
     }
 
     /**

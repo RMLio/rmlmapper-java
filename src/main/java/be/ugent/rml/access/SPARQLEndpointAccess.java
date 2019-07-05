@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import static be.ugent.rml.Utils.getHashOfString;
+
 /**
  * This class represents the access to a SPARQL endpoint.
  */
@@ -69,6 +71,11 @@ public class SPARQLEndpointAccess implements Access {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return getHashOfString(getEndpoint() + getQuery() + getContentType());
     }
 
     /**
