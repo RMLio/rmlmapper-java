@@ -10,6 +10,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+/**
+ * This class is a specific implementation of a record for XML.
+ * Every record corresponds with an XML element in a data source.
+ */
 public class XMLRecord extends Record {
 
     private Node node;
@@ -18,6 +22,11 @@ public class XMLRecord extends Record {
         this.node = node;
     }
 
+    /**
+     * This method returns the objects for a reference (XPath) in the record.
+     * @param value: the reference for which objects need to be returned.
+     * @return a list of objects for the reference.
+     */
     @Override
     public List<Object> get(String value) {
         List<Object> results = new ArrayList<>();

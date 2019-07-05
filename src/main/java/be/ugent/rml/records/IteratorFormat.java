@@ -14,13 +14,27 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This an abstract class for reference formulation-specific record factories that use iterators.
+ * @param <DocumentClass>: the class used to represent a format-specific document that can be reused.
+ */
 public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulationRecordFactory {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     private HashMap<Access, DocumentClass> documentMap = new HashMap<>();
 
+    /**
+     * This method returns a list of records for a data source.
+     * @param access: the access from which records need to be fetched.
+     * @param logicalSource: the used Logical Source.
+     * @param rmlStore: the QuadStore with the RML rules.
+     * @return a list of records.
+     * @throws IOException
+     */
     @Override
     public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException {
+        // Check if the needed document is already in the cache.
+        // If not, a new one is created, based on the InputStream from the access.
         if (! documentMap.containsKey(access)) {
             logger.debug("No document found for {}. Creating new one", access);
             InputStream stream = access.getInputStream();
@@ -38,9 +52,20 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
         }
     }
 
+    /**
+     * This method returns the records from a document based on an iterator.
+     * @param document: the document from which records need to get.
+     * @param iterator: the used iterator.
+     * @return a list of records.
+     * @throws IOException
+     */
     abstract List<Record> getRecordsFromDocument(DocumentClass document, String iterator) throws IOException;
 
+    /**
+     * This method returns a document from an InputStream.
+     * @param stream: the used InputStream.
+     * @return a format-specific document.
+     * @throws IOException
+     */
     abstract DocumentClass getDocumentFromStream(InputStream stream) throws IOException;
-
-//    abstract String getContentType();
 }

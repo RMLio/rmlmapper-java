@@ -93,7 +93,7 @@ public class AccessFactory {
 
                         String queryString = query.get(0).getValue().replaceAll("[\r\n]+", " ").trim();
 
-                        access = new SPARQLEndpointAccess(resultFormat.getMediaType(), endpoint.get(0).getValue(), queryString);;
+                        access = new SPARQLEndpointAccess(resultFormat.getContentType(), endpoint.get(0).getValue(), queryString);;
 
                         break;
                     case NAMESPACES.CSVW + "Table": // CSVW

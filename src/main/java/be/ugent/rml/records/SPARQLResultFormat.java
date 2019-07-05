@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This enum represents the different SPARQL result formats.
+ */
 public enum SPARQLResultFormat {
 
     XML("XMLRecordFactory", "http://www.w3.org/ns/formats/SPARQL_Results_XML", "application/sparql-results+xml",
@@ -21,31 +24,45 @@ public enum SPARQLResultFormat {
 
     private final String name;
     private final String uri;
-    private final String mediaType;
+    private final String contentType;
     private final Set<String> referenceFormulations;
 
-
-    SPARQLResultFormat(String name, String uri, String mediaType, String... referenceFormulations) {
+    SPARQLResultFormat(String name, String uri, String contentType, String... referenceFormulations) {
         this.name = name;
         this.uri = uri;
-        this.mediaType = mediaType;
+        this.contentType = contentType;
         this.referenceFormulations = new HashSet<>(Arrays.asList(referenceFormulations));
     }
 
+    /**
+     * This method returns the uri of the format.
+     * @return the uri of the format.
+     */
     public String getUri() {
         return uri;
     }
 
-    public String getMediaType() {
-        return mediaType;
+    /**
+     * This method returns the content type of the format.
+     * @return the content type of the format.
+     */
+    public String getContentType() {
+        return contentType;
     }
 
+    /**
+     * This method returns the reference formulation of the format.
+     * @return the reference formulation of the format.
+     */
     public Set<String> getReferenceFormulations() {
         return referenceFormulations;
     }
 
+    /**
+     * This method returns a String representation of the format, based on the format's name.
+     * @return String representation of the format.
+     */
     public String toString() {
         return this.name;
     }
-
 }
