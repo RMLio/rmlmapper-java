@@ -9,7 +9,7 @@ public abstract class Record {
 
     /**
      * This method returns the objects for a reference in the record.
-     * @param value: the reference for which objects need to be returned.
+     * @param value the reference for which objects need to be returned.
      * @return a list of objects for the reference.
      */
     public abstract List<Object> get(String value);

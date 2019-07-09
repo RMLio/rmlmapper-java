@@ -17,8 +17,8 @@ public class JSONRecordFactory extends IteratorFormat<Object> implements Referen
 
     /**
      * This method returns the records from a JSON document based on an iterator.
-     * @param document: the document from which records need to get.
-     * @param iterator: the used iterator.
+     * @param document the document from which records need to get.
+     * @param iterator the used iterator.
      * @return a list of records.
      * @throws IOException
      */
@@ -44,7 +44,7 @@ public class JSONRecordFactory extends IteratorFormat<Object> implements Referen
 
     /**
      * This method returns a JSON document from an InputStream.
-     * @param stream: the used InputStream.
+     * @param stream the used InputStream.
      * @return a JSON document.
      * @throws IOException
      */

@@ -25,9 +25,9 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
 
     /**
      * This method returns a list of records for a data source.
-     * @param access: the access from which records need to be fetched.
-     * @param logicalSource: the used Logical Source.
-     * @param rmlStore: the QuadStore with the RML rules.
+     * @param access the access from which records need to be fetched.
+     * @param logicalSource the used Logical Source.
+     * @param rmlStore the QuadStore with the RML rules.
      * @return a list of records.
      * @throws IOException
      */
@@ -54,8 +54,8 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
 
     /**
      * This method returns the records from a document based on an iterator.
-     * @param document: the document from which records need to get.
-     * @param iterator: the used iterator.
+     * @param document the document from which records need to get.
+     * @param iterator the used iterator.
      * @return a list of records.
      * @throws IOException
      */
@@ -63,7 +63,7 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
 
     /**
      * This method returns a document from an InputStream.
-     * @param stream: the used InputStream.
+     * @param stream the used InputStream.
      * @return a format-specific document.
      * @throws IOException
      */

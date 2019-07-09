@@ -22,8 +22,8 @@ public class RemoteFileAccess implements Access {
 
     /**
      * This constructor of RemoteFileAccess taking location and content type as arguments.
-     * @param location: the location of the remote file.
-     * @param contentType: the content type of the remote file.
+     * @param location the location of the remote file.
+     * @param contentType the content type of the remote file.
      */
     public RemoteFileAccess(String location, String contentType) {
         this.location = location;
@@ -38,7 +38,7 @@ public class RemoteFileAccess implements Access {
     /**
      * This methods returns the datatypes of the file.
      * This method always returns null, because the datatypes can't be determined from a remote file for the moment.
-     * @return
+     * @return the datatypes of the file.
      */
     @Override
     public Map<String, String> getDataTypes() {

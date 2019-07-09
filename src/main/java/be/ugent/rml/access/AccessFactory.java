@@ -24,7 +24,7 @@ public class AccessFactory {
 
     /**
      * The constructor of the AccessFactory.
-     * @param basePath: the base path for the local file system.
+     * @param basePath the base path for the local file system.
      */
     public AccessFactory(String basePath) {
         this.basePath = basePath;
@@ -32,9 +32,9 @@ public class AccessFactory {
 
     /**
      * This method returns an Access instance based on the RML rules in rmlStore.
-     * @param logicalSource: the Logical Source for which the Access needs to be created.
-     * @param rmlStore: a QuadStore with RML rules.
-     * @return
+     * @param logicalSource the Logical Source for which the Access needs to be created.
+     * @param rmlStore a QuadStore with RML rules.
+     * @return an Access instance based on the RML rules in rmlStore.
      */
     public Access getAccess(Term logicalSource, QuadStore rmlStore) {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
@@ -125,10 +125,10 @@ public class AccessFactory {
 
     /**
      * This method returns an RDB Access instance for the RML rules in rmlStore.
-     * @param rmlStore: a QuadStore with RML rules.
-     * @param source: the object of rml:source, dependent on the Logical Source.
-     * @param logicalSource: the Logical Source for which the Access instance need to be created.
-     * @return
+     * @param rmlStore a QuadStore with RML rules.
+     * @param source the object of rml:source, dependent on the Logical Source.
+     * @param logicalSource the Logical Source for which the Access instance need to be created.
+     * @return an RDB Access instance for the RML rules in rmlStore.
      */
     private RDBAccess getRDBAccess(QuadStore rmlStore, Term source, Term logicalSource) {
 
@@ -195,8 +195,8 @@ public class AccessFactory {
 
     /**
      * This method returns a SPARQLResultFormat based on the result formats and reference formulations.
-     * @param resultFormats: the result formats used to determine the SPARQLResultFormat.
-     * @param referenceFormulations: the reference formulations used to to determine the SPARQLResultFormat.
+     * @param resultFormats the result formats used to determine the SPARQLResultFormat.
+     * @param referenceFormulations the reference formulations used to to determine the SPARQLResultFormat.
      * @return a SPARQLResultFormat.
      */
     private SPARQLResultFormat getSPARQLResultFormat(List<Term> resultFormats, List<Term> referenceFormulations) {

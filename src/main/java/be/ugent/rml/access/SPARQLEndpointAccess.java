@@ -21,9 +21,9 @@ public class SPARQLEndpointAccess implements Access {
 
     /**
      * This constructor takes a content type, url of the endpoint, and a SPARQL query as arguments.
-     * @param contentType: the content type of the results.
-     * @param endpoint: the url of the SPARQL endpoint.
-     * @param query: the SPARQL query used on the endpoint.
+     * @param contentType the content type of the results.
+     * @param endpoint the url of the SPARQL endpoint.
+     * @param query the SPARQL query used on the endpoint.
      */
     public SPARQLEndpointAccess(String contentType, String endpoint, String query) {
         this.contentType = contentType;
@@ -81,7 +81,7 @@ public class SPARQLEndpointAccess implements Access {
     /**
      * This methods returns the datatypes of the results of the SPARQL query.
      * This method always returns null at the moment.
-     * @return
+     * @return the datatypes of the results of the SPARQL query.
      */
     @Override
     public Map<String, String> getDataTypes() {
@@ -90,7 +90,7 @@ public class SPARQLEndpointAccess implements Access {
 
     /**
      * This method returns the content type of the results.
-     * @return
+     * @return the content type of the results.
      */
     public String getContentType() {
         return contentType;
@@ -98,7 +98,7 @@ public class SPARQLEndpointAccess implements Access {
 
     /**
      * This method returns the url of the endpoint.
-     * @return
+     * @return the url of the endpoint.
      */
     public String getEndpoint() {
         return endpoint;
@@ -106,7 +106,7 @@ public class SPARQLEndpointAccess implements Access {
 
     /**
      * This method returns the SPARQL query that is used to get the results.
-     * @return
+     * @return the SPARQL query that is used to get the results.
      */
     public String getQuery() {
         return query;

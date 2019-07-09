@@ -36,8 +36,8 @@ public class RecordsFactory {
 
     /**
      * This method creates and returns records for a given Triples Map and set of RML rules.
-     * @param triplesMap: the Triples Map for which the record need to be created.
-     * @param rmlStore: the QuadStore with the RML rules.
+     * @param triplesMap the Triples Map for which the record need to be created.
+     * @param rmlStore the QuadStore with the RML rules.
      * @return a list of records.
      * @throws IOException
      */
@@ -75,9 +75,9 @@ public class RecordsFactory {
 
     /**
      * This method returns records if they can be found in the cache of the factory.
-     * @param access: the access from which records need to come.
-     * @param referenceFormulation: the used reference formulation.
-     * @param hash: the hash used for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
+     * @param access the access from which records need to come.
+     * @param referenceFormulation the used reference formulation.
+     * @param hash the hash used for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
      * @return
      */
     private List<Record> getRecordsFromCache(Access access, String referenceFormulation, String hash) {
@@ -93,10 +93,10 @@ public class RecordsFactory {
 
     /**
      * This method puts a list of records in the cache.
-     * @param access: the access from which the records where fetched.
-     * @param referenceFormulation: the used reference formulation.
-     * @param hash: the used hash for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
-     * @param records: the records that needs to be put into the cache.
+     * @param access the access from which the records where fetched.
+     * @param referenceFormulation the used reference formulation.
+     * @param hash the used hash for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
+     * @param records the records that needs to be put into the cache.
      */
     private void putRecordsIntoCache(Access access, String referenceFormulation, String hash, List<Record> records) {
         if (!recordCache.containsKey(access)) {
@@ -113,10 +113,10 @@ public class RecordsFactory {
 
     /**
      * This method returns the records either from the cache or by fetching them for the data sources.
-     * @param access: the access from which the records needs to be fetched.
-     * @param logicalSource: the used Logical Source.
-     * @param referenceFormulation: the used reference formulation.
-     * @param rmlStore: the QuadStore with the RML rules.
+     * @param access the access from which the records needs to be fetched.
+     * @param logicalSource the used Logical Source.
+     * @param referenceFormulation the used reference formulation.
+     * @param rmlStore the QuadStore with the RML rules.
      * @return a list of records.
      * @throws IOException
      */
@@ -148,8 +148,8 @@ public class RecordsFactory {
 
     /**
      * This method returns a hash for a Logical Source.
-     * @param logicalSource: the Logical Source for which a hash is wanted.
-     * @param rmlStore: the QuadStore of the RML rules.
+     * @param logicalSource the Logical Source for which a hash is wanted.
+     * @param rmlStore the QuadStore of the RML rules.
      * @return a hash for the Logical Source.
      */
     private String hashLogicalSource(Term logicalSource, QuadStore rmlStore) {

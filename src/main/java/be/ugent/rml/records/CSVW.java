@@ -95,7 +95,7 @@ class CSVW {
 
     /**
      * This method returns a single value (or null) for a CSVW term.
-     * @param term: the CSVW term, without CSVW namespace.
+     * @param term the CSVW term, without CSVW namespace.
      * @return the value of the term, if one is found, else null.
      */
     private String getValueFromTerm(String term) {

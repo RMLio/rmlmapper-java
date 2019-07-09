@@ -32,8 +32,8 @@ public class Main {
 
     /**
      * Main method use for the CLI. Allows to also set the current working directory via the argument basePath.
-     * @param args: the CLI arguments
-     * @param basePath: the basePath used during the execution.
+     * @param args the CLI arguments
+     * @param basePath the basePath used during the execution.
      */
     public static void main(String[] args, String basePath) {
         Options options = new Options();

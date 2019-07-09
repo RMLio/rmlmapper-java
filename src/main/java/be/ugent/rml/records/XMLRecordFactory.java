@@ -23,8 +23,8 @@ public class XMLRecordFactory extends IteratorFormat<Document> implements Refere
 
     /**
      * This method returns the records from an XML document based on an iterator.
-     * @param document: the document from which records need to get.
-     * @param iterator: the used iterator.
+     * @param document the document from which records need to get.
+     * @param iterator the used iterator.
      * @return a list of records.
      * @throws IOException
      */
@@ -48,7 +48,7 @@ public class XMLRecordFactory extends IteratorFormat<Document> implements Refere
 
     /**
      * This method returns an XML document from an InputStream.
-     * @param stream: the used InputStream.
+     * @param stream the used InputStream.
      * @return an XML document.
      * @throws IOException
      */

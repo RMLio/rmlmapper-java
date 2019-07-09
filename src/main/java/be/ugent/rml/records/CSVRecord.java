@@ -36,7 +36,7 @@ public class CSVRecord extends Record {
 
     /**
      * This method returns the objects for a column in the CSV record (= CSV row).
-     * @param value: the column for which objects need to be returned.
+     * @param value the column for which objects need to be returned.
      * @return a list of objects for the column.
      */
     @Override

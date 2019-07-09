@@ -18,8 +18,8 @@ public class LocalFileAccess implements Access {
 
     /**
      * This constructor takes the path and the base path of a file.
-     * @param path: the relative path of the file.
-     * @param basePath: the used base path.
+     * @param path the relative path of the file.
+     * @param basePath the used base path.
      */
     public LocalFileAccess(String path, String basePath) {
         this.path = path;

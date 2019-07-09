@@ -9,7 +9,6 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,9 +24,9 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
 
     /**
      * This method returns a list of CSV records for a data source.
-     * @param access: the access from which records need to be fetched.
-     * @param logicalSource: the used Logical Source.
-     * @param rmlStore: the QuadStore with the RML rules.
+     * @param access the access from which records need to be fetched.
+     * @param logicalSource the used Logical Source.
+     * @param rmlStore the QuadStore with the RML rules.
      * @return a list of records.
      * @throws IOException
      */
@@ -69,7 +68,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
 
     /**
      * This method returns a CSVParser from a simple access (local/remote CSV file; no CSVW).
-     * @param access: the used access.
+     * @param access the used access.
      * @return a CSVParser.
      * @throws IOException
      */

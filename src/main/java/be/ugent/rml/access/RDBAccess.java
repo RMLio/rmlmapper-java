@@ -26,12 +26,12 @@ public class RDBAccess implements Access {
 
     /**
      * This constructor takes as arguments the dsn, database, username, password, query, and content type.
-     * @param dsn: the data source name.
-     * @param database: the database type.
-     * @param username: the username of the user that executes the query.
-     * @param password: the password of the above user.
-     * @param query: the SQL query to use.
-     * @param contentType: the content type of the results.
+     * @param dsn the data source name.
+     * @param database the database type.
+     * @param username the username of the user that executes the query.
+     * @param password the password of the above user.
+     * @param query the SQL query to use.
+     * @param contentType the content type of the results.
      */
     public RDBAccess(String dsn, DatabaseType.Database database, String username, String password, String query, String contentType) {
         this.dsn = dsn;
@@ -126,7 +126,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method creates an CSV-formatted InputStream from a Result Set.
-     * @param rs: the Result Set that is used.
+     * @param rs the Result Set that is used.
      * @return a CSV-formatted InputStream.
      * @throws SQLException
      */
@@ -176,7 +176,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the corresponding datatype for a SQL datatype.
-     * @param type: the SQL datatype.
+     * @param type the SQL datatype.
      * @return the url of the corresponding datatype.
      */
     private String getColumnDataType(String type) {
@@ -221,8 +221,8 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the header of the CSV.
-     * @param rsmd: metdata of the Result Set
-     * @param columnCount: the number of columns.
+     * @param rsmd metdata of the Result Set
+     * @param columnCount the number of columns.
      * @return a String array with the headers.
      * @throws SQLException
      */
@@ -259,7 +259,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the DNS.
-     * @return
+     * @return the DNS.
      */
     public String getDSN() {
         return dsn;
@@ -267,7 +267,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the database type.
-     * @return
+     * @return the database type.
      */
     public DatabaseType.Database getDatabase() {
         return database;
@@ -275,7 +275,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the username.
-     * @return
+     * @return the username.
      */
     public String getUsername() {
         return username;
@@ -283,7 +283,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the password.
-     * @return
+     * @return the password.
      */
     public String getPassword() {
         return password;
@@ -291,7 +291,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the SQL query.
-     * @return
+     * @return the SQL query.
      */
     public String getQuery() {
         return query;
@@ -299,7 +299,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the content type.
-     * @return
+     * @return the content type.
      */
     public String getContentType() {
         return contentType;

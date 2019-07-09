@@ -26,7 +26,7 @@ public class JSONRecord extends Record {
 
     /**
      * This method returns the objects for a reference (JSONPath) in the record.
-     * @param value: the reference for which objects need to be returned.
+     * @param value the reference for which objects need to be returned.
      * @return a list of objects for the reference.
      */
     @Override
