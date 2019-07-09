@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is a specific implementation of a record for JSON.
+ * Every record corresponds with a JSON object in a data source.
+ */
 public class JSONRecord extends Record {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -20,11 +24,17 @@ public class JSONRecord extends Record {
         this.document = document;
     }
 
+    /**
+     * This method returns the objects for a reference (JSONPath) in the record.
+     * @param value the reference for which objects need to be returned.
+     * @return a list of objects for the reference.
+     */
     @Override
     public List<Object> get(String value) {
         List<Object> results = new ArrayList<>();
 
         try {
+            // JSONPaths with spaces need to have [ ] around it for the library we use.
             if (value.contains(" ")) {
                 value = "['" + value + "']";
             }
@@ -35,8 +45,8 @@ public class JSONRecord extends Record {
                 JSONArray array = (JSONArray) t;
                 ArrayList<String> tempList = new ArrayList<>();
 
-                for (int i = 0; i < array.size(); i ++) {
-                    tempList.add(array.get(i).toString());
+                for (Object o : array) {
+                    tempList.add(o.toString());
                 }
 
                 results.add(tempList);

@@ -16,12 +16,18 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XMLRecordFactory extends IteratorFormat<Document> {
+/**
+ * This class is a record factory that creates XML records.
+ */
+public class XMLRecordFactory extends IteratorFormat<Document> implements ReferenceFormulationRecordFactory {
 
-    protected String getContentType() {
-        return "application/xml";
-    }
-
+    /**
+     * This method returns the records from an XML document based on an iterator.
+     * @param document the document from which records need to get.
+     * @param iterator the used iterator.
+     * @return a list of records.
+     * @throws IOException
+     */
     @Override
     List<Record> getRecordsFromDocument(Document document, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
@@ -40,6 +46,12 @@ public class XMLRecordFactory extends IteratorFormat<Document> {
         return records;
     }
 
+    /**
+     * This method returns an XML document from an InputStream.
+     * @param stream the used InputStream.
+     * @return an XML document.
+     * @throws IOException
+     */
     @Override
     Document getDocumentFromStream(InputStream stream) throws IOException {
         try {
