@@ -1,5 +1,6 @@
 package be.ugent.rml.functions.lib;
 
+import be.ugent.rml.Utils;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -108,6 +110,16 @@ public class IDLabFunctions {
             } else {
                 return null;
             }
+        }
+    }
+
+    public static String readFile(String path) {
+        try {
+            logger.debug(Utils.getFile(path).toString());
+            return Utils.fileToString(Utils.getFile(path));
+        } catch (IOException e) {
+            logger.info(e.getMessage(), e);
+            return null;
         }
     }
 }

@@ -4,6 +4,21 @@ The RMLMapper execute RML rules to generate Linked Data.
 It is a Java library, which is available via the command line ([API docs online](https://rmlio.github.io/rmlmapper-java/apidocs/)).
 The RMLMapper loads all data in memory, so be aware when working with big datasets.
 
+## Table of contents
+
+- [Features](#features)
+- [Build](#build)
+- [Usage](#usage)
+  - [CLI](#cli)
+  - [Library](#library)
+  - [Docker](#docker)
+  - [Including functions](#including-functions)
+- [Testing](#testing)
+- [Dependencies](#dependencies)
+- [Remarks](#remarks)
+- [Documentation](#documentation)
+  - [UML Diagrams](#uml-diagrams)
+
 ## Features
 
 ### Supported
@@ -73,7 +88,6 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 
-import be.ugent.rml.DataFetcher;
 import be.ugent.rml.Executor;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JStore;
@@ -89,27 +103,37 @@ class Main {
 
         String cwd = "/home/rml"; //path to default directory for local files
         String mappingFile = "/home/rml/mapping.rml.ttl"; //path to the mapping file that needs to be executed
-        
+
         try {
             InputStream mappingStream = new FileInputStream(mappingFile);
             Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
             RDF4JStore rmlStore = new RDF4JStore(model);
 
-            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(cwd, rmlStore)));
+            Executor executor = new Executor(rmlStore, new RecordsFactory(cwd));
             QuadStore result = executor.execute(null);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    } 
+    }
 }
 ```
+
+### Docker
+
+You can use Docker to run the RMLMapper by following these steps:
+
+- Build the Docker image: `docker build -t rmlmapper .`.
+- Run a Docker container: `docker run --rm -v $(pwd):/data rmlmapper -m mapping.ttl`.
+
+The same parameters are available as via the CLI.
+The RMLMapper is executed in the `/data` folder in the Docker container.
 
 ### Including functions
 
 There are two ways to include (new) functions within the RML Mapper
   * dynamic loading: you add links to java files or jar files, and those files are loaded dynamically at runtime
   * preloading: you register functionality via code, and you need to rebuild the mapper to use that functionality
-  
+
 Registration of functions is done using a Turtle file, which you can find in `src/main/resources/functions.ttl`
 
 The snippet below for example links an fno:function to a library, provided by a jar-file (`GrelFunctions.jar`).
@@ -173,8 +197,8 @@ class Main {
             // execute mapping file
             File mappingFile = Utils.getFile(mapPath);
             QuadStore rmlStore = Utils.readTurtle(mappingFile);
-            
-            Executor executor = new Executor(rmlStore, new RecordsFactory(new DataFetcher(mappingFile.getParent(), rmlStore)),
+
+            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()),
                 functionLoader);
             QuadStore result = executor.execute(null);
         } catch (Exception e) {
@@ -184,12 +208,12 @@ class Main {
 }
 ```
 
-### Testing
+## Testing
 
-#### RDBs
+### RDBs
 Make sure you have [Docker](https://www.docker.com) running.
 
-##### Problems
+#### Problems
 * A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests will always succeed locally.
 * A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on Windows 7 machines.
 
@@ -227,16 +251,16 @@ However, the RMLMapper can be easily adapted to use a different XML parsing impl
 The processor checks whether correct language tags are not, using a regular expression.
 The regex has no support for languages of length 5-8, but this currently only applies to 'qaa..qtz'.
 
-# Documentation
+## Documentation
 Generate static files at /docs/apidocs with:
 ```
 mvn javadoc:javadoc
 ```
 
-# UML Diagrams
+### UML Diagrams
 
-## Architecture UML Diagram
-### How to generate with IntelliJ IDEA
+#### Architecture UML Diagram
+##### How to generate with IntelliJ IDEA
 (Requires Ultimate edition)
 
 * Right click on package: "be.ugent.rml"
@@ -244,7 +268,7 @@ mvn javadoc:javadoc
 * Choose what properties of the classes you want to show in the upper left corner
 * Export to file > .png  | Save diagram > .uml
 
-## Sequence Diagram
-### Edit on [draw.io](https://www.draw.io)
+#### Sequence Diagram
+##### Edit on [draw.io](https://www.draw.io)
 * Go to [draw.io](https://www.draw.io)
 * Click on 'Open Existing Diagram' and choose the .html file

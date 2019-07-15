@@ -7,6 +7,7 @@ import org.rdfhdt.hdt.hdt.HDTManager;
 import org.rdfhdt.hdt.triples.*;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -112,9 +113,14 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void testStdOut() {
+        String cwd = (new File( "./src/test/resources/argument/quote-in-literal")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String functionsFilePath = (new File( "./src/test/resources/rml-fno-test-cases/functions_test.ttl")).getAbsolutePath();
+
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         System.setOut(new PrintStream(stdout));
-        Main.main("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl".split(" "));
+        Main.main(("-v -f " + functionsFilePath + " -m " + mappingFilePath).split(" "), cwd);
+
         assertThat(stdout.toString(), containsString("<http://example.com/10> <http://xmlns.com/foaf/0.1/name> \"Venus\\\"\"."));
         assertThat(stdout.toString(), containsString("<http://example.com/10> <http://example.com/id> \"10\"."));
         assertThat(stdout.toString(), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>."));
@@ -138,17 +144,22 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void outputTurtle() {
-        Main.main("-m ./argument/mapping.ttl -o ./generated_output.ttl -s turtle".split(" "));
+        String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
+        String expectedTrigPath = (new File( "./src/test/resources/argument/output-trig/target_output.trig")).getAbsolutePath();
+
+        Main.main(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s turtle").split(" "), cwd);
         compareFiles(
-                "argument/output-turtle/target_output.ttl",
-                "./generated_output.ttl",
+                expectedTrigPath,
+                actualTrigPath,
                 false
         );
 
         File outputFile;
 
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get("./generated_output.ttl"));
+            byte[] encoded = Files.readAllBytes(Paths.get(actualTrigPath));
             String content = new String(encoded, "utf-8");
 
             assertTrue(content.contains("@prefix foaf: <http://xmlns.com/foaf/0.1/> ."));
@@ -158,7 +169,7 @@ public class Arguments_Test extends TestCore {
 
 
         try {
-            outputFile = Utils.getFile("./generated_output.ttl");
+            outputFile = Utils.getFile(actualTrigPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,17 +178,23 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void outputJSON() {
-        Main.main("-m ./argument/mapping.ttl -o ./generated_output.json -s jsonld".split(" "));
+        String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String actualJSONPath = (new File("./generated_output.json")).getAbsolutePath();
+        String expectedJSONPath = (new File( "./src/test/resources/argument/output-json/target_output.json")).getAbsolutePath();
+
+        Main.main(("-m " + mappingFilePath + " -o " + actualJSONPath + " -s jsonld").split(" "), cwd);
+
         compareFiles(
-                "argument/output-json/target_output.json",
-                "./generated_output.json",
+                expectedJSONPath,
+                actualJSONPath,
                 false
         );
 
         File outputFile;
 
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get("./generated_output.json"));
+            byte[] encoded = Files.readAllBytes(Paths.get(actualJSONPath));
             String content = new String(encoded, StandardCharsets.UTF_8);
 
             assertTrue(content.contains("\"http://xmlns.com/foaf/0.1/name\" : ["));
@@ -187,7 +204,7 @@ public class Arguments_Test extends TestCore {
 
 
         try {
-            outputFile = Utils.getFile("./generated_output.json");
+            outputFile = Utils.getFile(actualJSONPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,17 +213,22 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void outputTrig() {
-        Main.main("-m ./argument/mapping.ttl -o ./generated_output.trig -s trig".split(" "));
+        String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
+        String expectedTrigPath = (new File( "./src/test/resources/argument/output-trig/target_output.trig")).getAbsolutePath();
+
+        Main.main(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s trig").split(" "), cwd);
         compareFiles(
-                "argument/output-trig/target_output.trig",
-                "./generated_output.trig",
+                expectedTrigPath,
+                actualTrigPath,
                 false
         );
 
         File outputFile;
 
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get("./generated_output.trig"));
+            byte[] encoded = Files.readAllBytes(Paths.get(actualTrigPath));
             String content = new String(encoded, StandardCharsets.UTF_8);
 
             assertTrue(content.contains("{"));
@@ -216,7 +238,7 @@ public class Arguments_Test extends TestCore {
 
 
         try {
-            outputFile = Utils.getFile("./generated_output.trig");
+            outputFile = Utils.getFile(actualTrigPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
@@ -225,14 +247,16 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void outputHDT() throws IOException {
-        Main.main("-m ./argument/mapping.ttl -o ./generated_output.hdt -s hdt".split(" "));
+        String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
+        String mappingFilePath = (new File("./src/test/resources/argument/mapping.ttl")).getAbsolutePath();
+        String actualHDTPath = (new File("./generated_output.hdt")).getAbsolutePath();
+        String expectedHDTPath = (new File( "./src/test/resources/argument/output-hdt/target_output.hdt")).getAbsolutePath();
 
-        File file1 = new File("./src/test/resources/argument/output-hdt/target_output.hdt");
-        File file2 = new File("./generated_output.hdt");
+        Main.main(("-m " + mappingFilePath + " -o " + actualHDTPath + " -s hdt").split(" "), cwd);
 
         // Load HDT file.
-        HDT hdt1 = HDTManager.loadHDT(file1.getAbsolutePath(), null);
-        HDT hdt2 = HDTManager.loadHDT(file2.getAbsolutePath(), null);
+        HDT hdt1 = HDTManager.loadHDT(expectedHDTPath, null);
+        HDT hdt2 = HDTManager.loadHDT(actualHDTPath, null);
 
         try {
             Triples triples1 = hdt1.getTriples();
@@ -252,22 +276,27 @@ public class Arguments_Test extends TestCore {
         } finally {
             hdt1.close();
             hdt2.close();
-            assertTrue(file2.delete());
+            assertTrue((new File(actualHDTPath)).delete());
         }
     }
 
 
     @Test
     public void quoteInLiteral() {
-        Main.main("-m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        String cwd = (new File( "./src/test/resources/argument/quote-in-literal")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String actualNQuadsPath = (new File("./generated_output.nq")).getAbsolutePath();
+        String expectedNQuadsPath = (new File( "./src/test/resources/argument/quote-in-literal/target_output.nq")).getAbsolutePath();
+
+        Main.main(("-m " + mappingFilePath + " -o " + actualNQuadsPath).split(" "), cwd);
         compareFiles(
-                "argument/quote-in-literal/target_output.nq",
-                "./generated_output.nq",
+                expectedNQuadsPath,
+                actualNQuadsPath,
                 false
         );
 
         try {
-            File outputFile = Utils.getFile("./generated_output.nq");
+            File outputFile = Utils.getFile(actualNQuadsPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();

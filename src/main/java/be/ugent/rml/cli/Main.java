@@ -27,6 +27,15 @@ public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
+        main(args, System.getProperty("user.dir"));
+    }
+
+    /**
+     * Main method use for the CLI. Allows to also set the current working directory via the argument basePath.
+     * @param args the CLI arguments
+     * @param basePath the basePath used during the execution.
+     */
+    public static void main(String[] args, String basePath) {
         Options options = new Options();
         Option mappingdocOption = Option.builder("m")
                 .longOpt("mappingfile")
@@ -125,7 +134,7 @@ public class Main {
                         .collect(Collectors.toList());
                 InputStream is = new SequenceInputStream(Collections.enumeration(lis));
                 RDF4JStore rmlStore = Utils.readTurtle(is, RDFFormat.TURTLE);
-                RecordsFactory factory = new RecordsFactory(new DataFetcher(System.getProperty("user.dir"), rmlStore));
+                RecordsFactory factory = new RecordsFactory(basePath);
 
                 String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
                 QuadStore outputStore;
@@ -183,6 +192,13 @@ public class Main {
                 } else {
                     functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
                 }
+
+                // We have to get the InputStreams of the RML documents again,
+                // because we can only use an InputStream once.
+                lis = Arrays.stream(mOptionValue)
+                        .map(Utils::getInputStreamFromMOptionValue)
+                        .collect(Collectors.toList());
+                is = new SequenceInputStream(Collections.enumeration(lis));
 
                 executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(is));
 

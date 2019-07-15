@@ -542,6 +542,16 @@ public class Utils {
 
     }
 
+    public static int getHashOfString(String str) {
+        int hash = 7;
+
+        for (int i = 0; i < str.length(); i++) {
+            hash = hash*31 + str.charAt(i);
+        }
+
+        return hash;
+    }
+
     private static String formatToScientific(Double d) {
         BigDecimal input = BigDecimal.valueOf(d).stripTrailingZeros();
         int precision = input.scale() < 0

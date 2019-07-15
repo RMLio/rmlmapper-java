@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.4.2] - 2019-07-15
+
+### Added
+
+- Configure [no-response bot](https://github.com/probot/no-response) for Github ([issue 35](https://github.com/RMLio/rmlmapper-java/issues/35))
+- Dockerfile
+- Add table of contents to README
+- Refactor data access and records
+- Test case for CSV with special characters
+
+### Fixed
+
+- Base IRI is read from the mapping doc when using CLI
+
 ## [4.4.1] - 2019-06-17
 
 ### Added
@@ -183,6 +197,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.4.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.0...v4.4.1
 [4.4.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.3...v4.4.0
 [4.3.3]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.2...v4.3.3
