@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-## [4.4.2] - 2019-XX-XX
+## [4.4.2] - 2019-07-15
 
 ### Added
 
@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Dockerfile
 - Add table of contents to README
 - Refactor data access and records
+- Test case for CSV with special characters
 
 ### Fixed
 
