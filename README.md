@@ -81,42 +81,8 @@ options:
 
 ### Library
 
-An example of how you can use the RMLMapper as an external library can be found below.
-
-```java
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.Rio;
-
-import be.ugent.rml.Executor;
-import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.RDF4JStore;
-import be.ugent.rml.store.QuadStore;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-
-
-class Main {
-
-    public static void main(String[] args) {
-
-        String cwd = "/home/rml"; //path to default directory for local files
-        String mappingFile = "/home/rml/mapping.rml.ttl"; //path to the mapping file that needs to be executed
-
-        try {
-            InputStream mappingStream = new FileInputStream(mappingFile);
-            Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
-            RDF4JStore rmlStore = new RDF4JStore(model);
-
-            Executor executor = new Executor(rmlStore, new RecordsFactory(cwd));
-            QuadStore result = executor.execute(null);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-}
-```
+An example of how you can use the RMLMapper as an external library can be found
+at [./src/test/java/be/ugent/rml/readme/ReadmeTest.java](https://github.com/RMLio/rmlmapper-java/blob/master/src/test/java/be/ugent/rml/readme/ReadmeTest.java)
 
 ### Docker
 
@@ -165,48 +131,8 @@ You can change the functions.ttl path using a commandline-option (`-f`).
 #### Preloading
 
 This overrides the dynamic loading.
-See the snippet below for an example of how to do it.
-
-```java
-package be.ugent.rml;
-
-import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.lib.GrelProcessor;
-import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.Utils;
-
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
-
-class Main {
-
-    public static void main(String[] args) {
-        String mapPath = "path/to/mapping/file";
-        String functionPath = "path/to/functions.ttl/file";
-
-        Map<String, Class> libraryMap = new HashMap<>();
-        libraryMap.put("GrelFunctions.jar", GrelProcessor.class);
-        try {
-            File functionsFile = Utils.getFile(functionPath);
-            FunctionLoader functionLoader = new FunctionLoader(functionsFile, null, libraryMap);
-            ClassLoader classLoader = Main.class.getClassLoader();
-            // execute mapping file
-            File mappingFile = Utils.getFile(mapPath);
-            QuadStore rmlStore = Utils.readTurtle(mappingFile);
-
-            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()),
-                functionLoader);
-            QuadStore result = executor.execute(null);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-}
-```
+An example of how you can use Preload a custom function can be found
+at [./src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java](https://github.com/RMLio/rmlmapper-java/blob/master/src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java)
 
 ## Testing
 
