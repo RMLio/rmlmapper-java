@@ -12,7 +12,7 @@ import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.validator.routines.UrlValidator;
+import org.eclipse.rdf4j.common.net.ParsedIRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.ParserConfig;
@@ -29,10 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.ServerSocket;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -471,9 +468,35 @@ public class Utils {
         }
     }
 
+    /**
+     * This method returns true if a string is valid IRI.
+     *
+     * @param iri the IRI to validate.
+     * @return true if the IRI is valid, else false.
+     */
     public static boolean isValidIRI(String iri) {
-        UrlValidator urlValidator = new UrlValidator();
-        return urlValidator.isValid(iri);
+        try {
+            new ParsedIRI(iri);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * This method returns true if a string is a relative IRI.
+     *
+     * @param iri the IRI to check.
+     * @return true if the IRI is relative, else false.
+     */
+    public static boolean isRelativeIRI(String iri) {
+        try {
+            ParsedIRI parsedIRI = new ParsedIRI(iri);
+
+            return !parsedIRI.isAbsolute();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static String getBaseDirectiveTurtle(File file) {
@@ -546,7 +569,7 @@ public class Utils {
         int hash = 7;
 
         for (int i = 0; i < str.length(); i++) {
-            hash = hash*31 + str.charAt(i);
+            hash = hash * 31 + str.charAt(i);
         }
 
         return hash;

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## Fixed
+- Validation of IRIs (see [issue 37](https://github.com/RMLio/rmlmapper-java/issues/37))
+
 ## [4.4.2] - 2019-07-15
 
 ### Added
