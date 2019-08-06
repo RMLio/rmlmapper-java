@@ -31,4 +31,12 @@ public class UtilsTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void validateIRITest() {
+        assertTrue(Utils.isValidIRI("bob"));
+        assertTrue(Utils.isValidIRI("http://example.com/θερμότητα/10"));
+
+        assertFalse(Utils.isValidIRI("bob smith"));
+    }
 }

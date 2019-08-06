@@ -93,16 +93,33 @@ public class Executor {
                 Record record = records.get(j);
                 ProvenancedTerm subject = getSubject(triplesMap, mapping, record, j);
 
-                if (subject != null && subject.getTerm() instanceof NamedNode && !Utils.isValidIRI(subject.getTerm().getValue())) {
-                    if (this.baseIRI == null) {
-                        subject = null;
-                    } else {
-                        String newSubject = this.baseIRI + subject.getTerm().getValue();
+                // If we have subject and it's a named node,
+                // we validate it and make it an absolute IRI if needed.
+                if (subject != null && subject.getTerm() instanceof NamedNode) {
+                    String iri = subject.getTerm().getValue();
 
-                        if (Utils.isValidIRI(newSubject)) {
-                            subject = new ProvenancedTerm(new NamedNode(newSubject), subject.getMetadata());
-                        } else {
+                    // Is the IRI valid?
+                    if (!Utils.isValidIRI(iri)) {
+                        logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
+                        subject = null;
+
+                    // Is the IRI relative?
+                    } else if (Utils.isRelativeIRI(iri)) {
+
+                        // Check the base IRI to see if we can use it to turn the IRI into an absolute one.
+                        if (this.baseIRI == null) {
+                            logger.error("The base IRI is null, so relative IRI of subject cannot be turned in to absolute IRI. Skipped.");
                             subject = null;
+                        } else {
+                            logger.debug("The IRI of subject is made absolute via base IRI.");
+                            iri = this.baseIRI + iri;
+
+                            // Check if the new absolute IRI is valid.
+                            if (Utils.isValidIRI(iri)) {
+                                subject = new ProvenancedTerm(new NamedNode(iri), subject.getMetadata());
+                            } else {
+                                logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
+                            }
                         }
                     }
                 }
@@ -115,6 +132,7 @@ public class Executor {
 
                     mapping.getGraphMappingInfos().forEach(mappingInfo -> {
                         List<Term> terms = null;
+
                         try {
                             terms = mappingInfo.getTermGenerator().generate(record);
                         } catch (IOException e) {
