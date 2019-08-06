@@ -1,6 +1,7 @@
 package be.ugent.rml.termgenerator;
 
 import be.ugent.rml.Utils;
+import be.ugent.rml.extractor.ConstantExtractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
@@ -13,21 +14,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static be.ugent.rml.Utils.isValidrrLanguage;
+
 public class LiteralGenerator extends TermGenerator {
 
-    private String language;
+    // The executor used to get the language for the literal.
+    private SingleRecordFunctionExecutor languageExecutor;
+    // The URL of the datatype used for the literal.
     private Term datatype;
     private int maxNumberOfTerms;
 
-    private LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, String language, Term datatype, int maxNumberOfTerms) {
+    private LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, SingleRecordFunctionExecutor languageExecutor, Term datatype, int maxNumberOfTerms) {
         super(functionExecutor);
-        this.language = language;
+        this.languageExecutor = languageExecutor;
         this.datatype = datatype;
         this.maxNumberOfTerms = maxNumberOfTerms;
     }
 
     public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, String language) {
-        this(functionExecutor, language, null, 0);
+        this(functionExecutor, new ConstantExtractor(language));
+    }
+
+    public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, SingleRecordFunctionExecutor languageExecutor) {
+        this(functionExecutor, languageExecutor, null, 0);
     }
 
     public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, Term datatype) {
@@ -53,8 +62,24 @@ public class LiteralGenerator extends TermGenerator {
             //add language tag if present
             String finalDataTypeSource = dataTypeSource;
             objectStrings.forEach(objectString -> {
-                if (language != null) {
-                    objects.add(new Literal(objectString, language));
+                if (languageExecutor != null) {
+                    try {
+                        ArrayList<String> languages = new ArrayList<>();
+                        FunctionUtils.functionObjectToList(this.languageExecutor.execute(record), languages);
+
+                        if (!languages.isEmpty()) {
+                            String language = languages.get(0);
+
+                            if (! isValidrrLanguage(language)) {
+                                throw new RuntimeException(String.format("Language tag \"%s\" does not conform to BCP 47 standards", language));
+                            }
+
+                            objects.add(new Literal(objectString, language));
+                        }
+                    } catch (IOException e) {
+                        // TODO print error message
+                        e.printStackTrace();
+                    }
                 } else if (datatype != null) {
                     //add datatype if present; language and datatype can't be combined because the language tag implies langString as datatype
                     objects.add(new Literal(objectString, datatype));

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- Support for `rml:languageMap` (see [issue 9](https://github.com/RMLio/rml-test-cases/issues/9) of the RML Test cases)
+
 ## Fixed
 - Validation of IRIs (see [issue 37](https://github.com/RMLio/rmlmapper-java/issues/37))
 

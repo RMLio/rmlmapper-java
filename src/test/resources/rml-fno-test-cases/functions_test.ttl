@@ -33,7 +33,7 @@ grel:toLowerCase a fno:Function ;
   lib:providedBy [
     lib:localLibrary "GrelFunctions.jar";
     lib:class "GrelFunctions";
-    lib:method "toLowerCase"
+    lib:method "toLowercase"
   ].
 
 grel:concat a fno:Function ;
