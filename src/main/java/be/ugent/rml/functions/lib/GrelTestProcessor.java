@@ -8,6 +8,10 @@ public class GrelTestProcessor {
         return test.toUpperCase();
     }
 
+    public static String toLowercase(String test) {
+        return test.toLowerCase();
+    }
+
     public static String escape(String value, String mode) {
         switch (mode) {
             case "html":

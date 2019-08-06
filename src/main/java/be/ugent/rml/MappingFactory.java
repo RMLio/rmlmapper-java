@@ -178,14 +178,10 @@ public class MappingFactory {
         Term termType = getTermType(objectmap);
 
         List<Term> datatypes = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "datatype"), null));
-        List<Term> languages = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "language"), null));
         List<Term> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), null));
         List<Term> parentTermMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "parentTermMap"), null));
 
-        // validate languages
-        languages.stream().map(Term::getValue).forEach(language -> {if (! isValidrrLanguage(language)) {
-            throw new RuntimeException(String.format("Language tag \"%s\" does not conform to BCP 47 standards", language));
-        }});
+        List<SingleRecordFunctionExecutor> languages = getLanguageExecutorsForObjectMap(objectmap);
 
         if (functionValues.isEmpty()) {
             boolean encodeIRI = termType != null && termType.getValue().equals(NAMESPACES.RR + "IRI");
@@ -200,7 +196,7 @@ public class MappingFactory {
                         oGen = new LiteralGenerator(executor, datatypes.get(0));
                         //check if we need to apply a language to the object
                     } else if (!languages.isEmpty()) {
-                        oGen = new LiteralGenerator(executor, languages.get(0).getValue());
+                        oGen = new LiteralGenerator(executor, languages.get(0));
                     } else {
                         oGen = new LiteralGenerator(executor);
                     }
@@ -269,7 +265,7 @@ public class MappingFactory {
                     gen = new LiteralGenerator(functionExecutor, datatypes.get(0));
                     //check if we need to apply a language to the object
                 } else if (!languages.isEmpty()) {
-                    gen = new LiteralGenerator(functionExecutor, languages.get(0).getValue());
+                    gen = new LiteralGenerator(functionExecutor, languages.get(0));
                 } else {
                     gen = new LiteralGenerator(functionExecutor);
                 }
@@ -417,6 +413,42 @@ public class MappingFactory {
         });
 
         return mappingInfos;
+    }
+
+    /**
+     * This method returns all executors for the languages of an Object Map.
+     * @param objectmap the object for which the executors need to be determined.
+     * @return a list of executors that return language tags.
+     */
+    private List<SingleRecordFunctionExecutor> getLanguageExecutorsForObjectMap(Term objectmap) throws IOException {
+        ArrayList<SingleRecordFunctionExecutor> executors = new ArrayList<>();
+
+        // Parse rr:language
+        List<Term> languages = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "language"), null));
+
+        // Validate languages.
+        languages.stream().map(Term::getValue).forEach(language -> {if (! isValidrrLanguage(language)) {
+            throw new RuntimeException(String.format("Language tag \"%s\" does not conform to BCP 47 standards", language));
+        }});
+
+        for (Term language: languages) {
+            executors.add(new ConstantExtractor(language.getValue()));
+        }
+
+        // Parse rml:languageMap
+        List<Term> languageMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "languageMap"), null));
+
+        for (Term languageMap : languageMaps) {
+            List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(languageMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+
+            if (functionValues.isEmpty()) {
+                executors.add(RecordFunctionExecutorFactory.generate(store, languageMap, false));
+            } else {
+                executors.add(parseFunctionTermMap(functionValues.get(0)));
+            }
+        }
+
+        return executors;
     }
 
     /**
