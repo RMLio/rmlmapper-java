@@ -97,11 +97,7 @@ public class Executor {
                     if (this.baseIRI == null) {
                         subject = null;
                     } else {
-                        String newSubject = subject.getTerm().getValue();
-
-                        if (! Utils.isAbsoluteIRI(newSubject)) {
-                            newSubject = this.baseIRI + newSubject;
-                        }
+                        String newSubject = this.baseIRI + subject.getTerm().getValue();
 
                         if (Utils.isValidIRI(newSubject)) {
                             subject = new ProvenancedTerm(new NamedNode(newSubject), subject.getMetadata());
