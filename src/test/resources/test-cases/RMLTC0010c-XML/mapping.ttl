@@ -20,5 +20,5 @@
 
   rr:predicateObjectMap [
     rr:predicate ex:code ;
-    rr:objectMap [ rr:template "\{\{\{ {ISO3166} \}\}\}"; rr:termType rr:Literal]
+    rr:objectMap [ rr:template "\\{\\{\\{ {ISO3166} \\}\\}\\}"; rr:termType rr:Literal]
   ] .
