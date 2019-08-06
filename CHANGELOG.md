@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.5.0] - 2019-08-06
+
 ### Added
 - Support for `rml:languageMap` (see [issue 9](https://github.com/RMLio/rml-test-cases/issues/9) of the RML Test cases)
 
 ## Fixed
 - Validation of IRIs (see [issue 37](https://github.com/RMLio/rmlmapper-java/issues/37))
+- Example code in README (see [issue 39](https://github.com/RMLio/rmlmapper-java/issues/39))
 
 ## [4.4.2] - 2019-07-15
 
@@ -203,6 +206,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.5.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.2...v4.5.0
 [4.4.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.0...v4.4.1
 [4.4.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.3.3...v4.4.0
