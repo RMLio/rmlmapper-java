@@ -476,19 +476,6 @@ public class Utils {
         return urlValidator.isValid(iri);
     }
 
-    /**
-     * Checks if the given IRI is absolute.
-     *
-     * Source: https://github.com/json-ld/json-ld.org/issues/46#issuecomment-3849742
-     *
-     * @param iri
-     * @return true if absolute else false
-     */
-    public static boolean isAbsoluteIRI(String iri) {
-        int colonIndex = iri.indexOf(':');
-        return colonIndex != -1 && iri.charAt(colonIndex + 1) == '/' && iri.charAt(colonIndex + 2) == '/';
-    }
-
     public static String getBaseDirectiveTurtle(File file) {
         StringBuilder contentBuilder = new StringBuilder();
         try (Stream<String> stream = Files.lines(Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)) {
