@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Absolute paths for data source files
+
 ## [4.5.0] - 2019-08-06
 
 ### Added
