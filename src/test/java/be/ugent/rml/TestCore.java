@@ -2,6 +2,7 @@ package be.ugent.rml;
 
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.NamedNode;
@@ -11,6 +12,8 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -20,6 +23,17 @@ abstract class TestCore {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     Executor createExecutor(String mapPath) throws Exception {
+        return createExecutor(mapPath, new ArrayList<>());
+    }
+
+    /**
+     * Create an executor and add extra quads to the mapping file.
+     * @param mapPath The path to the mapping file.
+     * @param extraQuads A list of extra quads that need to be added to the mapping file.
+     * @return An executor.
+     * @throws Exception
+     */
+    Executor createExecutor(String mapPath, List<Quad> extraQuads) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
         URL url = classLoader.getResource(mapPath);
@@ -30,6 +44,7 @@ abstract class TestCore {
 
         File mappingFile = new File(mapPath);
         QuadStore rmlStore = Utils.readTurtle(mappingFile);
+        rmlStore.addQuads(extraQuads);
 
         return new Executor(rmlStore,
                 new RecordsFactory(mappingFile.getParent()), Utils.getBaseDirectiveTurtle(mappingFile));
