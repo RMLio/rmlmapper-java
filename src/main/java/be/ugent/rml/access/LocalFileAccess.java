@@ -1,5 +1,6 @@
 package be.ugent.rml.access;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -33,7 +34,13 @@ public class LocalFileAccess implements Access {
      */
     @Override
     public InputStream getInputStream() throws IOException {
-        return getInputStreamFromFile(getFile(this.basePath, this.path));
+        File file = new File(this.path);
+
+        if (!file.isAbsolute()) {
+            file = getFile(this.basePath, this.path);
+        }
+
+        return getInputStreamFromFile(file);
     }
 
     /**
@@ -75,5 +82,10 @@ public class LocalFileAccess implements Access {
      */
     public String getBasePath() {
         return basePath;
+    }
+
+    @Override
+    public String toString() {
+        return this.path;
     }
 }
