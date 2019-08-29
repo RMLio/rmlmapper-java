@@ -1,6 +1,9 @@
 package be.ugent.rml;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.junit.Test;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class Mapper_CSV_Test extends TestCore {
     @Test
@@ -201,6 +204,19 @@ public class Mapper_CSV_Test extends TestCore {
     @Test
     public void evaluate_1003_CSV() {
         doMapping("./test-cases/RMLTC1003-CSV/mapping.ttl", "./test-cases/RMLTC1003-CSV/output.nq");
+    }
+
+    @Test
+    public void evaluate_1003_CSV_mocked() {
+        WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig()
+                .withRootDirectory("src/test/resources/mockedURLs").port(8080));
+        wireMockServer.start();
+        wireMockServer.stubFor(get(urlMatching("/.*"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBodyFile("Airport.csv")));
+        doMapping("./test-cases/RMLTC1003-CSV/mapping_mocked.ttl", "./test-cases/RMLTC1003-CSV/output.nq");
+        wireMockServer.shutdown();
     }
 
     @Test
