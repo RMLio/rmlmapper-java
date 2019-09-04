@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.5.1] - 2019-09-04
+
+### Fixed
+- Absolute paths for data source files
+
 ## [4.5.0] - 2019-08-06
 
 ### Added
@@ -206,6 +211,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.5.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.0...v4.5.1
 [4.5.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.2...v4.5.0
 [4.4.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.0...v4.4.1

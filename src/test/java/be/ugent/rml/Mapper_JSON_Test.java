@@ -1,6 +1,14 @@
 package be.ugent.rml;
 
+import be.ugent.rml.store.Quad;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
 import org.junit.Test;
+
+import java.net.URL;
+import java.util.ArrayList;
+
+import static org.junit.Assert.fail;
 
 public class Mapper_JSON_Test extends TestCore {
     @Test
@@ -206,5 +214,24 @@ public class Mapper_JSON_Test extends TestCore {
     @Test
     public void evaluate_1009_JSON() {
         doMapping("./test-cases/RMLTC1009-JSON/mapping.ttl", "./test-cases/RMLTC1009-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_1016_JSON() {
+        try {
+            ClassLoader classLoader = getClass().getClassLoader();
+            URL url = classLoader.getResource("./test-cases/RMLTC1016-JSON/data.json");
+
+            ArrayList<Quad> extraQuads = new ArrayList<>();
+            extraQuads.add(new Quad(
+                    new NamedNode("http://mapping.example.com/source_0"),
+                    new NamedNode("http://semweb.mmlab.be/ns/rml#source"),
+                    new Literal(url.getFile())));
+
+            Executor executor = createExecutor("./test-cases/RMLTC1016-JSON/mapping.ttl", extraQuads);
+            doMapping(executor, "./test-cases/RMLTC1016-JSON/output.nq");
+        } catch (Exception e) {
+            fail();
+        }
     }
 }

@@ -1,0 +1,26 @@
+<http://mapping.example.com/map_person_0> <http://semweb.mmlab.be/ns/rml#logicalSource> <http://mapping.example.com/source_0>;
+    a <http://www.w3.org/ns/r2rml#TriplesMap>;
+    <http://www.w3.org/2000/01/rdf-schema#label> "person";
+    <http://www.w3.org/ns/r2rml#subjectMap> <http://mapping.example.com/s_0>;
+    <http://www.w3.org/ns/r2rml#predicateObjectMap> <http://mapping.example.com/pom_0>, <http://mapping.example.com/pom_1>.
+<http://mapping.example.com/om_0> a <http://www.w3.org/ns/r2rml#ObjectMap>;
+    <http://www.w3.org/ns/r2rml#constant> "http://xmlns.com/foaf/0.1/Person";
+    <http://www.w3.org/ns/r2rml#termType> <http://www.w3.org/ns/r2rml#IRI>.
+<http://mapping.example.com/om_1> a <http://www.w3.org/ns/r2rml#ObjectMap>;
+    <http://semweb.mmlab.be/ns/rml#reference> "firstname";
+    <http://www.w3.org/ns/r2rml#termType> <http://www.w3.org/ns/r2rml#Literal>.
+<http://mapping.example.com/pm_0> a <http://www.w3.org/ns/r2rml#PredicateMap>;
+    <http://www.w3.org/ns/r2rml#constant> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>.
+<http://mapping.example.com/pm_1> a <http://www.w3.org/ns/r2rml#PredicateMap>;
+    <http://www.w3.org/ns/r2rml#constant> <http://example.com/name>.
+<http://mapping.example.com/pom_0> a <http://www.w3.org/ns/r2rml#PredicateObjectMap>;
+    <http://www.w3.org/ns/r2rml#predicateMap> <http://mapping.example.com/pm_0>;
+    <http://www.w3.org/ns/r2rml#objectMap> <http://mapping.example.com/om_0>.
+<http://mapping.example.com/pom_1> a <http://www.w3.org/ns/r2rml#PredicateObjectMap>;
+    <http://www.w3.org/ns/r2rml#predicateMap> <http://mapping.example.com/pm_1>;
+    <http://www.w3.org/ns/r2rml#objectMap> <http://mapping.example.com/om_1>.
+<http://mapping.example.com/s_0> a <http://www.w3.org/ns/r2rml#SubjectMap>;
+    <http://www.w3.org/ns/r2rml#template> "http://example.com/{firstname}".
+<http://mapping.example.com/source_0> a <http://semweb.mmlab.be/ns/rml#LogicalSource>;
+    <http://semweb.mmlab.be/ns/rml#iterator> "$.persons[*]";
+    <http://semweb.mmlab.be/ns/rml#referenceFormulation> <http://semweb.mmlab.be/ns/ql#JSONPath>.
