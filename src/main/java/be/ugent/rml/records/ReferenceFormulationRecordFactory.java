@@ -21,5 +21,5 @@ public interface ReferenceFormulationRecordFactory {
      * @return a list of records.
      * @throws IOException
      */
-    List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException, SQLException, ClassNotFoundException;
+    List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception;
 }

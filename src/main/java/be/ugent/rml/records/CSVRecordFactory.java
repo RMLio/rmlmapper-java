@@ -9,8 +9,15 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FilenameUtils;
+import org.odftoolkit.simple.Document;
+import org.odftoolkit.simple.SpreadsheetDocument;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,24 +43,108 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @throws IOException
      */
     @Override
-    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException, SQLException, ClassNotFoundException {
+    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
-        CSVParser parser;
 
         if (source instanceof Literal) {
             // We are not dealing with something like CSVW.
-            parser = getParserForNormalCSV(access);
+            // Check for different spreadsheet formats
+            String filePath = source.getValue();
+            String extension = FilenameUtils.getExtension(filePath);
+            switch (extension) {
+                case "xlsx":
+                    return getRecordsForExcel(access);
+                case "ods":
+                    return getRecordsForODT(access);
+                default:
+                    return getRecordsForCSV(access, null);
+            }
+
         } else {
             List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
 
             // Check if we are dealing with CSVW.
             if (sourceType.get(0).getValue().equals(NAMESPACES.CSVW + "Table")) {
                 CSVW csvw = new CSVW(access.getInputStream(), rmlStore, logicalSource);
-                parser = csvw.getCSVParser();
+                return getRecordsForCSV(access, csvw);
             } else {
                 // RDBs fall under this.
-                parser = getParserForNormalCSV(access);
+                return getRecordsForCSV(access, null);
+            }
+        }
+    }
+
+    /**
+     * Get Records for Excel file format.
+     * @param access
+     * @return
+     * @throws IOException
+     */
+    private List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
+        List<Record> output = new ArrayList<>();
+        Workbook workbook = new XSSFWorkbook(access.getInputStream());
+        for (Sheet datatypeSheet : workbook) {
+            Row header = datatypeSheet.getRow(0);
+            boolean first = true;
+            for (Row currentRow : datatypeSheet) {
+                // remove the header
+                if (first) {
+                    first = false;
+                } else {
+                    output.add(new ExcelRecord(header, currentRow));
+                }
+            }
+        }
+        return output;
+    }
+
+    /**
+     * Get Records for ODT file format.
+     * @param access
+     * @return
+     * @throws IOException
+     */
+    private List<Record> getRecordsForODT(Access access) throws Exception {
+        List<Record> output = new ArrayList<>();
+        InputStream is = access.getInputStream();
+        Document document = SpreadsheetDocument.loadDocument(is);
+        for (org.odftoolkit.simple.table.Table table : document.getTableList()) {
+            org.odftoolkit.simple.table.Row header = table.getRowByIndex(0);
+            boolean first = true;
+            for (org.odftoolkit.simple.table.Row currentRow : table.getRowList()) {
+                if (first) {
+                    first = false;
+                } else {
+                    output.add(new ODSRecord(header, currentRow));
+                }
+            }
+        }
+        return output;
+    }
+
+    /**
+     * This method returns a CSVParser from a simple access (local/remote CSV file; no CSVW).
+     *
+     * @param access the used access.
+     * @return a CSVParser.
+     * @throws IOException
+     */
+    private List<Record> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException, ClassNotFoundException {
+        CSVParser parser;
+        // Check if we are dealing with CSVW.
+        if (csvw != null) {
+            parser = csvw.getCSVParser();
+        } else {
+            // RDBs fall under this.
+            CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false).withNullString("@@@@NULL@@@@");
+            InputStream inputStream = access.getInputStream();
+
+            try {
+                parser = CSVParser.parse(inputStream, StandardCharsets.UTF_8, csvFormat);
+            } catch (IllegalArgumentException e) {
+                logger.debug("Could not parse CSV inputstream", e);
+                parser = null;
             }
         }
 
@@ -68,29 +159,6 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
             // This is to support certain use cases with RDBs where queries might not be valid,
             // but you don't want the RMLMapper to crash.
             return new ArrayList<>();
-        }
-    }
-
-    /**
-     * This method returns a CSVParser from a simple access (local/remote CSV file; no CSVW).
-     *
-     * @param access the used access.
-     * @return a CSVParser.
-     * @throws IOException
-     */
-    private CSVParser getParserForNormalCSV(Access access) throws IOException, SQLException, ClassNotFoundException {
-        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false).withNullString("@@@@NULL@@@@");
-        InputStream inputStream = access.getInputStream();
-
-        if (inputStream != null) {
-            try {
-                return CSVParser.parse(inputStream, StandardCharsets.UTF_8, csvFormat);
-            } catch (IllegalArgumentException e) {
-                logger.debug("Could not parse CSV inputstream", e);
-                return null;
-            }
-        } else {
-            return null;
         }
     }
 }

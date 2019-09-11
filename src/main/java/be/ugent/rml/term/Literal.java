@@ -35,7 +35,9 @@ public class Literal extends AbstractTerm {
 
         if (this.language != null && !this.language.equals("")) {
             temp += "@" + this.language;
-        } else if (this.datatype != null) {
+        } else if (this.datatype != null && ! this.datatype.getValue().equals("http://www.w3.org/2001/XMLSchema#string")) {
+            // https://www.w3.org/TR/turtle/#h4_turtle-literals
+            // > If there is no datatype IRI and no language tag, the datatype is xsd:string.
             temp += "^^" + this.datatype;
         }
 

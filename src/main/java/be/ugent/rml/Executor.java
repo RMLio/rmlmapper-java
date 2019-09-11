@@ -423,7 +423,7 @@ public class Executor {
         return iris;
     }
 
-    private List<Record> getRecords(Term triplesMap) throws IOException, SQLException, ClassNotFoundException {
+    private List<Record> getRecords(Term triplesMap) throws Exception {
         if (!this.recordsHolders.containsKey(triplesMap)) {
             this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
         }

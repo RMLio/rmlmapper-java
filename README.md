@@ -34,6 +34,8 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 
 ### Supported
 - local data sources:
+  - Excel (.xlsx)
+  - LibreOffice (.ods)
   - CSV files (including CSVW)
   - JSON files (JSONPath)
   - XML files (XPath)
@@ -252,6 +254,9 @@ and up to which level metadata should be stored (dataset, triple, or term level 
 
 Run the tests via `test.sh`.
 
+#### Derived tests
+Some tests (Excel, ODS) are derived from other tests (CSV) using a script (`./generate_spreadsheet_test_cases.sh`)
+
 ### RDBs
 Make sure you have [Docker](https://www.docker.com) running.
 
@@ -316,6 +321,9 @@ We have commercial support available.
 We also offer consulting for all-things-RML.
 
 ## Remarks
+
+### Typed spreadsheet files
+All spreadsheet files are as of yet regarded as plain CSV files. No type information like Currency, Date... is used.
 
 ### XML file parsing performance
 
