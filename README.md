@@ -159,7 +159,7 @@ Make sure you have [Docker](https://www.docker.com) running.
 | junit                              | Eclipse Public License 1.0                                         |
 | org.eclipse.rdf4j rdf4j-runtime    | Eclipse Public License 1.0                                         |
 | commons-cli                        | Apache License 2.0                                                 |
-| com.opencsv opencsv                | Apache License 2.0                                                 |
+| commons-csv                        | Apache License 2.0                                                 |
 | commons-lang                       | Apache License 2.0                                                 |
 | ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
 | org.rdfhdt.hdt-jena                | GNU Lesser General Public License v3.0                             |
