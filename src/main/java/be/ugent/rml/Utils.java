@@ -95,22 +95,24 @@ public class Utils {
         try {
             switch (extension) {
                 case "n3":
-                    out = getTurtleInputStreamForFormat(mOptionValue, "text/n3;charset=utf-8", RDFFormat.N3);
+                    out = getTurtleInputStreamForFormat(mOptionValue, RDFFormat.N3);
                     break;
                 case "nt":
-                    out = getTurtleInputStreamForFormat(mOptionValue, "application/n-triples", RDFFormat.NTRIPLES);
+                    out = getTurtleInputStreamForFormat(mOptionValue, RDFFormat.NTRIPLES);
                     break;
                 case "nq":
-                    out =  getTurtleInputStreamForFormat(mOptionValue, "application/n-quads", RDFFormat.NQUADS);
-                    break;
-                case "json":
-                    out = getTurtleInputStreamForFormat(mOptionValue, "application/ld+json", RDFFormat.JSONLD);
+                    out =  getTurtleInputStreamForFormat(mOptionValue, RDFFormat.NQUADS);
                     break;
                 case "xml":
-                    out = getTurtleInputStreamForFormat(mOptionValue, "application/rdf+xml", RDFFormat.RDFXML);
+                    out = getTurtleInputStreamForFormat(mOptionValue, RDFFormat.RDFXML);
                     break;
+                case "json":
+                case "jsonld":
+                    out = getTurtleInputStreamForFormat(mOptionValue, RDFFormat.JSONLD);
+                    break;
+                case "rdf":
                 case "ttl":
-                    out = getInputStreamFromLocation(mOptionValue, null, "text/turtle");
+                    out = getInputStreamFromLocation(mOptionValue, null, RDFFormat.TURTLE.getDefaultMIMEType());
                     break;
                 default:
                     logger.info("Could not determine extension of file path. Trying Turtle format.");
@@ -130,8 +132,8 @@ public class Utils {
         return out;
     }
 
-    private static InputStream getTurtleInputStreamForFormat(String mOptionValue, String contentType, RDFFormat format) throws IOException {
-        InputStream out = getInputStreamFromLocation(mOptionValue, null, contentType);
+    private static InputStream getTurtleInputStreamForFormat(String mOptionValue, RDFFormat format) throws IOException {
+        InputStream out = getInputStreamFromLocation(mOptionValue, null, format.getDefaultMIMEType());
         Model model = Rio.parse(out, "", format);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Rio.write(model, output, RDFFormat.TURTLE);

@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.Rule;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
@@ -22,13 +23,17 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
-    private void mappingHandlerTest(String extension, HttpHandler mappingHandler) throws Exception {
+
+    private void mappingHandlerTest(RDFFormat format) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
-        server.createContext("/mappingFile", mappingHandler);
+        ValidMappingFileHandler mappingHandler = new ValidMappingFileHandler();
+        mappingHandler.format = format;
+        String fileName = String.format("/mappingFile.%s", format.getDefaultFileExtension());
+        server.createContext(fileName, mappingHandler);
         server.createContext("/inputFile", new ValidInputFileHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
-        Main.main(String.format("-m http://localhost:8080/mappingFile.%s -o ./generated_output.nq", extension).split(" "));
+        Main.main(String.format("-m http://localhost:8080/%s -o ./generated_output.nq", fileName).split(" "));
         compareFiles(
                 "./generated_output.nq",
                 "MAPPINGFILE_URL_TEST_valid/target_output.nq",
@@ -43,27 +48,27 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
 
     @Test
     public void testValidTurtle() throws Exception {
-        mappingHandlerTest("ttl", new TurtleFileHandler());
+        mappingHandlerTest(RDFFormat.TURTLE);
     }
 
     @Test
     public void testValidJSON() throws Exception {
-        mappingHandlerTest("json", new JSONLDFileHandler());
+        mappingHandlerTest(RDFFormat.JSONLD);
     }
 
     @Test
     public void testValidN3() throws Exception {
-        mappingHandlerTest("n3", new N3FileHandler());
+        mappingHandlerTest(RDFFormat.N3);
     }
 
     @Test
     public void testValidNT() throws Exception {
-        mappingHandlerTest("nt", new NTFileHandler());
+        mappingHandlerTest(RDFFormat.NTRIPLES);
     }
 
     @Test
     public void testValidXML() throws Exception {
-        mappingHandlerTest("xml", new XMLFileHandler());
+        mappingHandlerTest(RDFFormat.RDFXML);
     }
 
     @Test(expected = FileNotFoundException.class)
@@ -80,61 +85,25 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
         Utils.getFile("MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq");
     }
 
-    static abstract class ValidMappingFileHandler implements HttpHandler {
+    static class ValidMappingFileHandler implements HttpHandler {
 
-        String extension;
-        String contentType;
+        RDFFormat format;
 
         @Override
         public void handle(HttpExchange t) throws IOException {
             String response = "couldn't load mapping file";
             try {
-                response = Utils.fileToString(Utils.getFile(String.format("MAPPINGFILE_URL_TEST_valid/mapping.%s", extension)));
+                response = Utils.fileToString(Utils.getFile(String.format("MAPPINGFILE_URL_TEST_valid/mapping.%s", format.getDefaultFileExtension())));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
             List<String> contentType = new ArrayList<>();
-            contentType.add(this.contentType);
+            contentType.add(format.getDefaultMIMEType());
             t.getResponseHeaders().put("Content-Type", contentType);
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
             os.close();
-        }
-    }
-
-    static class TurtleFileHandler extends ValidMappingFileHandler {
-        TurtleFileHandler() {
-            extension = "ttl";
-            contentType = "text/turtle";
-        }
-    }
-
-    static class JSONLDFileHandler extends ValidMappingFileHandler {
-        JSONLDFileHandler() {
-            extension = "json";
-            contentType = "application/ld+json";
-        }
-    }
-
-    static class N3FileHandler extends ValidMappingFileHandler {
-        N3FileHandler() {
-            extension = "n3";
-            contentType = "text/n3;charset=utf-8";
-        }
-    }
-
-    static class NTFileHandler extends ValidMappingFileHandler {
-        NTFileHandler() {
-            extension = "nt";
-            contentType = "application/n-triples";
-        }
-    }
-
-    static class XMLFileHandler extends ValidMappingFileHandler {
-        XMLFileHandler() {
-            extension = "xml";
-            contentType = "application/rdf+xml";
         }
     }
 
