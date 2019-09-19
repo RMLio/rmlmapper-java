@@ -35,7 +35,7 @@ public class Executor {
     private QuadStore rmlStore;
     private HashMap<Term, QuadStore> targetStores;
     private RecordsFactory recordsFactory;
-    private static int blankNodeCounter = 0;
+    private static int blankNodeCounter;
     private HashMap<Term, Mapping> mappings;
     private String baseIRI;
 
@@ -56,6 +56,7 @@ public class Executor {
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
         this.targetStores = new HashMap<Term, QuadStore>();
+        this.blankNodeCounter = 0;
 
         // Default store if no Targets are available for a triple
         if (resultingQuads == null) {
