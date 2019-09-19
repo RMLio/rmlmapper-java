@@ -22,15 +22,13 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
-    @Test
-    public void testValid() throws Exception {
+    private void mappingHandlerTest(String extension, HttpHandler mappingHandler) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
-        server.createContext("/mappingFile", new ValidMappingFileHandler());
+        server.createContext("/mappingFile", mappingHandler);
         server.createContext("/inputFile", new ValidInputFileHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
-        
-        Main.main("-m http://localhost:8080/mappingFile -o ./generated_output.nq".split(" "));
+        Main.main(String.format("-m http://localhost:8080/mappingFile.%s -o ./generated_output.nq", extension).split(" "));
         compareFiles(
                 "./generated_output.nq",
                 "MAPPINGFILE_URL_TEST_valid/target_output.nq",
@@ -41,6 +39,31 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
 
         File outputFile = Utils.getFile("./generated_output.nq");
         assertTrue(outputFile.delete());
+    }
+
+    @Test
+    public void testValidTurtle() throws Exception {
+        mappingHandlerTest("ttl", new TurtleFileHandler());
+    }
+
+    @Test
+    public void testValidJSON() throws Exception {
+        mappingHandlerTest("json", new JSONLDFileHandler());
+    }
+
+    @Test
+    public void testValidN3() throws Exception {
+        mappingHandlerTest("n3", new N3FileHandler());
+    }
+
+    @Test
+    public void testValidNT() throws Exception {
+        mappingHandlerTest("nt", new NTFileHandler());
+    }
+
+    @Test
+    public void testValidXML() throws Exception {
+        mappingHandlerTest("xml", new XMLFileHandler());
     }
 
     @Test(expected = FileNotFoundException.class)
@@ -57,17 +80,21 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
         Utils.getFile("MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq");
     }
 
-    static class ValidMappingFileHandler implements HttpHandler {
+    static abstract class ValidMappingFileHandler implements HttpHandler {
+
+        String extension;
+        String contentType;
+
         @Override
         public void handle(HttpExchange t) throws IOException {
             String response = "couldn't load mapping file";
             try {
-                response = Utils.fileToString(Utils.getFile("MAPPINGFILE_URL_TEST_valid/mapping.ttl"));
+                response = Utils.fileToString(Utils.getFile(String.format("MAPPINGFILE_URL_TEST_valid/mapping.%s", extension)));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
             List<String> contentType = new ArrayList<>();
-            contentType.add("text/turtle");
+            contentType.add(this.contentType);
             t.getResponseHeaders().put("Content-Type", contentType);
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
@@ -76,7 +103,43 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
         }
     }
 
+    static class TurtleFileHandler extends ValidMappingFileHandler {
+        TurtleFileHandler() {
+            extension = "ttl";
+            contentType = "text/turtle";
+        }
+    }
+
+    static class JSONLDFileHandler extends ValidMappingFileHandler {
+        JSONLDFileHandler() {
+            extension = "json";
+            contentType = "application/ld+json";
+        }
+    }
+
+    static class N3FileHandler extends ValidMappingFileHandler {
+        N3FileHandler() {
+            extension = "n3";
+            contentType = "text/n3;charset=utf-8";
+        }
+    }
+
+    static class NTFileHandler extends ValidMappingFileHandler {
+        NTFileHandler() {
+            extension = "nt";
+            contentType = "application/n-triples";
+        }
+    }
+
+    static class XMLFileHandler extends ValidMappingFileHandler {
+        XMLFileHandler() {
+            extension = "xml";
+            contentType = "application/rdf+xml";
+        }
+    }
+
     static class ValidInputFileHandler implements HttpHandler {
+
         @Override
         public void handle(HttpExchange t) throws IOException {
             String response = "couldn't load input file";

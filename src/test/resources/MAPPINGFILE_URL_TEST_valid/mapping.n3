@@ -1,0 +1,16 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ns0: <http://semweb.mmlab.be/ns/rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+<http://example.com/base/TriplesMap1>
+  a rr:TriplesMap ;
+  ns0:logicalSource [
+    ns0:source "http://localhost:8080/inputFile" ;
+    ns0:referenceFormulation <http://semweb.mmlab.be/ns/ql#JSONPath> ;
+    ns0:iterator "$.students[*]"
+  ] ;
+  rr:subjectMap [ rr:template "http://example.com/{Name}" ] ;
+  rr:predicateObjectMap [
+    rr:predicate foaf:name ;
+    rr:objectMap [ ns0:reference "Name" ]
+  ] .

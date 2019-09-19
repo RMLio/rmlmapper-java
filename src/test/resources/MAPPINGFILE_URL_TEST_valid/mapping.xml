@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rr="http://www.w3.org/ns/r2rml#"
+         xmlns:ns0="http://semweb.mmlab.be/ns/rml#">
+
+    <rr:TriplesMap rdf:about="http://example.com/base/TriplesMap1">
+        <ns0:logicalSource>
+            <rdf:Description>
+                <ns0:source>http://localhost:8080/inputFile</ns0:source>
+                <ns0:referenceFormulation rdf:resource="http://semweb.mmlab.be/ns/ql#JSONPath"/>
+                <ns0:iterator>$.students[*]</ns0:iterator>
+            </rdf:Description>
+        </ns0:logicalSource>
+
+        <rr:subjectMap>
+            <rdf:Description>
+                <rr:template>http://example.com/{Name}</rr:template>
+            </rdf:Description>
+        </rr:subjectMap>
+
+        <rr:predicateObjectMap>
+            <rdf:Description>
+                <rr:predicate rdf:resource="http://xmlns.com/foaf/0.1/name"/>
+                <rr:objectMap>
+                    <rdf:Description>
+                        <ns0:reference>Name</ns0:reference>
+                    </rdf:Description>
+                </rr:objectMap>
+
+            </rdf:Description>
+        </rr:predicateObjectMap>
+
+    </rr:TriplesMap>
+
+</rdf:RDF>

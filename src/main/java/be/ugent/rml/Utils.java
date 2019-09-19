@@ -10,8 +10,12 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.common.net.ParsedIRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 import org.rdfhdt.hdt.enums.RDFNotation;
 import org.rdfhdt.hdt.hdt.HDT;
 import org.rdfhdt.hdt.hdt.HDTManager;
@@ -81,24 +85,57 @@ public class Utils {
 
     /**
      * Get an InputStream from a string. This string is either a path (local or remote) to an RDF file, or a raw RDF text.
-     * @param s input, either RDF file path or raw RDF text
+     * @param mOptionValue input, either RDF file path or raw RDF text
      * @return input stream
      */
-    public static InputStream getInputStreamFromFileOrContentString(String s) {
+    public static InputStream getInputStreamFromFileOrContentString(String mOptionValue) {
         InputStream out;
-        logger.debug("{} mapping file", s);
+        logger.debug("{} mapping file", mOptionValue);
+        String extension = FilenameUtils.getExtension(mOptionValue);
         try {
-            out = getInputStreamFromLocation(s, null, "text/turtle");
+            switch (extension) {
+                case "n3":
+                    out = getTurtleInputStreamForFormat(mOptionValue, "text/n3;charset=utf-8", RDFFormat.N3);
+                    break;
+                case "nt":
+                    out = getTurtleInputStreamForFormat(mOptionValue, "application/n-triples", RDFFormat.NTRIPLES);
+                    break;
+                case "nq":
+                    out =  getTurtleInputStreamForFormat(mOptionValue, "application/n-quads", RDFFormat.NQUADS);
+                    break;
+                case "json":
+                    out = getTurtleInputStreamForFormat(mOptionValue, "application/ld+json", RDFFormat.JSONLD);
+                    break;
+                case "xml":
+                    out = getTurtleInputStreamForFormat(mOptionValue, "application/rdf+xml", RDFFormat.RDFXML);
+                    break;
+                case "ttl":
+                    out = getInputStreamFromLocation(mOptionValue, null, "text/turtle");
+                    break;
+                default:
+                    logger.info("Could not determine extension of file path. Trying Turtle format.");
+                    out = getInputStreamFromLocation(mOptionValue, null, "text/turtle");
+                    break;
+            }
         } catch (IOException e) {
+            logger.info("Trying to read mapping as raw input string.");
             try {
                 // raw mapping input string
-                out = IOUtils.toInputStream(s, "UTF-8");
+                out = IOUtils.toInputStream(mOptionValue, "UTF-8");
             } catch (IOException e2) {
-                logger.error("Cannot read mapping option {}", s);
+                logger.error("Cannot read mapping option {}", mOptionValue);
                 out = new ByteArrayInputStream(new byte[0]);
             }
         }
         return out;
+    }
+
+    private static InputStream getTurtleInputStreamForFormat(String mOptionValue, String contentType, RDFFormat format) throws IOException {
+        InputStream out = getInputStreamFromLocation(mOptionValue, null, contentType);
+        Model model = Rio.parse(out, "", format);
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Rio.write(model, output, RDFFormat.TURTLE);
+        return new ByteArrayInputStream(output.toByteArray());
     }
 
     public static File getFile(String path) throws IOException {

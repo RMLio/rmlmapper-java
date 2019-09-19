@@ -57,7 +57,8 @@ public class Main {
                 .hasArg()
                 .numberOfArgs(Option.UNLIMITED_VALUES)
                 .desc("one or more mapping file paths and/or strings (multiple values are concatenated). " +
-                        "r2rml is converted to rml if needed using the r2rml arguments.")
+                        "r2rml is converted to rml if needed using the r2rml arguments."
+                + "RDF Format is determined based on extension.")
                 .build();
         Option privateSecurityDataOption = Option.builder("psd")
                 .longOpt("privatesecuritydata")
