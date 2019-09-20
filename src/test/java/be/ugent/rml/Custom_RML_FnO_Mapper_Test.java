@@ -24,6 +24,20 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
         assertTrue(functionLoader.getLibraryPath("GrelFunctions").endsWith("GrelFunctions_dynamic.jar"));
     }
 
+    /**
+     * Check if error is thrown if parameters are missing
+     * @throws Exception
+     */
+    @Test(expected = Exception.class)
+    public void evaluate_A001_missing_params() throws Exception {
+        QuadStore functionDescriptionTriples = new RDF4JStore();
+        functionDescriptionTriples.read(Utils.getInputStreamFromFile(new File("./src/test/resources/rml-fno-test-cases/functions_dynamic_missing_params.ttl")), null, RDFFormat.TURTLE);
+        FunctionLoader functionLoader = new FunctionLoader(functionDescriptionTriples);
+        Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionLoader);
+        doMapping(executor, "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
+        assertTrue(functionLoader.getLibraryPath("GrelFunctions").endsWith("GrelFunctions_dynamic.jar"));
+    }
+
     @Test
     public void evaluate_A002() throws Exception {
         Executor executor = doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");

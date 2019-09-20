@@ -129,13 +129,14 @@ public class FunctionLoader {
                     parameters = Utils.getList(this.functionDescriptionTriples, expectList.get(0));
                 }
 
-                Class<?>[] orderedParameters = FunctionUtils.parseFunctionParameters(this.functionDescriptionTriples, parameters);
                 List<Term> methods = Utils.getObjectsFromQuads(this.functionDescriptionTriples.getQuads(libraries.get(0), new NamedNode(NAMESPACES.LIB + "method"), null));
 
                 List<Term> outputs = Utils.getList(this.functionDescriptionTriples, Utils.getObjectsFromQuads(FunctionUtils.getQuadsByFunctionPrefix(this.functionDescriptionTriples, iri, "returns", null)).get(0));
+                // Validation of parameters within FunctionUtils.getFunctionParameterUris
                 List<Term> fnParameterUris = FunctionUtils.getFunctionParameterUris(this.functionDescriptionTriples, parameters);
                 List<Term> fnOutputUris = FunctionUtils.getFunctionParameterUris(this.functionDescriptionTriples, outputs);
 
+                Class<?>[] orderedParameters = FunctionUtils.parseFunctionParameters(this.functionDescriptionTriples, parameters);
                 if (methods.size() > 0) {
                     Method fn = null;
                     try {

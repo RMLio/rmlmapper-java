@@ -1,0 +1,30 @@
+@prefix fno: <http://semweb.datasciencelab.be/ns/function#> .
+@prefix lib: <http://example.com/library#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+@prefix : <http://example.com/idlab/functions/string/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+
+########################
+### String functions ###
+########################
+
+grel:toUpperCase a fno:Function ;
+  fno:name "to Uppercase" ;
+  rdfs:label "to Uppercase" ;
+  dcterms:description "Returns the input with all letters in upper case." ;
+  fno:expects ( grel:valueParam ) ;
+  fno:returns ( grel:stringOut ) ;
+  lib:providedBy [
+    lib:localLibrary "./GrelFunctions_dynamic.jar";
+    lib:class "GrelFunctions";
+    lib:method "toUppercase"
+  ].
+
+grel:stringOut a fno:Output ;
+  fno:name "output string" ;
+  rdfs:label "output string" ;
+  fno:type xsd:string ;
+  fno:predicate grel:stringOutput .

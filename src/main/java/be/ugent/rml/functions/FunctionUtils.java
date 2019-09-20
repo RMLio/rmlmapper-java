@@ -36,11 +36,21 @@ public class FunctionUtils {
         throw new IOException("Not a valid path for a JAVA implementation: " + path);
     }
 
+    /**
+     * Returns and validates parameters
+     * @param store
+     * @param parameterResources
+     * @return
+     */
     public static List<Term> getFunctionParameterUris(QuadStore store, List<Term> parameterResources) {
         List<Term> parameterPredicates = new ArrayList<>();
 
-        for (Term subject : parameterResources) {
-            parameterPredicates.add(Utils.getObjectsFromQuads(getQuadsByFunctionPrefix(store, subject, "predicate", null)).get(0));
+        try {
+            for (Term subject : parameterResources) {
+                parameterPredicates.add(Utils.getObjectsFromQuads(getQuadsByFunctionPrefix(store, subject, "predicate", null)).get(0));
+            }
+        } catch (Exception e) {
+            logger.error("Missing function parameters in {}", parameterResources);
         }
 
         return parameterPredicates;
