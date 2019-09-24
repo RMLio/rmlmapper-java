@@ -56,9 +56,13 @@ dockerhub-job:
     #
     # This will instruct Docker not to start over TLS.
     DOCKER_TLS_CERTDIR: ""
+    # Image name
+    IMAGE_TAG: rmlmapper:$CI_COMMIT_TAG
   services:
     - docker:19.03.1-dind
   before_script:
     - docker info
+    - docker login -u $CI_REGISTRY_USER -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build -t rmlmapper .
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG 
