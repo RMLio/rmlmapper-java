@@ -68,6 +68,7 @@ docker-build-job:
     - export IMAGE_TAG=$(./short-tag-name.sh $CI_COMMIT_TAG)
     - export IMAGE_NAME=rmlmapper
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+  only: tags
 
 docker-push-job:
   image: docker:19.03.1
@@ -90,3 +91,4 @@ docker-push-job:
   only:
     refs:
       - master
+      - tags
