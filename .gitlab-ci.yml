@@ -1,6 +1,7 @@
 stages:
   - build
-  - dockerhub
+  - docker-build
+  - docker-push
 
 build-job:
   stage: build
@@ -32,9 +33,9 @@ build-job:
     - name: microsoft/mssql-server-linux:latest
       alias: sqlserver
     
-dockerhub-job:
+docker-build-job:
   image: docker:19.03.1
-  stage: dockerhub
+  stage: docker-build
   variables:
     # When using dind service we need to instruct docker, to talk with the
     # daemon started inside of the service. The daemon is available with
@@ -62,7 +63,25 @@ dockerhub-job:
     - docker:19.03.1-dind
   before_script:
     - docker info
+  script:
+    - docker build -t $IMAGE_TAG .
+
+docker-push-job:
+  image: docker:19.03.1
+  stage: docker-push
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    IMAGE_TAG: rmlmapper:${$CI_COMMIT_TAG:1}
+  services:
+    - docker:19.03.1-dind
+  before_script:
+    - docker info
     - docker login -u $CI_REGISTRY_USER -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker build -t $IMAGE_TAG .
     - docker push $IMAGE_TAG 
+  only:
+    refs:
+      - master
