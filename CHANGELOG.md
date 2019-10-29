@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Username without password is possible
 - Completed prefixes in some test mappings
+- Generation of blank nodes via Object Maps
 
 ## [4.5.1] - 2019-09-04
 
