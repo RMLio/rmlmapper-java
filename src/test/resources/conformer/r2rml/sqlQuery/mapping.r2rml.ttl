@@ -1,0 +1,28 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix : <http://example.com/base/> .
+
+:TriplesMap1
+  a rr:TriplesMap;
+
+  rr:logicalTable [
+  rr:sqlQuery """
+    SELECT ID,
+    Name
+    FROM Student
+  """;
+		rr:sqlVersion rr:SQL2008
+  ];
+
+  rr:subjectMap :SubjectMap;
+  rr:predicateObjectMap :PredicateObjectMap.
+
+:SubjectMap rr:template "http://example.com/{ID}/{Name}".
+
+:PredicateObjectMap rr:predicate	foaf:name ;
+  rr:objectMap :ObjectMap .
+
+:ObjectMap rr:column "Name" .

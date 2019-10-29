@@ -45,9 +45,8 @@ public class Arguments_Test extends TestCore {
                 false
         );
 
-        File outputFile = null;
         try {
-            outputFile = Utils.getFile("./generated_output.nq");
+            File outputFile = Utils.getFile("./generated_output.nq");
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,8 +190,6 @@ public class Arguments_Test extends TestCore {
                 false
         );
 
-        File outputFile;
-
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(actualJSONPath));
             String content = new String(encoded, StandardCharsets.UTF_8);
@@ -202,9 +199,8 @@ public class Arguments_Test extends TestCore {
             e.printStackTrace();
         }
 
-
         try {
-            outputFile = Utils.getFile(actualJSONPath);
+            File outputFile = Utils.getFile(actualJSONPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- R2RML support: is converted to RML before executing the mapper
+
+### Changed
+- QuadFactory (removes need for explicit RDF4J store)
+- SQLTestCore created, used between RML SQL tests and R2RML tests
+
+### Fixed
+- Username without password is possible
+- Completed prefixes in some test mappings
+
 ## [4.5.1] - 2019-09-04
 
 ### Fixed

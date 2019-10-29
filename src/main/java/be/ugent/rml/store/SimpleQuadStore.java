@@ -1,26 +1,26 @@
 package be.ugent.rml.store;
 
 import be.ugent.rml.term.Term;
-import org.eclipse.rdf4j.model.Namespace;
+import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.rio.RDFFormat;
 
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * Implementation of QuadStore with List<Quad> quads.
+ * Package-private
+ */
 public class SimpleQuadStore extends QuadStore {
 
     private List<Quad> quads;
 
-    public SimpleQuadStore(ArrayList<Quad> quads) {
-        this.quads = quads;
-    }
-
     public SimpleQuadStore() {
-        quads = new ArrayList<Quad>();
+        quads = new ArrayList<>();
     }
 
+    @Override
     public void removeDuplicates() {
         List<Quad> quadsWithDuplicates = new ArrayList<>();
 
@@ -45,12 +45,14 @@ public class SimpleQuadStore extends QuadStore {
         quads = quadsWithDuplicates;
     }
 
+    @Override
     public void addQuad(Term subject, Term predicate, Term object, Term graph) {
         if (subject != null && predicate != null && object != null) {
             quads.add(new Quad(subject, predicate, object, graph));
         }
     }
 
+    @Override
     public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {
         Quad quad = new Quad(subject, predicate, object, graph);
 
@@ -65,8 +67,9 @@ public class SimpleQuadStore extends QuadStore {
         return filteredQuads;
     }
 
-    public List<Quad> getQuads(Term subject, Term predicate, Term object) {
-        return getQuads(subject, predicate, object, null);
+    @Override
+    public void copyNameSpaces(QuadStore store) {
+        // Namespace passing is not needed for .nquads and .hdt
     }
 
     @Override
@@ -80,6 +83,11 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
+    public void read(InputStream is, String base, RDFFormat format) {
+        throw new UnsupportedOperationException("Method not implemented.");
+    }
+
+    @Override
     public void write(Writer out, String format) throws IOException {
         switch (format) {
             case "nquads":
@@ -90,15 +98,35 @@ public class SimpleQuadStore extends QuadStore {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        throw new UnsupportedOperationException("Method not implemented.");
+    }
+
+    @Override
+    public void removeQuads(Term subject, Term predicate, Term object, Term graph) {
+        throw new UnsupportedOperationException("Method not implemented.");
+    }
+
+    @Override
+    public boolean contains(Term subject, Term predicate, Term object, Term graph) {
+        throw new UnsupportedOperationException("Method not implemented.");
+    }
+
+    @Override
+    public boolean isIsomorphic(QuadStore store) {
+        throw new UnsupportedOperationException("Method not implemented.");
+    }
+
+    @Override
+    public boolean isSubset(QuadStore store) {
+        throw new UnsupportedOperationException("Method not implemented.");
+    }
+
     private void toNQuads(Writer out) throws IOException {
         for (Quad q : quads) {
             out.write(getNQuadOfQuad(q) + "\n");
         }
-    }
-
-    @Override
-    public void setNamespaces(Set<Namespace> namespaces) {
-
     }
 
     private String getNQuadOfQuad(Quad q) {

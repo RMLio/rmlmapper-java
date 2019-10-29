@@ -5,6 +5,7 @@
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 @prefix activity: <http://example.com/activity/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <http://example.com/base/> .
 
 <TriplesMap1>
