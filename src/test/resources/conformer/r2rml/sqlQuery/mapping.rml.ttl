@@ -1,0 +1,37 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix : <http://example.com/base/> .
+
+:TriplesMap1
+  a rr:TriplesMap;
+  rml:logicalSource <http://example.com/base/TriplesMap1_logicalSource> ;
+  rr:subjectMap :SubjectMap;
+  rr:predicateObjectMap :PredicateObjectMap.
+
+:SubjectMap rr:template "http://example.com/{ID}/{Name}".
+
+:PredicateObjectMap rr:predicate	foaf:name ;
+  rr:objectMap :ObjectMap .
+
+:ObjectMap rml:reference "Name" .
+
+<http://example.com/base/TriplesMap1_logicalSource>
+  rml:source :TriplesMap1_database ;
+  rml:query """
+    SELECT ID,
+    Name
+    FROM Student
+  """;
+  rr:sqlVersion rr:SQL2008 ;
+  rml:referenceFormulation ql:CSV .
+
+:TriplesMap1_database
+  a d2rq:Database ;
+  d2rq:jdbcDSN "CONNECTIONDSN" ;
+  d2rq:password "YourSTRONG!Passw0rd;" ;
+  d2rq:username "sa" .

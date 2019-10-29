@@ -56,7 +56,7 @@ A standalone jar can be found in `/target`.
 ### CLI
 The following options are most common.
 
-- `-m, --mapping <arg>`: one or more mapping file paths and/or strings (multiple values are concatenated)
+- `-m, --mapping <arg>`: one or more mapping file paths and/or strings (multiple values are concatenated).
 - `-o, --output <arg>`: path to output file
 - `-s,--serialization <arg>`: serialization format (nquads (default), trig, trix, jsonld, hdt)
 
@@ -68,14 +68,26 @@ usage: java -jar mapper.jar <options>
 options:
  -c,--configfile <arg>            path to configuration file
  -d,--duplicates                  remove duplicates in the output
- -e,--metadatafile <arg>          path to metadata file
- -f,--functionfile <arg>          path to functions.ttl file (dynamic functions are found relative to functions.ttl)
+ -dsn,--r2rml-jdbcDriver <arg>    DSN of the database when using R2RML rules
+ -e,--metadatafile <arg>          path to output metadata file
+ -f,--functionfile <arg>          path to functions.ttl file (dynamic
+                                  functions are found relative to
+                                  functions.ttl)
  -h,--help                        show help info
- -l,--metadataDetailLevel <arg>   generate metadata on given detail level (dataset - triple - term)
- -m,--mappingfile <arg>           one or more mapping file paths and/or strings (multiple values are concatenated)
+ -l,--metadataDetailLevel <arg>   generate metadata on given detail level
+                                  (dataset - triple - term)
+ -m,--mappingfile <arg>           one or more mapping file paths and/or
+                                  strings (multiple values are
+                                  concatenated). r2rml is converted to rml 
+                                  if needed using the r2rml arguments.
  -o,--outputfile <arg>            path to output file (default: stdout)
- -s,--serialization <arg>         serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)
- -t,--triplesmaps <arg>           IRIs of the triplesmaps that should be executed in order, split by ',' (default is all triplesmaps)
+ -p,--r2rml-password <arg>        password of the database when using R2RML rules
+ -s,--serialization <arg>         serialization format (nquads (default),
+                                  turtle, trig, trix, jsonld, hdt)
+ -t,--triplesmaps <arg>           IRIs of the triplesmaps that should be
+                                  executed in order, split by ',' (default
+                                  is all triplesmaps)
+ -u,--r2rml-username <arg>        username of the database when using R2RML rules
  -v,--verbose                     show more details in debugging output
 ```
 

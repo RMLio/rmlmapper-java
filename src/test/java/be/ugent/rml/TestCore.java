@@ -1,24 +1,26 @@
 package be.ugent.rml;
 
+import be.ugent.rml.cli.Main;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.term.NamedNode;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.rdf4j.rio.RDFFormat;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-abstract class TestCore {
+public abstract class TestCore {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -43,7 +45,7 @@ abstract class TestCore {
         }
 
         File mappingFile = new File(mapPath);
-        QuadStore rmlStore = Utils.readTurtle(mappingFile);
+        QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
         rmlStore.addQuads(extraQuads);
 
         return new Executor(rmlStore,
@@ -54,13 +56,40 @@ abstract class TestCore {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
         File mappingFile = new File(classLoader.getResource(mapPath).getFile());
-        QuadStore rmlStore = Utils.readTurtle(mappingFile);
+        QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
         return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()),
                 functionLoader, Utils.getBaseDirectiveTurtle(mappingFile));
     }
 
-    Executor doMapping(String mapPath, String outPath) {
+    /**
+     * Test function to compare output with expected files, using CLI interface
+     */
+    public void doMapping(Path cwd, String mappingFiles, String output, String expected) {
+        Main.main(("-m " + mappingFiles + " -o " + output).split(" "), cwd.toString());
+        try {
+            try {
+                compareFiles(
+                    expected,
+                    output,
+                    false
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail();
+            }
+        } finally {
+            // remove output file
+            try {
+                File outputFile = Utils.getFile(output);
+                assertTrue(outputFile.delete());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Executor doMapping(String mapPath, String outPath) {
         try {
             Executor executor = this.createExecutor(mapPath);
             doMapping(executor, outPath);
@@ -78,7 +107,7 @@ abstract class TestCore {
             QuadStore result = executor.execute(null);
             result.removeDuplicates();
             compareStores(result, filePathToStore(outPath));
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             fail();
         }
@@ -89,7 +118,14 @@ abstract class TestCore {
 
         // execute mapping file
         File mappingFile = new File(classLoader.getResource(mapPath).getFile());
-        QuadStore rmlStore = Utils.readTurtle(mappingFile);
+
+        QuadStore rmlStore = null;
+        try {
+            rmlStore = QuadStoreFactory.read(mappingFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
 
         try {
             Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), Utils.getBaseDirectiveTurtle(mappingFile));
@@ -105,13 +141,21 @@ abstract class TestCore {
     private void compareStores(QuadStore store1, QuadStore store2) {
         String string1 = store1.toSortedString();
         String string2 = store2.toSortedString();
-
-        assertEquals(string2, string1);
+        // First arg is expected, second is actual
+        assertEquals(string1, string2);
     }
 
     void compareFiles(String path1, String path2, boolean removeTimestamps) {
-        RDF4JStore store1 = filePathToStore(path1);
-        RDF4JStore store2 = filePathToStore(path2);
+        QuadStore store1 = null;
+        QuadStore store2 = null;
+
+        try {
+            store1 = filePathToStore(path1);
+            store2 = filePathToStore(path2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
 
         if (removeTimestamps) {
             store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
@@ -129,7 +173,7 @@ abstract class TestCore {
         }
     }
 
-    private RDF4JStore filePathToStore(String path) {
+    private QuadStore filePathToStore(String path) throws Exception {
         // load output-turtle file
         File outputFile = null;
         try {
@@ -137,16 +181,16 @@ abstract class TestCore {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        RDF4JStore store;
+        QuadStore store;
 
         if (path.endsWith(".nq")) {
-            store = Utils.readTurtle(outputFile, RDFFormat.NQUADS);
+            store = QuadStoreFactory.read(outputFile, RDFFormat.NQUADS);
         } else if (path.endsWith(".json")) {
-            store = Utils.readTurtle(outputFile, RDFFormat.JSONLD);
+            store = QuadStoreFactory.read(outputFile, RDFFormat.JSONLD);
         } else if (path.endsWith(".trig")) {
-            store = Utils.readTurtle(outputFile, RDFFormat.TRIG);
+            store = QuadStoreFactory.read(outputFile, RDFFormat.TRIG);
         } else {
-            store = Utils.readTurtle(outputFile);
+            store = QuadStoreFactory.read(outputFile);
         }
 
         return store;

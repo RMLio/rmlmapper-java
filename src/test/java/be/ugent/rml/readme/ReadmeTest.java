@@ -7,10 +7,8 @@ import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.store.RDF4JStore;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.Rio;
 import org.junit.Test;
 
 import java.io.*;
@@ -31,8 +29,7 @@ public class ReadmeTest {
             InputStream mappingStream = new FileInputStream(mappingFile);
 
             // Load the mapping in a QuadStore
-            Model model = Rio.parse(mappingStream, "", RDFFormat.TURTLE);
-            QuadStore rmlStore = new RDF4JStore(model);
+            QuadStore rmlStore = QuadStoreFactory.read(mappingStream);
 
             // Set up the basepath for the records factory, i.e., the basepath for the (local file) data sources
             RecordsFactory factory = new RecordsFactory(mappingFile.getParent());

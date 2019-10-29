@@ -1,13 +1,12 @@
 package be.ugent.rml.functions;
 
+import be.ugent.rml.store.QuadStoreFactory;
+import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import be.ugent.rml.Utils;
 import be.ugent.rml.functions.lib.UtilFunctions;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.RDF4JStore;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,15 +42,15 @@ public class FunctionLoader {
      */
     private Map<Term, FunctionModel> loadedMethods;
 
-    public FunctionLoader() {
+    public FunctionLoader() throws Exception {
         this(null, null, null);
     }
 
-    public FunctionLoader(File functionsFile) {
+    public FunctionLoader(File functionsFile) throws Exception {
         this(functionsFile, null, null);
     }
 
-    public FunctionLoader(File functionsFile, QuadStore functionDescriptionTriples, Map<String, Class> libraryMap) {
+    public FunctionLoader(File functionsFile, QuadStore functionDescriptionTriples, Map<String, Class> libraryMap) throws Exception {
         if (functionsFile == null) {
             try {
                 functionsFile = Utils.getFile(defaultFunctionsPath);
@@ -72,11 +71,9 @@ public class FunctionLoader {
 
         if (functionDescriptionTriples == null) {
             if (functionsFile == null) {
-                ModelBuilder builder = new ModelBuilder();
-                Model model = builder.build();
-                this.functionDescriptionTriples = new RDF4JStore(model);
+                this.functionDescriptionTriples = new RDF4JStore();
             } else {
-                this.functionDescriptionTriples = Utils.readTurtle(functionsFile);
+                this.functionDescriptionTriples = QuadStoreFactory.read(functionsFile);
             }
         } else {
             this.functionDescriptionTriples = functionDescriptionTriples;

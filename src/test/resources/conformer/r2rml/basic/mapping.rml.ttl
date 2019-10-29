@@ -1,0 +1,31 @@
+<http://example.com/base/TriplesMap1> a <http://www.w3.org/ns/r2rml#TriplesMap>;
+    <http://www.w3.org/ns/r2rml#subjectMap> <http://example.com/base/SubjectMap1>;
+    <http://www.w3.org/ns/r2rml#predicateObjectMap> <http://example.com/base/POM2>, <http://example.com/base/POM1>;
+    <http://semweb.mmlab.be/ns/rml#logicalSource> <http://example.com/base/TriplesMap1_logicalSource>.
+<http://example.com/base/SubjectMap1> <http://www.w3.org/ns/r2rml#template> "http://example.com/{ID}/{Name}";
+    <http://www.w3.org/ns/r2rml#class> <http://xmlns.com/foaf/0.1/Person>.
+<http://example.com/base/POM1> <http://www.w3.org/ns/r2rml#predicate> <http://example.com/id>;
+    <http://www.w3.org/ns/r2rml#objectMap> <http://example.com/base/OM1>.
+<http://example.com/base/POM2> <http://www.w3.org/ns/r2rml#predicate> <http://xmlns.com/foaf/0.1/name>;
+    <http://www.w3.org/ns/r2rml#objectMap> <http://example.com/base/OM2>.
+<http://example.com/base/OM1> <http://semweb.mmlab.be/ns/rml#reference> "ID".
+<http://example.com/base/OM2> <http://semweb.mmlab.be/ns/rml#reference> "Name".
+<http://example.com/base/TriplesMap1_logicalSource> <http://www.w3.org/ns/r2rml#tableName> "Student" .
+<http://example.com/base/TriplesMap1_logicalSource>
+        <http://semweb.mmlab.be/ns/rml#source>
+                <http://example.com/base/TriplesMap1_database> .
+<http://example.com/base/TriplesMap1_logicalSource>
+        <http://www.w3.org/ns/r2rml#sqlVersion>
+                <http://www.w3.org/ns/r2rml#SQL2008> .
+<http://example.com/base/TriplesMap1_logicalSource>
+        <http://semweb.mmlab.be/ns/rml#referenceFormulation>
+                <http://semweb.mmlab.be/ns/ql#CSV> .
+
+<http://example.com/base/TriplesMap1_database>
+        a       <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#Database> ;
+        <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#jdbcDSN>
+                "CONNECTIONDSN" ;
+        <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#password>
+                "YourSTRONG!Passw0rd;" ;
+        <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#username>
+                "sa" .

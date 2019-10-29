@@ -64,6 +64,7 @@ public class AccessFactory {
                         List<Term> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "sqlVersion"), null));
 
                         if (sqlVersion.isEmpty()) {
+                            // TODO see issue #130
                             throw new Error("No SQL version identifier found.");
                         }
 
@@ -182,13 +183,12 @@ public class AccessFactory {
         String username = usernameObject.get(0).getValue();
 
         // - Password
+        String password = ""; // No password is the default.
         List<Term> passwordObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "password"), null));
 
-        if (usernameObject.isEmpty()) {
-            throw new Error("The database source object " + source + " does not include a password.");
+        if (!passwordObject.isEmpty()) {
+            password = passwordObject.get(0).getValue();
         }
-
-        String password = passwordObject.get(0).getValue();
 
         return new RDBAccess(dsn, database, username, password, query, "text/csv");
     }
