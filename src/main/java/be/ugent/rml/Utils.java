@@ -5,7 +5,6 @@ import be.ugent.rml.extractor.Extractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
@@ -13,13 +12,6 @@ import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.common.net.ParsedIRI;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.rio.ParserConfig;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFParseException;
-import org.eclipse.rdf4j.rio.Rio;
-import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 import org.rdfhdt.hdt.enums.RDFNotation;
 import org.rdfhdt.hdt.hdt.HDT;
 import org.rdfhdt.hdt.hdt.HDTManager;
@@ -29,7 +21,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.ServerSocket;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -42,6 +37,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * General static utility functions
+ */
 public class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
@@ -234,21 +232,6 @@ public class Utils {
         return list;
     }
 
-    public static RDF4JStore readTurtle(InputStream is, RDFFormat format) {
-        Model model = null;
-        try {
-            //model = Rio.parse(mappingStream, "", format);
-
-            ParserConfig config = new ParserConfig();
-            config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
-            model = Rio.parse(is, "", format, config, SimpleValueFactory.getInstance(), null);
-            is.close();
-        } catch (IOException | RDFParseException e) {
-            e.printStackTrace();
-        }
-        return new RDF4JStore(model);
-    }
-
     /**
      * Check if conforming to https://tools.ietf.org/html/bcp47#section-2.2.9
      *
@@ -257,20 +240,6 @@ public class Utils {
      */
     public static boolean isValidrrLanguage(String s) {
         return regexPatternLanguageTag.matcher(s).matches();
-    }
-
-    public static RDF4JStore readTurtle(File file, RDFFormat format) {
-        try {
-            logger.debug("Reading from " + file.getAbsolutePath());
-            return readTurtle(getInputStreamFromFile(file), format);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return new RDF4JStore(null);
-        }
-    }
-
-    public static RDF4JStore readTurtle(File mappingFile) {
-        return Utils.readTurtle(mappingFile, RDFFormat.TURTLE);
     }
 
     public static String encodeURI(String url) {

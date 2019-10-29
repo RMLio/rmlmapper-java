@@ -163,7 +163,8 @@ public class RDBAccess implements Access {
                 }
 
                 // Add CSV row to CSVPrinter.
-                printer.printRecord(csvRow);
+                // non-varargs call
+                printer.printRecord((Object[]) csvRow);
                 filledInDataTypes = true;
             }
         } catch (IOException e) {
