@@ -270,28 +270,32 @@ public class Main {
                 // Get start timestamp for post mapping metadata
                 String startTimestamp = Instant.now().toString();
 
-                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
-                        metadataGenerator);
+                try {
+                    QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                            metadataGenerator);
 
-                // Get stop timestamp for post mapping metadata
-                String stopTimestamp = Instant.now().toString();
+                    // Get stop timestamp for post mapping metadata
+                    String stopTimestamp = Instant.now().toString();
 
-                // Generate post mapping metadata and output all metadata
-                if (metadataGenerator != null) {
-                    metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
-                            result);
+                    // Generate post mapping metadata and output all metadata
+                    if (metadataGenerator != null) {
+                        metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
+                                result);
 
-                    writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
+                        writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
+                    }
+
+                    String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
+
+                    if (result.isEmpty()) {
+                        logger.info("No results!");
+                        // Write even if no results
+                    }
+                    result.copyNameSpaces(rmlStore);
+                    writeOutput(result, outputFile, outputFormat);
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
                 }
-
-                String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-
-                if (result.isEmpty()) {
-                    logger.info("No results!");
-                    // Write even if no results
-                }
-                result.copyNameSpaces(rmlStore);
-                writeOutput(result, outputFile, outputFormat);
             }
         } catch (ParseException exp) {
             // oops, something went wrong

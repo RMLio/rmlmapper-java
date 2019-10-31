@@ -7,5 +7,5 @@ import java.util.Map;
 
 public interface MultipleRecordsFunctionExecutor {
 
-    Object execute(Map<String, Record> records) throws IOException;
+    Object execute(Map<String, Record> records) throws Exception;
 }

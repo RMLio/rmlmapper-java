@@ -48,7 +48,7 @@ public class LiteralGenerator extends TermGenerator {
     }
 
     @Override
-    public List<Term> generate(Record record) throws IOException {
+    public List<Term> generate(Record record) throws Exception {
         ArrayList<Term> objects = new ArrayList<>();
         ArrayList<String> objectStrings = new ArrayList<>();
         FunctionUtils.functionObjectToList(this.functionExecutor.execute(record), objectStrings);
@@ -76,7 +76,7 @@ public class LiteralGenerator extends TermGenerator {
 
                             objects.add(new Literal(objectString, language));
                         }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         // TODO print error message
                         e.printStackTrace();
                     }
