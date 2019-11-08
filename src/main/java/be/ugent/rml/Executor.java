@@ -229,6 +229,27 @@ public class Executor {
 
 
         if (subject != null && predicate != null & object != null) {
+            if (object.getTerm() instanceof NamedNode) {
+                String iri = ((NamedNode) object.getTerm()).getValue();
+                if (Utils.isRelativeIRI(iri)) {
+                    // Check the base IRI to see if we can use it to turn the IRI into an absolute one.
+                    if (this.baseIRI == null) {
+                        logger.error("The base IRI is null, so relative IRI of object cannot be turned in to absolute IRI. Skipped.");
+                        return;
+                    } else {
+                        logger.debug("The IRI of object is made absolute via base IRI.");
+                        iri = this.baseIRI + iri;
+
+                        // Check if the new absolute IRI is valid.
+                        if (Utils.isValidIRI(iri)) {
+                            object = new ProvenancedTerm(new NamedNode(iri), object.getMetadata());
+                        } else {
+                            logger.error("The object \"" + iri + "\" is not a valid IRI. Skipped.");
+                            return;
+                        }
+                    }
+                }
+            }
             this.resultingQuads.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
         }
     }
