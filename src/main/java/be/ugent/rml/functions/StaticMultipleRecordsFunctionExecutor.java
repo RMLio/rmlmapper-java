@@ -17,7 +17,7 @@ public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFun
     }
 
     @Override
-    public Object execute(Map<String, Record> records) throws IOException {
+    public Object execute(Map<String, Record> records) throws Exception {
         Map <String, Object> filledInParameters = new HashMap<>();
 
         for (Map.Entry<String, Object[]> entry : this.parameters.entrySet()) {

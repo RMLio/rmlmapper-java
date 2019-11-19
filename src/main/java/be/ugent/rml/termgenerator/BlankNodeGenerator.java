@@ -21,7 +21,7 @@ public class BlankNodeGenerator extends TermGenerator {
     }
 
     @Override
-    public List<Term> generate(Record record) throws IOException {
+    public List<Term> generate(Record record) throws Exception {
         ArrayList<Term> nodes = new ArrayList<>();
 
         if (this.functionExecutor != null) {

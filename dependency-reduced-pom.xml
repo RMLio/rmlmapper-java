@@ -177,9 +177,9 @@
     </dependency>
   </dependencies>
   <properties>
+    <maven.compiler.target>8</maven.compiler.target>
     <maven.compiler.source>8</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.target>8</maven.compiler.target>
     <junit.version>4.12</junit.version>
   </properties>
 </project>
