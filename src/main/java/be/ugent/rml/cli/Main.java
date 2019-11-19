@@ -1,6 +1,8 @@
 package be.ugent.rml.cli;
 
-import be.ugent.rml.*;
+import be.ugent.rml.Executor;
+import be.ugent.rml.Utils;
+import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.functions.lib.IDLabFunctions;
@@ -16,6 +18,8 @@ import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.io.*;
 import java.time.Instant;
@@ -25,6 +29,7 @@ import java.util.stream.Collectors;
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Marker fatal = MarkerFactory.getMarker("FATAL");
 
     public static void main(String[] args) {
         main(args, System.getProperty("user.dir"));
@@ -41,7 +46,8 @@ public class Main {
                 .longOpt("mappingfile")
                 .hasArg()
                 .numberOfArgs(Option.UNLIMITED_VALUES)
-                .desc("one or more mapping file paths and/or strings (multiple values are concatenated)")
+                .desc("one or more mapping file paths and/or strings (multiple values are concatenated). " +
+                        "r2rml is converted to rml if needed using the r2rml arguments.")
                 .build();
         Option outputfileOption = Option.builder("o")
                 .longOpt("outputfile")
@@ -90,6 +96,22 @@ public class Main {
                 .desc("serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)")
                 .hasArg()
                 .build();
+        Option jdbcDSNOption = Option.builder("dsn")
+                .longOpt("r2rml-jdbcDSN")
+                .desc("DSN of the database when using R2RML rules")
+                .hasArg()
+                .build();
+        Option passwordOption = Option.builder("p")
+                .longOpt("r2rml-password")
+                .desc("password of the database when using R2RML rules")
+                .hasArg()
+                .build();
+        Option usernameOption = Option.builder("u")
+                .longOpt("r2rml-username")
+                .desc("username of the database when using R2RML rules")
+                .hasArg()
+                .build();
+
         options.addOption(mappingdocOption);
         options.addOption(outputfileOption);
         options.addOption(functionfileOption);
@@ -101,6 +123,9 @@ public class Main {
         options.addOption(serializationFormatOption);
         options.addOption(metadataOption);
         options.addOption(metadataDetailLevelOption);
+        options.addOption(jdbcDSNOption);
+        options.addOption(passwordOption);
+        options.addOption(usernameOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -129,11 +154,36 @@ public class Main {
             if (mOptionValue == null) {
                 printHelp(options);
             } else {
+                // Concatenate all mapping files
                 List<InputStream> lis = Arrays.stream(mOptionValue)
                         .map(Utils::getInputStreamFromMOptionValue)
                         .collect(Collectors.toList());
                 InputStream is = new SequenceInputStream(Collections.enumeration(lis));
-                RDF4JStore rmlStore = Utils.readTurtle(is, RDFFormat.TURTLE);
+
+                Map<String, String> mappingOptions = new HashMap<>();
+                for (Option option : new Option[]{jdbcDSNOption, passwordOption, usernameOption}) {
+                    if (checkOptionPresence(option, lineArgs, configFile)) {
+                        mappingOptions.put(option.getLongOpt().replace("r2rml-", ""), getOptionValues(option, lineArgs, configFile)[0]);
+                    }
+                }
+
+                // Read mapping file.
+                RDF4JStore rmlStore = new RDF4JStore();
+                rmlStore.read(is, null, RDFFormat.TURTLE);
+
+                // Convert mapping file to RML if needed.
+                MappingConformer conformer = new MappingConformer(rmlStore, mappingOptions);
+
+                try {
+                    boolean conversionNeeded = conformer.conform();
+
+                    if (conversionNeeded) {
+                        logger.info("Conversion to RML was needed.");
+                    }
+                } catch (Exception e) {
+                    logger.error(fatal, "Failed to make mapping file conformant to RML spec.", e);
+                }
+
                 RecordsFactory factory = new RecordsFactory(basePath);
 
                 String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
@@ -220,26 +270,31 @@ public class Main {
                 // Get start timestamp for post mapping metadata
                 String startTimestamp = Instant.now().toString();
 
-                QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
-                        metadataGenerator);
+                try {
+                    QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                            metadataGenerator);
 
-                // Get stop timestamp for post mapping metadata
-                String stopTimestamp = Instant.now().toString();
+                    // Get stop timestamp for post mapping metadata
+                    String stopTimestamp = Instant.now().toString();
 
-                // Generate post mapping metadata and output all metadata
-                if (metadataGenerator != null) {
-                    metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
-                            result);
+                    // Generate post mapping metadata and output all metadata
+                    if (metadataGenerator != null) {
+                        metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
+                                result);
 
-                    writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
-                }
+                        writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
+                    }
 
-                String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
+                    String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
 
-                if (!result.isEmpty()) {
-                    //write quads
-                    result.setNamespaces(rmlStore.getNamespaces());
+                    if (result.isEmpty()) {
+                        logger.info("No results!");
+                        // Write even if no results
+                    }
+                    result.copyNameSpaces(rmlStore);
                     writeOutput(result, outputFile, outputFormat);
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
                 }
             }
         } catch (ParseException exp) {
@@ -325,7 +380,7 @@ public class Main {
         }
 
         try {
-            BufferedWriter out;
+            Writer out;
             String doneMessage = null;
 
             //if output file provided, write to triples output file
@@ -351,7 +406,7 @@ public class Main {
             if (doneMessage != null) {
                 logger.info(doneMessage);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("Writing output failed. Reason: " + e.getMessage());
         }
 

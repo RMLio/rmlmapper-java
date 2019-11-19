@@ -7,28 +7,30 @@ import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.impl.TreeModel;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.rio.*;
+import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
+import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.rdf4j.model.util.Models;
 
+import javax.ws.rs.NotSupportedException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Implementation of QuadStore with RDF4J
+ * Package-private
+ */
 public class RDF4JStore extends QuadStore {
 
+    private static final Logger logger = LoggerFactory.getLogger(RDF4JStore.class);
     private Model model;
     private int triplesWithGraphCounter;
-    private static final Logger logger = LoggerFactory.getLogger(RDF4JStore.class);
-
-    public RDF4JStore(Model model) {
-        this.model = model;
-    }
 
     public RDF4JStore() {
         model = new TreeModel();
@@ -37,7 +39,7 @@ public class RDF4JStore extends QuadStore {
 
     @Override
     public void removeDuplicates() {
-
+        throw new UnsupportedOperationException("Method not implemented.");
     }
 
     @Override
@@ -50,19 +52,17 @@ public class RDF4JStore extends QuadStore {
         model.add(s, p, o, g);
 
         if (g != null) {
-            triplesWithGraphCounter ++;
+            triplesWithGraphCounter++;
         }
     }
 
     @Override
     public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {
-        throw new Error("Method getQuads() not implemented.");
-    }
-
-    @Override
-    public List<Quad> getQuads(Term subject, Term predicate, Term object) {
+        // TODO add graph support
+        if (graph != null) {
+            throw new UnsupportedOperationException("Method not implemented.");
+        }
         Model result;
-
         Resource filterSubject = getFilterSubject(subject);
         IRI filterPredicate = getFilterPredicate(predicate);
         Value filterObject = getFilterObject(object);
@@ -71,7 +71,7 @@ public class RDF4JStore extends QuadStore {
 
         List<Quad> quads = new ArrayList<>();
 
-        for (Statement st: result) {
+        for (Statement st : result) {
             Term s = convertStringToTerm(st.getSubject().toString());
             Term p = convertStringToTerm(st.getPredicate().toString());
             Term o = convertStringToTerm(st.getObject().toString());
@@ -87,15 +87,39 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public void write(Writer out, String format) {
+    public void copyNameSpaces(QuadStore store) {
+        if (store instanceof RDF4JStore) {
+            RDF4JStore rdf4JStore = (RDF4JStore) store;
+
+            rdf4JStore.getModel()
+                    .getNamespaces()
+                    .forEach(namespace -> model.setNamespace(namespace));
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public void read(InputStream is, String base, RDFFormat format) throws Exception {
+        if (base == null) {
+           base = "";
+        }
+
+        RDFParser parser = Rio.createParser(format);
+        parser.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+        parser.setRDFHandler(new StatementCollector(model));
+        parser.parse(is, base);
+        is.close();
+    }
+
+    @Override
+    public void write(Writer out, String format) throws Exception {
         switch (format) {
             case "turtle":
                 Rio.write(model, out, RDFFormat.TURTLE);
-
                 if (triplesWithGraphCounter > 0) {
                     logger.warn("There are graphs generated. However, Turtle does not support graphs. Use Trig instead.");
                 }
-
                 break;
             case "trig":
                 Rio.write(model, out, RDFFormat.TRIG);
@@ -110,18 +134,8 @@ public class RDF4JStore extends QuadStore {
                 Rio.write(model, out, RDFFormat.NQUADS);
                 break;
             default:
-                throw new Error("Serialization " + format + " not supported");
+                throw new Exception("Serialization " + format + " not supported");
         }
-    }
-
-    public void setNamespaces(Set<Namespace> namespaces) {
-        namespaces.forEach(namespace -> {
-            model.setNamespace(namespace);
-        });
-    }
-
-    public Set<Namespace> getNamespaces() {
-        return model.getNamespaces();
     }
 
     @Override
@@ -129,14 +143,23 @@ public class RDF4JStore extends QuadStore {
         return model.isEmpty();
     }
 
+    @Override
     public int size() {
         return model.size();
     }
 
+    /**
+     * TODO remove all need for this. Currently:
+     *  - store equality/isomorphism
+     *  - namespace passing
+     *  - store difference
+     *  - store isSubset
+     */
     public Model getModel() {
         return model;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o instanceof RDF4JStore) {
             RDF4JStore otherStore = (RDF4JStore) o;
@@ -147,16 +170,49 @@ public class RDF4JStore extends QuadStore {
         }
     }
 
+    @Override
     public void removeQuads(Term subject, Term predicate, Term object, Term graph) {
-        throw new Error("Method removeQuads() not implemented.");
+        // TODO add graph support
+        if (graph != null) {
+            throw new UnsupportedOperationException("Method not implemented.");
+        }
+        Resource filterSubject = getFilterSubject(subject);
+        IRI filterPredicate = getFilterPredicate(predicate);
+        Value filterObject = getFilterObject(object);
+        model.remove(filterSubject, filterPredicate, filterObject);
     }
 
-    public void removeQuads(Term subject, Term predicate, Term object) {
+    @Override
+    public boolean contains(Term subject, Term predicate, Term object, Term graph) {
+        // TODO add graph support
+        if (graph != null) {
+            throw new UnsupportedOperationException("Method not implemented.");
+        }
         Resource filterSubject = getFilterSubject(subject);
         IRI filterPredicate = getFilterPredicate(predicate);
         Value filterObject = getFilterObject(object);
 
-        model.remove(filterSubject, filterPredicate, filterObject);
+        return model.contains(filterSubject, filterPredicate, filterObject);
+    }
+
+    @Override
+    public boolean isIsomorphic(QuadStore store) {
+        if (store instanceof RDF4JStore) {
+            RDF4JStore rdf4JStore = (RDF4JStore) store;
+            return Models.isomorphic(model, rdf4JStore.getModel());
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public boolean isSubset(QuadStore store) {
+        if (store instanceof RDF4JStore) {
+            RDF4JStore rdf4JStore = (RDF4JStore) store;
+            return Models.isSubset(model, rdf4JStore.getModel());
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     private Resource getFilterSubject(Term subject) {
@@ -175,9 +231,7 @@ public class RDF4JStore extends QuadStore {
 
     private IRI getFilterPredicate(Term predicate) {
         if (predicate != null) {
-            ValueFactory vf = SimpleValueFactory.getInstance();
-
-            return vf.createIRI(predicate.getValue());
+            return SimpleValueFactory.getInstance().createIRI(predicate.getValue());
         } else {
             return null;
         }
@@ -211,15 +265,26 @@ public class RDF4JStore extends QuadStore {
         return getFilterSubject(graph);
     }
 
+    /**
+     * Convert given string to Term
+     *
+     * @param str
+     * @return
+     */
+    // TODO refactor Term class to use library (Jena/RDF4J) and have this built-in
     private Term convertStringToTerm(String str) {
         if (str.startsWith("_:")) {
             return new BlankNode(str.replace("_:", ""));
+        } else if (str.startsWith("\"\"\"")) {
+            // Triple quoted literal
+            return new Literal(str.substring(4, str.length() - 3));
         } else if (str.startsWith("\"")) {
             Pattern pattern;
-
-            if (str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"")) {
+            boolean hasLanguage = str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"");
+            boolean hasDatatype = str.contains("^^");
+            if (hasLanguage) {
                 pattern = Pattern.compile("^\"([^\"]*)\"@([^@]*)");
-            } else if (str.contains("^^")) {
+            } else if (hasDatatype) {
                 pattern = Pattern.compile("^\"([^\"]*)\"\\^\\^<([^>]*)>");
             } else {
                 pattern = Pattern.compile("^\"([^\"]*)\"");
@@ -228,9 +293,9 @@ public class RDF4JStore extends QuadStore {
             Matcher matcher = pattern.matcher(str);
 
             if (matcher.find()) {
-                if (str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"")) {
+                if (hasLanguage) {
                     return new Literal(matcher.group(1), matcher.group(2));
-                } else if (str.contains("^^")) {
+                } else if (hasDatatype) {
                     return new Literal(matcher.group(1), new NamedNode(matcher.group(2)));
                 } else {
                     return new Literal(matcher.group(1));

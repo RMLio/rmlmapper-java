@@ -48,6 +48,7 @@ public class CSVRecord extends Record {
             obj = this.record.get(value);
             result.add(obj);
         } catch (Exception e) {
+            e.printStackTrace();
             return result;
         }
 

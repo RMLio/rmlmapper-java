@@ -6,9 +6,9 @@ import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.ProvenancedTerm;
 import be.ugent.rml.term.Term;
@@ -59,7 +59,7 @@ public class Executor {
         }
     }
 
-    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws IOException {
+    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
 
         BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
 
@@ -77,7 +77,7 @@ public class Executor {
         return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
     }
 
-    public QuadStore executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws IOException {
+    public QuadStore executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
@@ -135,7 +135,7 @@ public class Executor {
 
                         try {
                             terms = mappingInfo.getTermGenerator().generate(record);
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             //todo be more nice and gentle
                             e.printStackTrace();
                         }
@@ -161,12 +161,12 @@ public class Executor {
         return resultingQuads;
     }
 
-    public QuadStore execute(List<Term> triplesMaps) throws IOException {
+    public QuadStore execute(List<Term> triplesMaps) throws Exception {
         return this.execute(triplesMaps, false, null);
     }
 
 
-    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record, List<ProvenancedTerm> alreadyNeededGraphs) throws IOException {
+    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record, List<ProvenancedTerm> alreadyNeededGraphs) throws Exception {
         ArrayList<PredicateObjectGraph> results = new ArrayList<>();
 
         List<PredicateObjectGraphMapping> predicateObjectGraphMappings = mapping.getPredicateObjectGraphMappings();
@@ -233,7 +233,7 @@ public class Executor {
         }
     }
 
-    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws IOException {
+    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws Exception {
         ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<ProvenancedTerm>();
         ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
 
@@ -259,7 +259,7 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Term triplesMap, MultipleRecordsFunctionExecutor condition) throws IOException {
+    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Term triplesMap, MultipleRecordsFunctionExecutor condition) throws Exception {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
@@ -289,7 +289,7 @@ public class Executor {
         return iris;
     }
 
-    private ProvenancedTerm getSubject(Term triplesMap, Mapping mapping, Record record, int i) throws IOException {
+    private ProvenancedTerm getSubject(Term triplesMap, Mapping mapping, Record record, int i) throws Exception {
         if (!this.subjectCache.containsKey(triplesMap)) {
             this.subjectCache.put(triplesMap, new HashMap<Integer, ProvenancedTerm>());
         }
@@ -306,7 +306,7 @@ public class Executor {
         return this.subjectCache.get(triplesMap).get(i);
     }
 
-    private List<ProvenancedTerm> getAllIRIs(Term triplesMap) throws IOException {
+    private List<ProvenancedTerm> getAllIRIs(Term triplesMap) throws Exception {
         Mapping mapping = this.mappings.get(triplesMap);
 
         List<Record> records = getRecords(triplesMap);

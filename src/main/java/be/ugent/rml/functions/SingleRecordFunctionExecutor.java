@@ -6,5 +6,5 @@ import java.io.IOException;
 
 public interface SingleRecordFunctionExecutor {
 
-    Object execute(Record record) throws IOException;
+    Object execute(Record record) throws Exception;
 }

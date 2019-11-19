@@ -15,5 +15,5 @@ public abstract class TermGenerator {
         this.functionExecutor = functionExecutor;
     }
 
-    public abstract List<Term> generate(Record record) throws IOException;
+    public abstract List<Term> generate(Record record) throws Exception;
 }

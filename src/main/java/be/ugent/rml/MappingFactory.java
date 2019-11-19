@@ -175,7 +175,7 @@ public class MappingFactory {
 
     private void parseObjectMapWithCallback(Term objectmap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
         List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
-        Term termType = getTermType(objectmap);
+        Term termType = getTermType(objectmap, true);
 
         List<Term> datatypes = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "datatype"), null));
         List<Term> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), null));
@@ -200,8 +200,10 @@ public class MappingFactory {
                     } else {
                         oGen = new LiteralGenerator(executor);
                     }
-                } else {
+                } else if (termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
                     oGen = new NamedNodeGenerator(executor);
+                } else {
+                    oGen = new BlankNodeGenerator(executor);
                 }
 
                 objectMapCallback.accept(new MappingInfo(objectmap, oGen), "child");
@@ -455,10 +457,7 @@ public class MappingFactory {
      * This method returns the TermType of a given Term Map.
      * If no Term Type is found, a default Term Type is return based on the R2RML specification.
      **/
-    private Term getTermType(Term map) {
-        List<Term> references = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML + "reference"), null));
-        List<Term> templates = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR + "template"), null));
-        List<Term> constants = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR + "constant"), null));
+    private Term getTermType(Term map, boolean isObjectMap) {
         List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR + "termType"), null));
 
         Term termType = null;
@@ -466,12 +465,32 @@ public class MappingFactory {
         if (!termTypes.isEmpty()) {
             termType = termTypes.get(0);
         } else {
-            if (!references.isEmpty()) {
-                termType = new NamedNode(NAMESPACES.RR + "Literal");
-            } else if (!templates.isEmpty()) {
+            List<Term> constants = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR + "constant"), null));
+
+            if (!constants.isEmpty()) {
+                Term constant = constants.get(0);
+
+                if (constant instanceof Literal) {
+                    termType = new NamedNode(NAMESPACES.RR + "Literal");
+                } else if (constant instanceof NamedNode) {
+                    termType = new NamedNode(NAMESPACES.RR + "IRI");
+                } else {
+                    termType = new NamedNode(NAMESPACES.RR + "BlankNode");
+                }
+            } else if (isObjectMap) {
+                boolean hasReference = !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML + "reference"), null)).isEmpty();
+                boolean hasFunctionValues = !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.FNML + "functionValue"), null)).isEmpty();
+                boolean hasLanguage = !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR + "language"), null)).isEmpty() ||
+                        !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML + "languageMap"), null)).isEmpty();
+                boolean hasDatatype = !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RR + "datatype"), null)).isEmpty();
+
+                if (hasReference || hasLanguage || hasDatatype || hasFunctionValues) {
+                    termType = new NamedNode(NAMESPACES.RR + "Literal");
+                } else {
+                    termType = new NamedNode(NAMESPACES.RR + "IRI");
+                }
+            } else {
                 termType = new NamedNode(NAMESPACES.RR + "IRI");
-            } else if (!constants.isEmpty()) {
-                termType = new NamedNode(NAMESPACES.RR + "Literal");
             }
         }
 

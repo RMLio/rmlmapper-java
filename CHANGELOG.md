@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.6.0] - 2019-11-19
+
+### Added
+- R2RML support
+
+### Changed
+- QuadFactory (removes need for explicit RDF4J store)
+- SQLTestCore created, used between RML SQL tests and R2RML tests
+
+### Fixed
+- Username without password is possible
+- Completed prefixes in some test mappings
+- Generation of blank nodes via Object Maps
+- FnO IRI
+
 ## [4.5.1] - 2019-09-04
 
 ### Fixed
@@ -211,6 +226,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.6.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.1...v4.6.0
 [4.5.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.0...v4.5.1
 [4.5.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.2...v4.5.0
 [4.4.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.1...v4.4.2

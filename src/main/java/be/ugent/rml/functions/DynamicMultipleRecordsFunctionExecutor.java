@@ -4,15 +4,15 @@ import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
 
+    private static final Logger logger = LoggerFactory.getLogger(DynamicMultipleRecordsFunctionExecutor.class);
     private List<ParameterValueOriginPair> parameterValuePairs;
     private FunctionLoader functionLoader;
 
@@ -22,7 +22,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     }
 
     @Override
-    public Object execute(Map<String, Record> records) throws IOException {
+    public Object execute(Map<String, Record> records) throws Exception {
         final ArrayList<Term> fnTerms = new ArrayList<>();
         final HashMap<String, Object> args =  new HashMap<>();
 
@@ -33,7 +33,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             pv.getParameterGenerators().forEach(parameterGen -> {
                 try {
                     parameters.addAll(parameterGen.generate(records.get("child")));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     //todo be more nice and gentle
                     e.printStackTrace();
                 }
@@ -42,13 +42,18 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             pv.getValueGeneratorPairs().forEach(pair -> {
                 try {
                     values.addAll(pair.getTermGenerator().generate(records.get(pair.getOrigin())));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     //todo be more nice and gentle
                     e.printStackTrace();
                 }
             });
 
-            if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes"))){
+            if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes")) || parameters.contains(new NamedNode(NAMESPACES.FNO_S + "executes"))){
+                if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes"))) {
+                    logger.warn("http is used instead of https for " + NAMESPACES.FNO_S + ". " +
+                            "Still works for now, but will be deprecated in the future.");
+                }
+
                 fnTerms.add(values.get(0));
             } else {
                 parameters.forEach(parameter -> {
@@ -63,6 +68,10 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             }
         });
 
-        return functionLoader.getFunction(fnTerms.get(0)).execute(args);
+        if (fnTerms.isEmpty()) {
+            throw new Exception("No function was defined for parameters: " + args.keySet());
+        } else {
+            return functionLoader.getFunction(fnTerms.get(0)).execute(args);
+        }
     }
 }
