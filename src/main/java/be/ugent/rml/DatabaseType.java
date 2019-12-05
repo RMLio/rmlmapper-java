@@ -1,39 +1,49 @@
 package be.ugent.rml;
 
+import java.util.Arrays;
+import java.util.List;
+
 /*
     NOTE: The Oracle driver has to be installed manually, because it's not on Maven due to licensing.
  */
 public class DatabaseType {
 
-    public static final String MYSQL = "com.mysql.cj.jdbc.Driver";
-    public static final String POSTGRES = "org.postgresql.Driver";
-    public static final String SQL_SERVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    public static final String ORACLE = "oracle.jdbc.OracleDriver";
-    public static final String DB2 = "com.ibm.as400.access.AS400JDBCDriver";
-    /*
-    public static final String JAVA_DB = ;
-    public static final String SYBASE = ;
-    */
+    private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static final String POSTGRESQL_DRIVER = "org.postgresql.Driver";
+    private static final String SQLSERVER_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private static final String ORACLE_DRIVER = "oracle.jdbc.OracleDriver";
+    private static final String DB2_DRIVER = "com.ibm.as400.access.AS400JDBCDriver";
 
     /*
-        Used to abstract as much as possible
-        Name fields are used to create JDBC connection strings in @RDBs
+        jdbcPrefix fields are used to create JDBC connection strings in @RDBAccess
      */
     public enum Database {
-        MYSQL ("mysql"),
-        POSTGRES ("postgresql"),
-        SQL_SERVER ("sqlserver"),
-        ORACLE ("oracle:thin"),
-        DB2 ("as400");
+        MYSQL ("MySQL",  "mysql", "mysql"),
+        POSTGRES ("PostgreSQL", "postgresql", "postgres"),
+        SQL_SERVER ("Microsoft SQL Server", "sqlserver", "sqlserver"),
+        ORACLE ("Oracle", "oracle:thin", "oracle"),
+        DB2 ("IBM DB2", "as400", "ibm");
 
         private final String name;
+        private final String jdbcPrefix;
+        private final String driverSubstring;
 
-        private Database(String s) {
-            name = s;
+        private Database(String name, String jdbcPrefix, String driverSubstring) {
+            this.name = name;
+            this.jdbcPrefix = jdbcPrefix;
+            this.driverSubstring = driverSubstring;
         }
 
         public String toString() {
             return this.name;
+        }
+
+        public String getJDBCPrefix() {
+            return this.jdbcPrefix;
+        }
+
+        public String getDriverSubstring() {
+            return this.driverSubstring;
         }
     }
 
@@ -41,17 +51,17 @@ public class DatabaseType {
         Retrieves the Database enum type from a given (driver) string
      */
     public static Database getDBtype(String db) {
-        String db_lower = db.toLowerCase();
-        if (db_lower.contains("mysql")) {
-            return Database.MYSQL;
-        } else if (db_lower.contains("postgres")) {
-            return Database.POSTGRES;
-        } else if (db_lower.contains("sqlserver")) {
-            return Database.SQL_SERVER;
-        } else if (db_lower.contains("oracle")) {
-            return Database.ORACLE;
-        } else if (db_lower.contains("ibm")) {
-            return Database.DB2;
+        String dbLower = db.toLowerCase();
+        List<Database> dbs = Arrays.asList(Database.values());
+
+        int i = 0;
+
+        while (i < dbs.size() && !dbLower.contains(dbs.get(i).getDriverSubstring())) {
+            i ++;
+        }
+
+        if (i < dbs.size()) {
+            return dbs.get(i);
         } else {
             throw new Error("Couldn't find a driver for the given DB: " + db);
         }
@@ -63,19 +73,19 @@ public class DatabaseType {
     public static String getDriver(Database db) {
         switch(db) {
             case MYSQL:
-                return MYSQL;
+                return MYSQL_DRIVER;
 
             case POSTGRES:
-                return POSTGRES;
+                return POSTGRESQL_DRIVER;
 
             case SQL_SERVER:
-                return SQL_SERVER;
+                return SQLSERVER_DRIVER;
 
             case ORACLE:
-                return ORACLE;
+                return ORACLE_DRIVER;
 
             case DB2:
-                return DB2;
+                return DB2_DRIVER;
 
             default:
                 throw new Error("Couldn't find a driver for the given DB: " + db);
