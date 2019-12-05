@@ -91,6 +91,14 @@
             <version>7.2.2.jre8</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.oracle.jdbc/ojdbc14 -->
+        <!-- Installed locally https://stackoverflow.com/questions/1074869/find-oracle-jdbc-driver-in-maven-repository -->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>12.2.0.1</version>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>com.googlecode.zohhak</groupId>
             <artifactId>zohhak</artifactId>

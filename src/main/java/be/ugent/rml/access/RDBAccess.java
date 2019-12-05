@@ -53,7 +53,8 @@ public class RDBAccess implements Access {
         Connection connection = null;
         Statement statement = null;
         String jdbcDriver = DatabaseType.getDriver(database);
-        String jdbcDSN = "jdbc:" + database.toString() + "://" + dsn;
+        // TODO: I added the '@' to work with Oracle, but we need to do different things for the differen DBs!
+        String jdbcDSN = "jdbc:" + database.toString() + ":@//" + dsn;
         InputStream inputStream = null;
 
         try {
@@ -62,8 +63,13 @@ public class RDBAccess implements Access {
 
             // Open connection
             String connectionString = jdbcDSN;
-            if (!connectionString.contains("user=")) {
-                connectionString += "?user=" + username + "&password=" + password;
+
+            if (username != null && !username.equals("") && password != null && !password.equals("")) {
+                if (database == DatabaseType.Database.ORACLE) {
+                    connectionString = connectionString.replace(":@", ":" + username + "/" + password + "@");
+                } else if (!connectionString.contains("user=")) {
+                    connectionString += "?user=" + username + "&password=" + password;
+                }
             }
 
             if (database == DatabaseType.Database.MYSQL) {

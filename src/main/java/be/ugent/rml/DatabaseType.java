@@ -1,16 +1,14 @@
 package be.ugent.rml;
 
 /*
-    NOTE: Oracle is disabled because there are multiple drivers possible: http://www.orafaq.com/wiki/JDBC
-
+    NOTE: The Oracle driver has to be installed manually, because it's not on Maven due to licensing.
  */
-
 public class DatabaseType {
 
     public static final String MYSQL = "com.mysql.cj.jdbc.Driver";
     public static final String POSTGRES = "org.postgresql.Driver";
     public static final String SQL_SERVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    //public static final String ORACLE = "oracle.jdbc.driver.OracleDrive";
+    public static final String ORACLE = "oracle.jdbc.OracleDriver";
     public static final String DB2 = "com.ibm.as400.access.AS400JDBCDriver";
     /*
     public static final String JAVA_DB = ;
@@ -25,7 +23,7 @@ public class DatabaseType {
         MYSQL ("mysql"),
         POSTGRES ("postgresql"),
         SQL_SERVER ("sqlserver"),
-        //ORACLE (""),
+        ORACLE ("oracle:thin"),
         DB2 ("as400");
 
         private final String name;
@@ -50,8 +48,8 @@ public class DatabaseType {
             return Database.POSTGRES;
         } else if (db_lower.contains("sqlserver")) {
             return Database.SQL_SERVER;
-        // } else if (db_lower.contains("oracle")) {
-        //    return Database.ORACLE;
+        } else if (db_lower.contains("oracle")) {
+            return Database.ORACLE;
         } else if (db_lower.contains("ibm")) {
             return Database.DB2;
         } else {
@@ -73,11 +71,12 @@ public class DatabaseType {
             case SQL_SERVER:
                 return SQL_SERVER;
 
-         //   case ORACLE:
-         //       return ORACLE;
+            case ORACLE:
+                return ORACLE;
 
             case DB2:
                 return DB2;
+
             default:
                 throw new Error("Couldn't find a driver for the given DB: " + db);
         }
