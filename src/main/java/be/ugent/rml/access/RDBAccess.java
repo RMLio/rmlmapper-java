@@ -1,6 +1,5 @@
 package be.ugent.rml.access;
 
-import be.ugent.rml.DatabaseType;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -17,7 +16,7 @@ import static be.ugent.rml.Utils.getHashOfString;
 public class RDBAccess implements Access {
 
     private String dsn;
-    private DatabaseType.Database database;
+    private DatabaseType databaseType;
     private String username;
     private String password;
     private String query;
@@ -27,15 +26,15 @@ public class RDBAccess implements Access {
     /**
      * This constructor takes as arguments the dsn, database, username, password, query, and content type.
      * @param dsn the data source name.
-     * @param database the database type.
+     * @param databaseType the database type.
      * @param username the username of the user that executes the query.
      * @param password the password of the above user.
      * @param query the SQL query to use.
      * @param contentType the content type of the results.
      */
-    public RDBAccess(String dsn, DatabaseType.Database database, String username, String password, String query, String contentType) {
+    public RDBAccess(String dsn, DatabaseType databaseType, String username, String password, String query, String contentType) {
         this.dsn = dsn;
-        this.database = database;
+        this.databaseType = databaseType;
         this.username = username;
         this.password = password;
         this.query = query;
@@ -52,9 +51,8 @@ public class RDBAccess implements Access {
         // JDBC objects
         Connection connection = null;
         Statement statement = null;
-        String jdbcDriver = DatabaseType.getDriver(database);
-        // TODO: I added the '@' to work with Oracle, but we need to do different things for the differen DBs!
-        String jdbcDSN = "jdbc:" + database.toString() + ":@//" + dsn;
+        String jdbcDriver = databaseType.getDriver();
+        String jdbcDSN = "jdbc:" + databaseType.getJDBCPrefix() + "//" + dsn;
         InputStream inputStream = null;
 
         try {
@@ -63,20 +61,28 @@ public class RDBAccess implements Access {
 
             // Open connection
             String connectionString = jdbcDSN;
+            boolean alreadySomeQueryParametersPresent = false;
 
             if (username != null && !username.equals("") && password != null && !password.equals("")) {
-                if (database == DatabaseType.Database.ORACLE) {
+                if (databaseType == DatabaseType.ORACLE) {
                     connectionString = connectionString.replace(":@", ":" + username + "/" + password + "@");
                 } else if (!connectionString.contains("user=")) {
                     connectionString += "?user=" + username + "&password=" + password;
+                    alreadySomeQueryParametersPresent = true;
                 }
             }
 
-            if (database == DatabaseType.Database.MYSQL) {
-                connectionString += "&serverTimezone=UTC&useSSL=false";
+            if (databaseType == DatabaseType.MYSQL) {
+                if (alreadySomeQueryParametersPresent) {
+                    connectionString += "&";
+                } else {
+                    connectionString += "?";
+                }
+
+                connectionString += "serverTimezone=UTC&useSSL=false";
             }
 
-            if (database == DatabaseType.Database.SQL_SERVER) {
+            if (databaseType == DatabaseType.SQL_SERVER) {
                 connectionString = connectionString.replaceAll("\\?|&", ";");
 
                 if (!connectionString.endsWith(";")) {
@@ -249,7 +255,7 @@ public class RDBAccess implements Access {
             RDBAccess access  = (RDBAccess) o;
 
             return dsn.equals(access.getDSN())
-                    && database.equals(access.getDatabase())
+                    && databaseType.equals(access.getDatabaseType())
                     && username.equals(access.getUsername())
                     && password.equals(access.getPassword())
                     && query.equals(access.getQuery())
@@ -261,7 +267,7 @@ public class RDBAccess implements Access {
 
     @Override
     public int hashCode() {
-        return getHashOfString(getDSN() + getDatabase() + getUsername() + getPassword() + getQuery() + getContentType());
+        return getHashOfString(getDSN() + getDatabaseType() + getUsername() + getPassword() + getQuery() + getContentType());
     }
 
     /**
@@ -276,8 +282,8 @@ public class RDBAccess implements Access {
      * This method returns the database type.
      * @return the database type.
      */
-    public DatabaseType.Database getDatabase() {
-        return database;
+    public DatabaseType getDatabaseType() {
+        return databaseType;
     }
 
     /**

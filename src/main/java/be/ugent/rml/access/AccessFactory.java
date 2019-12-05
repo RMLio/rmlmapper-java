@@ -1,6 +1,5 @@
 package be.ugent.rml.access;
 
-import be.ugent.rml.DatabaseType;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.SPARQLResultFormat;
@@ -60,14 +59,6 @@ public class AccessFactory {
 
                 switch(sourceType.get(0).getValue()) {
                     case NAMESPACES.D2RQ + "Database":  // RDBs
-                        // Check if SQL version is given
-                        List<Term> sqlVersion = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "sqlVersion"), null));
-
-                        if (sqlVersion.isEmpty()) {
-                            // TODO see issue #130
-                            throw new Error("No SQL version identifier found.");
-                        }
-
                         access = getRDBAccess(rmlStore, source, logicalSource);
 
                         break;
@@ -145,7 +136,7 @@ public class AccessFactory {
             throw new Error("The database source object " + source + " does not include a driver.");
         }
 
-        DatabaseType.Database database = DatabaseType.getDBtype(driverObject.get(0).getValue());
+        DatabaseType database = DatabaseType.getDBtype(driverObject.get(0).getValue());
 
         // - DSN
         List<Term> dsnObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "jdbcDSN"), null));
