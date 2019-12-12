@@ -116,10 +116,14 @@ public abstract class TestCore {
     void doMappingExpectError(String mapPath) {
         ClassLoader classLoader = getClass().getClassLoader();
 
-        // execute mapping file
-        File mappingFile = new File(classLoader.getResource(mapPath).getFile());
+        File mappingFile = new File(mapPath);
+
+        if (!mappingFile.isAbsolute()) {
+            mappingFile = new File(classLoader.getResource(mapPath).getFile());
+        }
 
         QuadStore rmlStore = null;
+
         try {
             rmlStore = QuadStoreFactory.read(mappingFile);
         } catch (Exception e) {

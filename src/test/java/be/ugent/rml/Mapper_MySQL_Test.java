@@ -92,15 +92,10 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
 
     @Test
     public void doMapping() throws Exception {
-        //setup expected exception
-        if (expectedException != null) {
-            thrown.expect(expectedException);
-        }
-
-        mappingTest(testCaseName);
+        mappingTest(testCaseName, expectedException);
     }
 
-    private void mappingTest(String testCaseName) throws Exception {
+    private void mappingTest(String testCaseName, Class expectedException) throws Exception {
         String resourcePath = "test-cases/" + testCaseName + "-MySQL/resource.sql";
         String mappingPath = "./test-cases/" + testCaseName + "-MySQL/mapping.ttl";
         String outputPath = "test-cases/" + testCaseName + "-MySQL/output.nq";
@@ -111,7 +106,13 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
         mysqlDB.source(resourcePath);
 
         // mapping
-        doMapping(tempMappingPath, outputPath);
+
+        if (expectedException == null) {
+            doMapping(tempMappingPath, outputPath);
+        } else {
+            doMappingExpectError(tempMappingPath);
+        }
+
         deleteTempMappingFile(tempMappingPath);
     }
 }

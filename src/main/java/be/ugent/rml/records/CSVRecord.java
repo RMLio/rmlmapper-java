@@ -44,13 +44,13 @@ public class CSVRecord extends Record {
         List<Object> result = new ArrayList<>();
         Object obj;
 
-        try {
+//        try {
             obj = this.record.get(value);
             result.add(obj);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return result;
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return result;
+//        }
 
         return result;
     }
