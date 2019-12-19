@@ -18,7 +18,7 @@
         rr:tableName "IOUs";
     ];
 
-    rr:subjectMap [ rr:template "{fname}_{lname}_{amount}"; rr:termType rr:BlankNode; ];
+    rr:subjectMap [ rr:template "{fname}{lname}"; rr:termType rr:BlankNode; ];
     
     rr:predicateObjectMap [
     	rr:predicate rdf:type;
@@ -53,7 +53,7 @@
 	    rr:tableName  "Lives"
     ];
 	
-    rr:subjectMap [ rr:template "{fname}_{lname}_{city}"; rr:termType rr:BlankNode; ];
+    rr:subjectMap [ rr:template "{fname}{lname}{city}"; rr:termType rr:BlankNode; ];
     
     rr:predicateObjectMap [
     	rr:predicate rdf:type;

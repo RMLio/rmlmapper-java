@@ -157,6 +157,8 @@ public class AccessFactory {
                 // TODO better message (include Triples Map somewhere)
 
                 throw new Error("The Logical Source does not include a SQL query nor a target table.");
+            } else if (tables.get(0).getValue().equals("") || tables.get(0).getValue().equals("\"\"")) {
+                throw new Error("The table name of a database should not be empty.");
             } else {
                 query = "SELECT * FROM " + tables.get(0).getValue();
             }

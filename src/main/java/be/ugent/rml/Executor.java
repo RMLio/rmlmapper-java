@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -322,7 +323,7 @@ public class Executor {
         return iris;
     }
 
-    private List<Record> getRecords(Term triplesMap) throws IOException {
+    private List<Record> getRecords(Term triplesMap) throws IOException, SQLException, ClassNotFoundException {
         if (!this.recordsHolders.containsKey(triplesMap)) {
             this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
         }

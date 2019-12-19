@@ -39,6 +39,7 @@ public abstract class MySQLTestCore extends TestCore {
         DBConfigurationBuilder configBuilder = DBConfigurationBuilder.newBuilder();
         configBuilder.setPort(PORTNUMBER_MYSQL);
         configBuilder.addArg("--user=root");
+        configBuilder.addArg("--sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI_QUOTES");
         mysqlDB = DB.newEmbeddedDB(configBuilder.build());
         mysqlDB.start();
     }

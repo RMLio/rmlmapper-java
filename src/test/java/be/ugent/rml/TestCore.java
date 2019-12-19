@@ -146,7 +146,7 @@ public abstract class TestCore {
         String string1 = store1.toSortedString();
         String string2 = store2.toSortedString();
         // First arg is expected, second is actual
-        assertEquals(string1, string2);
+        assertEquals(string2, string1);
     }
 
     void compareFiles(String path1, String path2, boolean removeTimestamps) {

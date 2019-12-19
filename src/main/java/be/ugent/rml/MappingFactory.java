@@ -14,6 +14,7 @@ import be.ugent.rml.termgenerator.TermGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.Name;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,7 +111,7 @@ public class MappingFactory {
         }
     }
 
-    private void parsePredicateObjectMaps() throws IOException {
+    private void parsePredicateObjectMaps() throws Exception {
         List<Term> predicateobjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "predicateObjectMap"), null));
 
         for (Term pom : predicateobjectmaps) {
@@ -279,7 +280,7 @@ public class MappingFactory {
         }
     }
 
-    private List<MappingInfo> parseGraphMapsAndShortcuts(Term termMap) throws IOException {
+    private List<MappingInfo> parseGraphMapsAndShortcuts(Term termMap) throws Exception {
         ArrayList<MappingInfo> graphMappingInfos = new ArrayList<>();
 
         List<Term> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graphMap"), null));
@@ -291,6 +292,10 @@ public class MappingFactory {
 
             if (!termTypes.isEmpty()) {
                 termType = termTypes.get(0);
+
+                if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
+                    throw new Exception("A Graph Map cannot generate literals.");
+                }
             }
 
             TermGenerator generator;

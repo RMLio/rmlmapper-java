@@ -47,7 +47,7 @@ public class RDBAccess implements Access {
      * @throws IOException
      */
     @Override
-    public InputStream getInputStream() throws IOException {
+    public InputStream getInputStream() throws IOException, SQLException, ClassNotFoundException {
         // JDBC objects
         Connection connection = null;
         Statement statement = null;
@@ -104,7 +104,7 @@ public class RDBAccess implements Access {
             connection.close();
 
         } catch (Exception sqlE) {
-            sqlE.printStackTrace();
+            throw sqlE;
         } finally {
 
             // finally block used to close resources
