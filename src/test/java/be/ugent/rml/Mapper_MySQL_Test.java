@@ -8,7 +8,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 
-
 @RunWith(Parameterized.class)
 public class Mapper_MySQL_Test extends MySQLTestCore {
 

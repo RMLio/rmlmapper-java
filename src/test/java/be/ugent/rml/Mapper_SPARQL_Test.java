@@ -1,14 +1,11 @@
 package be.ugent.rml;
 
-import com.googlecode.zohhak.api.TestWith;
-import com.googlecode.zohhak.api.runners.ZohhakRunner;
-
 import org.apache.commons.io.FilenameUtils;
-import org.apache.jena.fuseki.embedded.FusekiServer;
+import org.apache.jena.fuseki.main.FusekiServer;
 import org.apache.jena.riot.RDFDataMgr;
-import org.junit.AfterClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,16 +16,134 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-@RunWith(ZohhakRunner.class)
+import static be.ugent.rml.MySQLTestCore.deleteTempMappingFile;
+
+@RunWith(Parameterized.class)
 public class Mapper_SPARQL_Test extends TestCore {
 
-    FusekiServer server;
-    static HashMap<String, ServerSocket> openPorts = new HashMap<>();
-    
-    private void stopServer() {
+    private static int PORTNUMBER_SPARQL;
+    private FusekiServer.Builder builder;
+    private FusekiServer server;
+
+    @Parameterized.Parameter(0)
+    public String testCaseName;
+
+    @Parameterized.Parameter(1)
+    public Class<? extends Exception> expectedException;
+
+    @Parameterized.Parameters(name = "{index}: SPARQL_{0}")
+    public static Iterable<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                // scenarios:
+                {"RMLTC0000", null},
+                {"RMLTC0001a", null},
+                {"RMLTC0001b", null},
+                {"RMLTC0002a", null},
+                {"RMLTC0002b", null},
+                {"RMLTC0002c", Error.class},
+                {"RMLTC0002d", null},
+                {"RMLTC0002e", Error.class},
+                {"RMLTC0002f", null},
+                {"RMLTC0002g", Error.class},
+                {"RMLTC0002h", Error.class},
+                {"RMLTC0002i", Error.class},
+                {"RMLTC0002j", null},
+                {"RMLTC0003a", Error.class},
+                {"RMLTC0003b", null},
+                {"RMLTC0003c", null},
+                {"RMLTC0004a", null},
+                {"RMLTC0004b", null},
+                {"RMLTC0005a", null},
+                {"RMLTC0005b", null},
+                {"RMLTC0006a", null},
+                {"RMLTC0007a", null},
+                {"RMLTC0007b", null},
+                {"RMLTC0007c", null},
+                {"RMLTC0007d", null},
+                {"RMLTC0007e", null},
+                {"RMLTC0007f", null},
+                {"RMLTC0007g", null},
+                {"RMLTC0007h", Error.class},
+                {"RMLTC0008a", null},
+                {"RMLTC0008b", null},
+                {"RMLTC0008c", null},
+                {"RMLTC0009a", null},
+                {"RMLTC0009b", null},
+                {"RMLTC0009c", null},
+                {"RMLTC0009d", null},
+                {"RMLTC0010a", null},
+                {"RMLTC0010b", null},
+                {"RMLTC0010c", null},
+                {"RMLTC0011a", null},
+                {"RMLTC0011b", null},
+                {"RMLTC0012a", null},
+                {"RMLTC0012b", null},
+                {"RMLTC0012c", Error.class},
+                {"RMLTC0012d", Error.class},
+                {"RMLTC0012e", null},
+                {"RMLTC0013a", null},
+                {"RMLTC0014d", null},
+                {"RMLTC0015a", null},
+                {"RMLTC0015b", Error.class},
+                {"RMLTC0016a", null},
+                {"RMLTC0016b", null},
+                {"RMLTC0016c", null},
+                {"RMLTC0016d", null},
+                {"RMLTC0016e", null},
+                {"RMLTC0018a", null},
+                {"RMLTC0019a", null},
+                {"RMLTC0019b", null},
+                {"RMLTC0020a", null},
+                {"RMLTC0020b", null},
+        });
+    }
+
+    @Before
+    public void intialize() {
+        builder = FusekiServer.create();
+        builder.port(PORTNUMBER_SPARQL);
+    }
+
+    @BeforeClass
+    public static void startServer() throws Exception {
+        try {
+            PORTNUMBER_SPARQL = Utils.getFreePortNumber();
+        } catch (Exception ex) {
+            throw new Exception("Could not find a free port number for SPARQL testing.");
+        }
+    }
+
+    @Test
+    public void doMapping() throws Exception {
+        mappingTest(testCaseName, expectedException);
+    }
+
+    private void mappingTest(String testCaseName, Class expectedException) throws Exception {
+        String resourcePath = "test-cases/" + testCaseName + "-SPARQL/resource.ttl";
+        String mappingPath = "./test-cases/" + testCaseName + "-SPARQL/mapping.ttl";
+        String outputPath = "test-cases/" + testCaseName + "-SPARQL/output.nq";
+        String tempMappingPath = replacePortInMappingFile(mappingPath, "" + PORTNUMBER_SPARQL);
+
+        builder.add("/ds"+(1), RDFDataMgr.loadDataset(resourcePath), true);
+        this.server = builder.build();
+        this.server.start();
+
+        // mapping
+        if (expectedException == null) {
+            doMapping(tempMappingPath, outputPath);
+        } else {
+            doMappingExpectError(tempMappingPath);
+        }
+
+        deleteTempMappingFile(tempMappingPath);
+    }
+
+    @After
+    public void stopServer() {
         if (server != null) {
             server.stop();
         }
+
         System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
         System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
     }
@@ -45,14 +160,10 @@ public class Mapper_SPARQL_Test extends TestCore {
         Replaces the "PORT" in the given mapping file to an available port and saves this in a new temp file
         Returns the absolute path to the temp mapping file
      */
-    private String replacePortInMappingFile(String path) {
+    private String replacePortInMappingFile(String path, String port) {
         try {
             // Read mapping file
             String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
-
-            // Open a new port
-            ServerSocket openPort = findRandomOpenPortOnAllLocalInterfaces();
-            String port = Integer.toString(openPort.getLocalPort());
 
             // Replace "PORT" in mapping file by new port
             mapping = mapping.replace("PORT", port);
@@ -64,138 +175,9 @@ public class Mapper_SPARQL_Test extends TestCore {
 
             String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
 
-            openPorts.put(absolutePath, openPort);
-
             return absolutePath;
-
         } catch (IOException ex) {
             throw new Error(ex.getMessage());
         }
-    }
-
-    /*
-        Closes the port used by the given temp mapping file.
-        Deletes the temp mapping file.
-     */
-    private static void closePort(String absolutePath) {
-        String portNumber = FilenameUtils.getBaseName(absolutePath);
-        if (openPorts.containsKey(absolutePath)) {
-            try {
-                // Close port and remove from map
-                openPorts.remove(absolutePath).close();
-
-                // Delete the file
-                File file = new File(absolutePath);
-                file.delete();
-            } catch (IOException ex) {
-                throw new Error("Couldn't close port " + portNumber + " for the SPARQL tests.");
-            }
-        }
-    }
-
-    /*
-        Makes sure that every opened port is closed and every temp mapping file is deleted.
-     */
-    @AfterClass
-    public static void deleteRemainingFiles() {
-        for (String filePath: openPorts.keySet()) {
-            closePort(filePath);
-        }
-    }
-
-    @TestWith({
-            "RMLTC0000-SPARQL, nq",
-            "RMLTC0001a-SPARQL, nq",
-            "RMLTC0001b-SPARQL, nq",
-            "RMLTC0002a-SPARQL, nq",
-            "RMLTC0002b-SPARQL, nq",
-            "RMLTC0002h-SPARQL, nq",
-            "RMLTC0003c-SPARQL, nq",
-            "RMLTC0004a-SPARQL, nq",
-            "RMLTC0004b-SPARQL, nq",
-            "RMLTC0006a-SPARQL, nq",
-            "RMLTC0007a-SPARQL, nq",
-            "RMLTC0007b-SPARQL, nq",
-            "RMLTC0007c-SPARQL, nq",
-            "RMLTC0007d-SPARQL, nq",
-            "RMLTC0007e-SPARQL, nq",
-            "RMLTC0007f-SPARQL, nq",
-            "RMLTC0007g-SPARQL, nq",
-            "RMLTC0007h-SPARQL, nq",
-            "RMLTC0008a-SPARQL, nq",
-            "RMLTC0008b-SPARQL, nq",
-            "RMLTC0008c-SPARQL, nq",
-            "RMLTC0012a-SPARQL, nq",
-    })
-    public void evaluate_XXXX_SPARQL(String resourceDir, String outputExtension) {
-        String resourcePath = "test-cases/" + resourceDir + "/resource.ttl";
-        String mappingPath = "./test-cases/" + resourceDir + "/mapping.ttl";
-        String outputPath = "test-cases/" + resourceDir + "/output." + outputExtension;
-
-        List<String> resources = new ArrayList<>();
-        resources.add(resourcePath);
-
-        doTest(mappingPath, resources, outputPath);
-
-    }
-
-    @Test(expected = Error.class)
-    public void evaluate_0002g_SPARQL() {
-        evaluate_XXXX_SPARQL("RMLTC0002g-SPARQL", "ttl");
-    }
-
-    @Test
-    public void evaluate_0009a_SPARQL() throws Exception {
-        String mappingPath = "test-cases/RMLTC0009a-SPARQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0009a-SPARQL/output.nq";
-
-        List<String> resources = new ArrayList<>();
-        resources.add("test-cases/RMLTC0009a-SPARQL/resource1.ttl");
-        resources.add("test-cases/RMLTC0009a-SPARQL/resource2.ttl");
-
-        doTest(mappingPath, resources, outputPath);
-    }
-
-    @Test
-    public void evaluate_0009b_SPARQL() throws Exception {
-        String mappingPath = "test-cases/RMLTC0009b-SPARQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0009b-SPARQL/output.nq";
-
-        List<String> resources = new ArrayList<>();
-        resources.add("test-cases/RMLTC0009b-SPARQL/resource1.ttl");
-        resources.add("test-cases/RMLTC0009b-SPARQL/resource2.ttl");
-
-        doTest(mappingPath, resources, outputPath);
-    }
-
-    @Test
-    public void evaluate_00012b_SPARQL() throws Exception {
-        String mappingPath = "test-cases/RMLTC0012b-SPARQL/mapping.ttl";
-        String outputPath = "test-cases/RMLTC0012b-SPARQL/output.nq";
-
-        List<String> resources = new ArrayList<>();
-        resources.add("test-cases/RMLTC0012b-SPARQL/resource1.ttl");
-        resources.add("test-cases/RMLTC0012b-SPARQL/resource2.ttl");
-
-        doTest(mappingPath, resources, outputPath);
-    }
-
-    public void doTest(String mappingPath, List<String> resourceFiles, String outputPath) {
-        stopServer();
-        String tempMapping = replacePortInMappingFile(mappingPath);
-
-        FusekiServer.Builder builder = FusekiServer.create();
-        builder.setPort(openPorts.get(tempMapping).getLocalPort());
-
-        for (int i = 0; i < resourceFiles.size(); i++) {
-            builder.add("/ds"+(i+1), RDFDataMgr.loadDataset(resourceFiles.get(i)), true);
-        }
-        this.server = builder.build();
-        this.server.start();
-
-        doMapping(tempMapping, outputPath);
-
-        closePort(tempMapping);
-        stopServer();
     }
 }
