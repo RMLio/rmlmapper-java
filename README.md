@@ -176,6 +176,24 @@ Make sure you have [Docker](https://www.docker.com) running.
 | ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
 | org.rdfhdt.hdt-jena                | GNU Lesser General Public License v3.0                             |
 
+## Commercial Support
+
+Do you need...
+
+-   training?
+-   specific features?
+-   different integrations?
+-   bugfixes, on _your_ timeline?
+-   custom code, built by experts?
+-   commercial support and licensing?
+
+You're welcome to [contact us](mailto:info@rml.io) in regards to
+on-premise, enterprise, and internal installations, integrations, and deployments.
+
+We have commercial support available.
+
+We also offer consulting for all-things-RML.
+
 ## Remarks
 
 ### XML file parsing performance
