@@ -91,14 +91,6 @@
             <version>7.2.2.jre8</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.oracle.jdbc/ojdbc14 -->
-        <!-- Installed locally https://stackoverflow.com/questions/1074869/find-oracle-jdbc-driver-in-maven-repository -->
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc8</artifactId>
-            <version>12.2.0.1</version>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>com.spotify</groupId>
             <artifactId>docker-client</artifactId>
@@ -110,9 +102,26 @@
             <version>2.9.8</version>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.4.17.v20190418</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-security</artifactId>
+            <version>9.4.17.v20190418</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.jena</groupId>
-            <artifactId>jena-fuseki-main</artifactId>
-            <version>3.13.1</version>
+            <artifactId>apache-jena-libs</artifactId>
+            <type>pom</type>
+            <version>3.8.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-fuseki-embedded</artifactId>
+            <version>3.8.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.bjdmeest</groupId>
@@ -124,6 +133,14 @@
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
             <version>1.6</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.oracle.jdbc/ojdbc14 -->
+        <!-- Installed locally https://stackoverflow.com/questions/1074869/find-oracle-jdbc-driver-in-maven-repository -->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>12.2.0.1</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
