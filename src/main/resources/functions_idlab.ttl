@@ -1,5 +1,5 @@
 @prefix dcterms:  <http://purl.org/dc/terms/> .
-@prefix fno:      <https://w3id.org/function/ontology#> .
+@prefix fno:      <http://semweb.datasciencelab.be/ns/function#> . # MUST STAY DATASCIENCELAB AS LONG AS YOU USE LIB:
 @prefix grel:     <http://semweb.mmlab.be/ns/grel#> .
 @prefix idlab-fn: <http://example.com/idlab/function/> .
 @prefix lib:      <http://example.com/library#> .
@@ -123,28 +123,6 @@ idlab-fn:random
                           lib:class        "IDLabFunctions" ;
                           lib:method       "random" ] .
 
-idlab-fn:generateNull
-    a                   fno:Function ;
-    fno:name            "generateNull" ;
-    rdfs:label          "generateNull" ;
-    dcterms:description "Always returns null" ;
-    fno:expects         ( ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
-                          lib:method       "getNull" ] .
-
-idlab-fn:generateA
-    a                   fno:Function ;
-    fno:name            "generateA" ;
-    rdfs:label          "generateA" ;
-    dcterms:description "Always returns `A_by_function`" ;
-    fno:expects         ( ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
-                          lib:method       "generateA" ] .
-
 grel:valueParam
     a             fno:Parameter ;
     fno:name      "input value" ;
@@ -232,6 +210,13 @@ idlab-fn:_list
     rdfs:label    "list" ;
     fno:type      rdf:List ;
     fno:predicate idlab-fn:list .
+
+idlab-fn:_listOut
+    a             fno:Parameter ;
+    fno:name      "output list" ;
+    rdfs:label    "output list" ;
+    fno:type      rdf:List ;
+    fno:predicate idlab-fn:listOut .
 
 idlab-fn:_delimiter
     a             fno:Parameter ;

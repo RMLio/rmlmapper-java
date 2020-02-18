@@ -75,16 +75,16 @@ public class Utils {
         }
     }
 
-    public static InputStream getInputStreamFromMOptionValue(String mOptionValue) {
+    public static InputStream getInputStreamFromFileOrContentString(String s) {
         InputStream out;
         try {
-            out = getInputStreamFromLocation(mOptionValue, null, "application/rdf+xml");
+            out = getInputStreamFromLocation(s, null, "application/rdf+xml");
         } catch (IOException e) {
             try {
                 // raw mapping input string
-                out = IOUtils.toInputStream(mOptionValue, "UTF-8");
+                out = IOUtils.toInputStream(s, "UTF-8");
             } catch (IOException e2) {
-                logger.error("Cannot read mapping option {}", mOptionValue);
+                logger.error("Cannot read mapping option {}", s);
                 out = new ByteArrayInputStream(new byte[0]);
             }
         }

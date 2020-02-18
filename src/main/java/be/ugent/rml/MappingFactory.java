@@ -233,11 +233,11 @@ public class MappingFactory {
 
                         SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0));
                         Object[] detailsParent = {"parent", parent};
-                        parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
+                        parameters.put("http://semweb.mmlab.be/ns/grel#valueParameter", detailsParent);
 
                         SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0));
                         Object[] detailsChild = {"child", child};
-                        parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
+                        parameters.put("http://semweb.mmlab.be/ns/grel#valueParameter2", detailsChild);
 
                         joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(equal, parameters));
                     }
