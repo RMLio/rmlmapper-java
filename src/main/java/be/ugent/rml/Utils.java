@@ -75,6 +75,11 @@ public class Utils {
         }
     }
 
+    /**
+     * Get an InputStream from a string. This string is either a path (local or remote) to an RDF file, or a raw RDF text.
+     * @param s input, either RDF file path or raw RDF text
+     * @return input stream
+     */
     public static InputStream getInputStreamFromFileOrContentString(String s) {
         InputStream out;
         try {

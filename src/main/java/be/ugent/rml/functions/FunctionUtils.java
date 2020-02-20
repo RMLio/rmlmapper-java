@@ -143,11 +143,28 @@ public class FunctionUtils {
         return cls;
     }
 
+    /**
+     * Retrieve triples of a store based on a predicate, taking into account deprecated FnO prefixed predicates
+     * @param store The triple store to retrieve the triples from
+     * @param s the subject
+     * @param functionTerm the unprefixed function term
+     * @param o the object
+     * @return the quads that are conform to the triple pattern fragment
+     */
     static List<Quad> getQuadsByFunctionPrefix(QuadStore store, Term s, String functionTerm, Term o) {
         List<String> prefices = Arrays.asList(NAMESPACES.FNO_S, NAMESPACES.FNO, NAMESPACES.FNO_OLD);
         return getQuadsByPrefix(store, s, functionTerm, o, prefices);
     }
 
+    /**
+     * Retrieve triples of a store based on a predicate, taking into account multiple prefixes
+     * @param store The triple store to retrieve the triples from
+     * @param s the subject
+     * @param pString the unprefixed predicate term
+     * @param o the object
+     * @param prefices the list of prefices on which to look for, in order of 'correctness' (all prefixes except for the first one are assumed deprecated)
+     * @return the quads that are conform to the triple pattern fragment
+     */
     private static List<Quad> getQuadsByPrefix(QuadStore store, Term s, String pString, Term o, List<String> prefices) {
         String preferredPrefix = prefices.get(0);
         Term realTerm;

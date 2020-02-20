@@ -235,19 +235,15 @@ public class Main {
                 String[] fOptionValue = getOptionValues(functionfileOption, lineArgs, configFile);
                 FunctionLoader functionLoader;
 
-                Map<String, Class> libraryMap = new HashMap<>();
-                libraryMap.put("io.fno.grel.ArrayFunctions", io.fno.grel.ArrayFunctions.class);
-                libraryMap.put("io.fno.grel.BooleanFunctions", io.fno.grel.BooleanFunctions.class);
-                libraryMap.put("io.fno.grel.ControlsFunctions", io.fno.grel.ControlsFunctions.class);
-                libraryMap.put("io.fno.grel.StringFunctions", io.fno.grel.StringFunctions.class);
-                libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-
                 // Read function description files.
                 if (fOptionValue == null) {
-                    functionLoader = new FunctionLoader(null, libraryMap);
+                    functionLoader = new FunctionLoader();
                 } else {
-                    logger.debug("Using custom path to functions.ttl file: " + fOptionValue);
+                    logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
                     RDF4JStore functionDescriptionTriples = new RDF4JStore();
+                    functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
+                    Map<String, Class> libraryMap = new HashMap<>();
+                    libraryMap.put("IDLabFunctions", IDLabFunctions.class);
                     List<InputStream> lisF = Arrays.stream(fOptionValue)
                             .map(Utils::getInputStreamFromFileOrContentString)
                             .collect(Collectors.toList());

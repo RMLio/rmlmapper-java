@@ -142,6 +142,28 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
+    public void testWithCustomFunctionFileInternalFunctionsStillWork() {
+        String cwd = (new File("./src/test/resources/rml-fno-test-cases/RMLFNOTCA005")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
+        String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
+        Main.main(("-f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath).split(" "), cwd);
+        compareFiles(
+                expectedOutPath,
+                actualOutPath,
+                false
+        );
+
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile(actualOutPath);
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void outputTurtle() {
         String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
