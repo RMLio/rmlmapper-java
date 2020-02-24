@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+
+- conform with latest <https://fno.io> spec
+  - the old way of describing a link to a JAVA library is currently still supported
+- usage of external GREL functions library
+  - prefix is `http://semweb.mmlab.be/ns/grel#`
+  - by default, these _classes_ are loaded, _even when the function file parameter has another file_
+  - moved some functions to IDLabFunctions
+- FunctionLoader takes a `store` as constructor, not a file
+- for now, allow fallback on old FnO IRIs
+- dynamic function libraries (i.e., jars) are found relative to the cwd
+- renamed Utils::getInputStreamFromMOptionValue to Utils::getInputStreamFromFileOrContentString
+- changed URL of remote data file src/test/resources/test-cases/RMLTC1003-CSV/mapping.ttl
+
 ## [4.6.0] - 2019-11-19
 
 ### Added
