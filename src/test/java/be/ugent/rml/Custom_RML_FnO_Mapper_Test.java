@@ -43,6 +43,9 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
         assertEquals("GrelFunctions", cls.getName());
     }
 
+    /**
+     * Tests whether the function `idlab-fn:trueCondition` is supported correctly by the mapper
+     */
     @Test
     public void evaluate_A004() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA004/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA004/output.ttl");

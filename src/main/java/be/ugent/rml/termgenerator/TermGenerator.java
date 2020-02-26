@@ -16,4 +16,14 @@ public abstract class TermGenerator {
     }
 
     public abstract List<Term> generate(Record record) throws Exception;
+
+    /**
+     * to string method
+     * @return string
+     */
+    @Override
+    public String toString() {
+        return "gen(" + functionExecutor +
+                ')';
+    }
 }
