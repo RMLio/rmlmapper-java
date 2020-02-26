@@ -21,4 +21,14 @@ public class ParameterValuePair {
     public List<TermGenerator> getValueGenerators() {
         return valueGenerators;
     }
+
+    /**
+     * To string method
+     *
+     * @return string
+     */
+    @Override
+    public String toString() {
+        return parameterGenerators + "=" + valueGenerators;
+    }
 }
