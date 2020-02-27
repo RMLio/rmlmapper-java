@@ -1,6 +1,5 @@
 package be.ugent.rml;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -92,7 +91,6 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
     }
 
     @Test
-    @Ignore
     public void doMapping() throws Exception {
         //setup expected exception
         if (expectedException != null) {
