@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - dynamic function libraries (i.e., jars) are found relative to the cwd
 - renamed Utils::getInputStreamFromMOptionValue to Utils::getInputStreamFromFileOrContentString
 - changed URL of remote data file src/test/resources/test-cases/RMLTC1003-CSV/mapping.ttl
+- moved IDLabFunction tests to its canonical place
+- added idlab-fn:inRange function
 
 ## [4.6.0] - 2019-11-19
 

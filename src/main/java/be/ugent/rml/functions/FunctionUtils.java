@@ -82,9 +82,10 @@ public class FunctionUtils {
             case "http://www.w3.org/2001/XMLSchema#string":
                 return String.class;
             case "http://www.w3.org/2001/XMLSchema#integer":
-                return int.class;
+                return Integer.class;
             case "http://www.w3.org/2001/XMLSchema#decimal":
-                return double.class;
+            case "http://www.w3.org/2001/XMLSchema#double":
+                return Double.class;
             case "http://www.w3.org/1999/02/22-rdf-syntax-ns#List":
                 return List.class;
             default:

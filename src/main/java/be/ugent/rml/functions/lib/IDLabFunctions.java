@@ -136,6 +136,35 @@ public class IDLabFunctions {
         return upperTest;
     }
 
+    /**
+     * Tests whether a certain number is in a certain range.
+     * Everything is optional:
+     *   - function returns false when testNumber is null
+     *   - function only tests from constraint when to is null
+     *   - function only tests to constraint when from is null
+     *   - function returns true when from and to are null.
+     * @param testNumber The number put under the test. Optional (function returns false when is null)
+     * @param from The number from where (inclusive)
+     * @param to The number until where (exclusive)
+     * @return whether it's in range or not
+     */
+    public static boolean inRange(Double testNumber, Double from, Double to) {
+        if (testNumber == null) {
+            return false;
+        }
+        if (from == null && to == null) {
+            return true;
+        }
+
+        if (from == null) {
+            return testNumber < to;
+        }
+        if (to == null) {
+            return testNumber >= from;
+        }
+        return testNumber >= from && testNumber < to;
+    }
+
     // TODO below are currently not part of any tests
 
     // TODO check whether this is the right place for this
