@@ -24,7 +24,6 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     public Object execute(Map<String, Record> records) throws Exception {
         final ArrayList<Term> fnTerms = new ArrayList<>();
         final ArrayList<Argument> args = new ArrayList<>();
-//        final HashMap<String, Object> args =  new HashMap<>();
 
         parameterValuePairs.forEach(pv -> {
             ArrayList<Term> parameters = new ArrayList<>();
@@ -86,9 +85,18 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     }
 }
 
+/**
+ * Helper class to combine a parameter and his arguments in one object
+ */
 class Argument {
- private String parameter;
- private List arguments;
+    /**
+     * Function Parameter URI
+     */
+    private String parameter;
+    /**
+     * All the actual generated values for this parameter
+     */
+    private List arguments;
 
     Argument(String parameter, List arguments) {
         this.parameter = parameter;
