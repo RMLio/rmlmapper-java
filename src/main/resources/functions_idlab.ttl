@@ -1,5 +1,5 @@
 @prefix dcterms:  <http://purl.org/dc/terms/> .
-@prefix fno:      <http://semweb.datasciencelab.be/ns/function#> . # MUST STAY DATASCIENCELAB AS LONG AS YOU USE LIB:
+@prefix fno:      <https://w3id.org/function/ontology#> .
 @prefix grel:     <http://semweb.mmlab.be/ns/grel#> .
 @prefix idlab-fn: <http://example.com/idlab/function/> .
 @prefix lib:      <http://example.com/library#> .
@@ -123,6 +123,17 @@ idlab-fn:random
                           lib:class        "IDLabFunctions" ;
                           lib:method       "random" ] .
 
+idlab-fn:inRange
+    a                   fno:Function ;
+    fno:name            "inRange" ;
+    rdfs:label          "in range" ;
+    dcterms:description "Returns whether a value is in range" ;
+    fno:expects         ( idlab-fn:_test idlab-fn:_from idlab-fn:_to ) ;
+    fno:returns         ( idlab-fn:_boolOut ) ;
+    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
+                          lib:class        "IDLabFunctions" ;
+                          lib:method       "inRange" ] .
+
 grel:valueParam
     a             fno:Parameter ;
     fno:name      "input value" ;
@@ -225,9 +236,37 @@ idlab-fn:_delimiter
     fno:type      xsd:string ;
     fno:predicate idlab-fn:delimiter .
 
+idlab-fn:_test
+    a             fno:Parameter ;
+    fno:name      "test" ;
+    rdfs:label    "test" ;
+    fno:type      xsd:double ;
+    fno:predicate idlab-fn:p_test .
+
+idlab-fn:_from
+    a             fno:Parameter ;
+    fno:name      "from" ;
+    rdfs:label    "from" ;
+    fno:type      xsd:double ;
+    fno:predicate idlab-fn:p_from .
+
+idlab-fn:_to
+    a             fno:Parameter ;
+    fno:name      "to" ;
+    rdfs:label    "to" ;
+    fno:type      xsd:double ;
+    fno:predicate idlab-fn:p_to .
+
 idlab-fn:_stringOut
     a             fno:Output ;
     fno:name      "output string" ;
     rdfs:label    "output string" ;
     fno:type      xsd:string ;
     fno:predicate idlab-fn:stringOut .
+
+idlab-fn:_boolOut
+    a             fno:Output ;
+    fno:name      "output boolean" ;
+    rdfs:label    "output boolean" ;
+    fno:type      xsd:boolean ;
+    fno:predicate idlab-fn:o_boolOut .

@@ -142,7 +142,7 @@
         <dependency>
             <groupId>com.github.fnoio</groupId>
             <artifactId>grel-functions-java</artifactId>
-            <version>v0.3.0</version>
+            <version>v0.3.1</version>
         </dependency>
     </dependencies>
 

@@ -63,4 +63,12 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     public void evaluate_A005() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA005/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA005/output.ttl");
     }
+
+    /**
+     * Tests whether the function idlab-fn:inRange is supported correctly by the mapper
+     */
+    @Test
+    public void evaluate_A006() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCA006/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA006/output.ttl");
+    }
 }

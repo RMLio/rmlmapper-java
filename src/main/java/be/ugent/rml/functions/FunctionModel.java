@@ -130,7 +130,7 @@ public class FunctionModel {
             if (parameters.get(this.parameters.get(i).getValue()) != null) {
                 args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i]);
             } else {
-                logger.warn("No argument was found for following parameter: " + this.parameters.get(i).getValue());
+                logger.debug("No argument was found for following parameter: " + this.parameters.get(i).getValue());
                 args[i] = null;
             }
         }
@@ -139,22 +139,37 @@ public class FunctionModel {
     }
 
     private Object parseParameter(Object parameter, Class type) {
+        if (type.getName().equals("java.util.List")) {
+            if (parameter instanceof String) {
+                JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+                try {
+                    //this should return a JSONArray, which implements java.util.List
+                    return parser.parse((String) parameter);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    throw new Error("Could not get a List from " + parameter);
+                }
+            } else {
+                return parameter;
+            }
+        }
+        if (parameter instanceof List) {
+            List l = (List) parameter;
+
+            if (l.isEmpty()) {
+                return null;
+            } else {
+                parameter = l.get(0);
+            }
+        }
         switch (type.getName()) {
             case "java.lang.String":
-                if (parameter instanceof List) {
-                    List l = (List) parameter;
-
-                    if (l.isEmpty()) {
-                        return null;
-                    } else {
-                        return l.get(0);
-                    }
-                } else {
-                    return parameter.toString();
-                }
+                return parameter.toString();
             case "int":
+            case "java.lang.Integer":
                 return Integer.parseInt(parameter.toString());
             case "double":
+            case "java.lang.Double":
                 return Double.parseDouble(parameter.toString());
             case "java.util.List":
                 if (parameter instanceof String) {

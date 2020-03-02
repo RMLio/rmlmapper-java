@@ -30,7 +30,8 @@ public abstract class TestCore {
 
     /**
      * Create an executor and add extra quads to the mapping file.
-     * @param mapPath The path to the mapping file.
+     *
+     * @param mapPath    The path to the mapping file.
      * @param extraQuads A list of extra quads that need to be added to the mapping file.
      * @return An executor.
      * @throws Exception
@@ -103,9 +104,9 @@ public abstract class TestCore {
     }
 
     void doMapping(Executor executor, String outPath) throws Exception {
-            QuadStore result = executor.execute(null);
-            result.removeDuplicates();
-            compareStores(filePathToStore(outPath), result);
+        QuadStore result = executor.execute(null);
+        result.removeDuplicates();
+        compareStores(filePathToStore(outPath), result);
     }
 
     void doMappingExpectError(String mapPath) {
@@ -140,17 +141,12 @@ public abstract class TestCore {
         assertEquals(expectedString, resultString);
     }
 
-    void compareFiles(String expectedPath, String resultPath, boolean removeTimestamps) {
+    void compareFiles(String expectedPath, String resultPath, boolean removeTimestamps) throws Exception {
         QuadStore expectedStore = null;
         QuadStore resultStore = null;
 
-        try {
-            expectedStore = filePathToStore(expectedPath);
-            resultStore = filePathToStore(resultPath);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
+        expectedStore = filePathToStore(expectedPath);
+        resultStore = filePathToStore(resultPath);
 
         if (removeTimestamps) {
             expectedStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
