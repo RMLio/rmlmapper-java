@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- support for list-style parameter arguments for functions (see test `rml-fno-test-cases/RMLFNOTC0023-CSV`)
+
 ### Changed
 
 - conform with latest <https://fno.io> spec
@@ -22,6 +26,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - changed URL of remote data file src/test/resources/test-cases/RMLTC1003-CSV/mapping.ttl
 - moved IDLabFunction tests to its canonical place
 - added idlab-fn:inRange function
+- in `TestFunctionCore`: `doPreloadMapping` just adds up to the existing `functions_idlab.ttl` descriptions to avoid duplication
+  - random generator defaults to "random_string_here" to avoid space characters.
 
 ## [4.6.0] - 2019-11-19
 

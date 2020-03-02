@@ -33,7 +33,7 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     public void evaluate_0004_CSV() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0004-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0004-CSV/output.ttl");
     }
-    
+
     @Test
     public void evaluate_0005_CSV() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0005-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0005-CSV/output.ttl");
@@ -87,7 +87,7 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     public void evaluate_0014_CSV() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0014-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0014-CSV/output.ttl");
     }
-    
+
     @Test
     @Ignore
     public void evaluate_0015_CSV() {
@@ -119,5 +119,13 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     @Test
     public void evaluate_0022_CSV() {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0022-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0022-CSV/output.nq");
+    }
+
+    /**
+     * Tests that list-style parameters are handled
+     */
+    @Test
+    public void evaluate_0023_CSV() {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0023-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0023-CSV/output.nq");
     }
 }

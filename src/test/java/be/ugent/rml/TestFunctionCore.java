@@ -23,6 +23,7 @@ abstract class TestFunctionCore extends TestCore {
         try {
         // Read function description files.
         RDF4JStore functionDescriptionTriples = new RDF4JStore();
+        functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
         functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("rml-fno-test-cases/functions_test.ttl")), null, RDFFormat.TURTLE);
         functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_grel.ttl")), null, RDFFormat.TURTLE);
         functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("grel_java_mapping.ttl")), null, RDFFormat.TURTLE);
