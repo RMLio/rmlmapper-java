@@ -7,7 +7,6 @@ import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 
 public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
@@ -24,7 +23,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     @Override
     public Object execute(Map<String, Record> records) throws Exception {
         final ArrayList<Term> fnTerms = new ArrayList<>();
-        final HashMap<String, Object> args =  new HashMap<>();
+        final ArrayList<Argument> args = new ArrayList<>();
 
         parameterValuePairs.forEach(pv -> {
             ArrayList<Term> parameters = new ArrayList<>();
@@ -48,7 +47,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
                 }
             });
 
-            if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes")) || parameters.contains(new NamedNode(NAMESPACES.FNO_S + "executes"))){
+            if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes")) || parameters.contains(new NamedNode(NAMESPACES.FNO_S + "executes"))) {
                 if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes"))) {
                     logger.warn("http is used instead of https for " + NAMESPACES.FNO_S + ". " +
                             "Still works for now, but will be deprecated in the future.");
@@ -63,15 +62,52 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
                         temp.add(value.getValue());
                     });
 
-                    args.put(parameter.getValue(), temp);
+                    args.add(new Argument(parameter.getValue(), temp));
                 });
             }
         });
 
+        final HashMap<String, List> mergedArgs = new HashMap<>();
+        //TODO check if function is list?
+        args.forEach(arg -> {
+            if (!mergedArgs.containsKey(arg.getParameter())) {
+                mergedArgs.put(arg.getParameter(), arg.getArguments());
+            } else {
+
+                mergedArgs.get(arg.getParameter()).addAll(arg.getArguments());
+            }
+        });
         if (fnTerms.isEmpty()) {
-            throw new Exception("No function was defined for parameters: " + args.keySet());
+            throw new Exception("No function was defined for parameters: " + mergedArgs.keySet());
         } else {
-            return functionLoader.getFunction(fnTerms.get(0)).execute(args);
+            return functionLoader.getFunction(fnTerms.get(0)).execute((Map) mergedArgs);
         }
+    }
+}
+
+/**
+ * Helper class to combine a parameter and his arguments in one object
+ */
+class Argument {
+    /**
+     * Function Parameter URI
+     */
+    private String parameter;
+    /**
+     * All the actual generated values for this parameter
+     */
+    private List arguments;
+
+    Argument(String parameter, List arguments) {
+        this.parameter = parameter;
+        this.arguments = arguments;
+    }
+
+    public String getParameter() {
+        return parameter;
+    }
+
+    public List getArguments() {
+        return arguments;
     }
 }

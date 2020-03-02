@@ -8,7 +8,7 @@ public class IDLabTestFunctions extends IDLabFunctions {
     private static final Logger logger = LoggerFactory.getLogger(IDLabTestFunctions.class);
 
     public static String random() {
-        return "random string here";
+        return "random_string_here";
     }
 
     public static String getNull() {
