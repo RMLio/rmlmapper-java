@@ -4,7 +4,6 @@ import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +23,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     @Override
     public Object execute(Map<String, Record> records) throws Exception {
         final ArrayList<Term> fnTerms = new ArrayList<>();
-        final ArrayList<Pair<String, List>> args = new ArrayList<>();
+        final ArrayList<Argument> args = new ArrayList<>();
 //        final HashMap<String, Object> args =  new HashMap<>();
 
         parameterValuePairs.forEach(pv -> {
@@ -64,7 +63,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
                         temp.add(value.getValue());
                     });
 
-                    args.add(new Pair(parameter.getValue(), temp));
+                    args.add(new Argument(parameter.getValue(), temp));
                 });
             }
         });
@@ -72,11 +71,11 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
         final HashMap<String, List> mergedArgs = new HashMap<>();
         //TODO check if function is list?
         args.forEach(arg -> {
-            if (!mergedArgs.containsKey(arg.getKey())) {
-                mergedArgs.put(arg.getKey(), arg.getValue());
+            if (!mergedArgs.containsKey(arg.getParameter())) {
+                mergedArgs.put(arg.getParameter(), arg.getArguments());
             } else {
 
-                mergedArgs.get(arg.getKey()).addAll(arg.getValue());
+                mergedArgs.get(arg.getParameter()).addAll(arg.getArguments());
             }
         });
         if (fnTerms.isEmpty()) {
@@ -84,5 +83,23 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
         } else {
             return functionLoader.getFunction(fnTerms.get(0)).execute((Map) mergedArgs);
         }
+    }
+}
+
+class Argument {
+ private String parameter;
+ private List arguments;
+
+    Argument(String parameter, List arguments) {
+        this.parameter = parameter;
+        this.arguments = arguments;
+    }
+
+    public String getParameter() {
+        return parameter;
+    }
+
+    public List getArguments() {
+        return arguments;
     }
 }
