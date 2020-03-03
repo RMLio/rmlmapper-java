@@ -1,6 +1,7 @@
 @prefix ex:       <http://example.com/> .
 @prefix fnml:     <http://semweb.mmlab.be/ns/fnml#> .
 @prefix fno:      <https://w3id.org/function/ontology#> .
+@prefix grel:     <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 @prefix idlab-fn: <http://example.com/idlab/function/> .
 @prefix rr:       <http://www.w3.org/ns/r2rml#> .
 @prefix rml:      <http://semweb.mmlab.be/ns/rml#> .
@@ -38,7 +39,7 @@ map:pmexec_0
     rr:constant fno:executes .
 
 map:omexec_0
-    rr:constant "http://semweb.mmlab.be/ns/grel#array_join" ;
+    rr:constant "http://users.ugent.be/~bjdmeest/function/grel.ttl#array_join" ;
     rr:termType rr:IRI .
 
 map:pom_0
@@ -48,7 +49,7 @@ map:pom_0
 
 map:pm_0
     a           rr:PredicateMap ;
-    rr:constant <http://semweb.mmlab.be/ns/grel#p_array_a> .
+    rr:constant grel:p_array_a .
 
 map:om_0
     a           rr:ObjectMap ;
@@ -62,7 +63,7 @@ map:pom_1
 
 map:pm_1
     a           rr:PredicateMap ;
-    rr:constant <http://semweb.mmlab.be/ns/grel#p_array_a> .
+    rr:constant grel:p_array_a .
 
 map:om_1
     a                  rr:ObjectMap, fnml:FunctionTermMap ;

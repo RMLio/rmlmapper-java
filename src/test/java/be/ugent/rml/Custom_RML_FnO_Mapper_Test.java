@@ -25,7 +25,7 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     }
 
     @Test
-    public void evaluate_A002() {
+    public void evaluate_A002() throws Exception {
         Executor executor = doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
         assertEquals("__local", executor.getFunctionLoader().getLibraryPath("io.fno.grel.ArrayFunctions"));
     }
@@ -47,12 +47,12 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
      * Tests whether the function `idlab-fn:trueCondition` is supported correctly by the mapper
      */
     @Test
-    public void evaluate_A004() {
+    public void evaluate_A004() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA004/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA004/output.ttl");
     }
 
     @Test
-    public void evaluate_A004b() {
+    public void evaluate_A004b() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA004b/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA004b/output.ttl");
     }
 
@@ -60,7 +60,7 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
      * Tests whether the function idlab-fn:readFile is supported correctly by the mapper
      */
     @Test
-    public void evaluate_A005() {
+    public void evaluate_A005() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA005/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA005/output.ttl");
     }
 
