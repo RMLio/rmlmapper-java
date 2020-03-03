@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - conform with latest <https://fno.io> spec
   - the old way of describing a link to a JAVA library is currently still supported
 - usage of external GREL functions library
-  - prefix is `http://semweb.mmlab.be/ns/grel#`
   - by default, these _classes_ are loaded, _even when the function file parameter has another file_
   - moved some functions to IDLabFunctions
 - FunctionLoader takes a `store` as constructor, not a file

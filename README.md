@@ -120,7 +120,7 @@ The snippet below for example links an fno:function to a library, provided by a 
 @prefix fno:     <https://w3id.org/function/ontology#> .
 @prefix fnoi:    <https://w3id.org/function/vocabulary/implementation#> .
 @prefix fnom:    <https://w3id.org/function/vocabulary/mapping#> .
-@prefix grel:    <http://semweb.mmlab.be/ns/grel#> .
+@prefix grel:    <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 @prefix grelm:   <http://fno.io/grel/rmlmapping#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 
