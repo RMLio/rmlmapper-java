@@ -70,9 +70,7 @@ options:
  -d,--duplicates                  remove duplicates in the output
  -dsn,--r2rml-jdbcDriver <arg>    DSN of the database when using R2RML rules
  -e,--metadatafile <arg>          path to output metadata file
- -f,--functionfile <arg>          path to functions.ttl file (dynamic
-                                  functions are found relative to
-                                  functions.ttl)
+ -f,--functionfile <arg>          one or more function file paths (dynamic functions with relative paths are found relative to the cwd)
  -h,--help                        show help info
  -l,--metadataDetailLevel <arg>   generate metadata on given detail level
                                   (dataset - triple - term)
@@ -116,18 +114,34 @@ Registration of functions is done using a Turtle file, which you can find in `sr
 
 The snippet below for example links an fno:function to a library, provided by a jar-file (`GrelFunctions.jar`).
 
-```
+```turtle
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix doap:    <http://usefulinc.com/ns/doap#> .
+@prefix fno:     <https://w3id.org/function/ontology#> .
+@prefix fnoi:    <https://w3id.org/function/vocabulary/implementation#> .
+@prefix fnom:    <https://w3id.org/function/vocabulary/mapping#> .
+@prefix grel:    <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix grelm:   <http://fno.io/grel/rmlmapping#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+
 grel:toUpperCase a fno:Function ;
   fno:name "to Uppercase" ;
   rdfs:label "to Uppercase" ;
   dcterms:description "Returns the input with all letters in upper case." ;
   fno:expects ( grel:valueParam ) ;
-  fno:returns ( grel:stringOut ) ;
-  lib:providedBy [
-    lib:localLibrary "GrelFunctions.jar";
-    lib:class "GrelFunctions";
-    lib:method "toUppercase"
-  ].
+  fno:returns ( grel:stringOut ) .
+
+grelm:javaString
+    a                  fnoi:JavaClass ;
+    doap:download-page "GrelFunctions.jar" ;
+    fnoi:class-name    "io.fno.grel.StringFunctions" .
+
+grelm:uppercaseMapping
+    a                    fnoi:Mapping ;
+    fno:function         grel:toUpperCase ;
+    fno:implementation   grelm:javaString ;
+    fno:methodMapping    [ a                fnom:StringMethodMapping ;
+                           fnom:method-name "toUppercase" ] .
 ```
 
 #### Dynamic loading
@@ -137,8 +151,8 @@ at the root folder of the jar-location,
 or the parent folder of the jar-location,
 it will be found dynamically.
 
-> Note: the java or jar-files are found relative to the loaded functions.ttl.
-You can change the functions.ttl path using a commandline-option (`-f`).
+> Note: the java or jar-files are found relative to the cwd.
+You can change the functions.ttl path (or use multiple functions.ttl paths) using a commandline-option (`-f`).
 
 #### Preloading
 
@@ -175,6 +189,25 @@ Make sure you have [Docker](https://www.docker.com) running.
 | commons-lang                       | Apache License 2.0                                                 |
 | ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
 | org.rdfhdt.hdt-jena                | GNU Lesser General Public License v3.0                             |
+| io.fno.grel                        | MIT                                                                |
+
+## Commercial Support
+
+Do you need...
+
+-   training?
+-   specific features?
+-   different integrations?
+-   bugfixes, on _your_ timeline?
+-   custom code, built by experts?
+-   commercial support and licensing?
+
+You're welcome to [contact us](mailto:info@rml.io) in regards to
+on-premise, enterprise, and internal installations, integrations, and deployments.
+
+We have commercial support available.
+
+We also offer consulting for all-things-RML.
 
 ## Remarks
 

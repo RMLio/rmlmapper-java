@@ -30,7 +30,8 @@ public abstract class TestCore {
 
     /**
      * Create an executor and add extra quads to the mapping file.
-     * @param mapPath The path to the mapping file.
+     *
+     * @param mapPath    The path to the mapping file.
      * @param extraQuads A list of extra quads that need to be added to the mapping file.
      * @return An executor.
      * @throws Exception
@@ -102,15 +103,10 @@ public abstract class TestCore {
         return null;
     }
 
-    void doMapping(Executor executor, String outPath) {
-        try {
-            QuadStore result = executor.execute(null);
-            result.removeDuplicates();
-            compareStores(result, filePathToStore(outPath));
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            fail();
-        }
+    void doMapping(Executor executor, String outPath) throws Exception {
+        QuadStore result = executor.execute(null);
+        result.removeDuplicates();
+        compareStores(filePathToStore(outPath), result);
     }
 
     void doMappingExpectError(String mapPath) {
@@ -138,38 +134,33 @@ public abstract class TestCore {
         fail("Expecting error not found");
     }
 
-    private void compareStores(QuadStore store1, QuadStore store2) {
-        String string1 = store1.toSortedString();
-        String string2 = store2.toSortedString();
+    private void compareStores(QuadStore expectedStory, QuadStore resultStore) {
+        String expectedString = expectedStory.toSortedString();
+        String resultString = resultStore.toSortedString();
         // First arg is expected, second is actual
-        assertEquals(string1, string2);
+        assertEquals(expectedString, resultString);
     }
 
-    void compareFiles(String path1, String path2, boolean removeTimestamps) {
-        QuadStore store1 = null;
-        QuadStore store2 = null;
+    void compareFiles(String expectedPath, String resultPath, boolean removeTimestamps) throws Exception {
+        QuadStore expectedStore = null;
+        QuadStore resultStore = null;
 
-        try {
-            store1 = filePathToStore(path1);
-            store2 = filePathToStore(path2);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
+        expectedStore = filePathToStore(expectedPath);
+        resultStore = filePathToStore(resultPath);
 
         if (removeTimestamps) {
-            store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
-            store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
-            store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
-            store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
-            store1.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
-            store2.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
+            expectedStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
+            resultStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
+            expectedStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
+            resultStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
+            expectedStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
+            resultStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
         }
 
         try {
-            assertEquals(store1, store2);
+            assertEquals(expectedStore, resultStore);
         } catch (AssertionError e) {
-            compareStores(store1, store2);
+            compareStores(expectedStore, resultStore);
         }
     }
 

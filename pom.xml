@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>be.ugent.rml</groupId>
     <artifactId>rmlmapper</artifactId>
-    <version>4.6.0</version>
+    <version>4.7.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.12</junit.version>
@@ -138,6 +138,11 @@
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
             <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.fnoio</groupId>
+            <artifactId>grel-functions-java</artifactId>
+            <version>v0.4.0</version>
         </dependency>
     </dependencies>
 

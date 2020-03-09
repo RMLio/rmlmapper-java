@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.7.0] - 2020-03-09
+
+### Added
+
+- support for list-style parameter arguments for functions (see test `rml-fno-test-cases/RMLFNOTC0023-CSV`)
+
+### Changed
+
+- conform with latest <https://fno.io> spec
+  - the old way of describing a link to a JAVA library is currently still supported
+- usage of external GREL functions library
+  - by default, these _classes_ are loaded, _even when the function file parameter has another file_
+  - moved some functions to IDLabFunctions
+- FunctionLoader takes a `store` as constructor, not a file
+- for now, allow fallback on old FnO IRIs
+- dynamic function libraries (i.e., jars) are found relative to the cwd
+- renamed Utils::getInputStreamFromMOptionValue to Utils::getInputStreamFromFileOrContentString
+- changed URL of remote data file src/test/resources/test-cases/RMLTC1003-CSV/mapping.ttl
+- moved IDLabFunction tests to its canonical place
+- added idlab-fn:inRange function
+- in `TestFunctionCore`: `doPreloadMapping` just adds up to the existing `functions_idlab.ttl` descriptions to avoid duplication
+  - random generator defaults to "random_string_here" to avoid space characters.
+
 ## [4.6.0] - 2019-11-19
 
 ### Added
@@ -226,6 +249,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.7.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.6.0...v4.7.0
 [4.6.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.1...v4.6.0
 [4.5.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.0...v4.5.1
 [4.5.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.2...v4.5.0
