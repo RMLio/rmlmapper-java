@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.7.0] - 2020-03-09
+
 ### Added
 
 - support for list-style parameter arguments for functions (see test `rml-fno-test-cases/RMLFNOTC0023-CSV`)
@@ -247,6 +249,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.7.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.6.0...v4.7.0
 [4.6.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.1...v4.6.0
 [4.5.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.0...v4.5.1
 [4.5.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.4.2...v4.5.0
