@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 public class Arguments_Test extends TestCore {
 
     @Test
-    public void withConfigFile() {
+    public void withConfigFile() throws Exception {
         Main.main("-c ./argument-config-file-test-cases/config_example.properties".split(" "));
         compareFiles(
                 "argument-config-file-test-cases/target_output.nq",
@@ -37,7 +37,7 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void withoutConfigFile() {
+    public void withoutConfigFile() throws Exception {
         Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq".split(" "));
         compareFiles(
                 "argument-config-file-test-cases/target_output.nq",
@@ -54,7 +54,7 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void mappingFileAndRawMappingString() {
+    public void mappingFileAndRawMappingString() throws Exception {
         String arg1 = "./argument-config-file-test-cases/mapping_base.ttl";
         String arg2 = "@prefix rml: <http://semweb.mmlab.be/ns/rml#> .\n" +
                 "@prefix ql: <http://semweb.mmlab.be/ns/ql#> .\n\n" +
@@ -85,7 +85,7 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void multipleMappingFiles() {
+    public void multipleMappingFiles() throws Exception {
         Main.main("-m ./argument-config-file-test-cases/mapping_base.ttl ./argument-config-file-test-cases/mapping1.ttl -o ./generated_output.nq".split(" "));
         compareFiles(
                 "argument-config-file-test-cases/target_output.nq",
@@ -142,7 +142,29 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void outputTurtle() {
+    public void testWithCustomFunctionFileInternalFunctionsStillWork() throws Exception {
+        String cwd = (new File("./src/test/resources/rml-fno-test-cases/RMLFNOTCA005")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
+        String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
+        Main.main(("-f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath).split(" "), cwd);
+        compareFiles(
+                expectedOutPath,
+                actualOutPath,
+                false
+        );
+
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile(actualOutPath);
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void outputTurtle() throws Exception {
         String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
@@ -176,7 +198,7 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void outputJSON() {
+    public void outputJSON() throws Exception {
         String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualJSONPath = (new File("./generated_output.json")).getAbsolutePath();
@@ -208,7 +230,7 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void outputTrig() {
+    public void outputTrig() throws Exception {
         String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
@@ -278,7 +300,7 @@ public class Arguments_Test extends TestCore {
 
 
     @Test
-    public void quoteInLiteral() {
+    public void quoteInLiteral() throws Exception {
         String cwd = (new File( "./src/test/resources/argument/quote-in-literal")).getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualNQuadsPath = (new File("./generated_output.nq")).getAbsolutePath();

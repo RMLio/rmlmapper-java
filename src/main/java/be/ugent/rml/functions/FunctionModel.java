@@ -6,6 +6,8 @@ import net.minidev.json.parser.ParseException;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,6 +28,8 @@ public class FunctionModel {
     private Term URI;
     private Method method;
 
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public FunctionModel(Term URI, Method m, List<Term> parameters, List<Term> outputs) {
         this.URI = URI;
         this.method = m;
@@ -36,7 +40,7 @@ public class FunctionModel {
     public Object execute(Map<String, Object> args) {
         Object[] parameters = this.getParameters(args);
         try {
-            return  this.method.invoke(null, parameters);
+            return this.method.invoke(null, parameters);
 //            ArrayList<Value> result = this.toValue(object, this.getDataType(args));
         } catch (IllegalAccessException | InvocationTargetException e) {
             // Nothing to do?
@@ -126,6 +130,7 @@ public class FunctionModel {
             if (parameters.get(this.parameters.get(i).getValue()) != null) {
                 args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i]);
             } else {
+                logger.debug("No argument was found for following parameter: " + this.parameters.get(i).getValue());
                 args[i] = null;
             }
         }
@@ -134,22 +139,37 @@ public class FunctionModel {
     }
 
     private Object parseParameter(Object parameter, Class type) {
+        if (type.getName().equals("java.util.List")) {
+            if (parameter instanceof String) {
+                JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+                try {
+                    //this should return a JSONArray, which implements java.util.List
+                    return parser.parse((String) parameter);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    throw new Error("Could not get a List from " + parameter);
+                }
+            } else {
+                return parameter;
+            }
+        }
+        if (parameter instanceof List) {
+            List l = (List) parameter;
+
+            if (l.isEmpty()) {
+                return null;
+            } else {
+                parameter = l.get(0);
+            }
+        }
         switch (type.getName()) {
             case "java.lang.String":
-                if (parameter instanceof List) {
-                    List l = (List) parameter;
-
-                    if (l.isEmpty()) {
-                        return null;
-                    } else {
-                        return l.get(0);
-                    }
-                } else {
-                    return parameter.toString();
-                }
+                return parameter.toString();
             case "int":
+            case "java.lang.Integer":
                 return Integer.parseInt(parameter.toString());
             case "double":
+            case "java.lang.Double":
                 return Double.parseDouble(parameter.toString());
             case "java.util.List":
                 if (parameter instanceof String) {

@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 public class Metadata_Test extends TestCore {
 
     @Test
-    public void datasetLevelTest() {
+    public void datasetLevelTest() throws Exception {
         Main.main("-c ./metadata-test-cases/metadata-dataset-level/config_example.properties".split(" "));
         compareFiles(
                 "metadata-test-cases/metadata-dataset-level/target_metadata.nq",
@@ -26,7 +26,7 @@ public class Metadata_Test extends TestCore {
     }
 
     @Test
-    public void tripleLevelTest() {
+    public void tripleLevelTest() throws Exception {
         Main.main("-c ./metadata-test-cases/metadata-triple-level/config_example.properties".split(" "));
         compareFiles(
                 "metadata-test-cases/metadata-triple-level/target_metadata.nq",
@@ -38,7 +38,7 @@ public class Metadata_Test extends TestCore {
     }
 
     @Test
-    public void termLevelTest() {
+    public void termLevelTest() throws Exception {
         Main.main("-c ./src/test/resources/metadata-test-cases/metadata-term-level/config_example.properties".split(" "));
         compareFiles(
                 "metadata-test-cases/metadata-term-level/target_metadata.nq",

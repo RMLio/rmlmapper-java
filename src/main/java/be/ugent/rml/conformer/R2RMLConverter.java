@@ -37,10 +37,10 @@ public class R2RMLConverter implements Converter {
 
     /**
      * Tries to convert R2RML TriplesMap to rml by:
-     * - renaming logicalTable -> logicalSource
+     * - renaming logicalTable to logicalSource
      * - adding referenceFormulation: CSV
      * - adding sqlVersion: SQL2008
-     * - renaming rr:sqlQuery -> rml:query
+     * - renaming rr:sqlQuery to rml:query
      * - renaming all rr:column properties to rml:reference
      * - removing all rr:logicalTable nodes, leaving rml:logicalSource to take their place
      * - moving rest over from logicalTable to logicalSource

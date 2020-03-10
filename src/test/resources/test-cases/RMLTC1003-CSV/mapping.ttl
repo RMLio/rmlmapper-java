@@ -11,7 +11,7 @@
   a rr:TriplesMap;
     
   rml:logicalSource [ 
-    rml:source "http://rml.io/data/dataRetrieval/dcat/Airport.csv";
+    rml:source "https://rml.io/docs/rml/data-retrieval/dcat/Airport.csv";
     rml:referenceFormulation ql:CSV 
   ];
 

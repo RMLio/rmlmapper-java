@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of QuadStore with List<Quad> quads.
+ * Implementation of QuadStore with a List of Quads.
  * Package-private
  */
 public class SimpleQuadStore extends QuadStore {

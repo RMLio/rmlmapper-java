@@ -12,7 +12,7 @@ import static org.junit.Assert.fail;
 public class Arguments_Test_MySQL extends MySQLTestCore {
 
     @Test
-    public void executeR2RML() {
+    public void executeR2RML() throws Exception {
         String cwd = (new File( "./src/test/resources/argument/r2rml")).getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.r2rml.ttl")).getAbsolutePath();
         String actualPath = (new File("./generated_output.nq")).getAbsolutePath();

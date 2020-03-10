@@ -27,4 +27,14 @@ public class ConstantExtractor implements Extractor, SingleRecordFunctionExecuto
     public Object execute(Record record) throws IOException {
         return extract(record);
     }
+
+    /**
+     * to String method
+     *
+     * @return string
+     */
+    @Override
+    public String toString() {
+        return "\"" + constant + '\"';
+    }
 }

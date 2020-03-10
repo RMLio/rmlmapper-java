@@ -1,14 +1,14 @@
-package be.ugent.rml;
+package be.ugent.rml.functions.lib;
 
-import be.ugent.rml.functions.lib.IDLabFunctions;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class BuildInFunctions extends TestCore {
+public class IDLabFunctionsTest {
 
     @Test
     public void dbpediaSpotlight() {
@@ -48,5 +48,15 @@ public class BuildInFunctions extends TestCore {
 
         result = IDLabFunctions.getMIMEType("test.json");
         assertEquals("application/json", result);
+    }
+
+    @Test
+    public void inRange() {
+        assertTrue(IDLabFunctions.inRange(3.0, 1.0, 5.0));
+        assertFalse(IDLabFunctions.inRange(3.0, 1.0, 3.0));
+        assertTrue(IDLabFunctions.inRange(3.0, 1.0, null));
+        assertTrue(IDLabFunctions.inRange(3.0, null, 5.0));
+        assertTrue(IDLabFunctions.inRange(3.0, null, null));
+        assertFalse(IDLabFunctions.inRange(null, null, null));
     }
 }

@@ -4,11 +4,11 @@ import be.ugent.rml.Executor;
 import be.ugent.rml.Utils;
 import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.NamedNode;
@@ -37,7 +37,8 @@ public class Main {
 
     /**
      * Main method use for the CLI. Allows to also set the current working directory via the argument basePath.
-     * @param args the CLI arguments
+     *
+     * @param args     the CLI arguments
      * @param basePath the basePath used during the execution.
      */
     public static void main(String[] args, String basePath) {
@@ -57,7 +58,8 @@ public class Main {
         Option functionfileOption = Option.builder("f")
                 .longOpt("functionfile")
                 .hasArg()
-                .desc("path to functions.ttl file (dynamic functions are found relative to functions.ttl)")
+                .numberOfArgs(Option.UNLIMITED_VALUES)
+                .desc("path to functions.ttl file (dynamic functions with relative paths are found relative to the cwd)")
                 .build();
         Option triplesmapsOption = Option.builder("t")
                 .longOpt("triplesmaps")
@@ -156,7 +158,7 @@ public class Main {
             } else {
                 // Concatenate all mapping files
                 List<InputStream> lis = Arrays.stream(mOptionValue)
-                        .map(Utils::getInputStreamFromMOptionValue)
+                        .map(Utils::getInputStreamFromFileOrContentString)
                         .collect(Collectors.toList());
                 InputStream is = new SequenceInputStream(Collections.enumeration(lis));
 
@@ -230,23 +232,31 @@ public class Main {
                     }
                 }
 
-                String fOptionValue = getPriorityOptionValue(functionfileOption, lineArgs, configFile);
+                String[] fOptionValue = getOptionValues(functionfileOption, lineArgs, configFile);
                 FunctionLoader functionLoader;
 
-                Map<String, Class> libraryMap = new HashMap<>();
-                libraryMap.put("GrelFunctions", GrelProcessor.class);
-                libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-
+                // Read function description files.
                 if (fOptionValue == null) {
-                    functionLoader = new FunctionLoader(null, null, libraryMap);
+                    functionLoader = new FunctionLoader();
                 } else {
-                    functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
+                    logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
+                    RDF4JStore functionDescriptionTriples = new RDF4JStore();
+                    functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
+                    Map<String, Class> libraryMap = new HashMap<>();
+                    libraryMap.put("IDLabFunctions", IDLabFunctions.class);
+                    List<InputStream> lisF = Arrays.stream(fOptionValue)
+                            .map(Utils::getInputStreamFromFileOrContentString)
+                            .collect(Collectors.toList());
+                    for (int i = 0; i < lisF.size(); i++) {
+                        functionDescriptionTriples.read(lisF.get(i), null, RDFFormat.TURTLE);
+                    }
+                    functionLoader = new FunctionLoader(functionDescriptionTriples, libraryMap);
                 }
 
-                // We have to get the InputStreams of the RML documents again,
-                // because we can only use an InputStream once.
+                // We have to get the. InputStreams of the RML documents again,
+                //                // because we can only use an InputStream once
                 lis = Arrays.stream(mOptionValue)
-                        .map(Utils::getInputStreamFromMOptionValue)
+                        .map(Utils::getInputStreamFromFileOrContentString)
                         .collect(Collectors.toList());
                 is = new SequenceInputStream(Collections.enumeration(lis));
 

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>be.ugent.rml</groupId>
   <artifactId>rmlmapper</artifactId>
-  <version>4.6.0</version>
+  <version>4.7.0</version>
   <scm>
     <connection>scm:git:ssh://git@github.com:RMLio/rmlmapper-java.git</connection>
     <url>https://github.com/RMLio/rmlmapper-java</url>
@@ -161,6 +161,13 @@
       <artifactId>mssql-jdbc</artifactId>
       <version>7.2.2.jre8</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>apache-jena-libs</artifactId>
+      <version>3.8.0</version>
+      <type>pom</type>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <properties>

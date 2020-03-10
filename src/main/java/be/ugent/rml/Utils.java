@@ -75,16 +75,21 @@ public class Utils {
         }
     }
 
-    public static InputStream getInputStreamFromMOptionValue(String mOptionValue) {
+    /**
+     * Get an InputStream from a string. This string is either a path (local or remote) to an RDF file, or a raw RDF text.
+     * @param s input, either RDF file path or raw RDF text
+     * @return input stream
+     */
+    public static InputStream getInputStreamFromFileOrContentString(String s) {
         InputStream out;
         try {
-            out = getInputStreamFromLocation(mOptionValue, null, "application/rdf+xml");
+            out = getInputStreamFromLocation(s, null, "application/rdf+xml");
         } catch (IOException e) {
             try {
                 // raw mapping input string
-                out = IOUtils.toInputStream(mOptionValue, "UTF-8");
+                out = IOUtils.toInputStream(s, "UTF-8");
             } catch (IOException e2) {
-                logger.error("Cannot read mapping option {}", mOptionValue);
+                logger.error("Cannot read mapping option {}", s);
                 out = new ByteArrayInputStream(new byte[0]);
             }
         }

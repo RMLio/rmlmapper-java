@@ -1,5 +1,7 @@
 package be.ugent.rml.functions;
 
+import be.ugent.rml.NAMESPACES;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import be.ugent.rml.Utils;
@@ -15,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FunctionUtils {
@@ -36,7 +39,7 @@ public class FunctionUtils {
         List<Term> parameterPredicates = new ArrayList<>();
 
         for (Term subject : parameterResources) {
-            parameterPredicates.add(Utils.getObjectsFromQuads(store.getQuads(subject, new NamedNode("http://semweb.datasciencelab.be/ns/function#predicate"), null)).get(0));
+            parameterPredicates.add(Utils.getObjectsFromQuads(getQuadsByFunctionPrefix(store, subject, "predicate", null)).get(0));
         }
 
         return parameterPredicates;
@@ -47,7 +50,7 @@ public class FunctionUtils {
 
         for (int i = 0; i < parameterResources.size(); i++) {
             Term subject = parameterResources.get(i);
-            Term type = Utils.getObjectsFromQuads(store.getQuads(subject, new NamedNode("http://semweb.datasciencelab.be/ns/function#type"), null)).get(0);
+            Term type = Utils.getObjectsFromQuads(getQuadsByFunctionPrefix(store, subject, "type", null)).get(0);
 
             try {
                 args[i] = FunctionUtils.getParamType(type);
@@ -79,9 +82,10 @@ public class FunctionUtils {
             case "http://www.w3.org/2001/XMLSchema#string":
                 return String.class;
             case "http://www.w3.org/2001/XMLSchema#integer":
-                return int.class;
+                return Integer.class;
             case "http://www.w3.org/2001/XMLSchema#decimal":
-                return double.class;
+            case "http://www.w3.org/2001/XMLSchema#double":
+                return Double.class;
             case "http://www.w3.org/1999/02/22-rdf-syntax-ns#List":
                 return List.class;
             default:
@@ -138,5 +142,44 @@ public class FunctionUtils {
         }
 
         return cls;
+    }
+
+    /**
+     * Retrieve triples of a store based on a predicate, taking into account deprecated FnO prefixed predicates
+     * @param store The triple store to retrieve the triples from
+     * @param s the subject
+     * @param functionTerm the unprefixed function term
+     * @param o the object
+     * @return the quads that are conform to the triple pattern fragment
+     */
+    static List<Quad> getQuadsByFunctionPrefix(QuadStore store, Term s, String functionTerm, Term o) {
+        List<String> prefices = Arrays.asList(NAMESPACES.FNO_S, NAMESPACES.FNO, NAMESPACES.FNO_OLD);
+        return getQuadsByPrefix(store, s, functionTerm, o, prefices);
+    }
+
+    /**
+     * Retrieve triples of a store based on a predicate, taking into account multiple prefixes
+     * @param store The triple store to retrieve the triples from
+     * @param s the subject
+     * @param pString the unprefixed predicate term
+     * @param o the object
+     * @param prefices the list of prefices on which to look for, in order of 'correctness' (all prefixes except for the first one are assumed deprecated)
+     * @return the quads that are conform to the triple pattern fragment
+     */
+    private static List<Quad> getQuadsByPrefix(QuadStore store, Term s, String pString, Term o, List<String> prefices) {
+        String preferredPrefix = prefices.get(0);
+        Term realTerm;
+        List<Quad> quads = new ArrayList<>();
+        for (int i = 0; i < prefices.size(); i++) {
+            realTerm = new NamedNode(prefices.get(i) + pString);
+            quads = store.getQuads(s, realTerm, o);
+            if (quads.size() > 0) {
+                if (i != 0) {
+                    logger.warn(prefices.get(i) + "is a deprecated prefix, please use " + preferredPrefix);
+                }
+                return quads;
+            }
+        }
+        return quads;
     }
 }

@@ -1,0 +1,1437 @@
+@prefix cc:      <http://creativecommons.org/ns#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix fno:     <https://w3id.org/function/ontology#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix grel:    <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix void:    <http://rdfs.org/ns/void#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+grel:void
+    a                 void:DatasetDescription ;
+    dcterms:title     "A VoID Description of the GREL Fno Descriptions Dataset" ;
+    dcterms:creator   <https://ben.de-meester.org/#me> ;
+    foaf:primaryTopic grel:dataset ;
+.
+
+<https://ben.de-meester.org/#me>
+    rdf:type  foaf:Person ;
+    foaf:mbox "mailto:Ben.DeMeester@UGent.be" ;
+    foaf:name "Ben De Meester"@en .
+
+grel:dataset
+    a                    void:Dataset ;
+    foaf:homepage        <https://github.com/OpenRefine/OpenRefine/wiki/General-Refine-Expression-Language> ;
+    foaf:homepage        <https://fno.io> ;
+    dcterms:title        "GREL Fno Descriptions"@en ;
+    dcterms:description  "The FnO descriptions of the GREL functions" ;
+    dcterms:contributor  <https://ben.de-meester.org/#me> ;
+    dcterms:modified     "2020-01-20"^^xsd:date ;
+    cc:license           <http://creativecommons.org/license/by/3.0/> ;
+    dcterms:issued       "2016-12-15"^^xsd:date ;
+    dcterms:rights       "Copyright © Ghent University – imec – IDLab"@en ;
+    dcterms:subject      <http://dbpedia.org/resource/Function_(mathematics)> ;
+    dcterms:subject      <http://dbpedia.org/resource/Function_model> ;
+    void:feature         <http://www.w3.org/ns/formats/Turtle> ;
+    void:exampleResource grel:boolean_and ;
+    void:vocabulary      <https://w3id.org/function/ontology#> .
+
+# Contents:
+# - Parameters (per java) param_{var} with predicate p_{type}_{var}
+# - Outputs (per java) output_{type} with predicate o_{type}
+# - Problems (per java) prob_{var}
+#   - Functions (per java)
+
+grel:prob_array
+    a                   fno:Problem ;
+    fno:name            "The array problem"^^xsd:string ;
+    dcterms:description ""^^xsd:string .
+
+grel:prob_array_join
+    a                   fno:Problem ;
+    fno:name            "The array join problem"^^xsd:string ;
+    dcterms:description "Joining an array into a string."^^xsd:string .
+
+grel:array_join
+    a                   fno:Function ;
+    fno:name            "join" ;
+    dcterms:description "join" ;
+    fno:solves          grel:prob_array_join ;
+    fno:expects         ( grel:param_a grel:param_string_sep ) ;
+    fno:returns         ( grel:stringOut ) .
+
+grel:param_a
+    a             fno:Parameter ;
+    fno:name      "a" ;
+    rdfs:label    "a" ;
+    fno:predicate grel:p_array_a ;
+    fno:type      rdf:List ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:param_string_sep
+    a             fno:Parameter ;
+    fno:name      "sep" ;
+    rdfs:label    "sep" ;
+    fno:predicate grel:p_string_sep ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:stringOut
+    a             fno:Output ;
+    fno:name      "output string" ;
+    rdfs:label    "output string" ;
+    fno:predicate grel:stringOutput ;
+    fno:type      xsd:string .
+
+grel:prob_bool
+    a                   fno:Problem ;
+    fno:name            "The bool problem"^^xsd:string ;
+    dcterms:description ""^^xsd:string .
+
+#AND
+
+grel:prob_and
+    a                   fno:Problem ;
+    fno:name            "The and problem"^^xsd:string ;
+    dcterms:description "Returning the logical AND between two (boolean) operands."^^xsd:string .
+
+grel:boolean_and
+    a                   fno:Function ;
+    fno:name            "and" ;
+    dcterms:description "and" ;
+    fno:solves          grel:prob_and ;
+    fno:expects         ( grel:bool_array_b ) ;
+    fno:returns         ( grel:output_bool ) .
+
+grel:bool_array_b
+    a             fno:Parameter ;
+    fno:name      "b" ;
+    rdfs:label    "b" ;
+    fno:predicate grel:param_rep_b ;
+    fno:type      rdf:List ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:output_bool
+    a             fno:Output ;
+    fno:name      "bool" ;
+    rdfs:label    "bool" ;
+    fno:predicate grel:o_bool ;
+    fno:type      xsd:boolean .
+
+#OR
+
+grel:prob_or
+    a                   fno:Problem ;
+    fno:name            "The or problem"^^xsd:string ;
+    dcterms:description "Returning the logical OR between two (boolean) operands."^^xsd:string .
+
+grel:boolean_or
+    a                   fno:Function ;
+    fno:name            "or" ;
+    dcterms:description "or" ;
+    fno:solves          grel:prob_or ;
+    fno:expects         ( grel:bool_array_b ) ;
+    fno:returns         ( grel:output_bool ) .
+
+#NOT
+
+grel:prob_not
+    a                   fno:Problem ;
+    fno:name            "The not problem"^^xsd:string ;
+    dcterms:description "Returning the boolean negation of the argument."^^xsd:string .
+
+grel:boolean_not
+    a                   fno:Function ;
+    fno:name            "not" ;
+    dcterms:description "not" ;
+    fno:solves          grel:prob_not ;
+    fno:expects         ( grel:param_b ) ;
+    fno:returns         ( grel:output_bool ) .
+
+grel:param_b
+    a             fno:Parameter ;
+    fno:name      "b" ;
+    rdfs:label    "b" ;
+    fno:predicate grel:bool_b ;
+    fno:type      xsd:boolean ;
+    fno:required  "true"^^xsd:boolean .
+
+#XOR
+
+grel:boolean_xor
+    a                   fno:Function ;
+    fno:name            "xor" ;
+    dcterms:description "xor" ;
+    fno:expects         ( grel:bool_array_b ) ;
+    fno:returns         ( grel:output_bool ) .
+
+#IFTHENELSE
+
+grel:prob_if
+    a                   fno:Problem ;
+    fno:name            "The if problem"^^xsd:string ;
+    dcterms:description "Doing an if-statement."^^xsd:string .
+
+grel:controls_if
+    a                   fno:Function ;
+    fno:name            "if" ;
+    dcterms:description "if" ;
+    fno:solves          grel:prob_if ;
+    fno:expects         ( grel:param_b grel:param_true grel:param_false ) ;
+    fno:returns         ( grel:output_any ) .
+
+grel:param_true
+    a             fno:Parameter ;
+    fno:name      "eTrue" ;
+    rdfs:label    "eTrue" ;
+    fno:predicate grel:any_true ;
+    fno:type      xsd:any ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:param_false
+    a             fno:Parameter ;
+    fno:name      "eFalse" ;
+    rdfs:label    "eFalse" ;
+    fno:predicate grel:any_false ;
+    fno:type      xsd:any ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:prob_string
+    a                   fno:Problem ;
+    fno:name            "The string problem"^^xsd:string ;
+    dcterms:description ""^^xsd:string .
+
+#STRING_LENGTH
+
+grel:prob_strlen
+    a                   fno:Problem ;
+    fno:name            "The strlen problem"^^xsd:string ;
+    dcterms:description "Computing the length of a given input string."^^xsd:string .
+
+grel:string_length
+    a                   fno:Function ;
+    fno:name            "length" ;
+    dcterms:description "length" ;
+    fno:solves          grel:prob_strlen ;
+    fno:expects         ( grel:valueParam ) ;
+    fno:returns         ( grel:output_number ) .
+
+grel:valueParam
+    a             fno:Parameter ;
+    fno:name      "input value" ;
+    rdfs:label    "input value" ;
+    fno:predicate grel:valueParameter ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:output_number
+    a             fno:Output ;
+    fno:name      "number" ;
+    rdfs:label    "number" ;
+    fno:predicate grel:o_number ;
+    fno:type      xsd:number .
+
+#TODO toStringValue
+
+#STARTSWITH
+
+grel:prob_strstarts
+    a                   fno:Problem ;
+    fno:name            "The strstarts problem"^^xsd:string ;
+    dcterms:description "Whether a string starts another string"^^xsd:string .
+
+grel:string_startsWith
+    a                   fno:Function ;
+    fno:name            "startsWith" ;
+    dcterms:description "startsWith" ;
+    fno:solves          grel:prob_strstarts ;
+    fno:expects         ( grel:valueParam grel:param_string_sub ) ;
+    fno:returns         ( grel:output_bool ) .
+
+grel:param_string_sub
+    a             fno:Parameter ;
+    fno:name      "sub" ;
+    rdfs:label    "sub" ;
+    fno:predicate grel:string_sub ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+#ENDSWITH
+
+grel:prob_strends
+    a                   fno:Problem ;
+    fno:name            "The strends problem"^^xsd:string ;
+    dcterms:description "Whether a string ends another string"^^xsd:string .
+
+grel:string_endsWith
+    a                   fno:Function ;
+    fno:name            "endsWith" ;
+    dcterms:description "endsWith" ;
+    fno:solves          grel:prob_strends ;
+    fno:expects         ( grel:valueParam grel:param_string_sub ) ;
+    fno:returns         ( grel:output_bool ) .
+
+#CONTAINS
+
+grel:prob_contains
+    a                   fno:Problem ;
+    fno:name            "The contains problem"^^xsd:string ;
+    dcterms:description "Whether a string contains another string"^^xsd:string .
+
+grel:string_contains
+    a                   fno:Function ;
+    fno:name            "contains" ;
+    dcterms:description "contains" ;
+    fno:solves          grel:prob_contains ;
+    fno:expects         ( grel:valueParam grel:param_string_sub ) ;
+    fno:returns         ( grel:output_bool ) .
+
+#TODO indexOf
+
+grel:string_indexOf
+    a                   fno:Function ;
+    fno:name            "indexOf" ;
+    dcterms:description "indexOf" ;
+    fno:expects         ( grel:valueParam grel:param_string_sub ) ;
+    fno:returns         ( grel:output_number ) .
+
+#grel:string_indexOf
+#    a                   fno:Function ;
+#    fno:name            "indexOf" ;
+#    dcterms:description "indexOf" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#TOLOWERCASE
+
+grel:prob_lcase
+    a                   fno:Problem ;
+    fno:name            "The lcase problem"^^xsd:string ;
+    dcterms:description "Converting a string to lower case characters."^^xsd:string .
+
+grel:toLowerCase
+    a                   fno:Function ;
+    fno:name            "to Lowercase" ;
+    rdfs:label          "to Lowercase" ;
+    dcterms:description "Returns the input with all letters in lower case." ;
+    fno:solves          grel:prob_lcase ;
+    fno:expects         ( grel:valueParam ) ;
+    fno:returns         ( grel:stringOut ) .
+
+#TOUPPERCASE
+
+grel:prob_ucase
+    a                   fno:Problem ;
+    fno:name            "The ucase problem"^^xsd:string ;
+    dcterms:description "Converting a string to upper case characters."^^xsd:string .
+
+grel:toUpperCase
+    a                   fno:Function ;
+    fno:name            "to Uppercase" ;
+    rdfs:label          "to Uppercase" ;
+    dcterms:description "Returns the input with all letters in upper case." ;
+    fno:solves          grel:prob_ucase ;
+    fno:expects         ( grel:valueParam ) ;
+    fno:returns         ( grel:stringOut ) .
+
+#TODO toTitleCase
+
+grel:string_toTitlecase
+    a                   fno:Function ;
+    fno:name            "toTitlecase" ;
+    dcterms:description "toTitlecase" ;
+    fno:expects         ( grel:valueParam ) ;
+    fno:returns         ( grel:stringOut ) .
+
+#TRIM
+
+#TODO Problem trim
+
+grel:string_trim
+    a                   fno:Function ;
+    fno:name            "trim" ;
+    dcterms:description "trim" ;
+    fno:expects         ( grel:valueParam ) ;
+    fno:returns         ( grel:stringOut ) .
+
+#TODO strip sameAs trim
+
+#grel:valueParamtrip
+#    a                   fno:Function ;
+#    fno:name            "strip" ;
+#    dcterms:description "strip" ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#TODO chomp
+
+grel:string_chomp
+    a                   fno:Function ;
+    fno:name            "chomp" ;
+    dcterms:description "chomp" ;
+    fno:expects         ( grel:valueParam grel:param_string_sep ) ;
+    fno:returns         ( grel:stringOut ) .
+
+#SUBSTRING
+
+grel:prob_substr
+    a                   fno:Problem ;
+    fno:name            "The substr problem"^^xsd:string ;
+    dcterms:description "Getting the sub-string of a given string"^^xsd:string .
+
+grel:string_substring
+    a                   fno:Function ;
+    fno:name            "substring" ;
+    dcterms:description "substring" ;
+    fno:solves          grel:prob_substr ;
+    fno:expects         ( grel:valueParam grel:p_int_i_from grel:p_int_i_opt_to ) ;
+    fno:returns         ( grel:stringOut ) .
+
+grel:p_int_i_from
+    a             fno:Parameter ;
+    fno:name      "from" ;
+    rdfs:label    "from" ;
+    fno:predicate grel:param_int_i_from ;
+    fno:type      xsd:int ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:p_int_i_opt_to
+    a             fno:Parameter ;
+    fno:name      "to" ;
+    rdfs:label    "to" ;
+    fno:predicate grel:param_int_i_opt_to ;
+    fno:type      xsd:string ;
+    fno:required  "false"^^xsd:boolean .
+
+# TODO slice sameAs substring
+
+#grel:valueParamlice
+#    a                   fno:Function ;
+#    fno:name            "slice" ;
+#    dcterms:description "slice" ;
+#    fno:expects         ( grel:valueParam grel:p_int_i_from grel:p_int_i_opt_to ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+# TODO get sameAs substring
+
+#grel:string_get
+#    a                   fno:Function ;
+#    fno:name            "get" ;
+#    dcterms:description "get" ;
+#    fno:expects         ( grel:valueParam grel:p_int_i_from grel:p_int_i_opt_to ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+# TODO lastIndexOf
+
+#grel:string_lastIndexOf
+#    a                   fno:Function ;
+#    fno:name            "lastIndexOf" ;
+#    dcterms:description "lastIndexOf" ;
+#    fno:expects         ( grel:valueParam grel:param_string_sub ) ;
+#    fno:returns         ( grel:output_number ) .
+
+# TODO replace
+
+grel:prob_replace
+    a        fno:Problem ;
+    fno:name "The replace problem"^^xsd:string ;
+    dcterms:description
+             "Replacing each non-overlapping occurrence of a regular expression pattern with a replacement string. Regular expession matching may involve modifier flags."^^xsd:string .
+
+#grel:string_replace
+#    a                   fno:Function ;
+#    fno:name            "replace" ;
+#    dcterms:description "replace" ;
+#    fno:solves          grel:prob_replace ;
+#    fno:expects         ( grel:valueParam grel:param_find grel:param_replace ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+grel:param_find
+    a             fno:Parameter ;
+    fno:name      "f" ;
+    rdfs:label    "f" ;
+    fno:predicate grel:p_string_find ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:param_replace
+    a             fno:Parameter ;
+    fno:name      "r" ;
+    rdfs:label    "r" ;
+    fno:predicate grel:p_string_replace ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+#TODO replaceChars
+
+#grel:string_replaceChars
+#    a                   fno:Function ;
+#    fno:name            "replaceChars" ;
+#    dcterms:description "replaceChars" ;
+#    fno:expects         ( grel:valueParam grel:param_find grel:param_replace ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#TODO match
+
+grel:prob_regex
+    a        fno:Problem ;
+    fno:name "The regex problem"^^xsd:string ;
+    dcterms:description
+             "Returning true if a string (?arg1) matches the regular expression supplied as a pattern (?arg2) as influenced by the value of flags (?arg3), otherwise returns false."^^xsd:string .
+
+#grel:string_match
+#    a                   fno:Function ;
+#    fno:name            "match" ;
+#    dcterms:description "match" ;
+#    fno:expects         ( grel:valueParam grel:param_regex ) ;
+#    fno:returns         ( grel:output_array ) .
+
+grel:output_array
+    a             fno:Output ;
+    fno:name      "array" ;
+    rdfs:label    "array" ;
+    fno:predicate grel:o_array ;
+    fno:type      rdf:List .
+
+grel:param_regex
+    a             fno:Parameter ;
+    fno:name      "p" ;
+    rdfs:label    "p" ;
+    fno:predicate grel:p_string_regex ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+#TODO find
+
+#grel:string_find
+#    a                   fno:Function ;
+#    fno:name            "find" ;
+#    dcterms:description "find" ;
+#    fno:expects         ( grel:valueParam grel:param_regex ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#TODO toNumber
+
+#grel:string_toNumber
+#    a                   fno:Function ;
+#    fno:name            "toNumber" ;
+#    dcterms:description "toNumber" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:output_number ) .
+
+grel:param_any_e
+    a             fno:Parameter ;
+    fno:name      "e" ;
+    rdfs:label    "e" ;
+    fno:predicate grel:p_any_e ;
+    fno:type      xsd:any ;
+    fno:required  "true"^^xsd:boolean .
+
+#SPLIT
+
+grel:string_split
+    a                   fno:Function ;
+    fno:name            "split" ;
+    dcterms:description "split" ;
+    fno:expects         ( grel:valueParam grel:param_string_sep ) ;
+    fno:returns         ( grel:output_array ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#splitbylengthsstring-s-number-n1-number-n2-
+
+#grel:string_splitByLengths
+#    a                   fno:Function ;
+#    fno:name            "splitByLengths" ;
+#    dcterms:description "splitByLengths" ;
+#    fno:expects         ( grel:valueParam grel:param_int_i grel:param_int_i2 grel:param_int_rep_i ) ;
+#    fno:returns         ( grel:output_array ) .
+
+grel:param_int_i
+    a             fno:Parameter ;
+    fno:name      "d1" ;
+    rdfs:label    "d1" ;
+    fno:predicate grel:p_int_i ;
+    fno:type      xsd:int ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:param_int_i2
+    a             fno:Parameter ;
+    fno:name      "d2" ;
+    rdfs:label    "d2" ;
+    fno:predicate grel:p_int_i2 ;
+    fno:type      xsd:int ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:param_int_rep_i
+    a             fno:Parameter ;
+    fno:name      "n3" ;
+    rdfs:label    "n3" ;
+    fno:predicate grel:p_rep_i ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#smartsplitstring-s-optional-string-sep
+
+#grel:valueParammartSplit
+#    a                   fno:Function ;
+#    fno:name            "smartSplit" ;
+#    dcterms:description "smartSplit" ;
+#    fno:expects         ( grel:valueParam grel:param_opt_sep ) ;
+#    fno:returns         ( grel:output_array ) .
+
+grel:param_opt_sep
+    a             fno:Parameter ;
+    fno:name      "sep" ;
+    rdfs:label    "sep" ;
+    fno:predicate grel:p_opt_sep ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#splitbychartypes
+
+#grel:valueParamplitByCharType
+#    a                   fno:Function ;
+#    fno:name            "splitByCharType" ;
+#    dcterms:description "splitByCharType" ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#partitionstring-s-string-or-regex-frag-optional-boolean-omitfragment
+
+#grel:string_partition
+#    a                   fno:Function ;
+#    fno:name            "partition" ;
+#    dcterms:description "partition" ;
+#    fno:expects         ( grel:valueParam grel:param_fragment grel:param_bool_opt_b ) ;
+#    fno:returns         ( grel:output_array ) .
+
+grel:param_fragment
+    a             fno:Parameter ;
+    fno:name      "frag" ;
+    rdfs:label    "frag" ;
+    fno:predicate grel:p_fragment ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:param_bool_opt_b
+    a             fno:Parameter ;
+    fno:name      "b?" ;
+    rdfs:label    "b?" ;
+    fno:predicate grel:p_bool_opt_b ;
+    fno:type      xsd:boolean ;
+    fno:required  "false"^^xsd:boolean .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#rpartitionstring-s-string-or-regex-frag-optional-boolean-omitfragment
+
+#grel:string_rpartition
+#    a                   fno:Function ;
+#    fno:name            "rpartition" ;
+#    dcterms:description "rpartition" ;
+#    fno:expects         ( grel:valueParam grel:param_fragment grel:param_bool_opt_b ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#diffo1-o2-optional-string-timeunit
+
+#grel:string_diff
+#    a                   fno:Function ;
+#    fno:name            "diff" ;
+#    dcterms:description "diff" ;
+#    fno:expects         ( grel:valueParam grel:valueParam2 ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+grel:valueParam2
+    a             fno:Parameter ;
+    fno:name      "input value 2" ;
+    rdfs:label    "input value 2" ;
+    fno:predicate grel:valueParameter2 ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+#ESCAPE
+
+grel:prob_encode_for_uri
+    a                   fno:Problem ;
+    fno:name            "The encode_for_uri problem"^^xsd:string ;
+    dcterms:description "encoding for a URI"^^xsd:string .
+
+grel:escape
+    a                   fno:Function ;
+    fno:name            "escape" ;
+    rdfs:label          "escape" ;
+    dcterms:description "Escapes a string, with a mode parameter." ;
+    fno:solves          grel:prob_encode_for_uri ;
+    fno:expects         ( grel:valueParam grel:modeParam ) ;
+    fno:returns         ( grel:stringOut ) .
+
+grel:modeParam
+    a             fno:Parameter ;
+    fno:name      "mode value" ;
+    rdfs:label    "mode value" ;
+    fno:type      xsd:string ;
+    fno:predicate grel:modeParameter ;
+    fno:required  "true"^^xsd:boolean .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#unescapestring-s-string-mode
+
+#grel:string_unescape
+#    a                   fno:Function ;
+#    fno:name            "unescape" ;
+#    dcterms:description "unescape" ;
+#    fno:expects         ( grel:valueParam grel:modeParam ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#md5string-s
+
+grel:prob_crypto
+    a                   fno:Problem ;
+    fno:name            "The crypto problem"^^xsd:string ;
+    dcterms:description ""^^xsd:string .
+
+grel:prob_md5
+    a                   fno:Problem ;
+    fno:name            "The md5 problem"^^xsd:string ;
+    dcterms:description "Calculating the md5 checksum."^^xsd:string .
+
+#grel:string_md5
+#    a                   fno:Function ;
+#    fno:name            "md5" ;
+#    dcterms:description "md5" ;
+#    fno:solves          grel:prob_md5 ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#sha1string-s
+
+grel:prob_sha1
+    a                   fno:Problem ;
+    fno:name            "The sha1 problem"^^xsd:string ;
+    dcterms:description "Calculating the SHA1 checksum."^^xsd:string .
+
+#grel:string_sha1
+#    a                   fno:Function ;
+#    fno:name            "sha1" ;
+#    dcterms:description "sha1" ;
+#    fno:solves          grel:prob_sha1 ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#phoneticstring-s-string-encoding
+
+#grel:string_phonetic
+#    a                   fno:Function ;
+#    fno:name            "phonetic" ;
+#    dcterms:description "phonetic" ;
+#    fno:expects         ( grel:valueParam grel:valueParamtring_encoding ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+grel:valueParamtring_encoding
+    a             fno:Parameter ;
+    fno:name      "encoding" ;
+    rdfs:label    "encoding" ;
+    fno:predicate grel:p_encoding ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#reinterpretstring-s-string-encoder
+
+#grel:string_reinterpret
+#    a                   fno:Function ;
+#    fno:name            "reinterpret" ;
+#    dcterms:description "reinterpret" ;
+#    fno:expects         ( grel:valueParam grel:valueParamtring_encoder ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+grel:valueParamtring_encoder
+    a             fno:Parameter ;
+    fno:name      "encoder" ;
+    rdfs:label    "encoder" ;
+    fno:predicate grel:p_encoder ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#fingerprintstring-s
+
+#grel:string_fingerprint
+#    a                   fno:Function ;
+#    fno:name            "fingerprint" ;
+#    dcterms:description "fingerprint" ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#ngramstring-s-number-n
+
+#grel:string_ngram
+#    a                   fno:Function ;
+#    fno:name            "ngram" ;
+#    dcterms:description "ngram" ;
+#    fno:expects         ( grel:valueParam grel:param_int_i ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#ngramfingerprintstring-s-number-n
+
+#grel:string_ngramFingerprint
+#    a                   fno:Function ;
+#    fno:name            "ngramFingerprint" ;
+#    dcterms:description "ngramFingerprint" ;
+#    fno:expects         ( grel:valueParam grel:param_int_i ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#unicodestring-s
+
+#grel:string_unicode
+#    a                   fno:Function ;
+#    fno:name            "unicode" ;
+#    dcterms:description "unicode" ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#unicodetypestring-s
+
+#grel:string_unicodeType
+#    a                   fno:Function ;
+#    fno:name            "unicodeType" ;
+#    dcterms:description "unicodeType" ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#mqlkeyquotestring-s
+
+#grel:string_mqlKeyQuote
+#    a                   fno:Function ;
+#    fno:name            "mqlKeyQuote" ;
+#    dcterms:description "mqlKeyQuote" ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#mqlkeyunquotestring-key
+
+grel:string_mqlKeyUnquote
+    a                   fno:Function ;
+    fno:name            "mqlKeyUnquote" ;
+    dcterms:description "mqlKeyUnquote" ;
+    fno:expects         ( grel:valueParamtring_key ) ;
+    fno:returns         ( grel:stringOut ) .
+
+grel:valueParamtring_key
+    a             fno:Parameter ;
+    fno:name      "key" ;
+    rdfs:label    "key" ;
+    fno:predicate grel:p_key ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+grel:prob_date
+    a                   fno:Problem ;
+    fno:name            "The date problem"^^xsd:string ;
+    dcterms:description ""^^xsd:string .
+
+grel:prob_timezone
+    a                   fno:Problem ;
+    fno:name            "The timezone problem"^^xsd:string ;
+    dcterms:description "Getting the timezone of a string."^^xsd:string .
+
+grel:prob_day
+    a                   fno:Problem ;
+    fno:name            "The day problem"^^xsd:string ;
+    dcterms:description "Extracting the day from a date/time literal."^^xsd:string .
+
+grel:prob_month
+    a                   fno:Problem ;
+    fno:name            "The month problem"^^xsd:string ;
+    dcterms:description "Extracting the month from a date/time literal."^^xsd:string .
+
+grel:prob_hours
+    a                   fno:Problem ;
+    fno:name            "The hours problem"^^xsd:string ;
+    dcterms:description "Extracting the hours from a date/time literal."^^xsd:string .
+
+grel:prob_seconds
+    a                   fno:Problem ;
+    fno:name            "The seconds problem"^^xsd:string ;
+    dcterms:description "Extracting the seconds from a date/time literal."^^xsd:string .
+
+grel:prob_minutes
+    a                   fno:Problem ;
+    fno:name            "The minutes problem"^^xsd:string ;
+    dcterms:description "Extracting the minutes from a date/time literal."^^xsd:string .
+
+grel:prob_year
+    a                   fno:Problem ;
+    fno:name            "The year problem"^^xsd:string ;
+    dcterms:description "Extracting the year from a date/time literal."^^xsd:string .
+
+#grel:date_datePart
+#    a                   fno:Function ;
+#    fno:name            "datePart" ;
+#    dcterms:description "datePart" ;
+#    fno:expects         ( grel:date_d grel:string_unit ) ;
+#    fno:returns         ( grel:output_any ) .
+
+#grel:date_d
+#    a             fno:Parameter ;
+#    fno:name      "d" ;
+#    rdfs:label    "d" ;
+#    fno:predicate grel:param_d ;
+#    fno:type      xsd:date ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:string_unit
+#    a             fno:Parameter ;
+#    fno:name      "unit" ;
+#    rdfs:label    "unit" ;
+#    fno:predicate grel:param_unit ;
+#    fno:type      xsd:string ;
+#    fno:required  "true"^^xsd:boolean .
+
+grel:prob_now
+    a                   fno:Problem ;
+    fno:name            "The now problem"^^xsd:string ;
+    dcterms:description "Getting the current date and time."^^xsd:string .
+
+#grel:date_now
+#    a                   fno:Function ;
+#    fno:name            "now" ;
+#    dcterms:description "now" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:output_datetime ) .
+
+#TODO output_datetime
+
+grel:prob_mathematical
+    a                   fno:Problem ;
+    fno:name            "The mathematical problem"^^xsd:string ;
+    dcterms:description ""^^xsd:string .
+
+grel:prob_floor
+    a        fno:Problem ;
+    fno:name "The floor problem"^^xsd:string ;
+    dcterms:description
+             "Returning the largest (closest to positive infinity) number with no fractional part that is not greater than the given value."^^xsd:string .
+
+#grel:math_floor
+#    a                   fno:Function ;
+#    fno:name            "floor" ;
+#    dcterms:description "floor" ;
+#    fno:solves          grel:prob_floor ;
+#    fno:expects         ( grel:dec_n ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:dec_n
+#    a             fno:Parameter ;
+#    fno:name      "d" ;
+#    rdfs:label    "d" ;
+#    fno:predicate grel:param_n ;
+#    fno:type      xsd:decimal ;
+#    fno:required  "true"^^xsd:boolean .
+
+#<https://www.w3.org/TR/sparql11-query/#func-floor>
+#    skos:broader grel:math_floor .
+
+grel:prob_max
+    a                   fno:Problem ;
+    fno:name            "The max problem"^^xsd:string ;
+    dcterms:description "Returning the largest value of the input."^^xsd:string .
+
+#grel:math_max
+#    a                   fno:Function ;
+#    fno:name            "max" ;
+#    dcterms:description "max" ;
+#    fno:solves          grel:prob_max ;
+#    fno:expects         ( grel:dec_n grel:dec_n2 ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:dec_n2
+#    a             fno:Parameter ;
+#    fno:name      "d2" ;
+#    rdfs:label    "d2" ;
+#    fno:predicate grel:param_n2 ;
+#    fno:type      xsd:decimal ;
+#    fno:required  "true"^^xsd:boolean .
+
+grel:prob_min
+    a                   fno:Problem ;
+    fno:name            "The min problem"^^xsd:string ;
+    dcterms:description "Returning the smallest value of the input."^^xsd:string .
+
+#grel:math_min
+#    a                   fno:Function ;
+#    fno:name            "min" ;
+#    dcterms:description "min" ;
+#    fno:solves         grel:prob_min ;
+#    fno:expects         ( grel:dec_n grel:dec_n2 ) ;
+#    fno:returns         ( grel:output_number ) .
+
+grel:prob_round
+    a        fno:Problem ;
+    fno:name "The round problem"^^xsd:string ;
+    dcterms:description
+             "Returning the number with no fractional part that is closest to the argument. If there are two such numbers, then the one that is closest to positive infinity is returned."^^xsd:string .
+
+#grel:math_round
+#    a                   fno:Function ;
+#    fno:name            "round" ;
+#    dcterms:description "round" ;
+#    fno:solves          grel:prob_round ;
+#    fno:expects         ( grel:dec_n ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#<https://www.w3.org/TR/sparql11-query/#func-round>
+#    skos:broader grel:math_round .
+
+grel:prob_ceil
+    a        fno:Problem ;
+    fno:name "The ceil problem"^^xsd:string ;
+    dcterms:description
+             "Returning the smallest (closest to negative infinity) number with no fractional part that is not less than the value of arg."^^xsd:string .
+
+#grel:math_ceil
+#    a                   fno:Function ;
+#    fno:name            "ceil" ;
+#    dcterms:description "ceil" ;
+#    fno:solves          grel:prob_ceil ;
+#    fno:expects         ( grel:dec_n ) ;
+#    fno:returns         ( grel:output_number ) .
+
+grel:prob_coalesce
+    a                   fno:Problem ;
+    fno:name            "The coalesce problem"^^xsd:string ;
+    dcterms:description "Returning the first bound argument."^^xsd:string .
+
+#grel:other_coalesce
+#    a                   fno:Function ;
+#    fno:name            "coalesce" ;
+#    dcterms:description "coalesce" ;
+#    fno:solves          grel:prob_coalesce ;
+#    fno:expects         ( grel:any_rep_e ) ;
+#    fno:returns         ( grel:output_any ) .
+
+# HERE
+
+#grel:param_b2
+#    a             fno:Parameter ;
+#    fno:name      "b2" ;
+#    rdfs:label    "b2" ;
+#    fno:predicate grel:bool_b2 ;
+#    fno:type      xsd:boolean ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:bool_rep_b
+#    a             fno:Parameter ;
+#    fno:name      "b3" ;
+#    rdfs:label    "b3" ;
+#    fno:predicate grel:param_rep_b ;
+#    fno:type      xsd:string ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:date_d2
+#    a             fno:Parameter ;
+#    fno:name      "d2" ;
+#    rdfs:label    "d2" ;
+#    fno:predicate grel:param_d2 ;
+#    fno:type      xsd:date ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:dec_n_exp
+#    a             fno:Parameter ;
+#    fno:name      "e" ;
+#    rdfs:label    "e" ;
+#    fno:predicate grel:p_any_exp ;
+#    fno:type      xsd:decimal ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:string_field
+#    a             fno:Parameter ;
+#    fno:name      "field" ;
+#    rdfs:label    "field" ;
+#    fno:predicate grel:param_field ;
+#    fno:type      xsd:string ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:string_format
+#    a             fno:Parameter ;
+#    fno:name      "format" ;
+#    rdfs:label    "format" ;
+#    fno:predicate grel:param_format ;
+#    fno:type      xsd:string ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:string_rep_format
+#    a             fno:Parameter ;
+#    fno:name      "format1" ;
+#    rdfs:label    "format1" ;
+#    fno:predicate grel:param_rep_format ;
+#    fno:type      xsd:string ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:uri_index
+#    a             fno:Parameter ;
+#    fno:name      "i" ;
+#    rdfs:label    "i" ;
+#    fno:predicate grel:p_int_index ;
+#    fno:type      xsd:string ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:any_rep_e
+#    a             fno:Parameter ;
+#    fno:name      "o1" ;
+#    rdfs:label    "o1" ;
+#    fno:predicate grel:param_rep_e ;
+#    fno:type      xsd:any ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:bool_opt_omit
+#    a             fno:Parameter ;
+#    fno:name      "omitFragment" ;
+#    rdfs:label    "omitFragment" ;
+#    fno:predicate grel:param_omit ;
+#    fno:type      xsd:string ;
+#    fno:required  "false"^^xsd:boolean .
+
+#grel:param_int_i_step
+#    a             fno:Parameter ;
+#    fno:name      "step" ;
+#    rdfs:label    "step" ;
+#    fno:predicate grel:string_step ;
+#    fno:type      xsd:int ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:string_time_unit
+#    a             fno:Parameter ;
+#    fno:name      "timeUnit" ;
+#    rdfs:label    "timeUnit" ;
+#    fno:predicate grel:param_time_unit ;
+#    fno:type      xsd:string ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:param_int_i_to
+#    a             fno:Parameter ;
+#    fno:name      "to" ;
+#    rdfs:label    "to" ;
+#    fno:predicate grel:param_to ;
+#    fno:type      xsd:int ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:uri_value
+#    a             fno:Parameter ;
+#    fno:name      "v" ;
+#    rdfs:label    "v" ;
+#    fno:predicate grel:param_value ;
+#    fno:type      xsd:string ;
+#    fno:required  "true"^^xsd:boolean .
+
+#grel:controls_forEachIndex
+#    a                   fno:Function ;
+#    fno:name            "forEachIndex" ;
+#    dcterms:description "forEachIndex" ;
+#    fno:expects         ( grel:param_a grel:uri_index grel:uri_value grel:param_any_e ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#grel:controls_forNonBlank
+#    a                   fno:Function ;
+#    fno:name            "forNonBlank" ;
+#    dcterms:description "forNonBlank" ;
+#    fno:expects         ( grel:param_any_e grel:uri_value grel:param_false grel:param_true ) ;
+#    fno:returns         ( grel:output_any ) .
+
+#grel:date_toDate
+#    a                   fno:Function ;
+#    fno:name            "toDate" ;
+#    dcterms:description "toDate" ;
+#    fno:expects         ( grel:param_any_e grel:string_rep_format ) ;
+#    fno:returns         ( grel:output_date ) .
+
+#grel:array_sum
+#    a                   fno:Function ;
+#    fno:name            "sum" ;
+#    dcterms:description "sum" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:controls_forRange
+#    a                   fno:Function ;
+#    fno:name            "forRange" ;
+#    dcterms:description "forRange" ;
+#    fno:expects         ( grel:p_int_i_from grel:inti_i_to grel:param_int_i_step grel:uri_value grel:param_any_e ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#grel:other_facetCount
+#    a                   fno:Function ;
+#    fno:name            "facetCount" ;
+#    dcterms:description "facetCount" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:other_cross
+#    a                   fno:Function ;
+#    fno:name            "cross" ;
+#    dcterms:description "cross" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#grel:controls_filter
+#    a                   fno:Function ;
+#    fno:name            "filter" ;
+#    dcterms:description "filter" ;
+#    fno:expects         ( grel:param_a grel:uri_value grel:param_any_e ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#grel:controls_forEach
+#    a                   fno:Function ;
+#    fno:name            "forEach" ;
+#    dcterms:description "forEach" ;
+#    fno:expects         ( grel:param_a grel:uri_value grel:param_any_e ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#grel:controls_with
+#    a                   fno:Function ;
+#    fno:name            "with" ;
+#    dcterms:description "with" ;
+#    fno:expects         ( grel:param_any_e grel:uri_value grel:param_any_e ) ;
+#    fno:returns         ( grel:output_any ) .
+
+#grel:date_diff
+#    a                   fno:Function ;
+#    fno:name            "diff" ;
+#    dcterms:description "diff" ;
+#    fno:expects         ( grel:date_d grel:date_d2 grel:string_time_unit ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:array_get
+#    a                   fno:Function ;
+#    fno:name            "get" ;
+#    dcterms:description "get" ;
+#    fno:expects         ( grel:param_a grel:p_int_i_from grel:p_int_i_opt_to ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#grel:array_slice
+#    a                   fno:Function ;
+#    fno:name            "slice" ;
+#    dcterms:description "slice" ;
+#    fno:expects         ( grel:param_a grel:p_int_i_from grel:p_int_i_opt_to ) ;
+#    fno:returns         ( grel:output_number ) .
+
+
+#grel:date_inc
+#    a                   fno:Function ;
+#    fno:name            "inc" ;
+#    dcterms:description "inc" ;
+#    fno:expects         ( grel:date_d grel:dec_n grel:string_unit ) ;
+#    fno:returns         ( grel:output_date ) .
+
+#grel:date_toDate
+#    a                   fno:Function ;
+#    fno:name            "toDate" ;
+#    dcterms:description "toDate" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:output_date ) .
+
+#grel:math_mod
+#    a                   fno:Function ;
+#    fno:name            "mod" ;
+#    dcterms:description "mod" ;
+#    fno:expects         ( grel:param_int_i grel:param_int_i2 ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:math_pow
+#    a                   fno:Function ;
+#    fno:name            "pow" ;
+#    dcterms:description "pow" ;
+#    fno:expects         ( grel:dec_n grel:dec_n_exp ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:other_get
+#    a                   fno:Function ;
+#    fno:name            "get" ;
+#    dcterms:description "get" ;
+#    fno:expects         ( grel:param_any_e grel:string_field ) ;
+#    fno:returns         ( grel:output_any ) .
+
+#grel:date_toString
+#    a                   fno:Function ;
+#    fno:name            "toString" ;
+#    dcterms:description "toString" ;
+#    fno:expects         ( grel:date_d grel:string_format ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#grel:other_hasField
+#    a                   fno:Function ;
+#    fno:name            "hasField" ;
+#    dcterms:description "hasField" ;
+#    fno:expects         ( grel:param_any_e grel:string_field ) ;
+#    fno:returns         ( grel:output_bool ) .
+
+#grel:other_htmlAttr
+#    a                   fno:Function ;
+#    fno:name            "htmlAttr" ;
+#    dcterms:description "htmlAttr" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:output_any ) .
+
+#grel:other_select
+#    a                   fno:Function ;
+#    fno:name            "select" ;
+#    dcterms:description "select" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:output_element ) .
+
+#grel:array_length
+#    a                   fno:Function ;
+#    fno:name            "length" ;
+#    dcterms:description "length" ;
+#    fno:expects         ( grel:param_a ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:array_reverse
+#    a                   fno:Function ;
+#    fno:name            "reverse" ;
+#    dcterms:description "reverse" ;
+#    fno:expects         ( grel:param_a ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#grel:math_sum
+#    a                   fno:Function ;
+#    fno:name            "sum" ;
+#    dcterms:description "sum" ;
+#    fno:expects         ( grel:param_a ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:array_uniques
+#    a                   fno:Function ;
+#    fno:name            "uniques" ;
+#    dcterms:description "uniques" ;
+#    fno:expects         ( grel:param_a ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#grel:array_sort
+#    a                   fno:Function ;
+#    fno:name            "sort" ;
+#    dcterms:description "sort" ;
+#    fno:expects         ( grel:param_a ) ;
+#    fno:returns         ( grel:output_array ) .
+
+#grel:math_exp
+#    a                   fno:Function ;
+#    fno:name            "exp" ;
+#    dcterms:description "exp" ;
+#    fno:expects         ( grel:dec_n ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:math_ln
+#    a                   fno:Function ;
+#    fno:name            "ln" ;
+#    dcterms:description "ln" ;
+#    fno:expects         ( grel:dec_n ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:math_log
+#    a                   fno:Function ;
+#    fno:name            "log" ;
+#    dcterms:description "log" ;
+#    fno:expects         ( grel:dec_n ) ;
+#    fno:returns         ( grel:output_number ) .
+
+#grel:controls_isBlank
+#    a                   fno:Function ;
+#    fno:name            "isBlank" ;
+#    dcterms:description "isBlank" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:output_bool ) .
+
+#grel:controls_isError
+#    a                   fno:Function ;
+#    fno:name            "isError" ;
+#    dcterms:description "isError" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:output_bool ) .
+
+#grel:controls_isNonBlank
+#    a                   fno:Function ;
+#    fno:name            "isNonBlank" ;
+#    dcterms:description "isNonBlank" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:output_bool ) .
+
+#grel:controls_isNotNull
+#    a                   fno:Function ;
+#    fno:name            "isNotNull" ;
+#    dcterms:description "isNotNull" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:output_bool ) .
+
+#grel:controls_isNull
+#    a                   fno:Function ;
+#    fno:name            "isNull" ;
+#    dcterms:description "isNull" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:output_bool ) .
+
+#grel:controls_isNumeric
+#    a                   fno:Function ;
+#    fno:name            "isNumeric" ;
+#    dcterms:description "isNumeric" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:output_bool ) .
+
+#grel:other_htmlText
+#    a                   fno:Function ;
+#    fno:name            "htmlText" ;
+#    dcterms:description "htmlText" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#grel:other_innerHtml
+#    a                   fno:Function ;
+#    fno:name            "innerHtml" ;
+#    dcterms:description "innerHtml" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#grel:other_outerHtml
+#    a                   fno:Function ;
+#    fno:name            "outerHtml" ;
+#    dcterms:description "outerHtml" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#grel:other_ownText
+#    a                   fno:Function ;
+#    fno:name            "ownText" ;
+#    dcterms:description "ownText" ;
+#    fno:expects         ( ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#grel:other_type
+#    a                   fno:Function ;
+#    fno:name            "type" ;
+#    dcterms:description "type" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#grel:other_parseHtml
+#    a                   fno:Function ;
+#    fno:name            "parseHtml" ;
+#    dcterms:description "parseHtml" ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:output_element ) .
+
+#grel:other_parseJson
+#    a                   fno:Function ;
+#    fno:name            "parseJson" ;
+#    dcterms:description "parseJson" ;
+#    fno:expects         ( grel:valueParam ) ;
+#    fno:returns         ( grel:output_any ) .
+
+#grel:other_jsonize
+#    a                   fno:Function ;
+#    fno:name            "jsonize" ;
+#    dcterms:description "jsonize" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:stringOut ) .
+
+#grel:string_toString
+#    a                   fno:Function ;
+#    fno:name            "toString" ;
+#    dcterms:description "toString" ;
+#    fno:expects         ( grel:param_any_e ) ;
+#    fno:returns         ( grel:stringOut ) .
+

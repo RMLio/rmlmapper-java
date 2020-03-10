@@ -3,7 +3,7 @@ package be.ugent.rml.readme;
 import be.ugent.rml.Executor;
 import be.ugent.rml.Utils;
 import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.lib.GrelProcessor;
+import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
@@ -38,10 +38,10 @@ public class ReadmeFunctionTest {
 
             // Set up the functions used during the mapping
             Map<String, Class> libraryMap = new HashMap<>();
-            libraryMap.put("GrelFunctions", GrelProcessor.class);
+            libraryMap.put("IDLabFunctions", IDLabFunctions.class);
 
             File functionsFile = Utils.getFile(functionPath);
-            FunctionLoader functionLoader = new FunctionLoader(functionsFile, null, libraryMap);
+            FunctionLoader functionLoader = new FunctionLoader(QuadStoreFactory.read(functionsFile), libraryMap);
 
             // Set up the outputstore (needed when you want to output something else than nquads
             QuadStore outputStore = new RDF4JStore();

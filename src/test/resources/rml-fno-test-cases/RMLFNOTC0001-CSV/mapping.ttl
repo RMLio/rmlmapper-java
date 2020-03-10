@@ -9,6 +9,7 @@
 @prefix fnml:   <http://semweb.mmlab.be/ns/fnml#> .
 @prefix fno: 	<https://w3id.org/function/ontology#> .
 @prefix grel: 	<http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
 
 @base <http://example.com/base/> .
 
