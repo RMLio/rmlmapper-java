@@ -134,14 +134,6 @@
             <artifactId>commons-validator</artifactId>
             <version>1.6</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.oracle.jdbc/ojdbc14 -->
-        <!-- Installed locally https://stackoverflow.com/questions/1074869/find-oracle-jdbc-driver-in-maven-repository -->
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc8</artifactId>
-            <version>12.2.0.1</version>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>com.github.fnoio</groupId>
             <artifactId>grel-functions-java</artifactId>

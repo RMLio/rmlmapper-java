@@ -3,7 +3,10 @@ package be.ugent.rml.access;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +25,7 @@ public class RDBAccess implements Access {
     private String query;
     private String contentType;
     private Map<String, String> datatypes = new HashMap<>();
+    private String oracleJarPath;
 
     /**
      * This constructor takes as arguments the dsn, database, username, password, query, and content type.

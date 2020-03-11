@@ -8,7 +8,6 @@ import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.NamedNode;
