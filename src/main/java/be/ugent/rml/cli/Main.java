@@ -303,14 +303,7 @@ public class Main {
                     }
                     result.copyNameSpaces(rmlStore);
                     writeOutput(result, outputFile, outputFormat);
-                } catch (ClassNotFoundException e) {
-                    if (e.getMessage().equals(DatabaseType.ORACLE.getDriver())) {
-                        logger.error("The Oracle JDBC driver was not found. Did you add it to the classpath?");
-                    } else {
-                        logger.error(e.getMessage());
-                    }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
             }

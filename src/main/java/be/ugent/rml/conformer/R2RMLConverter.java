@@ -1,6 +1,7 @@
 package be.ugent.rml.conformer;
 
 import be.ugent.rml.NAMESPACES;
+import be.ugent.rml.access.DatabaseType;
 import be.ugent.rml.store.QuadStore;
 
 import be.ugent.rml.term.Literal;
@@ -74,6 +75,13 @@ public class R2RMLConverter implements Converter {
             for (Map.Entry<String, String> entry : mappingOptions.entrySet()) {
                 String removePrefix = entry.getKey();
                 store.addQuad(database, new NamedNode(D2RQ + removePrefix), new Literal(entry.getValue()));
+
+                if (removePrefix.equals("jdbcDSN")) {
+                    DatabaseType type = DatabaseType.getDBtype(entry.getValue());
+                    String driver = type.getDriver();
+
+                    store.addQuad(database, new NamedNode(D2RQ + "jdbcDriver"), new Literal(driver));
+                }
             }
         }
 //        }
