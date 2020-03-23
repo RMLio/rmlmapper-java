@@ -17,11 +17,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 
-public abstract class MySQLTestCore extends TestCore {
+public abstract class MySQLTestCore extends DBTestCore {
 
     protected static String CONNECTIONSTRING = "jdbc:mysql://localhost:%d/test";
-
-    protected static HashSet<String> tempFiles = new HashSet<>();
 
     protected static DB mysqlDB;
 
@@ -69,38 +67,4 @@ public abstract class MySQLTestCore extends TestCore {
             }
         }
     }
-
-    // Utils -----------------------------------------------------------------------------------------------------------
-
-    protected static String replaceDSNInMappingFile(String path, String connectionString) {
-        try {
-            // Read mapping file
-            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
-
-            // Replace "PORT" in mapping file by new port
-            mapping = mapping.replace("CONNECTIONDSN", connectionString);
-
-            // Write to temp mapping file
-
-            String fileName = Integer.toString(Math.abs(path.hashCode())) + "tempMapping.ttl";
-            Path file = Paths.get(fileName);
-            Files.write(file, Arrays.asList(mapping.split("\n")));
-
-            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
-            tempFiles.add(absolutePath);
-
-            return absolutePath;
-
-        } catch (IOException ex) {
-            throw new Error(ex.getMessage());
-        }
-    }
-
-    protected static void deleteTempMappingFile(String absolutePath) {
-        File file = new File(absolutePath);
-        if (file.delete()) {
-            tempFiles.remove(absolutePath);
-        }
-    }
-
 }
