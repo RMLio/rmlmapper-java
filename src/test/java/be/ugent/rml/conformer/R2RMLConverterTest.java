@@ -86,7 +86,7 @@ public class R2RMLConverterTest {
         String input = folder + "mapping.r2rml.ttl";
         String output = folder + "mapping.rml.ttl";
         Map<String, String> options = new HashMap<>();
-        options.put("jdbcDSN", "CONNECTIONDSN");
+        options.put("jdbcDSN", "jdbc:mysql://localhost:1234/test");
         options.put("password", "YourSTRONG!Passw0rd;");
         options.put("username", "sa");
 
@@ -104,7 +104,7 @@ public class R2RMLConverterTest {
         String output = folder + "mapping.rml.ttl";
 
         Map<String, String> options = new HashMap<>();
-        options.put("jdbcDSN", "CONNECTIONDSN");
+        options.put("jdbcDSN", "jdbc:mysql://localhost:1234/test");
         options.put("password", "YourSTRONG!Passw0rd;");
         options.put("username", "sa");
 

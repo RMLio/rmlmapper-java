@@ -32,6 +32,7 @@
 
 :TriplesMap1_database
   a d2rq:Database ;
-  d2rq:jdbcDSN "CONNECTIONDSN" ;
+  d2rq:jdbcDSN "jdbc:mysql://localhost:1234/test" ;
+  d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver" ;
   d2rq:password "YourSTRONG!Passw0rd;" ;
   d2rq:username "sa" .
