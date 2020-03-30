@@ -1,5 +1,9 @@
 package be.ugent.rml;
 
+import ch.vorburger.exec.ManagedProcessException;
+import ch.vorburger.mariadb4j.DB;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -10,6 +14,21 @@ import java.util.Arrays;
 
 @RunWith(Parameterized.class)
 public class Mapper_MySQL_Test extends MySQLTestCore {
+
+    private static String CONNECTIONSTRING;
+    private static DB mysqlDB;
+
+    @BeforeClass
+    public static void before() throws Exception {
+        int portNumber = Utils.getFreePortNumber();
+        CONNECTIONSTRING = getConnectionString(portNumber);
+        mysqlDB = setUpMySQLDBInstance(portNumber);
+    }
+
+    @AfterClass
+    public static void after() throws ManagedProcessException {
+        stopDBs(mysqlDB);
+    }
 
     @Parameterized.Parameter(0)
     public String testCaseName;

@@ -19,31 +19,24 @@ import java.util.Iterator;
 
 public abstract class MySQLTestCore extends DBTestCore {
 
-    protected static String CONNECTIONSTRING = "jdbc:mysql://localhost:%d/test";
+    protected static String CONNECTIONSTRING_TEMPLATE = "jdbc:mysql://localhost:%d/test";
 
-    protected static DB mysqlDB;
-
-    @BeforeClass
-    public static void startDBs() throws Exception {
-        int PORTNUMBER_MYSQL;
-        try {
-            PORTNUMBER_MYSQL = Utils.getFreePortNumber();
-        } catch (Exception ex) {
-            throw new Error("Could not find a free port number for RDBs testing.");
-        }
-
-        CONNECTIONSTRING = String.format(CONNECTIONSTRING, PORTNUMBER_MYSQL);
-
-        DBConfigurationBuilder configBuilder = DBConfigurationBuilder.newBuilder();
-        configBuilder.setPort(PORTNUMBER_MYSQL);
-        configBuilder.addArg("--user=root");
-        configBuilder.addArg("--sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI_QUOTES");
-        mysqlDB = DB.newEmbeddedDB(configBuilder.build());
-        mysqlDB.start();
+    protected static String getConnectionString(int portNumber) {
+        return String.format(CONNECTIONSTRING_TEMPLATE, portNumber);
     }
 
-    @AfterClass
-    public static void stopDBs() throws ManagedProcessException {
+    protected static DB setUpMySQLDBInstance(int portNumber) throws ManagedProcessException {
+        DBConfigurationBuilder configBuilder = DBConfigurationBuilder.newBuilder();
+        configBuilder.setPort(portNumber);
+        configBuilder.addArg("--user=root");
+        configBuilder.addArg("--sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI_QUOTES");
+        DB mysqlDB = DB.newEmbeddedDB(configBuilder.build());
+        mysqlDB.start();
+
+        return mysqlDB;
+    }
+
+    protected static void stopDBs(DB mysqlDB) throws ManagedProcessException {
         if (mysqlDB != null) {
             mysqlDB.stop();
         }
