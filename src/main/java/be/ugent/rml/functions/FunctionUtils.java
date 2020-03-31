@@ -79,12 +79,26 @@ public class FunctionUtils {
         String typeStr = type.getValue();
 
         switch (typeStr) {
+            // This is quite crude, based on https://www.w3.org/TR/xmlschema11-2/#built-in-datatypes
             case "http://www.w3.org/2001/XMLSchema#string":
                 return String.class;
             case "http://www.w3.org/2001/XMLSchema#integer":
+            case "http://www.w3.org/2001/XMLSchema#long":
+            case "http://www.w3.org/2001/XMLSchema#int":
+            case "http://www.w3.org/2001/XMLSchema#short":
+            case "http://www.w3.org/2001/XMLSchema#byte":
+            case "http://www.w3.org/2001/XMLSchema#nonNegativeInteger":
+            case "http://www.w3.org/2001/XMLSchema#positiveInteger":
+            case "http://www.w3.org/2001/XMLSchema#unsignedLong":
+            case "http://www.w3.org/2001/XMLSchema#unsignedInt":
+            case "http://www.w3.org/2001/XMLSchema#unsignedShort":
+            case "http://www.w3.org/2001/XMLSchema#unsignedByte":
+            case "http://www.w3.org/2001/XMLSchema#nonPositiveInteger":
+            case "http://www.w3.org/2001/XMLSchema#negativeInteger":
                 return Integer.class;
             case "http://www.w3.org/2001/XMLSchema#decimal":
             case "http://www.w3.org/2001/XMLSchema#double":
+            case "http://www.w3.org/2001/XMLSchema#float":
                 return Double.class;
             case "http://www.w3.org/1999/02/22-rdf-syntax-ns#List":
                 return List.class;
