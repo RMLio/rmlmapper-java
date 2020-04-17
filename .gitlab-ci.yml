@@ -30,7 +30,7 @@ test-oracle:
   stage: test-oracle
   image: gitlab.ilabt.imec.be:4567/rml/util/mvn-oracle-docker:latest
   script:
-    - '/entrypoint.sh $MAVEN_CLI_OPTS -Dtest=Mapper_OracleDB_Test test'
+    - '/entrypoint.sh'
 
 services:
   - postgres:10.4
