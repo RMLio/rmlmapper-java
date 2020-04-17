@@ -23,12 +23,12 @@ cache:
     - .m2/repository
 
 test:
-  name: test
+  stage: test
   script:
     - '/entrypoint.sh $MAVEN_CLI_OPTS -Dtest=!Mapper_OracleDB_Test test'
 
 test-oracle:
-  name: test-oracle
+  stage: test-oracle
   script:
     - '/entrypoint.sh $MAVEN_CLI_OPTS -Dtest=Mapper_OracleDB_Test test'
 
