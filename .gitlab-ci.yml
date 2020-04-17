@@ -1,5 +1,3 @@
-image: gitlab.ilabt.imec.be:4567/rml/util/mvn-oracle-docker:latest
-
 stages:
   - test
   - test-oracle
@@ -24,11 +22,13 @@ cache:
 
 test:
   stage: test
+  image: maven:3.5.0-jdk-8
   script:
-    - '/entrypoint.sh $MAVEN_CLI_OPTS -Dtest=!Mapper_OracleDB_Test test'
+    - 'mvn $MAVEN_CLI_OPTS -Dtest=!Mapper_OracleDB_Test test'
 
 test-oracle:
   stage: test-oracle
+  image: gitlab.ilabt.imec.be:4567/rml/util/mvn-oracle-docker:latest
   script:
     - '/entrypoint.sh $MAVEN_CLI_OPTS -Dtest=Mapper_OracleDB_Test test'
 
