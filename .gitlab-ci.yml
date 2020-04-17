@@ -20,7 +20,7 @@ cache:
 
 verify:
   script:
-    - 'mvn $MAVEN_CLI_OPTS test'
+    - '$MAVEN_CLI_OPTS test'
 
 services:
   - postgres:10.4
