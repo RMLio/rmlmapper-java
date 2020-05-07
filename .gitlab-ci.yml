@@ -15,10 +15,10 @@ variables:
   ACCEPT_EULA: Y
   SA_PASSWORD: "YourSTRONG!Passw0rd"
 
-cache:
-  key: ${CI_JOB_NAME}
-  paths:
-    - .m2/repository
+# cache:
+#   key: ${CI_JOB_NAME}
+#   paths:
+#     - .m2/repository
 
 test:
   stage: test
