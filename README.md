@@ -182,6 +182,8 @@ at [./src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java](https://github.
 
 ## Testing
 
+Run the tests via `test.sh`.
+
 ### RDBs
 Make sure you have [Docker](https://www.docker.com) running.
 
