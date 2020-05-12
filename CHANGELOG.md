@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- Oracle driver information in README (see [issue 142](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/142))
+- Support Oracle databases (see [issue 160](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/160))
+
 ### Changed
 
 - Functions support more datatypes: `be/ugent/rml/functions/FunctionUtils.java`
