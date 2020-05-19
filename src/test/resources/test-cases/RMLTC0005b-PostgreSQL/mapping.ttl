@@ -16,7 +16,7 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "{fname}{lname}";
+    rr:template "{fname}_{lname}";
     rr:class <IOUs>;
     rr:termType rr:BlankNode
   ];
