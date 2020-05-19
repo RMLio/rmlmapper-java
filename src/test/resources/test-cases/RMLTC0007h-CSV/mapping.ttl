@@ -14,7 +14,7 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/Student/{ID}/{FirstName}";
+    rr:template "http://example.com/Student/{ID}/{Name}";
     rr:graphMap [ rml:reference "Name"; rr:termType rr:Literal; ]
   ];
 
