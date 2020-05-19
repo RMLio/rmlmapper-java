@@ -2,6 +2,9 @@ package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
 import ch.vorburger.exec.ManagedProcessException;
+import ch.vorburger.mariadb4j.DB;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -10,6 +13,21 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class Arguments_Test_MySQL extends MySQLTestCore {
+
+    private static String CONNECTIONSTRING;
+    private static DB mysqlDB;
+
+    @BeforeClass
+    public static void before() throws Exception {
+        int portNumber = Utils.getFreePortNumber();
+        CONNECTIONSTRING = getConnectionString(portNumber);
+        mysqlDB = setUpMySQLDBInstance(portNumber);
+    }
+
+    @AfterClass
+    public static void after() throws ManagedProcessException {
+        stopDBs(mysqlDB);
+    }
 
     @Test
     public void executeR2RML() throws Exception {
@@ -27,7 +45,7 @@ public class Arguments_Test_MySQL extends MySQLTestCore {
             fail();
         }
 
-        Main.main(("-m " + mappingFilePath + " -o " + actualPath + " --r2rml-jdbcDSN " + CONNECTIONSTRING + " --r2rml-username root").split(" "), cwd);
+        Main.main(("-m " + mappingFilePath + " -o " + actualPath + " --r2rml-jdbcDSN " + CONNECTIONSTRING + " --r2rml-username root -v").split(" "), cwd);
         compareFiles(
                 expectedPath,
                 actualPath,

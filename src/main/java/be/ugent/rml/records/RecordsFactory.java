@@ -10,6 +10,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,7 @@ public class RecordsFactory {
      * @return a list of records.
      * @throws IOException
      */
-    public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException {
+    public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws IOException, SQLException, ClassNotFoundException {
         // Get Logical Sources.
         List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
@@ -120,7 +121,7 @@ public class RecordsFactory {
      * @return a list of records.
      * @throws IOException
      */
-    private List<Record> getRecords(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws IOException {
+    private List<Record> getRecords(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws IOException, SQLException, ClassNotFoundException {
         String logicalSourceHash = hashLogicalSource(logicalSource, rmlStore);
 
         // Try to get the records from the cache.

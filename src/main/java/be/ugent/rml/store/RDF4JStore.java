@@ -287,7 +287,7 @@ public class RDF4JStore extends QuadStore {
             } else if (hasDatatype) {
                 pattern = Pattern.compile("^\"([^\"]*)\"\\^\\^<([^>]*)>");
             } else {
-                pattern = Pattern.compile("^\"([^\"]*)\"");
+                pattern = Pattern.compile("^\"(.*)\"$", Pattern.DOTALL);
             }
 
             Matcher matcher = pattern.matcher(str);

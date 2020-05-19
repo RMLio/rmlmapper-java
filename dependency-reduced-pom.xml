@@ -163,12 +163,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.googlecode.zohhak</groupId>
-      <artifactId>zohhak</artifactId>
-      <version>1.1.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>apache-jena-libs</artifactId>
       <version>3.8.0</version>
@@ -177,9 +171,9 @@
     </dependency>
   </dependencies>
   <properties>
+    <maven.compiler.target>8</maven.compiler.target>
     <maven.compiler.source>8</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.target>8</maven.compiler.target>
     <junit.version>4.12</junit.version>
   </properties>
 </project>

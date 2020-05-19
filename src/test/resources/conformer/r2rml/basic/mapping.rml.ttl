@@ -24,7 +24,9 @@
 <http://example.com/base/TriplesMap1_database>
         a       <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#Database> ;
         <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#jdbcDSN>
-                "CONNECTIONDSN" ;
+                "jdbc:mysql://localhost:1234/test" ;
+        <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#jdbcDriver>
+                        "com.mysql.cj.jdbc.Driver" ;
         <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#password>
                 "YourSTRONG!Passw0rd;" ;
         <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#username>

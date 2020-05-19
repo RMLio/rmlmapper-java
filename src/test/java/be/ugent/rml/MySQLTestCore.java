@@ -17,34 +17,26 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 
-public abstract class MySQLTestCore extends TestCore {
+public abstract class MySQLTestCore extends DBTestCore {
 
-    protected static String CONNECTIONSTRING = "jdbc:mysql://localhost:%d/test";
+    protected static String CONNECTIONSTRING_TEMPLATE = "jdbc:mysql://localhost:%d/test";
 
-    protected static HashSet<String> tempFiles = new HashSet<>();
-
-    protected static DB mysqlDB;
-
-    @BeforeClass
-    public static void startDBs() throws Exception {
-        int PORTNUMBER_MYSQL;
-        try {
-            PORTNUMBER_MYSQL = Utils.getFreePortNumber();
-        } catch (Exception ex) {
-            throw new Error("Could not find a free port number for RDBs testing.");
-        }
-
-        CONNECTIONSTRING = String.format(CONNECTIONSTRING, PORTNUMBER_MYSQL);
-
-        DBConfigurationBuilder configBuilder = DBConfigurationBuilder.newBuilder();
-        configBuilder.setPort(PORTNUMBER_MYSQL);
-        configBuilder.addArg("--user=root");
-        mysqlDB = DB.newEmbeddedDB(configBuilder.build());
-        mysqlDB.start();
+    protected static String getConnectionString(int portNumber) {
+        return String.format(CONNECTIONSTRING_TEMPLATE, portNumber);
     }
 
-    @AfterClass
-    public static void stopDBs() throws ManagedProcessException {
+    protected static DB setUpMySQLDBInstance(int portNumber) throws ManagedProcessException {
+        DBConfigurationBuilder configBuilder = DBConfigurationBuilder.newBuilder();
+        configBuilder.setPort(portNumber);
+        configBuilder.addArg("--user=root");
+        configBuilder.addArg("--sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI_QUOTES");
+        DB mysqlDB = DB.newEmbeddedDB(configBuilder.build());
+        mysqlDB.start();
+
+        return mysqlDB;
+    }
+
+    protected static void stopDBs(DB mysqlDB) throws ManagedProcessException {
         if (mysqlDB != null) {
             mysqlDB.stop();
         }
@@ -68,38 +60,4 @@ public abstract class MySQLTestCore extends TestCore {
             }
         }
     }
-
-    // Utils -----------------------------------------------------------------------------------------------------------
-
-    protected static String replaceDSNInMappingFile(String path, String connectionString) {
-        try {
-            // Read mapping file
-            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
-
-            // Replace "PORT" in mapping file by new port
-            mapping = mapping.replace("CONNECTIONDSN", connectionString);
-
-            // Write to temp mapping file
-
-            String fileName = Integer.toString(Math.abs(path.hashCode())) + "tempMapping.ttl";
-            Path file = Paths.get(fileName);
-            Files.write(file, Arrays.asList(mapping.split("\n")));
-
-            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
-            tempFiles.add(absolutePath);
-
-            return absolutePath;
-
-        } catch (IOException ex) {
-            throw new Error(ex.getMessage());
-        }
-    }
-
-    protected static void deleteTempMappingFile(String absolutePath) {
-        File file = new File(absolutePath);
-        if (file.delete()) {
-            tempFiles.remove(absolutePath);
-        }
-    }
-
 }

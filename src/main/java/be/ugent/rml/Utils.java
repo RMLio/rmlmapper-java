@@ -127,11 +127,18 @@ public class Utils {
             return f;
         }
 
+        logger.debug("File " + path + " not found in " + basePath);
+        logger.debug("Looking for file " + path + " in " + basePath + "/../");
+
+
         // Relative from parent of user dir?
         f = new File(basePath, "../" + path);
         if (f.exists()) {
             return f;
         }
+
+        logger.debug("File " + path + " not found in " + basePath);
+        logger.debug("Looking for file " + path + " in the resources directory");
 
         // Resource path?
         try {
@@ -139,6 +146,8 @@ public class Utils {
         } catch (IOException e) {
             // Too bad
         }
+
+        logger.debug("File " + path + " not found in the resources directory");
 
         throw new FileNotFoundException(path);
     }

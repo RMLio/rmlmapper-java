@@ -12,18 +12,19 @@ public class IDLabFunctionsTest {
 
     @Test
     public void dbpediaSpotlight() {
-        List<String> entities = IDLabFunctions.dbpediaSpotlight("Barack Obama", "https://api.dbpedia-spotlight.org/en");
+        String endpoint = "http://hp049.utah.cloudlab.us:2222/rest";
+        List<String> entities = IDLabFunctions.dbpediaSpotlight("Barack Obama", endpoint);
         ArrayList<String> expected = new ArrayList<>();
         expected.add("http://dbpedia.org/resource/Barack_Obama");
 
         assertThat(entities, CoreMatchers.is(expected));
 
-        entities = IDLabFunctions.dbpediaSpotlight("", "https://api.dbpedia-spotlight.org/en");
+        entities = IDLabFunctions.dbpediaSpotlight("", endpoint);
         expected = new ArrayList<>();
 
         assertThat(entities, CoreMatchers.is(expected));
 
-        entities = IDLabFunctions.dbpediaSpotlight("a", "https://api.dbpedia-spotlight.org/en");
+        entities = IDLabFunctions.dbpediaSpotlight("a", endpoint);
         expected = new ArrayList<>();
 
         assertThat(entities, CoreMatchers.is(expected));

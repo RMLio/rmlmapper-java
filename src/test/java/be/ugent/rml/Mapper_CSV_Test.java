@@ -30,7 +30,7 @@ public class Mapper_CSV_Test extends TestCore {
 
     @Test
     public void evaluate_0002c_CSV() {
-        doMapping("./test-cases/RMLTC0002c-CSV/mapping.ttl", "./test-cases/RMLTC0002c-CSV/output.nq");
+        doMappingExpectError("./test-cases/RMLTC0002c-CSV/mapping.ttl");
     }
 
     @Test
@@ -100,7 +100,7 @@ public class Mapper_CSV_Test extends TestCore {
 
     @Test
     public void evaluate_0007h_CSV() {
-        doMapping("./test-cases/RMLTC0007h-CSV/mapping.ttl", "./test-cases/RMLTC0007h-CSV/output.nq");
+        doMappingExpectError("./test-cases/RMLTC0007h-CSV/mapping.ttl");
     }
 
     @Test
