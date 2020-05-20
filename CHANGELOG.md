@@ -14,8 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Functions support more datatypes: `be/ugent/rml/functions/FunctionUtils.java`
 
-### Fixed
-- Remove oracle setup file (see [issue 161](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/161))
+### Removed
+- Oracle setup file (see [issue 161](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/161))
 
 ## [4.7.0] - 2020-03-09
 
