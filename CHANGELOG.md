@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.8.0] - 2020-05-25
+
 ### Added
 - Oracle driver information in README (see [issue 142](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/142))
 - Support Oracle databases (see [issue 160](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/160))
@@ -259,6 +261,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.8.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.6.0...v4.7.0
 [4.6.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.1...v4.6.0
 [4.5.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.0...v4.5.1
