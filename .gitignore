@@ -7,3 +7,4 @@ rmlmapper.iml
 .attach_*
 ojdbc*.jar
 pom-oracle.xml
+dependency-reduced-pom.xml
