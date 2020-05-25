@@ -2,6 +2,7 @@ package be.ugent.rml.access;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ public interface Access {
      * @return the InputStream corresponding to the access.
      * @throws IOException
      */
-    InputStream getInputStream() throws IOException;
+    InputStream getInputStream() throws IOException, SQLException, ClassNotFoundException;
 
     /**
      * This method returns a map of datatypes.

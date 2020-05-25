@@ -1,5 +1,9 @@
 package be.ugent.rml;
 
+import ch.vorburger.exec.ManagedProcessException;
+import ch.vorburger.mariadb4j.DB;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -8,9 +12,23 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 
-
 @RunWith(Parameterized.class)
 public class Mapper_MySQL_Test extends MySQLTestCore {
+
+    private static String CONNECTIONSTRING;
+    private static DB mysqlDB;
+
+    @BeforeClass
+    public static void before() throws Exception {
+        int portNumber = Utils.getFreePortNumber();
+        CONNECTIONSTRING = getConnectionString(portNumber);
+        mysqlDB = setUpMySQLDBInstance(portNumber);
+    }
+
+    @AfterClass
+    public static void after() throws ManagedProcessException {
+        stopDBs(mysqlDB);
+    }
 
     @Parameterized.Parameter(0)
     public String testCaseName;
@@ -34,8 +52,8 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
                 {"RMLTC0002d", null},
                 {"RMLTC0002e", Error.class},
 //                {"RMLTC0002f", null},
-                {"RMLTC0002g", null},
-                {"RMLTC0002h", null},
+                {"RMLTC0002g", Error.class},
+                {"RMLTC0002h", Error.class},
                 // TODO see issue #130
                 {"RMLTC0002i", Error.class},
                 {"RMLTC0002j", null},
@@ -55,7 +73,7 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
                 {"RMLTC0007e", null},
                 {"RMLTC0007f", null},
                 {"RMLTC0007g", null},
-                {"RMLTC0007h", null},
+                {"RMLTC0007h", Error.class},
                 {"RMLTC0008a", null},
                 {"RMLTC0008b", null},
                 {"RMLTC0008c", null},
@@ -72,7 +90,7 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
                 {"RMLTC0012b", null},
                 {"RMLTC0012c", Error.class},
                 {"RMLTC0012d", Error.class},
-//                {"RMLTC0012e", null},
+                {"RMLTC0012e", null},
 //                {"RMLTC0013a", null},
                 {"RMLTC0014d", null},
 //                {"RMLTC0015a", null},
@@ -92,15 +110,10 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
 
     @Test
     public void doMapping() throws Exception {
-        //setup expected exception
-        if (expectedException != null) {
-            thrown.expect(expectedException);
-        }
-
-        mappingTest(testCaseName);
+        mappingTest(testCaseName, expectedException);
     }
 
-    private void mappingTest(String testCaseName) throws Exception {
+    private void mappingTest(String testCaseName, Class expectedException) throws Exception {
         String resourcePath = "test-cases/" + testCaseName + "-MySQL/resource.sql";
         String mappingPath = "./test-cases/" + testCaseName + "-MySQL/mapping.ttl";
         String outputPath = "test-cases/" + testCaseName + "-MySQL/output.nq";
@@ -111,7 +124,13 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
         mysqlDB.source(resourcePath);
 
         // mapping
-        doMapping(tempMappingPath, outputPath);
+
+        if (expectedException == null) {
+            doMapping(tempMappingPath, outputPath);
+        } else {
+            doMappingExpectError(tempMappingPath);
+        }
+
         deleteTempMappingFile(tempMappingPath);
     }
 }

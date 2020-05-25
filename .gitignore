@@ -5,3 +5,6 @@ rmlmapper.iml
 .settings
 .vscode
 .attach_*
+ojdbc*.jar
+pom-oracle.xml
+dependency-reduced-pom.xml

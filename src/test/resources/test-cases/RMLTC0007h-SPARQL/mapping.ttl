@@ -34,7 +34,7 @@
 
     rr:subjectMap [
         rr:template "http://example.com/Student/{ID.value}/{FirstName.value}";
-        rr:graph [ rml:reference "Name"; rr:termType rr:Literal; ]
+        rr:graphMap [ rml:reference "Name"; rr:termType rr:Literal; ]
       ];
 
       rr:predicateObjectMap [

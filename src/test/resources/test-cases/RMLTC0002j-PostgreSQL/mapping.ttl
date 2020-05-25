@@ -12,8 +12,8 @@
   rml:logicalSource [
     rml:source <#DB_source>;
     rr:sqlVersion rr:SQL2008;
-    rml:query "SELECT NoColumnName, Name FROM student";
-    rr:tableName "student";
+    rml:query "SELECT \"student\".\"ID\", \"student\".\"Name\" FROM student";
+    rml:referenceFormulation ql:CSV
   ];
 
   rr:subjectMap [
@@ -21,8 +21,8 @@
     ];
 
     rr:predicateObjectMap [
-      rr:predicate ex:id ;
-      rr:objectMap [ rml:reference "IDs" ]
+      rr:predicate foaf:name ;
+      rr:objectMap [ rml:reference "Name" ]
     ].
 
 <#DB_source> a d2rq:Database;

@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @throws IOException
      */
     @Override
-    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException {
+    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException, SQLException, ClassNotFoundException {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
         CSVParser parser;
@@ -72,7 +73,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return a CSVParser.
      * @throws IOException
      */
-    private CSVParser getParserForNormalCSV(Access access) throws IOException {
+    private CSVParser getParserForNormalCSV(Access access) throws IOException, SQLException, ClassNotFoundException {
         CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false);
         InputStream inputStream = access.getInputStream();
 

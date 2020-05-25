@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
      * @throws IOException
      */
     @Override
-    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException {
+    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException, SQLException, ClassNotFoundException {
         // Check if the needed document is already in the cache.
         // If not, a new one is created, based on the InputStream from the access.
         if (! documentMap.containsKey(access)) {

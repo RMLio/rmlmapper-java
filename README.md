@@ -89,6 +89,26 @@ options:
  -v,--verbose                     show more details in debugging output
 ```
 
+#### Accessing Oracle Database
+
+You need to add the Oracle JDBC driver manually to the class path
+if you want to access an Oracle Database.
+The required driver is `ojdbc8`.
+
+- Download `ojdbc8.jar` from [Oracle](https://www.oracle.com/database/technologies/jdbc-ucp-122-downloads.html).
+- Execute the RMLMapper via 
+
+```
+java -cp 'rmlmapper.jar:ojdbc8-12.2.0.1.jar' be.ugent.rml.cli.Main -m rules.rml.ttl
+```
+
+The options do the following:
+
+- `-cp 'rmlmapper.jar:ojdbc8-12.2.0.1.jar'`: Put the jar of the RMLMapper and JDBC driver in the classpath.
+- `be.ugent.rml.cli.Main`: `be.ugent.rml.cli.Main` is the entry point of the RMLMapper.
+- `-m rules.rml.ttl`: Use the RML rules in the file `rules.rml`.ttl.
+The exact same options as the ones mentioned earlier are supported.
+
 ### Library
 
 An example of how you can use the RMLMapper as an external library can be found
@@ -161,6 +181,8 @@ An example of how you can use Preload a custom function can be found
 at [./src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java](https://github.com/RMLio/rmlmapper-java/blob/master/src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java)
 
 ## Testing
+
+Run the tests via `test.sh`.
 
 ### RDBs
 Make sure you have [Docker](https://www.docker.com) running.
