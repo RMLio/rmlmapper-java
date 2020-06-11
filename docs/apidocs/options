@@ -18,10 +18,10 @@
 'UTF-8'
 -Xdoclint:none
 -doctitle
-'rmlmapper 4.7.0 API'
+'rmlmapper 4.8.0 API'
 -linkoffline
 'https://docs.oracle.com/javase/8/docs/api' '/home/pieter/Developer/rmlmapper-java/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'rmlmapper 4.7.0 API'
+'rmlmapper 4.8.0 API'

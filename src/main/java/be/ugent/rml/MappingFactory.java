@@ -188,7 +188,7 @@ public class MappingFactory {
             boolean encodeIRI = termType != null && termType.getValue().equals(NAMESPACES.RR + "IRI");
             SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, encodeIRI);
 
-            if (executor != null) {
+            if (parentTriplesMaps.isEmpty() && parentTermMaps.isEmpty()) {
                 TermGenerator oGen;
 
                 if (termType.equals(new NamedNode(NAMESPACES.RR + "Literal"))) {
@@ -204,7 +204,12 @@ public class MappingFactory {
                 } else if (termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
                     oGen = new NamedNodeGenerator(executor);
                 } else {
-                    oGen = new BlankNodeGenerator(executor);
+                    if (executor == null) {
+                        // This will generate Blank Node with random identifiers.
+                        oGen = new BlankNodeGenerator();
+                    } else {
+                        oGen = new BlankNodeGenerator(executor);
+                    }
                 }
 
                 objectMapCallback.accept(new MappingInfo(objectmap, oGen), "child");
