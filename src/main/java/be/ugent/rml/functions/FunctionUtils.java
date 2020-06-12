@@ -61,15 +61,26 @@ public class FunctionUtils {
         return args;
     }
 
+    /**
+     * Generates strings from a function object. Possible lists/sets/bags/... in the object are unrolled recursively
+     * and a string value is generated from each "simple" (i.e., not a list/set/bag/...) child object.
+     *
+     * @param o      Function object, can be iterable.
+     * @param result A string list to which string values of objects are added
+     */
     public static void functionObjectToList(Object o, List<String> result) {
         if (o != null) {
-            if (o instanceof String) {
-                result.add((String) o);
-            } else if (o instanceof List) {
-                ((List) o).forEach(item -> {
+            // if o has child objects, recursively call this function on each child
+            if (o instanceof Iterable<?>) {
+                ((Iterable<?>) o).forEach(item -> {
                     functionObjectToList(item, result);
                 });
-            } else if (o instanceof Boolean) {
+            }
+            // if o has no children, call toString() to serialize it into a string
+            else {
+                // TODO verify whether the toString() serializations are compatible with the xsd spec
+                // at least for types in https://www.xml.com/pub/a/2000/11/29/schemas/dataref.html
+                // consider adding type-specific serializations if not
                 result.add(o.toString());
             }
         }
