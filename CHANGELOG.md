@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+
+- Extended function parameter type support to include dates and times (see [issue 165](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/165))
+
 ### Fixed
 - ObjectMap with type Blank Node is ignored (see [issue 164](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/164))
 - Function objects with types other than String/Boolean don't get discarded (see [issue 165](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/165))
-- Extended function parameter type support to include dates and times (see [issue 165](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/165))
 
 ## [4.8.0] - 2020-05-25
 
