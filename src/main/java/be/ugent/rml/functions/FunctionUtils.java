@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -108,6 +109,31 @@ public class FunctionUtils {
             case "http://www.w3.org/2001/XMLSchema#nonPositiveInteger":
             case "http://www.w3.org/2001/XMLSchema#negativeInteger":
                 return Integer.class;
+            case "http://www.w3.org/2001/XMLSchema#date":
+                // "Local" just means "without a time zone"
+                return LocalDate.class;
+            case "http://www.w3.org/2001/XMLSchema#dateTime":
+                // again "Local" means "without a time zone"
+                // (An xsd:dateTime actually has an OPTIONAL time zone, so there is a small semantic difference
+                // with java.time.LocalDateTime, this is a best effort.)
+                return LocalDateTime.class;
+            case "http://www.w3.org/2001/XMLSchema#dateTimeStamp":
+                return ZonedDateTime.class;
+            case "http://www.w3.org/2001/XMLSchema#dayTimeDuration":
+            case "http://www.w3.org/2001/XMLSchema#yearMonthDuration":
+                return Duration.class;
+            case "http://www.w3.org/2001/XMLSchema#gDay":
+                // TODO there is no java.time equivalent of xsd:day
+                // (There is java.time.DayOfWeek, but xsd:day would corresponds to java.time.DayOfMonth .)
+                throw new DateTimeException("There is no java.time equivalent of xsd:day. Crashing.");
+            case "http://www.w3.org/2001/XMLSchema#gMonth":
+                return Month.class;
+            case "http://www.w3.org/2001/XMLSchema#gMonthDay":
+                return MonthDay.class;
+            case "http://www.w3.org/2001/XMLSchema#gYear":
+                return Year.class;
+            case "http://www.w3.org/2001/XMLSchema#gYearMonth":
+                return YearMonth.class;
             case "http://www.w3.org/2001/XMLSchema#decimal":
             case "http://www.w3.org/2001/XMLSchema#double":
             case "http://www.w3.org/2001/XMLSchema#float":

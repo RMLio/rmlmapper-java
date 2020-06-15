@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -174,6 +175,23 @@ public class FunctionModel {
             case "long":
             case "java.lang.Long":
                 return Long.parseLong(parameter.toString());
+            case "java.time.LocalDate":
+                return LocalDate.parse(parameter.toString());
+            case "java.time.LocalDateTime":
+                return LocalDateTime.parse(parameter.toString());
+            case "java.time.ZonedDateTime":
+                return ZonedDateTime.parse(parameter.toString());
+            case "java.time.Duration":
+                return Duration.parse(parameter.toString());
+            case "java.time.Month":
+                return Month.valueOf(parameter.toString());
+            case "java.time.MonthDay":
+                return MonthDay.parse(parameter.toString());
+            case "java.time.Year":
+                return Year.parse(parameter.toString());
+            case "java.time.YearMonth":
+                return YearMonth.parse(parameter.toString());
+            // TODO my IDE says this case is unreachable (redundant with the check at the start of this function)
             case "java.util.List":
                 if (parameter instanceof String) {
                     JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
