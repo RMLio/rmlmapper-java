@@ -78,9 +78,9 @@ public class FunctionUtils {
             }
             // if o has no children, call toString() to serialize it into a string
             else {
-                // TODO verify whether the toString() serializations are compatible with the xsd spec
-                // at least for types in https://www.xml.com/pub/a/2000/11/29/schemas/dataref.html
-                // consider adding type-specific serializations if not
+                // numeric and boolean types are trivially serialized correctly
+                // times/dates objects in the java.time package use the relevant ISO-8601 standard,
+                // which is also used by xsd types and thus RDF types
                 result.add(o.toString());
             }
         }
