@@ -93,14 +93,15 @@ public class FunctionUtils {
             // This is quite crude, based on https://www.w3.org/TR/xmlschema11-2/#built-in-datatypes
             case "http://www.w3.org/2001/XMLSchema#string":
                 return String.class;
-            case "http://www.w3.org/2001/XMLSchema#integer":
+            case "http://www.w3.org/2001/XMLSchema#unsignedLong":
             case "http://www.w3.org/2001/XMLSchema#long":
+                return Long.class;
+            case "http://www.w3.org/2001/XMLSchema#integer":
             case "http://www.w3.org/2001/XMLSchema#int":
             case "http://www.w3.org/2001/XMLSchema#short":
             case "http://www.w3.org/2001/XMLSchema#byte":
             case "http://www.w3.org/2001/XMLSchema#nonNegativeInteger":
             case "http://www.w3.org/2001/XMLSchema#positiveInteger":
-            case "http://www.w3.org/2001/XMLSchema#unsignedLong":
             case "http://www.w3.org/2001/XMLSchema#unsignedInt":
             case "http://www.w3.org/2001/XMLSchema#unsignedShort":
             case "http://www.w3.org/2001/XMLSchema#unsignedByte":

@@ -171,6 +171,9 @@ public class FunctionModel {
             case "double":
             case "java.lang.Double":
                 return Double.parseDouble(parameter.toString());
+            case "long":
+            case "java.lang.Long":
+                return Long.parseLong(parameter.toString());
             case "java.util.List":
                 if (parameter instanceof String) {
                     JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
