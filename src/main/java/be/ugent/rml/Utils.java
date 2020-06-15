@@ -360,7 +360,7 @@ public class Utils {
      * @param template template string
      * @return list of extractors
      **/
-    public static List<Extractor> parseTemplate(String template) {
+    public static List<Extractor> parseTemplate(String template, boolean ignoreDoubleQuotes) {
         ArrayList<Extractor> extractors = new ArrayList<>();
         String current = "";
         boolean previousWasBackslash = false;
@@ -389,7 +389,7 @@ public class Utils {
                         current += c;
                         previousWasBackslash = false;
                     } else if (variableBusy) {
-                        extractors.add(new ReferenceExtractor(current));
+                        extractors.add(new ReferenceExtractor(current, ignoreDoubleQuotes));
                         current = "";
                         variableBusy = false;
                     } else {

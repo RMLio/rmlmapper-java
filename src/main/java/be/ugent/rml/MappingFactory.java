@@ -14,7 +14,6 @@ import be.ugent.rml.termgenerator.TermGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.Name;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +30,7 @@ public class MappingFactory {
     private Term triplesMap;
     private QuadStore store;
     private List<PredicateObjectGraphMapping> predicateObjectGraphMappings;
+    private boolean ignoreDoubleQuotes;
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public MappingFactory(FunctionLoader functionLoader) {
@@ -43,6 +43,7 @@ public class MappingFactory {
         this.subjectMappingInfo = null;
         this.predicateObjectGraphMappings = new ArrayList<>();
         this.graphMappingInfos = null;
+        this.ignoreDoubleQuotes = this.areDoubleQuotesIgnored(store, triplesMap);
 
         parseSubjectMap();
         parsePredicateObjectMaps();
@@ -71,7 +72,7 @@ public class MappingFactory {
 
                     //checking if we are dealing with a Blank Node as subject
                     if (!termTypes.isEmpty() && termTypes.get(0).equals(new NamedNode(NAMESPACES.RR  + "BlankNode"))) {
-                        SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, subjectmap, true);
+                        SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, subjectmap, true, ignoreDoubleQuotes);
 
                         if (executor != null) {
                             generator = new BlankNodeGenerator(executor);
@@ -80,7 +81,7 @@ public class MappingFactory {
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
-                        generator = new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, subjectmap, true));
+                        generator = new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, subjectmap, true, ignoreDoubleQuotes));
                     }
                 } else {
                     SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
@@ -186,7 +187,7 @@ public class MappingFactory {
 
         if (functionValues.isEmpty()) {
             boolean encodeIRI = termType != null && termType.getValue().equals(NAMESPACES.RR + "IRI");
-            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, encodeIRI);
+            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, encodeIRI, ignoreDoubleQuotes);
 
             if (parentTriplesMaps.isEmpty() && parentTermMaps.isEmpty()) {
                 TermGenerator oGen;
@@ -237,11 +238,11 @@ public class MappingFactory {
                         FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
                         Map<String, Object[]> parameters = new HashMap<>();
 
-                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0));
+                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0), ignoreDoubleQuotes);
                         Object[] detailsParent = {"parent", parent};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
 
-                        SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0));
+                        SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0), ignoreDoubleQuotes);
                         Object[] detailsChild = {"child", child};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
@@ -306,7 +307,7 @@ public class MappingFactory {
             TermGenerator generator;
 
             if (functionValues.isEmpty()) {
-                SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, graphMap, true);
+                SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, graphMap, true, ignoreDoubleQuotes);
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RR + "IRI"))) {
                     generator = new NamedNodeGenerator(executor);
@@ -351,7 +352,7 @@ public class MappingFactory {
 
             if (functionValues.isEmpty()) {
                 predicateMappingInfos.add(new MappingInfo(predicateMap,
-                        new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false))));
+                        new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false, ignoreDoubleQuotes))));
             } else {
                 SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
@@ -454,7 +455,7 @@ public class MappingFactory {
             List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(languageMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
 
             if (functionValues.isEmpty()) {
-                executors.add(RecordFunctionExecutorFactory.generate(store, languageMap, false));
+                executors.add(RecordFunctionExecutorFactory.generate(store, languageMap, false, ignoreDoubleQuotes));
             } else {
                 executors.add(parseFunctionTermMap(functionValues.get(0)));
             }
@@ -521,4 +522,25 @@ public class MappingFactory {
         return list;
     }
 
+    private boolean areDoubleQuotesIgnored(QuadStore store, Term triplesMap) {
+        List<Term> logicalSources = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
+
+        if (!logicalSources.isEmpty()) {
+            Term logicalSource = logicalSources.get(0);
+
+            List<Term> sources = Utils.getObjectsFromQuads(store.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+
+            if (!sources.isEmpty()) {
+                Term source = sources.get(0);
+
+                if (! (sources.get(0) instanceof Literal)) {
+                    List<Term> sourceType = Utils.getObjectsFromQuads(store.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
+
+                    return sourceType.get(0).getValue().equals(NAMESPACES.D2RQ + "Database");
+                }
+            }
+        }
+
+        return false;
+    }
 }
