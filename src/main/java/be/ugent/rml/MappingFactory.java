@@ -522,6 +522,12 @@ public class MappingFactory {
         return list;
     }
 
+    /**
+     * This function returns true if double quotes should be ignored in references.
+     * @param store The store with the RML rules.
+     * @param triplesMap The Triples Map that should be checked.
+     * @return true if double quotes should be ignored in references, else false.
+     */
     private boolean areDoubleQuotesIgnored(QuadStore store, Term triplesMap) {
         List<Term> logicalSources = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
