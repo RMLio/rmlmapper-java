@@ -14,3 +14,4 @@ _:Sue_Jones_Madrid <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://exa
 _:Sue_Jones_Madrid <http://example.com/base/IOUs#fname> "Sue" .
 _:Sue_Jones_Madrid <http://example.com/base/IOUs#lname> "Jones" .
 _:Sue_Jones_Madrid <http://example.com/base/IOUs#city> "Madrid" .
+
