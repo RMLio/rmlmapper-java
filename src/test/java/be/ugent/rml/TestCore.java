@@ -103,6 +103,12 @@ public abstract class TestCore {
         }
     }
 
+    /**
+     * This method executes a mapping, compares it to the expected out, and returns the used Executor.
+     * @param mapPath The path of the mapping file.
+     * @param outPath The path of the file with the expected output.
+     * @return The Executor used to execute the mapping.
+     */
     public Executor doMapping(String mapPath, String outPath) {
         try {
             Executor executor = this.createExecutor(mapPath);
@@ -116,6 +122,13 @@ public abstract class TestCore {
         return null;
     }
 
+    /**
+     * This method executes a mapping, compares it to the expected out, and returns the used Executor.
+     * @param mapPath The path of the mapping file.
+     * @param outPath The path of the file with the expected output.
+     * @param parentPath The path of the folder where the Executor looks for files, such as CSV files.
+     * @return The Executor used to execute the mapping.
+     */
     public Executor doMapping(String mapPath, String outPath, String parentPath) {
         try {
             Executor executor = this.createExecutor(mapPath, parentPath);
@@ -129,6 +142,11 @@ public abstract class TestCore {
         return null;
     }
 
+    /**
+     * This method executes a mapping and compares with the expected output.
+     * @param executor The Executor that is used to execute the mapping.
+     * @param outPath The path of the file with the expected output.
+     */
     void doMapping(Executor executor, String outPath) throws Exception {
         QuadStore result = executor.execute(null);
         result.removeDuplicates();

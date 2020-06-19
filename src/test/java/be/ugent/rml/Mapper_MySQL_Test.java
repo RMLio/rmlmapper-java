@@ -10,8 +10,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
-import java.net.URL;
 import java.util.Arrays;
 
 import static be.ugent.rml.MyFileUtils.getParentPath;

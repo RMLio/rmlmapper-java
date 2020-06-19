@@ -30,6 +30,8 @@ public class MappingFactory {
     private Term triplesMap;
     private QuadStore store;
     private List<PredicateObjectGraphMapping> predicateObjectGraphMappings;
+    // This boolean is true when the double in a reference need to be ignored.
+    // For example, when accessing data in a RDB.
     private boolean ignoreDoubleQuotes;
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
