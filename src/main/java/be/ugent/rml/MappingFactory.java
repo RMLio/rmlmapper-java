@@ -238,7 +238,8 @@ public class MappingFactory {
                         FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
                         Map<String, Object[]> parameters = new HashMap<>();
 
-                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0), ignoreDoubleQuotes);
+                        boolean ignoreDoubleQuotesInParent = this.areDoubleQuotesIgnored(store, parentTriplesMap);
+                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0), ignoreDoubleQuotesInParent);
                         Object[] detailsParent = {"parent", parent};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
 

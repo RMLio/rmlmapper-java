@@ -119,4 +119,17 @@ class MyFileUtils {
         }
 
     }
+
+    public static String getParentPath(Class c, String path) {
+        ClassLoader classLoader = c.getClassLoader();
+        URL url = classLoader.getResource(path);
+
+        if (url != null) {
+            path = url.getFile();
+        }
+
+        File outputFile = new File(path);
+
+        return outputFile.getParent();
+    }
 }
