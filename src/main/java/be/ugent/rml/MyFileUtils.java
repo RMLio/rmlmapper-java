@@ -119,4 +119,23 @@ class MyFileUtils {
         }
 
     }
+
+    /**
+     * This method returns the path of the parent of a file.
+     * @param c The class to which the file path is relative.
+     * @param path The path of the file.
+     * @return The path of the parent.
+     */
+    public static String getParentPath(Class c, String path) {
+        ClassLoader classLoader = c.getClassLoader();
+        URL url = classLoader.getResource(path);
+
+        if (url != null) {
+            path = url.getFile();
+        }
+
+        File outputFile = new File(path);
+
+        return outputFile.getParent();
+    }
 }
