@@ -9,14 +9,26 @@ import java.util.List;
 public class ReferenceExtractor implements Extractor, SingleRecordFunctionExecutor {
 
     public String reference;
+    private boolean ignoreDoubleQuotes;
+
+    public ReferenceExtractor(String reference, boolean ignoreDoubleQuotes) {
+        this.reference = reference;
+        this.ignoreDoubleQuotes = ignoreDoubleQuotes;
+    }
 
     public ReferenceExtractor(String reference) {
-        this.reference = reference;
+        this(reference, false);
     }
 
     @Override
     public List<Object> extract(Record record) {
-        return record.get(reference);
+        String temp = this.reference;
+
+        if (ignoreDoubleQuotes && temp.startsWith("\"") && temp.endsWith("\"")) {
+            temp = temp.substring(1, temp.length() - 1);
+        }
+
+        return record.get(temp);
     }
 
     @Override

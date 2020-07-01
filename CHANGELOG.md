@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+- updated grel-functions-java to 0.5.2
+
 ### Fixed
 - ObjectMap with type Blank Node is ignored (see [issue 164](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/164))
+- Support double quotes in references of RDBs (see [issue 163](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/163))
 
 ## [4.8.0] - 2020-05-25
 
