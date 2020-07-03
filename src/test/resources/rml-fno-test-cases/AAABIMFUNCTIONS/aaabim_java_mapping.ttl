@@ -1,0 +1,263 @@
+@prefix cc:      <http://creativecommons.org/ns#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix doap:    <http://usefulinc.com/ns/doap#> .
+@prefix fno:     <https://w3id.org/function/ontology#> .
+@prefix fnoi:    <https://w3id.org/function/vocabulary/implementation#> .
+@prefix fnom:    <https://w3id.org/function/vocabulary/mapping#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+#TODO some real prefixes would probably be cool idk
+@prefix aaabim:    <http://users.ugent.be/~tdlva/function/aaabim.ttl#> .
+@prefix aaabimm:   <http://fno.io/aaabim/rmlmapping#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix void:    <http://rdfs.org/ns/void#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+#############
+# FUNCTIONS #
+#############
+
+aaabim:geoHashToLatitude a fno:Function ;
+  fno:name "geoHash to Latitude" ;
+  rdfs:label "geoHash to Latitude" ;
+  dcterms:description "Returns the latitude of the center of the box described by a geoHash." ;
+  fno:expects ( aaabim:geoHashParam ) ;
+  fno:returns ( aaabim:doubleOut ) .
+
+aaabim:geoHashToLongitude a fno:Function ;
+  fno:name "geohash to longitude" ;
+  rdfs:label "geohash to longitude" ;
+  dcterms:description "Returns the longitude of the center of the box described by a geohash." ;
+  fno:expects ( aaabim:geoHashParam ) ;
+  fno:returns ( aaabim:doubleOut ) .
+
+aaabim:millisecondsToInstant a fno:Function ;
+  fno:name "milliseconds to instant" ;
+  rdfs:label "milliseconds to instant" ;
+  dcterms:description "Returns a time instant object corresponding with the milliseconds passed since the start of the epoch." ;
+  fno:expects ( aaabim:millisecondsParam ) ;
+  fno:returns ( aaabim:instantOut ) .
+
+aaabim:featureFromMetric a fno:Function ;
+  fno:name "feature from metric" ;
+  rdfs:label "feature from metric" ;
+  dcterms:description "Extracts the feature name from a metric string." ;
+  fno:expects ( aaabim:metricParam ) ;
+  fno:returns ( aaabim:stringOut ) .
+
+aaabim:propertyFromMetric a fno:Function ;
+  fno:name "property from metric" ;
+  rdfs:label "property from metric" ;
+  dcterms:description "Extracts the property name from a metric string." ;
+  fno:expects ( aaabim:metricParam ) ;
+  fno:returns ( aaabim:stringOut ) .
+
+aaabim:typeFromMetric a fno:Function ;
+  fno:name "type from metric" ;
+  rdfs:label "type from metric" ;
+  dcterms:description "Extracts the type name from a metric string." ;
+  fno:expects ( aaabim:metricParam ) ;
+  fno:returns ( aaabim:stringOut ) .
+
+aaabim:concat2 a fno:Function ;
+  fno:name "concat2" ;
+  rdfs:label "concat2" ;
+  dcterms:description "Concatenates 2 strings" ;
+  fno:expects ( aaabim:string1Param aaabim:string2Param ) ;
+  fno:returns ( aaabim:stringOut ) .
+
+aaabim:concat3 a fno:Function ;
+  fno:name "concat3" ;
+  rdfs:label "concat3" ;
+  dcterms:description "Concatenates 3 strings" ;
+  fno:expects ( aaabim:string1Param aaabim:string2Param aaabim:string3Param ) ;
+  fno:returns ( aaabim:stringOut ) .
+
+aaabim:concat4 a fno:Function ;
+  fno:name "concat4" ;
+  rdfs:label "concat4" ;
+  dcterms:description "Concatenates 4 strings" ;
+  fno:expects ( aaabim:string1Param aaabim:string2Param aaabim:string3Param aaabim:string4Param ) ;
+  fno:returns ( aaabim:stringOut ) .
+
+aaabim:concat5 a fno:Function ;
+  fno:name "concat5" ;
+  rdfs:label "concat5" ;
+  dcterms:description "Concatenates 5 strings" ;
+  fno:expects ( aaabim:string1Param aaabim:string2Param aaabim:string3Param aaabim:string4Param aaabim:string5Param ) ;
+  fno:returns ( aaabim:stringOut ) .
+
+aaabim:concat6 a fno:Function ;
+  fno:name "concat6" ;
+  rdfs:label "concat6" ;
+  dcterms:description "Concatenates 6 strings" ;
+  fno:expects ( aaabim:string1Param aaabim:string2Param aaabim:string3Param aaabim:string4Param aaabim:string5Param aaabim:string6Param ) ;
+  fno:returns ( aaabim:stringOut ) .
+
+#####################
+# FUNCTION MAPPINGS #
+#####################
+
+aaabimm:latitudeMapping a fnoi:Mapping ;
+  fno:function aaabim:geoHashToLatitude ;
+  fno:implementation aaabimm:geoFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "geoHashToLongitude" ] .
+
+aaabimm:longitudeMapping a fnoi:Mapping ;
+  fno:function aaabim:geoHashToLongitude ;
+  fno:implementation aaabimm:geoFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "geoHashToLatitude" ] .
+
+aaabimm:instantMapping a fnoi:Mapping ;
+  fno:function aaabim:millisecondsToInstant ;
+  fno:implementation aaabimm:timeFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "instantFromMilliseconds" ] .
+
+aaabimm:featureMapping a fnoi:Mapping ;
+  fno:function aaabim:featureFromMetric ;
+  fno:implementation aaabimm:obeliskFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "featureFromMetric" ] .
+
+aaabimm:propertyMapping a fnoi:Mapping ;
+  fno:function aaabim:propertyFromMetric ;
+  fno:implementation aaabimm:obeliskFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "propertyFromMetric" ] .
+
+aaabimm:typeMapping a fnoi:Mapping ;
+  fno:function aaabim:typeFromMetric ;
+  fno:implementation aaabimm:obeliskFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "typeFromMetric" ] .
+
+aaabimm:concat2Mapping a fnoi:Mapping ;
+  fno:function aaabim:concat2 ;
+  fno:implementation aaabimm:obeliskFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat2" ] .
+
+aaabimm:concat3Mapping a fnoi:Mapping ;
+  fno:function aaabim:concat3 ;
+  fno:implementation aaabimm:obeliskFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat3" ] .
+
+aaabimm:concat4Mapping a fnoi:Mapping ;
+  fno:function aaabim:concat4 ;
+  fno:implementation aaabimm:obeliskFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat4" ] .
+
+aaabimm:concat5Mapping a fnoi:Mapping ;
+  fno:function aaabim:concat5 ;
+  fno:implementation aaabimm:obeliskFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat5" ] .
+
+aaabimm:concat6Mapping a fnoi:Mapping ;
+  fno:function aaabim:concat6 ;
+  fno:implementation aaabimm:obeliskFunctions ;
+  fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat6" ] .
+
+##############
+# PARAMETERS #
+##############
+
+aaabim:geoHashParam a fno:Parameter ;
+    fno:name "geohash" ;
+    rdfs:label "geohash" ;
+    fno:predicate aaabim:p_geohash ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+aaabim:millisecondsParam a fno:Parameter ;
+    fno:name "milliseconds" ;
+    rdfs:label "milliseconds" ;
+    fno:predicate aaabim:p_milliseconds ;
+    fno:type xsd:long ;
+    fno:required "true"^^xsd:boolean .
+
+aaabim:metricParam a fno:Parameter ;
+    fno:name "metric" ;
+    rdfs:label "metric" ;
+    fno:predicate aaabim:p_metric ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+aaabim:string1Param a fno:Parameter ;
+    fno:name "String 1" ;
+    rdfs:label "String 1" ;
+    fno:predicate aaabim:p_str1 ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+aaabim:string2Param a fno:Parameter ;
+    fno:name "String 2" ;
+    rdfs:label "String 2" ;
+    fno:predicate aaabim:p_str2 ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+aaabim:string3Param a fno:Parameter ;
+    fno:name "String 3" ;
+    rdfs:label "String 3" ;
+    fno:predicate aaabim:p_str3 ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+aaabim:string4Param a fno:Parameter ;
+    fno:name "String 4" ;
+    rdfs:label "String 4" ;
+    fno:predicate aaabim:p_str4 ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+aaabim:string5Param a fno:Parameter ;
+    fno:name "String 5" ;
+    rdfs:label "String 5" ;
+    fno:predicate aaabim:p_str5 ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+aaabim:string6Param a fno:Parameter ;
+    fno:name "String 6" ;
+    rdfs:label "String 6" ;
+    fno:predicate aaabim:p_str6 ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+###########
+# OUTPUTS #
+###########
+
+aaabim:doubleOut a fno:Output ;
+    fno:name "double" ;
+    rdfs:label "double" ;
+    fno:predicate aaabim:o_double ;
+    fno:type xsd:double .
+
+aaabim:instantOut a fno:Output ;
+    fno:name "instant" ;
+    rdfs:label "instant" ;
+    fno:predicate aaabim:o_instant ;
+    fno:type xsd:timeInstant .
+
+aaabim:stringOut a fno:Output ;
+    fno:name "string" ;
+    rdfs:label "string" ;
+    fno:predicate aaabim:o_string ;
+    fno:type xsd:string .
+
+###########
+# CLASSES #
+###########
+
+aaabimm:geoFunctions a fnoi:javaClass ;
+  doap:download-page "./src/test/resources/rml-fno-test-cases/AAABIMFUNCTIONS/AaabimFunctions.jar" ;
+  fnoi:class-name "io.fno.aaabim.GeoFunctions" .
+
+aaabimm:timeFunctions a fnoi:javaClass ;
+  doap:download-page "./src/test/resources/rml-fno-test-cases/AAABIMFUNCTIONS/AaabimFunctions.jar" ;
+  fnoi:class-name "io.fno.aaabim.TimeFunctions" .
+
+aaabimm:obeliskFunctions a fnoi:javaClass ;
+  doap:download-page "./src/test/resources/rml-fno-test-cases/AAABIMFUNCTIONS/AaabimFunctions.jar" ;
+  fnoi:class-name "io.fno.aaabim.ObeliskFunctions" .
+
+aaabimm:stringFunctions a fnoi:javaClass ;
+  doap:download-page "./src/test/resources/rml-fno-test-cases/AAABIMFUNCTIONS/AaabimFunctions.jar" ;
+  fnoi:class-name "io.fno.aaabim.StringFunctions" .

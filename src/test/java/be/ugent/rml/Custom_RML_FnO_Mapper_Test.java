@@ -71,4 +71,18 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     public void evaluate_A006() {
         doMapping("./rml-fno-test-cases/RMLFNOTCA006/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA006/output.ttl");
     }
+
+    /**
+     * Tests whether the function millisecondstotimestamp can be loaded and is supported correctly by the mapper
+     */
+    @Test
+    public void evaluate_aaabim() throws Exception {
+        QuadStore functionDescriptionTriples = new RDF4JStore();
+        functionDescriptionTriples.read(Utils.getInputStreamFromFile(new File("./src/test/resources/rml-fno-test-cases/AAABIMFUNCTIONS/aaabim_java_mapping.ttl")), null, RDFFormat.TURTLE);
+        logger.debug("######## description triples size: " + functionDescriptionTriples.size());
+        FunctionLoader functionLoader = new FunctionLoader(functionDescriptionTriples);
+        // You first need to execute the mapping, bc the libraryMap of loaded Jars is dynamically built
+        Executor executor = this.createExecutor("./rml-fno-test-cases/AAABIMFUNCTIONS/mapping.ttl", functionLoader);
+        doMapping(executor, "./rml-fno-test-cases/AAABIMFUNCTIONS/output.ttl");
+    }
 }

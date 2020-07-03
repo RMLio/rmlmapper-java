@@ -5,7 +5,6 @@ import be.ugent.rml.functions.lib.IDLabTestFunctions;
 import be.ugent.rml.store.RDF4JStore;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
