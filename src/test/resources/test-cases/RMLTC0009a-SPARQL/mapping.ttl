@@ -1,12 +1,14 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix ex: <http://example.com/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
-@prefix activity: <http://example.com/activity/> .
+@prefix rr:         <http://www.w3.org/ns/r2rml#> .
+@prefix foaf:       <http://xmlns.com/foaf/0.1/> .
+@prefix ex:         <http://example.com/> .
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml:        <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql:         <http://semweb.mmlab.be/ns/ql#> .
+@prefix activity:   <http://example.com/activity/> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix d2rq:       <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix sd:         <http://www.w3.org/ns/sparql-service-description#> .
 @base <http://example.com/base/> .
-@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
 
 <#InputSPARQL1>
     a sd:Service ;

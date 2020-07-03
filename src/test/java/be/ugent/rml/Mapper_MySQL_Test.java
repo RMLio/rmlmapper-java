@@ -12,6 +12,8 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 
+import static be.ugent.rml.MyFileUtils.getParentPath;
+
 @RunWith(Parameterized.class)
 public class Mapper_MySQL_Test extends MySQLTestCore {
 
@@ -105,6 +107,8 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
                 {"RMLTC0019b", null},
                 {"RMLTC0020a", null},
                 {"RMLTC0020b", null},
+                {"RMLTC1019", null},
+                {"RMLTC1020", null}
         });
     }
 
@@ -124,9 +128,10 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
         mysqlDB.source(resourcePath);
 
         // mapping
+        String parentPath = getParentPath(getClass(), outputPath);
 
         if (expectedException == null) {
-            doMapping(tempMappingPath, outputPath);
+            doMapping(tempMappingPath, outputPath, parentPath);
         } else {
             doMappingExpectError(tempMappingPath);
         }
