@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.8.1] - 2020-07-03
+
 ### Changed
 - updated grel-functions-java to 0.5.2
 
@@ -268,6 +270,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.8.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.8.0...v4.8.1
 [4.8.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.6.0...v4.7.0
 [4.6.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.1...v4.6.0
