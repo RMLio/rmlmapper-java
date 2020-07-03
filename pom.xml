@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>be.ugent.rml</groupId>
     <artifactId>rmlmapper</artifactId>
-    <version>4.8.0</version>
+    <version>4.8.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.12</junit.version>
@@ -137,7 +137,7 @@
         <dependency>
             <groupId>com.github.fnoio</groupId>
             <artifactId>grel-functions-java</artifactId>
-            <version>v0.4.0</version>
+            <version>v0.5.2</version>
         </dependency>
     </dependencies>
 

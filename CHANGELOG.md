@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-### Changed
+### Fixed
 
-- Extended function parameter type support to include dates and times (see [issue 165](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/165))
+- Function objects with types other than String/Boolean don't get discarded (see [issue 165](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/165))
+
+## [4.8.1] - 2020-07-03
+
+### Changed
+- updated grel-functions-java to 0.5.2
 
 ### Fixed
 - ObjectMap with type Blank Node is ignored (see [issue 164](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/164))
-- Function objects with types other than String/Boolean don't get discarded (see [issue 165](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/165))
+- Support double quotes in references of RDBs (see [issue 163](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/163))
 
 ## [4.8.0] - 2020-05-25
 
@@ -269,6 +274,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.8.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.8.0...v4.8.1
 [4.8.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.6.0...v4.7.0
 [4.6.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.5.1...v4.6.0
