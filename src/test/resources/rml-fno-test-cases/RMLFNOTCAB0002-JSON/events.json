@@ -1,0 +1,5 @@
+{
+    "events": [
+      {"tsReceivedMs":1591782480090,"metricId":"weather.pressure::number","timestamp":1591782480076,"sourceId":"knx.0.1.6","geohash":"u14dhw2phg54","h3Index":644459886592352432,"elevation":0.0,"value":101545.0,"tags":{"_scope":"idlab.homelab","_auth":"service-account-dyamand"},"obeliskDelayMs":94}
+      ]
+}

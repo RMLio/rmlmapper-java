@@ -247,17 +247,17 @@ aaabim:stringOut a fno:Output ;
 ###########
 
 aaabimm:geoFunctions a fnoi:javaClass ;
-  doap:download-page "./src/test/resources/rml-fno-test-cases/AAABIMFUNCTIONS/AaabimFunctions.jar" ;
+  doap:download-page "./src/test/resources/aaabimfunctions/AaabimFunctions.jar" ;
   fnoi:class-name "io.fno.aaabim.GeoFunctions" .
 
 aaabimm:timeFunctions a fnoi:javaClass ;
-  doap:download-page "./src/test/resources/rml-fno-test-cases/AAABIMFUNCTIONS/AaabimFunctions.jar" ;
+  doap:download-page "./src/test/resources/aaabimfunctions/AaabimFunctions.jar" ;
   fnoi:class-name "io.fno.aaabim.TimeFunctions" .
 
 aaabimm:obeliskFunctions a fnoi:javaClass ;
-  doap:download-page "./src/test/resources/rml-fno-test-cases/AAABIMFUNCTIONS/AaabimFunctions.jar" ;
+  doap:download-page "./src/test/resources/aaabimfunctions/AaabimFunctions.jar" ;
   fnoi:class-name "io.fno.aaabim.ObeliskFunctions" .
 
 aaabimm:stringFunctions a fnoi:javaClass ;
-  doap:download-page "./src/test/resources/rml-fno-test-cases/AAABIMFUNCTIONS/AaabimFunctions.jar" ;
+  doap:download-page "./src/test/resources/aaabimfunctions/AaabimFunctions.jar" ;
   fnoi:class-name "io.fno.aaabim.StringFunctions" .
