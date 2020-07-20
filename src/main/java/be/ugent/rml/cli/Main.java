@@ -59,7 +59,7 @@ public class Main {
                 .longOpt("functionfile")
                 .hasArg()
                 .numberOfArgs(Option.UNLIMITED_VALUES)
-                .desc("path to functions.ttl file (dynamic functions with relative paths are found relative to the cwd)")
+                .desc("one or more function file paths (dynamic functions with relative paths are found relative to the cwd)")
                 .build();
         Option triplesmapsOption = Option.builder("t")
                 .longOpt("triplesmaps")
