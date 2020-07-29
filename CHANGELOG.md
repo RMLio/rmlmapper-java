@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-### Fixed
+### Changed
+- Updated licenses on the README
 
+### Fixed
+- Documentation updated to reflect metadata generation
 - Function objects with types other than String/Boolean don't get discarded (see [issue 165](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/165))
 
 ## [4.8.1] - 2020-07-03

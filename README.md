@@ -27,7 +27,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
  - JSON files (JSONPath)
  - XML files (XPath)
 - remote data sources:
- - relational databases (MySQL, PostgreSQL, and SQLServer)
+ - relational databases (MySQL, PostgreSQL, Oracle, and SQLServer)
  - SPARQL endpoints
  - files via HTTP urls (via GET)
   - CSV files
@@ -68,24 +68,29 @@ usage: java -jar mapper.jar <options>
 options:
  -c,--configfile <arg>            path to configuration file
  -d,--duplicates                  remove duplicates in the output
- -dsn,--r2rml-jdbcDriver <arg>    DSN of the database when using R2RML rules
+ -dsn,--r2rml-jdbcDSN <arg>       DSN of the database when using R2RML
+                                  rules
  -e,--metadatafile <arg>          path to output metadata file
- -f,--functionfile <arg>          one or more function file paths (dynamic functions with relative paths are found relative to the cwd)
+ -f,--functionfile <arg>          one or more function file paths (dynamic
+                                  functions with relative paths are found
+                                  relative to the cwd)
  -h,--help                        show help info
  -l,--metadataDetailLevel <arg>   generate metadata on given detail level
                                   (dataset - triple - term)
  -m,--mappingfile <arg>           one or more mapping file paths and/or
                                   strings (multiple values are
-                                  concatenated). r2rml is converted to rml 
+                                  concatenated). r2rml is converted to rml
                                   if needed using the r2rml arguments.
  -o,--outputfile <arg>            path to output file (default: stdout)
- -p,--r2rml-password <arg>        password of the database when using R2RML rules
+ -p,--r2rml-password <arg>        password of the database when using
+                                  R2RML rules
  -s,--serialization <arg>         serialization format (nquads (default),
                                   turtle, trig, trix, jsonld, hdt)
  -t,--triplesmaps <arg>           IRIs of the triplesmaps that should be
                                   executed in order, split by ',' (default
                                   is all triplesmaps)
- -u,--r2rml-username <arg>        username of the database when using R2RML rules
+ -u,--r2rml-username <arg>        username of the database when using
+                                  R2RML rules
  -v,--verbose                     show more details in debugging output
 ```
 
@@ -180,6 +185,20 @@ This overrides the dynamic loading.
 An example of how you can use Preload a custom function can be found
 at [./src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java](https://github.com/RMLio/rmlmapper-java/blob/master/src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java)
 
+### Generating metadata
+
+Conform to how it is described in the scientific paper [1],
+the RMLMapper allows to automatically generate [PROV-O](https://www.w3.org/TR/prov-o/) metadata.
+Specifically, you need the CLI arguments below.
+You can specify in which output file the metadata should be stored,
+and up to which level metadata should be stored (dataset, triple, or term level metadata).
+
+```
+ -e,--metadatafile <arg>          path to output metadata file
+ -l,--metadataDetailLevel <arg>   generate metadata on given detail level
+                                  (dataset - triple - term)
+```
+
 ## Testing
 
 Run the tests via `test.sh`.
@@ -193,25 +212,29 @@ Make sure you have [Docker](https://www.docker.com) running.
 
 ## Dependencies
 
-|             Dependency             | License                                                            |
-|:----------------------------------:|--------------------------------------------------------------------|
-| com.spotify docker client          | Apache License 2.0                                                 |
-| com.h2database h2                  | Eclipse Public License 1.0 & Mozilla Public License 2.0            |
-| com.googlecode.zohhak              | GNU Lesser General Public License v3.0                             |
-| com.microsoft.sqlserver mssql-jdbc | MIT                                                                |
-| ch.vorbuger.mariaDB4j              | Apache License 2.0                                                 |
-| mysql-connector-java               | GNU General Public License v2.0                                    |
-| com.google.guava                   | Apache License 2.0                                                 |
-| javax.xml.parsers jaxp-api         | Apache License 2.0                                                 |
-| com.jayway.jsonpath                | Apache License 2.0                                                 |
-| junit                              | Eclipse Public License 1.0                                         |
-| org.eclipse.rdf4j rdf4j-runtime    | Eclipse Public License 1.0                                         |
-| commons-cli                        | Apache License 2.0                                                 |
-| commons-csv                        | Apache License 2.0                                                 |
-| commons-lang                       | Apache License 2.0                                                 |
-| ch.qos.logback                     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
-| org.rdfhdt.hdt-jena                | GNU Lesser General Public License v3.0                             |
-| io.fno.grel                        | MIT                                                                |
+| Dependency                              | License                                                            |
+|:---------------------------------------:|--------------------------------------------------------------------|
+| ch.qos.logback logback-classic          | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
+| commons-cli commons-lang                | Apache License 2.0                                                 |
+| org.apache.commons commons-csv          | Apache License 2.0                                                 |
+| commons-cli commons-cli                 | Apache License 2.0                                                 |
+| org.eclipse.rdf4j rdf4j-runtime         | Eclipse Public License 1.0                                         |
+| junit junit                             | Eclipse Public License 1.0                                         |
+| com.jayway.jsonpath json-path           | Apache License 2.0                                                 |
+| javax.xml.parsers jaxp-api              | Apache License 2.0                                                 |
+| mysql mysql-connector-java              | GNU General Public License v2.0                                    |
+| ch.vorbuger.mariaDB4j mariaDB4j         | Apache License 2.0                                                 |
+| postgresql postgresql                   | BSD                                                                |
+| com.microsoft.sqlserver mssql-jdbc      | MIT                                                                |
+| com.spotify docker-client               | Apache License 2.0                                                 |
+| com.fasterxml.jackson.core jackson-core | Apache License 2.0                                                 |
+| org.eclipse.jetty jetty-server          | Eclipse Public License 1.0 & Apache License 2.0                    |
+| org.eclipse.jetty jetty-security        | Eclipse Public License 1.0 & Apache License 2.0                    |
+| org.apache.jena apache-jena-libs        | Apache License 2.0                                                 |
+| org.apache.jena jena-fuseki-embedded    | Apache License 2.0                                                 |
+| com.github.bjdmeest hdt-java            | GNU Lesser General Public License v3.0                             |
+| commons-validator commons-validator     | Apache License 2.0                                                 |
+| com.github.fnoio grel-functions-java    | MIT                                                                |
 
 ## Commercial Support
 
@@ -224,7 +247,7 @@ Do you need...
 -   custom code, built by experts?
 -   commercial support and licensing?
 
-You're welcome to [contact us](mailto:info@rml.io) in regards to
+You're welcome to [contact us](mailto:info@rml.io) regarding
 on-premise, enterprise, and internal installations, integrations, and deployments.
 
 We have commercial support available.
@@ -265,3 +288,6 @@ mvn javadoc:javadoc
 ##### Edit on [draw.io](https://www.draw.io)
 * Go to [draw.io](https://www.draw.io)
 * Click on 'Open Existing Diagram' and choose the .html file
+
+[1]: A. Dimou, T. De Nies, R. Verborgh, E. Mannens, P. Mechant, and R. Van de Walle, “Automated metadata generation for linked data generation and publishing workflows,” in Proceedings of the 9th Workshop on Linked Data on the Web, Montreal, Canada, 2016, pp. 1–10.
+[PDF](http://events.linkeddata.org/ldow2016/papers/LDOW2016_paper_04.pdf)
