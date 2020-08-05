@@ -12,7 +12,7 @@ variables:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: "YourSTRONG!Passw0rd"
   # SQLServer
-  ACCEPT_EULA: Y
+  ACCEPT_EULA: "Y"
   SA_PASSWORD: "YourSTRONG!Passw0rd"
 
 cache:

@@ -1,0 +1,13 @@
+<file://./generated_metadata.ttl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset>.
+<file://./generated_metadata.ttl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity>.
+<file://./generated_metadata.ttl> <http://www.w3.org/ns/prov#wasAssociatedWith> <http://rml.io/tool/rmlmapper-java>.
+<file://./generated_metadata.ttl> <http://www.w3.org/ns/prov#wasDerivedFrom> <file://src/test/resources/metadata-test-cases/sport.json>.
+<file://./generated_metadata.ttl> <http://www.w3.org/ns/prov#wasDerivedFrom> <file://src/test/resources/metadata-test-cases/student.json>.
+<file://./generated_metadata.ttl> <http://www.w3.org/ns/prov#wasGeneratedBy> _:72722.
+<http://rml.io/tool/rmlmapper-java> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Agent>.
+<http://rml.io/tool/rmlmapper-java> <http://www.w3.org/ns/prov#type> <http://www.w3.org/ns/prov#SoftwareAgent>.
+_:72722 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Activity>.
+_:72722 <http://www.w3.org/ns/prov#generated> <file://./generated_metadata.ttl>.
+_:72722 <http://www.w3.org/ns/prov#used> <file://./metadata-test-cases/metadata-dataset-level/turtle/mapping.ttl>.
+_:72722 <http://www.w3.org/ns/prov#used> <file://src/test/resources/metadata-test-cases/sport.json>.
+_:72722 <http://www.w3.org/ns/prov#used> <file://src/test/resources/metadata-test-cases/student.json>.

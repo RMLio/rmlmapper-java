@@ -215,11 +215,13 @@ public abstract class TestCore {
     private QuadStore filePathToStore(String path) throws Exception {
         // load output-turtle file
         File outputFile = null;
+
         try {
             outputFile = Utils.getFile(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         QuadStore store;
 
         if (path.endsWith(".nq")) {

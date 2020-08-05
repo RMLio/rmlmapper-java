@@ -30,13 +30,18 @@ case $key in
     VERBOSE=true
     shift # past argument
     ;;
+    -m|--hide-maven-output)
+    HIDE_MAVEN_OUTPUT=true
+    shift # past argument
+    ;;
     -h|--help)
     echo "Usage information: "
     echo
-    echo "  -n|--no-oracle   Skip Oracle tests."
-    echo "  -o|--only-oracle Only run Oracle tests."
-    echo "  -v|--verbose     Output more information."
-    echo "  -h|--help        The usage of information."
+    echo "  -n|--no-oracle         Skip Oracle tests."
+    echo "  -o|--only-oracle       Only run Oracle tests."
+    echo "  -v|--verbose           Output more information."
+    echo "  -m|--hide-maven-output Hide maven output."
+    echo "  -h|--help              The usage of information."
     exit 0;
     ;;
 esac
@@ -53,7 +58,12 @@ log ""
 
 if [[ "$ONLY_ORACLE_TESTS" != "true" ]]; then
   log "Running all tests except Oracle tests."
-  mvn test -Dtest=!Mapper_OracleDB_Test
+
+  if [[ "$HIDE_MAVEN_OUTPUT" == "true" ]]; then
+    mvn test -Dtest=!Mapper_OracleDB_Test &> /dev/null
+  else
+    mvn test -Dtest=!Mapper_OracleDB_Test
+  fi
 fi
 
 if [ $? -eq 0 ]; then
@@ -66,7 +76,11 @@ if [ $? -eq 0 ]; then
       temp=$(echo $dep | sed 's/\//\\\//g')
       sed -i "/<\/dependencies>/ s/.*/${temp}\n&/" pom-oracle.xml
 
-      mvn test -f pom-oracle.xml -Dtest=Mapper_OracleDB_Test
+      if [[ "$HIDE_MAVEN_OUTPUT" == "true" ]]; then
+        mvn test -f pom-oracle.xml -Dtest=Mapper_OracleDB_Test &> /dev/null
+      else
+        mvn test -f pom-oracle.xml -Dtest=Mapper_OracleDB_Test
+      fi
 
       rm pom-oracle.xml
 
@@ -77,7 +91,7 @@ if [ $? -eq 0 ]; then
         exit 1
       fi
     else
-      log "All tests are done."
+      log "All tests succeeded."
     fi
 else
     >&2 echo "Some of the tests failed."

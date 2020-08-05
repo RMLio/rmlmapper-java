@@ -32,7 +32,6 @@ public class MetadataGenerator {
 
     private QuadStore mdStore;
     private DETAIL_LEVEL detailLevel;
-    private String outputFile;
     private QuadStore inputData;
     private String[] mappingFiles;
     private List<Term> triplesMaps;
@@ -50,10 +49,9 @@ public class MetadataGenerator {
     private Term rdfDatasetGeneration;
     private Term rmlMapper;
 
-    public MetadataGenerator(DETAIL_LEVEL detailLevel, String outputFile, String[] mappingFiles, QuadStore inputData) {
-        mdStore = new SimpleQuadStore();
+    public MetadataGenerator(DETAIL_LEVEL detailLevel, String outputFile, String[] mappingFiles, QuadStore inputData, QuadStore metadataStore) {
+        mdStore = metadataStore;
         this.detailLevel = detailLevel;
-        this.outputFile = outputFile;
         this.inputData = inputData;
         this.mappingFiles = mappingFiles;
 
@@ -76,6 +74,10 @@ public class MetadataGenerator {
         if (detailLevel.getLevel() >= DETAIL_LEVEL.TERM.getLevel()) {
             addTermLevelFunctions();
         }
+    }
+
+    public MetadataGenerator(DETAIL_LEVEL detailLevel, String outputFile, String[] mappingFiles, QuadStore inputData) {
+        this(detailLevel, outputFile, mappingFiles, inputData, new SimpleQuadStore());
     }
 
     /**

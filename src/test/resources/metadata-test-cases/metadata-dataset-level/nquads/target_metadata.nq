@@ -9,7 +9,7 @@ _:69080 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/
 _:69080 <http://www.w3.org/ns/prov#endedAtTime> "2018-08-21T11:59:06.188911Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 _:69080 <http://www.w3.org/ns/prov#generated> <file://./generated_metadata.nq>.
 _:69080 <http://www.w3.org/ns/prov#startedAtTime> "2018-08-21T11:59:06.178968Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
-_:69080 <http://www.w3.org/ns/prov#used> <file://./metadata-test-cases/metadata-dataset-level/mapping.ttl>.
+_:69080 <http://www.w3.org/ns/prov#used> <file://./metadata-test-cases/metadata-dataset-level/nquads/mapping.ttl>.
 _:69080 <http://www.w3.org/ns/prov#used> <file://src/test/resources/metadata-test-cases/sport.json>.
 _:69080 <http://www.w3.org/ns/prov#used> <file://src/test/resources/metadata-test-cases/student.json>.
 <http://rml.io/tool/rmlmapper-java> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Agent>.

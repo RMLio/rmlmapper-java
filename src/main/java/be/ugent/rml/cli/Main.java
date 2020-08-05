@@ -189,13 +189,7 @@ public class Main {
                 RecordsFactory factory = new RecordsFactory(basePath);
 
                 String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
-                QuadStore outputStore;
-
-                if (outputFormat == null || outputFormat.equals("nquads") || outputFormat.equals("hdt")) {
-                    outputStore = new SimpleQuadStore();
-                } else {
-                    outputStore = new RDF4JStore();
-                }
+                QuadStore outputStore = getStoreForFormat(outputFormat);
 
                 Executor executor;
 
@@ -221,11 +215,15 @@ public class Main {
                                 logger.error("Unknown metadata detail level option. Use the -h flag for more info.");
                                 return;
                         }
+
+                        QuadStore metadataStore = getStoreForFormat(outputFormat);
+
                         metadataGenerator = new MetadataGenerator(
                                 detailLevel,
                                 getPriorityOptionValue(metadataOption, lineArgs, configFile),
                                 mOptionValue,
-                                rmlStore
+                                rmlStore,
+                                metadataStore
                         );
                     } else {
                         logger.error("Please specify the detail level when requesting metadata generation. Use the -h flag for more info.");
@@ -421,5 +419,13 @@ public class Main {
         }
 
         return targetFile;
+    }
+
+    private static QuadStore getStoreForFormat(String outputFormat) {
+        if (outputFormat == null || outputFormat.equals("nquads") || outputFormat.equals("hdt")) {
+            return new SimpleQuadStore();
+        } else {
+            return new RDF4JStore();
+        }
     }
 }
