@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+###
+- Support function on SubjectMap that generates blank nodes (see [issue 167](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/167))
+
 ### Changed
 - Updated licenses on the README
 

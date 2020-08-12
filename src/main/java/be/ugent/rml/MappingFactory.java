@@ -68,12 +68,12 @@ public class MappingFactory {
 
                 Term subjectmap = subjectmaps.get(0);
                 List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+                List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR + "termType"), null));
+                boolean isBlankNode = !termTypes.isEmpty() && termTypes.get(0).equals(new NamedNode(NAMESPACES.RR  + "BlankNode"));
 
                 if (functionValues.isEmpty()) {
-                    List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR + "termType"), null));
-
                     //checking if we are dealing with a Blank Node as subject
-                    if (!termTypes.isEmpty() && termTypes.get(0).equals(new NamedNode(NAMESPACES.RR  + "BlankNode"))) {
+                    if (isBlankNode) {
                         SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, subjectmap, true, ignoreDoubleQuotes);
 
                         if (executor != null) {
@@ -88,7 +88,11 @@ public class MappingFactory {
                 } else {
                     SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
-                    generator = new NamedNodeGenerator(functionExecutor);
+                    if (isBlankNode) {
+                        generator = new BlankNodeGenerator(functionExecutor);
+                    } else {
+                        generator = new NamedNodeGenerator(functionExecutor);
+                    }
                 }
 
                 this.subjectMappingInfo = new MappingInfo(subjectmap, generator);

@@ -1,6 +1,7 @@
 package be.ugent.rml.termgenerator;
 
 import be.ugent.rml.Executor;
+import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.BlankNode;
@@ -25,7 +26,8 @@ public class BlankNodeGenerator extends TermGenerator {
         ArrayList<Term> nodes = new ArrayList<>();
 
         if (this.functionExecutor != null) {
-            List<String> objectStrings = (List<String>) this.functionExecutor.execute(record);
+            List<String> objectStrings = new ArrayList<>();
+            FunctionUtils.functionObjectToList(functionExecutor.execute(record), objectStrings);
 
             objectStrings.forEach(object -> {
                 nodes.add(new BlankNode(object));
