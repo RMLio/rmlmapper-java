@@ -159,6 +159,9 @@ class CSVW {
 
         if (output == null) {
             return this.csvFormat.getDelimiter();
+            // Matches literal with value "\\t".
+        } else if (output.equals("\\t")) {
+            return '\t';
         } else {
             return output.toCharArray()[0];
         }

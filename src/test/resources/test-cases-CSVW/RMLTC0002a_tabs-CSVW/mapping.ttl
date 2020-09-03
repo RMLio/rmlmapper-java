@@ -29,7 +29,7 @@
   ].
 
 <#CSVW_source> a csvw:Table;
-   csvw:url "student.csv" ;
+   csvw:url "student.tsv" ;
    csvw:dialect [ a csvw:Dialect;
-       csvw:delimiter " ";
+       csvw:delimiter "\\t";
    ] .
