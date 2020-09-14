@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ### Fixed
-- Fix CSVW with tab (see [issue 168](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/168))
+- Fix CSVW with tab (see issues [168](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/168)
+and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 
 ## [4.8.2] - 2020-08-17
 

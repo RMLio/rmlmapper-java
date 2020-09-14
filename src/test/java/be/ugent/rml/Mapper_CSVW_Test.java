@@ -18,6 +18,7 @@ public class Mapper_CSVW_Test extends TestCore {
                 {"delimiter"},
                 {"encoding"},
                 {"tabs"},
+                {"tabs_unicode"},
                 {"trim"}
         });
 

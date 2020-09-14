@@ -31,5 +31,5 @@
 <#CSVW_source> a csvw:Table;
    csvw:url "student.tsv" ;
    csvw:dialect [ a csvw:Dialect;
-       csvw:delimiter "\t";
+       csvw:delimiter "\u0009";
    ] .
