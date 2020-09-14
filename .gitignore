@@ -8,3 +8,4 @@ rmlmapper.iml
 ojdbc*.jar
 pom-oracle.xml
 dependency-reduced-pom.xml
+settings.xml

@@ -14,6 +14,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
   - [Docker](#docker)
   - [Including functions](#including-functions)
 - [Testing](#testing)
+- [Deploy on Central Repository](#deploy-on-central-repository)
 - [Dependencies](#dependencies)
 - [Remarks](#remarks)
 - [Documentation](#documentation)
@@ -209,6 +210,14 @@ Make sure you have [Docker](https://www.docker.com) running.
 #### Problems
 * A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests will always succeed locally.
 * A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on Windows 7 machines.
+
+## Deploy on Central Repository
+The following steps deploy a new version to the Central Repository,
+based on [this tutorial](https://central.sonatype.org/pages/apache-maven.html).
+
+1. Copy `settings.example.xml` to `settings.xml`.
+2. Fill in your JIRA user name and password in `settings.xml`.
+3. Deploy the latest release via `mvn clean deploy -P release`.
 
 ## Dependencies
 

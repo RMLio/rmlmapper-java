@@ -1,0 +1,9 @@
+<settings>
+    <servers>
+        <server>
+            <id>ossrh</id>
+            <username>jira-username</username>
+            <password>jira-password</password>
+        </server>
+    </servers>
+</settings>

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- Add to Maven Central (see [issue 94](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/94))
+
 ### Fixed
 - Fix CSVW with tab (see issues [168](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/168)
 and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
