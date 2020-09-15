@@ -1,1 +1,0 @@
-/home/pheyvaer/.sdkman/candidates/java/current/bin/javadoc @options @packages

@@ -2,7 +2,37 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>be.ugent.rml</groupId>
     <artifactId>rmlmapper</artifactId>
-    <version>4.8.2</version>
+    <name>RMLMapper</name>
+    <version>4.9.0</version>
+    <description>
+        The RMLMapper executes RML rules to generate high quality Linked Data from multiple originally (semi-)structured data sources.
+    </description>
+    <url>https://github.com/RMLio/rmlmapper-java</url>
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>https://raw.githubusercontent.com/RMLio/rmlmapper-java/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>pheyvaer</id>
+            <name>Pieter Heyvaert</name>
+            <email>pieter.heyvaert@ugent.be</email>
+        </developer>
+        <developer>
+            <id>bjdmeest</id>
+            <name>Ben De Meester</name>
+            <email>ben.demeester@ugent.be</email>
+        </developer>
+        <developer>
+            <id>andimou</id>
+            <name>Anastasia Dimou</name>
+            <email>anastasia.dimou@ugent.be</email>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.12</junit.version>
@@ -42,20 +72,14 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <version>3.1.0</version>
-                        <configuration>
-                            <reportOutputDirectory>docs</reportOutputDirectory>
-                            <locale>en</locale>
-                        </configuration>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
-                                <phase>install</phase>
                                 <goals>
-                                    <goal>javadoc</goal>
+                                    <goal>jar</goal>
                                 </goals>
                                 <configuration>
                                     <show>public</show>
-                                    <reportOutputDirectory>docs</reportOutputDirectory>
                                     <failOnError>false</failOnError>
                                     <doclint>none</doclint>
                                 </configuration>

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.9.0] - 2020-09-14
+
 ### Added
 - Add to Maven Central (see [issue 94](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/94))
 
@@ -290,6 +292,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.9.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.8.2...v4.9.0
 [4.8.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.8.1...v4.8.2
 [4.8.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.8.0...v4.8.1
 [4.8.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.7.0...v4.8.0
