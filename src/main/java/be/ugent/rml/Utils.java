@@ -82,8 +82,9 @@ public class Utils {
      */
     public static InputStream getInputStreamFromFileOrContentString(String s) {
         InputStream out;
+        logger.warn("{} mapping file", s);
         try {
-            out = getInputStreamFromLocation(s, null, "application/rdf+xml");
+            out = getInputStreamFromLocation(s, null, "text/turtle");
         } catch (IOException e) {
             try {
                 // raw mapping input string
