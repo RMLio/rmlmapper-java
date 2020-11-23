@@ -195,7 +195,14 @@ grel:param_false
     rdfs:label    "eFalse" ;
     fno:predicate grel:any_false ;
     fno:type      xsd:any ;
-    fno:required  "true"^^xsd:boolean .
+    fno:required  "false"^^xsd:boolean .
+
+grel:output_any
+    a             fno:Output ;
+    fno:name      "any" ;
+    rdfs:label    "any" ;
+    fno:predicate grel:o_any ;
+    fno:type      xsd:any .
 
 grel:prob_string
     a                   fno:Problem ;

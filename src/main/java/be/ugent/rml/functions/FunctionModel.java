@@ -164,6 +164,7 @@ public class FunctionModel {
             }
         }
         switch (type.getName()) {
+            case "java.lang.Object":
             case "java.lang.String":
                 return parameter.toString();
             case "int":
@@ -175,6 +176,8 @@ public class FunctionModel {
             case "long":
             case "java.lang.Long":
                 return Long.parseLong(parameter.toString());
+            case "java.lang.Boolean":
+                return Boolean.parseBoolean(parameter.toString());
             case "java.time.LocalDate":
                 return LocalDate.parse(parameter.toString());
             case "java.time.LocalDateTime":

@@ -92,6 +92,8 @@ public class FunctionUtils {
 
         switch (typeStr) {
             // This is quite crude, based on https://www.w3.org/TR/xmlschema11-2/#built-in-datatypes
+            case "http://www.w3.org/2001/XMLSchema#any":
+                return Object.class;
             case "http://www.w3.org/2001/XMLSchema#string":
                 return String.class;
             case "http://www.w3.org/2001/XMLSchema#unsignedLong":
@@ -109,6 +111,8 @@ public class FunctionUtils {
             case "http://www.w3.org/2001/XMLSchema#nonPositiveInteger":
             case "http://www.w3.org/2001/XMLSchema#negativeInteger":
                 return Integer.class;
+            case "http://www.w3.org/2001/XMLSchema#boolean":
+                return Boolean.class;
             case "http://www.w3.org/2001/XMLSchema#date":
                 // "Local" just means "without a time zone"
                 return LocalDate.class;
