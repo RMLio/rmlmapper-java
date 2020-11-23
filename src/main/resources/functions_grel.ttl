@@ -408,7 +408,7 @@ grel:p_int_i_opt_to
     fno:name      "to" ;
     rdfs:label    "to" ;
     fno:predicate grel:param_int_i_opt_to ;
-    fno:type      xsd:string ;
+    fno:type      xsd:int ;
     fno:required  "false"^^xsd:boolean .
 
 # TODO slice sameAs substring
