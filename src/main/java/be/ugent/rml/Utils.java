@@ -82,7 +82,7 @@ public class Utils {
      */
     public static InputStream getInputStreamFromFileOrContentString(String s) {
         InputStream out;
-        logger.warn("{} mapping file", s);
+        logger.debug("{} mapping file", s);
         try {
             out = getInputStreamFromLocation(s, null, "text/turtle");
         } catch (IOException e) {

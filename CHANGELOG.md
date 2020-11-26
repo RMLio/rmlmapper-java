@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Support commas in JSONPath 
 
 ### Fixed
-- Print descriptive error when mapping file does not exist or is invalid Turtle (see Github [issue 54](https://github.com/RMLio/rmlmapper-java/issues/54)
+- Print descriptive error when mapping file does not exist or is invalid Turtle (see Github [issue 54](https://github.com/RMLio/rmlmapper-java/issues/54))
+- Print mapping file path as debug instead of a warning (see [issue 172](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/172))
 
 ## [4.9.0] - 2020-09-14
 
