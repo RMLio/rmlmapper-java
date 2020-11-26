@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+import org.eclipse.rdf4j.rio.RDFParseException;
 
 import java.io.*;
 import java.time.Instant;
@@ -171,7 +172,13 @@ public class Main {
 
                 // Read mapping file.
                 RDF4JStore rmlStore = new RDF4JStore();
-                rmlStore.read(is, null, RDFFormat.TURTLE);
+                try {
+                    rmlStore.read(is, null, RDFFormat.TURTLE);
+                }
+                catch (RDFParseException e) {
+                    logger.error(fatal, "Unable to parse mapping rules as Turtle. Does the file exist and is it valid Turtle?");
+                    System.exit(1);
+                }
 
                 // Convert mapping file to RML if needed.
                 MappingConformer conformer = new MappingConformer(rmlStore, mappingOptions);

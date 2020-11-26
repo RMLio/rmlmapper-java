@@ -1,7 +1,9 @@
 package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.rdfhdt.hdt.hdt.HDT;
 import org.rdfhdt.hdt.hdt.HDTManager;
 import org.rdfhdt.hdt.triples.*;
@@ -17,6 +19,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 
 public class Arguments_Test extends TestCore {
+    @Rule
+    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @Test
     public void withConfigFile() throws Exception {
@@ -51,6 +55,12 @@ public class Arguments_Test extends TestCore {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void nonexistingMappingFile() throws Exception {
+        exit.expectSystemExitWithStatus(1); // Handle System.exit(1)
+        Main.main("-m ./argument-config-file-test-cases/I_DONT_EXIST.ttl -o ./generated_output.nq".split(" "));
     }
 
     @Test

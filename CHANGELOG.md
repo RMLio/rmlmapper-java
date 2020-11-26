@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- Support commas in JSONPath 
+
 ### Fixed
-- Handling of boolean FnO parameter (see [MR 116](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/merge_requests/116))
+- Handling of boolean/any FnO parameters (see [MR 116](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/merge_requests/116))
+
+### Fixed
+- Print descriptive error when mapping file does not exist or is invalid Turtle (see Github [issue 54](https://github.com/RMLio/rmlmapper-java/issues/54))
+- Print mapping file path as debug instead of a warning (see [issue 172](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/172))
+>>>>>>> development
 
 ## [4.9.0] - 2020-09-14
 
@@ -21,7 +29,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 
 ## [4.8.2] - 2020-08-17
 
-###
+### Added
 - Support function on SubjectMap that generates blank nodes (see [issue 167](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/167))
 
 ### Changed
