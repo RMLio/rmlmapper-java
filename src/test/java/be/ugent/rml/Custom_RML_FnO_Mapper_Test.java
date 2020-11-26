@@ -105,4 +105,39 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
         // execute mapping
         doMapping(executor, "rml-fno-test-cases/RMLFNOTCAB0002-JSON/output.ttl");
     }
+
+    /**
+     * Tests whether grel:controls_if works for when the condition is true
+     * @throws Exception
+     */
+    @Test
+    public void evaluate_B0003() throws Exception {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTCAB0003-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCAB0003-CSV/output.ttl");
+    }
+
+    /**
+     * Tests whether grel:controls_if works for when the condition is false
+     * @throws Exception
+     */@Test
+    public void evaluate_B0004() throws Exception {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTCAB0004-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCAB0004-CSV/output.ttl");
+    }
+
+    /**
+     * Tests whether grel:controls_if works for when the condition is true and no value for the "else case" is given
+     * @throws Exception
+     */
+    @Test
+    public void evaluate_B0005() throws Exception {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTCAB0005-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCAB0005-CSV/output.ttl");
+    }
+
+    /**
+     * Tests whether grel:controls_if works for when the condition is false and no value for the "else case" is given
+     * @throws Exception
+     */
+    @Test
+    public void evaluate_B0006() throws Exception {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTCAB0006-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCAB0006-CSV/output.ttl");
+    }
 }
