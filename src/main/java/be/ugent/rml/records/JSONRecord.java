@@ -1,7 +1,7 @@
 package be.ugent.rml.records;
 
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
+import com.jayway.jsonpath.JsonPathException;
 import net.minidev.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +17,8 @@ public class JSONRecord extends Record {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private String path;
-    private Object document;
+    private final String path;
+    private final Object document;
 
     public JSONRecord(Object document, String path) {
         this.path = path;
@@ -34,13 +34,30 @@ public class JSONRecord extends Record {
     public List<Object> get(String value) {
         List<Object> results = new ArrayList<>();
 
-        try {
-            // JSONPaths with spaces need to have [ ] around it for the library we use.
-            if (value.contains(" ")) {
-                value = "['" + value + "']";
-            }
+        // We put simple values between square brackets to make sure no non-escaped shenanigans happen.
+        if (!value.contains("[") && !value.contains(".")) {
+            value = "['" + value + "']";
+        } else {
+            value = "." + value;
+        }
+        // TODO do we need to be smarter that this? Below isn't complete yet, but also doesn't seem necessary
+//        String[] valueParts = value.split("\\.");
+//        StringBuilder escapedValue = new StringBuilder();
+//        for (String valuePart : valueParts) {
+//            // This JSONPath library specifically cannot handle keys with commas, so we need to escape it
+//            String escapedValuePart = valuePart.replaceAll(",", "\\\\,");
+//            if (!(escapedValuePart.startsWith("["))) {
+//                escapedValue.append("['").append(escapedValuePart).append("']");
+//            } else {
+//                escapedValue.append(escapedValuePart);
+//            }
+//        }
 
-            Object t = JsonPath.read(document, this.path + "." + value);
+        // This JSONPath library specifically cannot handle keys with commas, so we need to escape it
+        String fullValue = (this.path + value).replaceAll(",", "\\\\,");
+
+        try {
+            Object t = JsonPath.read(document, fullValue);
 
             if (t instanceof JSONArray) {
                 JSONArray array = (JSONArray) t;
@@ -56,8 +73,8 @@ public class JSONRecord extends Record {
                     results.add(t.toString());
                 }
             }
-        } catch(PathNotFoundException e) {
-            logger.warn(e.getMessage(), e);
+        } catch (JsonPathException e) {
+            logger.warn(e.getMessage() + " for path " + this.path + value, e);
         }
 
         return results;

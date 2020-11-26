@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- Support commas in JSONPath 
+
 ### Fixed
 - Print descriptive error when mapping file does not exist or is invalid Turtle (see Github [issue 54](https://github.com/RMLio/rmlmapper-java/issues/54)
 

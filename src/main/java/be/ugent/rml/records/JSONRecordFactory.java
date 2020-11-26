@@ -1,9 +1,6 @@
 package be.ugent.rml.records;
 
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.PathNotFoundException;
+import com.jayway.jsonpath.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,23 +17,25 @@ public class JSONRecordFactory extends IteratorFormat<Object> implements Referen
      * @param document the document from which records need to get.
      * @param iterator the used iterator.
      * @return a list of records.
-     * @throws IOException
      */
     @Override
-    List<Record> getRecordsFromDocument(Object document, String iterator) throws IOException {
+    List<Record> getRecordsFromDocument(Object document, String iterator) {
         List<Record> records = new ArrayList<>();
 
         Configuration conf = Configuration.builder()
                 .options(Option.AS_PATH_LIST).build();
 
+        // This JSONPath library specifically cannot handle keys with commas, so we need to escape it
+        String escapedIterator = iterator.replaceAll(",", "\\\\,");
+
         try {
-            List<String> pathList = JsonPath.using(conf).parse(document).read(iterator);
+            List<String> pathList = JsonPath.using(conf).parse(document).read(escapedIterator);
 
             for(String p :pathList) {
                 records.add(new JSONRecord(document, p));
             }
-        } catch(PathNotFoundException e) {
-            logger.warn(e.getMessage(), e);
+        } catch (JsonPathException e) {
+            logger.warn(e.getMessage() + " for iterator " + iterator, e);
         }
 
         return records;
