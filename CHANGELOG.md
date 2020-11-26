@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Handling of boolean FnO parameter (see [MR 116](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/merge_requests/116))
+
 ## [4.9.0] - 2020-09-14
 
 ### Added
