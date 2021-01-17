@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
@@ -48,7 +49,7 @@ public class LocalFileAccess implements Access {
 
         // Apply compression if necessary
         if(this.compression != null) {
-            switch (this.compression) {
+            switch (this.compression.toLowerCase()) {
                 case COMPRESSION.ZIP:
                     in = new ZipInputStream(in);
                     break;

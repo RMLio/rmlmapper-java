@@ -133,6 +133,9 @@ public class RDF4JStore extends QuadStore {
             case "nquads":
                 Rio.write(model, out, RDFFormat.NQUADS);
                 break;
+            case "ntriples":
+                Rio.write(model, out, RDFFormat.NTRIPLES);
+                break;
             default:
                 throw new Exception("Serialization " + format + " not supported");
         }

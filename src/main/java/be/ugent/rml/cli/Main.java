@@ -1,6 +1,7 @@
 package be.ugent.rml.cli;
 
 import be.ugent.rml.Executor;
+import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.access.DatabaseType;
 import be.ugent.rml.conformer.MappingConformer;
@@ -11,6 +12,8 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
+import be.ugent.rml.target.Target;
+import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
@@ -23,6 +26,7 @@ import org.slf4j.MarkerFactory;
 import org.eclipse.rdf4j.rio.RDFParseException;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -311,8 +315,9 @@ public class Main {
                 String startTimestamp = Instant.now().toString();
 
                 try {
-                    QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                    HashMap<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                             metadataGenerator);
+                    QuadStore result = targets.get(new NamedNode("rmlmapper://legacy.store"));
 
                     // Get stop timestamp for post mapping metadata
                     String stopTimestamp = Instant.now().toString();
@@ -333,8 +338,9 @@ public class Main {
                     }
                     result.copyNameSpaces(rmlStore);
                     writeOutput(result, outputFile, outputFormat);
+                    writeOutputLogicalTargets(targets, rmlStore, basePath);
                 } catch (Exception e) {
-                    logger.error(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         } catch (ParseException exp) {
@@ -343,6 +349,54 @@ public class Main {
             printHelp(options);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        }
+    }
+
+    private static void writeOutputLogicalTargets(HashMap<Term, QuadStore> targets, QuadStore rmlStore, String basePath) throws Exception {
+        logger.debug("Writing to Logical Targets: " + targets);
+        TargetFactory targetFactory = new TargetFactory(basePath);
+
+        // Go over each term and export to the Logical Target if needed
+        for (Map.Entry<Term, QuadStore> termTargetMapping: targets.entrySet()) {
+            Term term = termTargetMapping.getKey();
+            QuadStore store = termTargetMapping.getValue();
+
+            if (term.getValue().equals("rmlmapper://legacy.store")) {
+                logger.debug("Skipping legacy store in Logical Target exporting");
+            }
+
+            logger.debug("Writing of " + term + " to Logical Targets");
+
+            // Check if we have a Logical Target for this TriplesMap or PredicateObjectMap:
+            List<Term> logicalTargets = Utils.getObjectsFromQuads(rmlStore.getQuads(term, new NamedNode(NAMESPACES.RML + "logicalTarget"), null));
+            if(logicalTargets.isEmpty()) {
+                logger.debug(term + " has no specific Logical Targets, inheritance will be applied");
+                continue;
+            }
+
+            // For each Logical Target, output the accompanied store to it
+            for(Term lt: logicalTargets) {
+                logger.debug("Processing " + lt + " Logical Target export");
+                Target target = targetFactory.getTarget(lt, rmlStore);
+                String serializationFormat = target.getSerializationFormat();
+                Charset encoding = target.getEncoding();
+                OutputStream outputFile = target.getOutputStream();
+
+                // If no encoding is available, use default encoding of the Java VM
+                if (encoding == null) {
+                    encoding = Charset.defaultCharset();
+                }
+
+                // Set character encoding
+                Writer out = new BufferedWriter(new OutputStreamWriter(outputFile, encoding));
+
+                // Write store to target
+                store.write(out, serializationFormat);
+
+                // Close OS resources
+                out.close();
+                target.close();
+            }
         }
     }
 

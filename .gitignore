@@ -1,5 +1,5 @@
 .idea
-target
+target/*
 rmlmapper.iml
 .DS_Store
 .settings

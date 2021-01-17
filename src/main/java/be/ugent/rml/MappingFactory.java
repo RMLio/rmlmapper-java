@@ -108,9 +108,8 @@ public class MappingFactory {
                     predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(
                             new MappingInfo(subjectmap, predicateGenerator),
                             new MappingInfo(subjectmap, objectGenerator),
-                            null));
-
-
+                            null,
+                            triplesMap));
                 }
             } else {
                 throw new Exception(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");
@@ -133,16 +132,16 @@ public class MappingFactory {
         parseObjectMapsAndShortcutsWithCallback(termMap, (oMappingInfo, childOrParent) -> {
             predicateMappingInfos.forEach(pMappingInfo -> {
                 if (graphMappingInfos.isEmpty()) {
-                    predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null));
+                    predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null, termMap));
                 } else {
                     graphMappingInfos.forEach(gMappingInfo -> {
-                        predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo));
+                        predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo, termMap));
                     });
                 }
             });
         }, (parentTriplesMap, joinConditionFunctionExecutors) -> {
             predicateMappingInfos.forEach(pMappingInfo -> {
-                List<PredicateObjectGraphMapping> pos = getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(pMappingInfo, null, graphMappingInfos);
+                List<PredicateObjectGraphMapping> pos = getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(pMappingInfo, null, graphMappingInfos, termMap);
 
                 pos.forEach(pogMappingInfo -> {
                     pogMappingInfo.setParentTriplesMap(parentTriplesMap);
@@ -515,15 +514,15 @@ public class MappingFactory {
         return termType;
     }
 
-    private List<PredicateObjectGraphMapping> getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(MappingInfo pMappingInfo, MappingInfo oMappingInfo, List<MappingInfo> gMappingInfos) {
+    private List<PredicateObjectGraphMapping> getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(MappingInfo pMappingInfo, MappingInfo oMappingInfo, List<MappingInfo> gMappingInfos, Term termMap) {
         ArrayList<PredicateObjectGraphMapping> list = new ArrayList<>();
 
         gMappingInfos.forEach(gMappingInfo -> {
-            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo));
+            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo, termMap));
         });
 
         if (gMappingInfos.isEmpty()) {
-            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null));
+            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null, termMap));
         }
 
         return list;

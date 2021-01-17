@@ -12,11 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.fail;
-
 public class Mapper_WoT_Test extends TestCore {
     @Test
-    public void evaluate_essence() throws IOException {
+    public void evaluate_essence_wot_support() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         server.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
         server.setExecutor(null); // creates a default executor
@@ -24,8 +22,9 @@ public class Mapper_WoT_Test extends TestCore {
 
         HashMap<String, String> outPaths = new HashMap<String, String>();
         outPaths.put("local-file", "./web-of-things/essence/out-local-file.nq");
-        outPaths.put("sparql-endpoint", "./web-of-things/essence/out-sparql-endpoint.nq");
         doMapping("./web-of-things/essence/mapping.ttl", outPaths, "./web-of-things/essence/private-security-data.ttl");
+
+        server.stop(0);
     }
 
     static class TrashCansFileHandler implements HttpHandler {
@@ -62,22 +61,4 @@ public class Mapper_WoT_Test extends TestCore {
 
         }
     }
-
-    @Test
-    public void evaluate_compression() {
-        doMapping("./web-of-things/compression/mapping.ttl", "./web-of-things/compression/out.nq");
-    }
-
-   /*@Test
-    public void evaluate_compression() {
-        doMapping("./web-of-things/compression/mapping.ttl", "./web-of-things/compression/out.nq");
-    }
-
-    */
-    /*@Test
-    public void evaluate_daiquiri() {
-        HashMap<String, String> outPaths = new HashMap<String, String>();
-        outPaths.put("local-file", "./web-of-things/daiquiri/output-local-file.nq");
-        doMapping("./web-of-things/daiquiri/mapping.ttl", outPaths);
-    }*/
 }

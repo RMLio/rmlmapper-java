@@ -6,6 +6,7 @@ import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
@@ -31,6 +32,7 @@ public class Executor {
     private HashMap<Term, HashMap<Integer, ProvenancedTerm>> subjectCache;
     private QuadStore resultingQuads;
     private QuadStore rmlStore;
+    private HashMap<Term, QuadStore> targets;
     private RecordsFactory recordsFactory;
     private static int blankNodeCounter = 0;
     private HashMap<Term, Mapping> mappings;
@@ -52,33 +54,58 @@ public class Executor {
         this.baseIRI = baseIRI;
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
+        this.targets = new HashMap<Term, QuadStore>();
 
+        // Legacy store for backwards compatibility
         if (resultingQuads == null) {
             this.resultingQuads = new SimpleQuadStore();
         } else {
             this.resultingQuads = resultingQuads;
         }
+
+        // Logical Target based output stores
+        for (Map.Entry<Term, Mapping> tm: this.mappings.entrySet()) {
+            Term triplesMap = tm.getKey();
+            Mapping mapping = tm.getValue();
+            logger.debug("Initializing default QuadStore for all PredicateObjectMaps of TriplesMap: " + triplesMap);
+            QuadStore defaultStore = new RDF4JStore();
+            this.targets.put(triplesMap, defaultStore);
+            for(PredicateObjectGraphMapping m: mapping.getPredicateObjectGraphMappings()) {
+                QuadStore store = defaultStore;
+                Term predicateObjectMap = m.getPredicateObjectMap();
+                logger.debug("\tPredicateObjectMap:" + predicateObjectMap);
+
+                // Check if we have a custom target for this PredicateObjectMap and override it if needed
+                List<Term> logicalTargets = Utils.getObjectsFromQuads(this.rmlStore.getQuads(predicateObjectMap, new NamedNode(NAMESPACES.RML + "logicalTarget"), null));
+                if(!logicalTargets.isEmpty()) {
+                    store = new RDF4JStore();
+                    logger.debug("\tFound Logical Target override, creating new QuadStore for this PredicateObjectMap");
+                }
+
+                this.targets.put(predicateObjectMap, store);
+            }
+        }
     }
 
-    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
+    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
 
         BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
 
         if (metadataGenerator != null && metadataGenerator.getDetailLevel().getLevel() >= MetadataGenerator.DETAIL_LEVEL.TRIPLE.getLevel()) {
             pogFunction = (subject, pog) -> {
-                generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
+                generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph(), pog.getPredicateObjectMap());
                 metadataGenerator.insertQuad(new ProvenancedQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph()));
             };
         } else {
             pogFunction = (subject, pog) -> {
-                generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
+                generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph(), pog.getPredicateObjectMap());
             };
         }
 
         return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
     }
 
-    public QuadStore executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
+    public HashMap<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
@@ -159,10 +186,12 @@ public class Executor {
             this.resultingQuads.removeDuplicates();
         }
 
-        return resultingQuads;
+        // Add the legacy store to the list of targets as well
+        this.targets.put(new NamedNode("rmlmapper://legacy.store"), this.resultingQuads);
+        return this.targets;
     }
 
-    public QuadStore execute(List<Term> triplesMaps) throws Exception {
+    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps) throws Exception {
         return this.execute(triplesMaps, false, null);
     }
 
@@ -176,6 +205,7 @@ public class Executor {
             ArrayList<ProvenancedTerm> predicates = new ArrayList<>();
             ArrayList<ProvenancedTerm> poGraphs = new ArrayList<>();
             poGraphs.addAll(alreadyNeededGraphs);
+            Term predicateObjectMap = pogMapping.getPredicateObjectMap();
 
             if (pogMapping.getGraphMappingInfo() != null && pogMapping.getGraphMappingInfo().getTermGenerator() != null) {
                 pogMapping.getGraphMappingInfo().getTermGenerator().generate(record).forEach(term -> {
@@ -199,7 +229,7 @@ public class Executor {
 
                 if (objects.size() > 0) {
                     //add pogs
-                    results.addAll(combineMultiplePOGs(predicates, provenancedObjects, poGraphs));
+                    results.addAll(combineMultiplePOGs(predicates, provenancedObjects, poGraphs, predicateObjectMap));
                 }
 
                 //check if we are dealing with a parentTriplesMap (RefObjMap)
@@ -214,23 +244,29 @@ public class Executor {
                     objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
                 }
 
-                results.addAll(combineMultiplePOGs(predicates, objects, poGraphs));
+                results.addAll(combineMultiplePOGs(predicates, objects, poGraphs, predicateObjectMap));
             }
         }
 
         return results;
     }
 
-    private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
+    private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph, Term predicateObjectMap) {
         Term g = null;
 
         if (graph != null) {
             g = graph.getTerm();
         }
 
-
         if (subject != null && predicate != null & object != null) {
+            // Legacy store, used for backwards compatibility
             this.resultingQuads.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
+
+            // Logical Target based outputStores, write to target store
+            if (predicateObjectMap != null && this.targets.containsKey(predicateObjectMap)) {
+                QuadStore store = this.targets.get(predicateObjectMap);
+                store.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
+            }
         }
     }
 
@@ -335,7 +371,7 @@ public class Executor {
         return this.initializer.getFunctionLoader();
     }
 
-    private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, List<ProvenancedTerm> objects, List<ProvenancedTerm> graphs) {
+    private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, List<ProvenancedTerm> objects, List<ProvenancedTerm> graphs, Term predicateObjectMap) {
         ArrayList<PredicateObjectGraph> results = new ArrayList<>();
 
         if (graphs.isEmpty()) {
@@ -345,7 +381,7 @@ public class Executor {
         predicates.forEach(p -> {
             objects.forEach(o -> {
                 graphs.forEach(g -> {
-                    results.add(new PredicateObjectGraph(p, o, g));
+                    results.add(new PredicateObjectGraph(p, o, g, predicateObjectMap));
                 });
             });
         });
