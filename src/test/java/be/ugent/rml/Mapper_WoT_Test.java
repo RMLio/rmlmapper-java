@@ -63,15 +63,17 @@ public class Mapper_WoT_Test extends TestCore {
         }
     }
 
+    @Test
+    public void evaluate_compression() {
+        doMapping("./web-of-things/compression/mapping.ttl", "./web-of-things/compression/out.nq");
+    }
+
    /*@Test
     public void evaluate_compression() {
         doMapping("./web-of-things/compression/mapping.ttl", "./web-of-things/compression/out.nq");
     }
 
-    @Test
-    public void evaluate_encoding() {
-        doMapping("./web-of-things/encoding/mapping.ttl", "./web-of-things/encoding/out.nq");
-    }*/
+    */
     /*@Test
     public void evaluate_daiquiri() {
         HashMap<String, String> outPaths = new HashMap<String, String>();

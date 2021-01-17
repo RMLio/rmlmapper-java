@@ -3,7 +3,10 @@ package be.ugent.rml.access;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
 
 import static be.ugent.rml.Utils.getHashOfString;
 import static be.ugent.rml.Utils.getInputStreamFromFile;
@@ -16,15 +19,17 @@ public class LocalFileAccess implements Access {
 
     private String path;
     private String basePath;
+    private String compression;
 
     /**
      * This constructor takes the path and the base path of a file.
      * @param path the relative path of the file.
      * @param basePath the used base path.
      */
-    public LocalFileAccess(String path, String basePath) {
+    public LocalFileAccess(String path, String basePath, String compression) {
         this.path = path;
         this.basePath = basePath;
+        this.compression = compression;
     }
 
     /**
@@ -34,13 +39,28 @@ public class LocalFileAccess implements Access {
      */
     @Override
     public InputStream getInputStream() throws IOException {
+        // Create File and allocate InputStream
         File file = new File(this.path);
-
         if (!file.isAbsolute()) {
             file = getFile(this.basePath, this.path);
         }
+        InputStream in = getInputStreamFromFile(file);
 
-        return getInputStreamFromFile(file);
+        // Apply compression if necessary
+        if(this.compression != null) {
+            switch (this.compression) {
+                case COMPRESSION.ZIP:
+                    in = new ZipInputStream(in);
+                    break;
+                case COMPRESSION.GZIP:
+                    in = new GZIPInputStream(in);
+                    break;
+                default:
+                    throw new IOException("Compression " + this.compression + " not implemented!");
+            }
+        }
+
+        return in;
     }
 
     /**

@@ -41,7 +41,13 @@ public class AccessFactory {
      */
     public Access getAccess(Term logicalSource, QuadStore rmlStore) {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+        List<Term> compressions = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "compression"), null));
         Access access = null;
+        String compression = null;
+
+        if(!compressions.isEmpty()) {
+            compression = compressions.get(0).getValue();
+        }
 
         // check if at least one source is available.
         if (!sources.isEmpty()) {
@@ -55,7 +61,7 @@ public class AccessFactory {
                 if (isRemoteFile(value)) {
                     access = new RemoteFileAccess(value);
                 } else {
-                    access = new LocalFileAccess(value, this.basePath);
+                    access = new LocalFileAccess(value, this.basePath, compression);
                 }
             } else {
                 // if not a literal, then we are dealing with a more complex description.
@@ -104,7 +110,7 @@ public class AccessFactory {
                         if (isRemoteFile(value)) {
                             access = new RemoteFileAccess(value);
                         } else {
-                            access = new LocalFileAccess(value, this.basePath);
+                            access = new LocalFileAccess(value, this.basePath, null);
                         }
 
                         break;
