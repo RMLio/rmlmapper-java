@@ -51,6 +51,13 @@ public class Main {
                 .desc("one or more mapping file paths and/or strings (multiple values are concatenated). " +
                         "r2rml is converted to rml if needed using the r2rml arguments.")
                 .build();
+        Option privateSecurityDataOption = Option.builder("psd")
+                .longOpt("privatesecuritydata")
+                .hasArg()
+                .numberOfArgs(Option.UNLIMITED_VALUES)
+                .desc("one or more private security files containing all private security information such as " +
+                        "usernames, passwords, certificates, etc.")
+                .build();
         Option outputfileOption = Option.builder("o")
                 .longOpt("outputfile")
                 .hasArg()
@@ -116,6 +123,7 @@ public class Main {
                 .build();
 
         options.addOption(mappingdocOption);
+        options.addOption(privateSecurityDataOption);
         options.addOption(outputfileOption);
         options.addOption(functionfileOption);
         options.addOption(removeduplicatesOption);
@@ -178,6 +186,23 @@ public class Main {
                 catch (RDFParseException e) {
                     logger.error(fatal, "Unable to parse mapping rules as Turtle. Does the file exist and is it valid Turtle?", e);
                     System.exit(1);
+                }
+
+                // Private security data is optionally
+                if (lineArgs.hasOption("psd")) {
+                    // Read the private security data.
+                    String[] mOptionValuePrivateSecurityData = getOptionValues(privateSecurityDataOption, lineArgs, configFile);
+                    List<InputStream> lisPrivateSecurityData = Arrays.stream(mOptionValuePrivateSecurityData)
+                            .map(Utils::getInputStreamFromFileOrContentString)
+                            .collect(Collectors.toList());
+                    InputStream isPrivateSecurityData = new SequenceInputStream(Collections.enumeration(lisPrivateSecurityData));
+                    try {
+                        rmlStore.read(isPrivateSecurityData, null, RDFFormat.TURTLE);
+                    } catch (RDFParseException e) {
+                        logger.debug(e.getMessage());
+                        logger.error(fatal, "Unable to parse private security data as Turtle. Does the file exist and is it valid Turtle?");
+                        System.exit(1);
+                    }
                 }
 
                 // Convert mapping file to RML if needed.

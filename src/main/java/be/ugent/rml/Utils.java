@@ -68,8 +68,12 @@ public class Utils {
     }
 
     public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
+        return getInputStreamFromLocation(location, basePath, contentType, new HashMap<String, String>());
+    }
+
+    public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType, HashMap<String, String> headers) throws IOException {
         if (isRemoteFile(location)) {
-            return getInputStreamFromURL(new URL(location), contentType);
+            return getInputStreamFromURL(new URL(location), contentType, headers);
         } else {
             return getInputStreamFromFile(getFile(location, basePath));
         }
@@ -178,6 +182,31 @@ public class Utils {
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", contentType);
             connection.setRequestProperty("charset", "utf-8");
+            connection.connect();
+            inputStream = connection.getInputStream();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return inputStream;
+    }
+
+    public static InputStream getInputStreamFromURL(URL url, String contentType, HashMap<String, String> headers) {
+        InputStream inputStream = null;
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(false);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", contentType);
+            // Set encoding if not set before
+            if(!headers.containsKey("charset")) {
+                headers.put("charset", "utf-8");
+            }
+            // Apply all headers
+            headers.forEach((name, value) -> {
+                logger.debug(name + ": " + value);
+                connection.setRequestProperty(name, value);
+            });
             connection.connect();
             inputStream = connection.getInputStream();
         } catch (IOException ex) {
