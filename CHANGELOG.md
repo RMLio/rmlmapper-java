@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- Add Logical Target support
+- Add Web of Things support
+- Add compression support
+
 ## [4.9.1] - 2020-12-04
 
 ### Added
