@@ -1,5 +1,7 @@
 package be.ugent.rml;
 
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -20,8 +22,9 @@ public class Mapper_WoT_Test extends TestCore {
         server.setExecutor(null); // creates a default executor
         server.start();
 
-        HashMap<String, String> outPaths = new HashMap<String, String>();
-        outPaths.put("local-file", "./web-of-things/essence/out-local-file.nq");
+        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/essence/out-local-file.nt");
+        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/essence/out-default.nq");
         doMapping("./web-of-things/essence/mapping.ttl", outPaths, "./web-of-things/essence/private-security-data.ttl");
 
         server.stop(0);

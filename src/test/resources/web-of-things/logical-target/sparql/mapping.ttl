@@ -22,11 +22,13 @@
 .
 
 # Target
-<#TargetDump> a rmlt:LogicalTarget;
-  rmlt:target [ a void:Dataset;
-    void:dataDump <file:///tmp/out.nt>;
-  ];
-  rmlt:serialization formats:N-Triples;
+<#SPARQLEndpoint> a sd:Service;
+  sd:endpoint <http://localhost:PORT/ds1> ;
+  sd:supportedLanguage sd:SPARQL11Update;
+.
+
+<#TargetSPARQL> a rmlt:LogicalTarget;
+  rmlt:target <SPARQLEndpoint>;
 .
 
 <#WoTWebResource> a td:PropertyAffordance;
@@ -59,7 +61,7 @@
 
   rr:subjectMap [
     rr:template "http://example.org/bigbelly/{id}";
-    rml:logicalTarget <#TargetDump>;
+    rml:logicalTarget <#TargetSPARQL>;
   ];
 
   rr:predicateObjectMap [

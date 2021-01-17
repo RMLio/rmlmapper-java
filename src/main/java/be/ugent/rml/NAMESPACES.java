@@ -27,4 +27,7 @@ public class NAMESPACES {
     public static final String HTV = "http://www.w3.org/2011/http#";
     public static final String WOTSEC = "https://www.w3.org/2019/wot/security#";
     public static final String RMLP = "http://semweb.mmlab.be/ns/rmlp#";
+    public static final String RMLT = "http://semweb.mmlab.be/ns/rml-target#";
+    public static final String FORMATS = "https://www.w3.org/ns/formats/";
+    public static final String COMP = "http://semweb.mmlab.be/ns/rml-compression#";
 }

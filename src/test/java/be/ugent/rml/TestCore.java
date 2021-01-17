@@ -7,6 +7,7 @@ import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,12 +151,12 @@ public abstract class TestCore {
     }
 
     /**
-     * This method executes a mapping with Logical Targets, compares it to the expected out, and returns the used Executor.
+     * This method executes a mapping with Targets, compares it to the expected out, and returns the used Executor.
      * @param mapPath The path of the mapping file.
      * @param outPaths The paths of the files with the expected output.
      * @return The Executor used to execute the mapping.
      */
-    public Executor doMapping(String mapPath, HashMap<String, String> outPaths, String privateSecurityDataPath) {
+    public Executor doMapping(String mapPath, HashMap<Term, String> outPaths, String privateSecurityDataPath) {
         try {
             Executor executor = this.createExecutorPrivateSecurityData(mapPath, privateSecurityDataPath);
             doMapping(executor, outPaths);
@@ -193,24 +194,27 @@ public abstract class TestCore {
      * @param outPath The path of the file with the expected output.
      */
     void doMapping(Executor executor, String outPath) throws Exception {
-        QuadStore result = executor.execute(null);
+        QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         result.removeDuplicates();
         compareStores(filePathToStore(outPath), result);
     }
 
     /**
-     * This method executes a mapping and compares with the expected output of Logical Targets.
+     * This method executes a mapping and compares with the expected output of Targets.
      * @param executor The Executor that is used to execute the mapping.
      * @param outPaths The paths of the files with the expected output.
      */
-    void doMapping(Executor executor, HashMap<String, String> outPaths) throws Exception {
-        // TODO: compare target with each output
-        QuadStore result = executor.execute(null);
-        result.removeDuplicates();
-        for (Map.Entry<String, String> entry: outPaths.entrySet()) {
-            String target = entry.getKey();
+    void doMapping(Executor executor, HashMap<Term, String> outPaths) throws Exception {
+        logger.debug("Comparing target outputs");
+        HashMap<Term, QuadStore> results = executor.execute(null);
+        for (Map.Entry<Term, String> entry: outPaths.entrySet()) {
+            Term target = entry.getKey();
             String outPath = entry.getValue();
-            compareStores(filePathToStore(outPath), result);
+            logger.debug("Target:" + target.getValue());
+            logger.debug("\tOutput path:" + outPath);
+            logger.debug("\tSize:" + results.get(target).size());
+
+            compareStores(filePathToStore(outPath), results.get(target));
         }
     }
 
@@ -234,7 +238,7 @@ public abstract class TestCore {
 
         try {
             Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), Utils.getBaseDirectiveTurtle(mappingFile));
-            QuadStore result = executor.execute(null);
+            QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         } catch (Exception e) {
             // I expected you!
             logger.warn(e.getMessage(), e);

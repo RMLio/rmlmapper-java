@@ -95,22 +95,26 @@ public class MappingFactory {
                     }
                 }
 
-                this.subjectMappingInfo = new MappingInfo(subjectmap, generator);
+                // get targets for subject
+                List<Term> targets = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RML + "logicalTarget"), null));
+
+                this.subjectMappingInfo = new MappingInfo(subjectmap, generator, targets);
 
                 //get classes
                 List<Term> classes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR + "class"), null));
 
                 //we create predicateobjects for the classes
                 for (Term c : classes) {
-                    // Don't put in graph for rr:class, subject is already put in graph, otherwise double export
+                    /*
+                     * Don't put in graph for rr:class, subject is already put in graph, otherwise double export.
+                     * Same holds for targets, the rdf:type triple will be exported to the subject target already.
+                     */
                     NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(new ConstantExtractor(NAMESPACES.RDF + "type"));
                     NamedNodeGenerator objectGenerator = new NamedNodeGenerator(new ConstantExtractor(c.getValue()));
                     predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(
                             new MappingInfo(subjectmap, predicateGenerator),
                             new MappingInfo(subjectmap, objectGenerator),
-                            null));
-
-
+                            null, null));
                 }
             } else {
                 throw new Exception(triplesMap + " has no Subject Map. Each Triples Map should have exactly one Subject Map.");
@@ -131,12 +135,14 @@ public class MappingFactory {
 
     private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<MappingInfo> predicateMappingInfos, List<MappingInfo> graphMappingInfos) throws IOException {
         parseObjectMapsAndShortcutsWithCallback(termMap, (oMappingInfo, childOrParent) -> {
+            MappingInfo lMappingInfo = parseLanguageMappingInfo(oMappingInfo.getTerm());
+
             predicateMappingInfos.forEach(pMappingInfo -> {
                 if (graphMappingInfos.isEmpty()) {
-                    predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null));
+                    predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null, lMappingInfo));
                 } else {
                     graphMappingInfos.forEach(gMappingInfo -> {
-                        predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo));
+                        predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo, lMappingInfo));
                     });
                 }
             });
@@ -177,6 +183,7 @@ public class MappingFactory {
                 gen = new NamedNodeGenerator(fn);
             }
 
+            // rr:object shortcut can never have targets
             objectMapCallback.accept(new MappingInfo(termMap, gen), "child");
         }
     }
@@ -219,7 +226,14 @@ public class MappingFactory {
                     }
                 }
 
-                objectMapCallback.accept(new MappingInfo(objectmap, oGen), "child");
+                // get language maps targets for object map
+                MappingInfo languageMapInfo = null;
+                List<Term> languageMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "languageMap"), null));
+
+                // get targets for object map
+                List<Term> oTargets = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "logicalTarget"), null));
+
+                objectMapCallback.accept(new MappingInfo(objectmap, oGen, oTargets), "child");
             } else if (!parentTriplesMaps.isEmpty()) {
                 if (parentTriplesMaps.size() > 1) {
                     logger.warn(triplesMap + " has " + parentTriplesMaps.size() + " Parent Triples Maps. You can only have one. A random one is taken.");
@@ -289,7 +303,10 @@ public class MappingFactory {
                 gen = new NamedNodeGenerator(functionExecutor);
             }
 
-            objectMapCallback.accept(new MappingInfo(objectmap, gen), "child");
+            // get targets for object map
+            List<Term> targets = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "logicalTarget"), null));
+
+            objectMapCallback.accept(new MappingInfo(objectmap, gen, targets), "child");
         }
     }
 
@@ -335,15 +352,18 @@ public class MappingFactory {
                 }
             }
 
-            graphMappingInfos.add(new MappingInfo(termMap, generator));
+            // get targets for graph maps
+            List<Term> targets = Utils.getObjectsFromQuads(store.getQuads(graphMap, new NamedNode(NAMESPACES.RML + "logicalTarget"), null));
+
+            graphMappingInfos.add(new MappingInfo(termMap, generator, targets));
         }
 
         List<Term> graphShortcuts = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graph"), null));
 
         for (Term graph : graphShortcuts) {
             String gStr = graph.getValue();
-            graphMappingInfos.add(new MappingInfo(termMap,
-                    new NamedNodeGenerator(new ConstantExtractor(gStr))));
+            // rr:graph shortcut can never have targets
+            graphMappingInfos.add(new MappingInfo(termMap, new NamedNodeGenerator(new ConstantExtractor(gStr))));
         }
 
         return graphMappingInfos;
@@ -355,15 +375,20 @@ public class MappingFactory {
         List<Term> predicateMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "predicateMap"), null));
 
         for (Term predicateMap : predicateMaps) {
+            // get functionValue for predicate maps
             List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(predicateMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+
+            // get targets for predicate maps
+            List<Term> targets = Utils.getObjectsFromQuads(store.getQuads(predicateMap, new NamedNode(NAMESPACES.RML + "logicalTarget"), null));
 
             if (functionValues.isEmpty()) {
                 predicateMappingInfos.add(new MappingInfo(predicateMap,
-                        new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false, ignoreDoubleQuotes))));
+                        new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false, ignoreDoubleQuotes)),
+                        targets));
             } else {
                 SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
-                predicateMappingInfos.add(new MappingInfo(predicateMap, new NamedNodeGenerator(functionExecutor)));
+                predicateMappingInfos.add(new MappingInfo(predicateMap, new NamedNodeGenerator(functionExecutor), targets));
             }
         }
 
@@ -371,6 +396,7 @@ public class MappingFactory {
 
         for (Term predicate : predicateShortcuts) {
             String pStr = predicate.getValue();
+            // rr:predicate shortcut can never have targets
             predicateMappingInfos.add(new MappingInfo(termMap, new NamedNodeGenerator(new ConstantExtractor(pStr))));
         }
 
@@ -471,6 +497,26 @@ public class MappingFactory {
         return executors;
     }
 
+    private MappingInfo parseLanguageMappingInfo(Term objectMap) {
+        // get optional language map targets for object map
+        MappingInfo mappingInfo = null;
+
+        if(objectMap == null) {
+            return mappingInfo;
+        }
+
+        List<Term> languageMaps = Utils.getObjectsFromQuads(store.getQuads(objectMap, new NamedNode(NAMESPACES.RML + "languageMap"), null));
+        if (languageMaps.size() == 1) {
+            Term l = languageMaps.get(0);
+            List<Term> lTargets = Utils.getObjectsFromQuads(store.getQuads(l, new NamedNode(NAMESPACES.RML + "logicalTarget"), null));
+            mappingInfo = new MappingInfo(l, lTargets);
+        }
+        else if (languageMaps.size() > 1) {
+            logger.warn("Multiple language maps found, a random language map is used");
+        }
+        return mappingInfo;
+    }
+
     /**
      * This method returns the TermType of a given Term Map.
      * If no Term Type is found, a default Term Type is return based on the R2RML specification.
@@ -517,13 +563,17 @@ public class MappingFactory {
 
     private List<PredicateObjectGraphMapping> getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(MappingInfo pMappingInfo, MappingInfo oMappingInfo, List<MappingInfo> gMappingInfos) {
         ArrayList<PredicateObjectGraphMapping> list = new ArrayList<>();
+        MappingInfo lMappingInfo = null;
+        if(oMappingInfo != null) {
+            lMappingInfo = parseLanguageMappingInfo(oMappingInfo.getTerm());
+        }
 
-        gMappingInfos.forEach(gMappingInfo -> {
-            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo));
-        });
+        for(MappingInfo gMappingInfo: gMappingInfos) {
+            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, gMappingInfo, lMappingInfo));
+        }
 
         if (gMappingInfos.isEmpty()) {
-            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null));
+            list.add(new PredicateObjectGraphMapping(pMappingInfo, oMappingInfo, null, lMappingInfo));
         }
 
         return list;

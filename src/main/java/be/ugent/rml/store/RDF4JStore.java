@@ -39,7 +39,11 @@ public class RDF4JStore extends QuadStore {
 
     @Override
     public void removeDuplicates() {
-        throw new UnsupportedOperationException("Method not implemented.");
+        /*
+         * Model is an extension of the default Java Collection class java.util.Set<Statement>.
+         * Sets don't contain any duplicates, thus no removal is needed.
+         * See https://rdf4j.org/documentation/programming/model/
+         */
     }
 
     @Override
@@ -132,6 +136,9 @@ public class RDF4JStore extends QuadStore {
                 break;
             case "nquads":
                 Rio.write(model, out, RDFFormat.NQUADS);
+                break;
+            case "ntriples":
+                Rio.write(model, out, RDFFormat.NTRIPLES);
                 break;
             default:
                 throw new Exception("Serialization " + format + " not supported");

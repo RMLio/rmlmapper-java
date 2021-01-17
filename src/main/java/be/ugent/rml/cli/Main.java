@@ -1,6 +1,7 @@
 package be.ugent.rml.cli;
 
 import be.ugent.rml.Executor;
+import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.access.DatabaseType;
 import be.ugent.rml.conformer.MappingConformer;
@@ -11,6 +12,8 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
+import be.ugent.rml.target.Target;
+import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
@@ -23,6 +26,7 @@ import org.slf4j.MarkerFactory;
 import org.eclipse.rdf4j.rio.RDFParseException;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -311,8 +315,9 @@ public class Main {
                 String startTimestamp = Instant.now().toString();
 
                 try {
-                    QuadStore result = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                    HashMap<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                             metadataGenerator);
+                    QuadStore result = targets.get(new NamedNode("rmlmapper://default.store"));
 
                     // Get stop timestamp for post mapping metadata
                     String stopTimestamp = Instant.now().toString();
@@ -326,13 +331,9 @@ public class Main {
                     }
 
                     String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-
-                    if (result.isEmpty()) {
-                        logger.info("No results!");
-                        // Write even if no results
-                    }
                     result.copyNameSpaces(rmlStore);
-                    writeOutput(result, outputFile, outputFormat);
+
+                    writeOutputTargets(targets, rmlStore, basePath, outputFile, outputFormat);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
@@ -343,6 +344,56 @@ public class Main {
             printHelp(options);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        }
+    }
+
+    private static void writeOutputTargets(HashMap<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault) throws Exception {
+        boolean hasNoResults = true;
+
+        logger.debug("Writing to Targets: " + targets.keySet());
+        TargetFactory targetFactory = new TargetFactory(basePath);
+
+        // Go over each term and export to the Target if needed
+        for (Map.Entry<Term, QuadStore> termTargetMapping: targets.entrySet()) {
+            Term term = termTargetMapping.getKey();
+            QuadStore store = termTargetMapping.getValue();
+
+            if (store.size() > 0) {
+                hasNoResults = false;
+                logger.info("Target: " + term + " has " + store.size() + " results");
+            }
+
+            // Default target is exported separately for backwards compatibility reasons
+            if (term.getValue().equals("rmlmapper://default.store")) {
+                logger.debug("Exporting to default Target");
+                writeOutput(store, outputFileDefault, outputFormatDefault);
+            }
+            else {
+                logger.debug("Exporting to Target: " + term);
+                if (store.size() > 1) {
+                    logger.info(store.size() + " quads were generated for " + term + " Target");
+                } else {
+                    logger.info(store.size() + " quad was generated " + term + " Target");
+                }
+
+                Target target = targetFactory.getTarget(term, rmlStore);
+                String serializationFormat = target.getSerializationFormat();
+                OutputStream output = target.getOutputStream();
+
+                // Set character encoding
+                Writer out = new BufferedWriter(new OutputStreamWriter(output, Charset.defaultCharset()));
+
+                // Write store to target
+                store.write(out, serializationFormat);
+
+                // Close OS resources
+                out.close();
+                target.close();
+            }
+        }
+
+        if (hasNoResults) {
+            logger.info("No results!");
         }
     }
 
@@ -414,9 +465,9 @@ public class Main {
         File targetFile = null;
 
         if (store.size() > 1) {
-            logger.info(store.size() + " quads were generated");
+            logger.info(store.size() + " quads were generated for default Target");
         } else {
-            logger.info(store.size() + " quad was generated");
+            logger.info(store.size() + " quad was generated for default Target");
         }
 
         try {

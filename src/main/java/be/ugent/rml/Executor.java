@@ -6,6 +6,7 @@ import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
@@ -31,6 +32,7 @@ public class Executor {
     private HashMap<Term, HashMap<Integer, ProvenancedTerm>> subjectCache;
     private QuadStore resultingQuads;
     private QuadStore rmlStore;
+    private HashMap<Term, QuadStore> targetStores;
     private RecordsFactory recordsFactory;
     private static int blankNodeCounter = 0;
     private HashMap<Term, Mapping> mappings;
@@ -52,15 +54,49 @@ public class Executor {
         this.baseIRI = baseIRI;
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
+        this.targetStores = new HashMap<Term, QuadStore>();
 
+        // Default store if no Targets are available for a triple
         if (resultingQuads == null) {
             this.resultingQuads = new SimpleQuadStore();
         } else {
             this.resultingQuads = resultingQuads;
         }
+
+        // Output stores for Targets in Term Maps
+        for (Map.Entry<Term, Mapping> tm: this.mappings.entrySet()) {
+            Term triplesMap = tm.getKey();
+            Mapping mapping = tm.getValue();
+            Set<Term> targets = new HashSet<Term>();
+
+            // Subject Map
+            MappingInfo subjectMapInfo = mapping.getSubjectMappingInfo();
+            targets.addAll(subjectMapInfo.getTargets());
+
+            // Predicate, Object and Language Maps
+            for(PredicateObjectGraphMapping pog: mapping.getPredicateObjectGraphMappings()) {
+                if(pog.getPredicateMappingInfo() != null) {
+                    targets.addAll(pog.getPredicateMappingInfo().getTargets());
+                }
+                if(pog.getObjectMappingInfo() != null) {
+                    targets.addAll(pog.getObjectMappingInfo().getTargets());
+                }
+            }
+
+            // Graph Map
+            for(MappingInfo g: mapping.getGraphMappingInfos()) {
+                targets.addAll(g.getTargets());
+            }
+
+            // Create stores
+            for (Term t: targets) {
+                logger.debug("Adding target for " + t);
+                this.targetStores.put(t, new RDF4JStore());
+            }
+        }
     }
 
-    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
+    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
 
         BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
 
@@ -78,7 +114,7 @@ public class Executor {
         return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
     }
 
-    public QuadStore executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
+    public HashMap<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
@@ -117,7 +153,7 @@ public class Executor {
 
                             // Check if the new absolute IRI is valid.
                             if (Utils.isValidIRI(iri)) {
-                                subject = new ProvenancedTerm(new NamedNode(iri), subject.getMetadata());
+                                subject = new ProvenancedTerm(new NamedNode(iri), subject.getMetadata(), subject.getTargets());
                             } else {
                                 logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
                             }
@@ -159,10 +195,12 @@ public class Executor {
             this.resultingQuads.removeDuplicates();
         }
 
-        return resultingQuads;
+        // Add the legacy store to the list of targets as well
+        this.targetStores.put(new NamedNode("rmlmapper://default.store"), this.resultingQuads);
+        return this.targetStores;
     }
 
-    public QuadStore execute(List<Term> triplesMaps) throws Exception {
+    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps) throws Exception {
         return this.execute(triplesMaps, false, null);
     }
 
@@ -223,14 +261,29 @@ public class Executor {
 
     private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
         Term g = null;
+        Set<Term> targets = new HashSet<Term>();
 
         if (graph != null) {
             g = graph.getTerm();
+            targets.addAll(graph.getTargets());
         }
 
+        if (subject != null && predicate != null && object != null) {
+            // Get all possible targets for triple, the Set guarantees that we don't have duplicates
+            targets.addAll(subject.getTargets());
+            targets.addAll(predicate.getTargets());
+            targets.addAll(object.getTargets());
 
-        if (subject != null && predicate != null & object != null) {
-            this.resultingQuads.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
+            // If we have targets, write to them
+            if (!targets.isEmpty()) {
+                for(Term t: targets) {
+                    this.targetStores.get(t).addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
+                }
+            }
+            // If not, use the default processor target
+            else {
+                this.resultingQuads.addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
+            }
         }
     }
 
@@ -300,7 +353,9 @@ public class Executor {
 
             if (!nodes.isEmpty()) {
                 //todo: only create metadata when it's required
-                this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0), new Metadata(triplesMap, mapping.getSubjectMappingInfo().getTerm())));
+                Metadata meta = new Metadata(triplesMap, mapping.getSubjectMappingInfo().getTerm());
+                List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
+                this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0), meta, targets));
             }
         }
 

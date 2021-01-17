@@ -120,21 +120,18 @@ public class AccessFactory {
 
                         // Security schema & data
                         List<Term> securityConfiguration = Utils.getObjectsFromQuads(rmlStore.getQuads(thing, new NamedNode(NAMESPACES.TD + "hasSecurityConfiguration"), null));
-                        logger.warn("Security config: " + securityConfiguration.toString());
+                        logger.debug("Security config: " + securityConfiguration.toString());
                         for (Term sc: securityConfiguration) {
                             // TODO: support more security configurations
                             List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
                             List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
                             List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RMLP + "token"), null));
-                            logger.warn("In: " + securityIn.toString());
-                            logger.warn("Name: " + securityName.toString());
-                            logger.warn("Value: " + securityValue.toString());
                             try {
                                 switch (securityIn.get(0).getValue()) {
                                     case "header": {
-                                        logger.warn ("Applying security configuration of " + sc.getValue() + "in header");
-                                        logger.warn("Name: " + securityName.get(0).getValue());
-                                        logger.warn("Value: " + securityValue.get(0).getValue());
+                                        logger.info ("Applying security configuration of " + sc.getValue() + "in header");
+                                        logger.debug("Name: " + securityName.get(0).getValue());
+                                        logger.debug("Value: " + securityValue.get(0).getValue());
                                         headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
                                         break;
                                     }
@@ -159,16 +156,18 @@ public class AccessFactory {
                         String contentType = contentTypes.isEmpty()? null: contentTypes.get(0).getValue();
 
                         // Retrieve HTTP headers
-                        for (Term h: headerList) {
+                        for (Term headerListItem: headerList) {
                             try {
-                                logger.debug(h.toString());
-                                List<Term> headerName = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldName"), null));
-                                List<Term> headerValue = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldValue"), null));
-                                headers.put(headerName.get(0).getValue(), headerValue.get(0).getValue());
+                                List<Term> header = Utils.getList(rmlStore, headerListItem);
+                                for(Term h: header) {
+                                    String headerName = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldName"), null)).get(0).getValue();
+                                    String headerValue = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldValue"), null)).get(0).getValue();
+                                    logger.debug("Retrieved HTTP header: '" + headerName + "','" + headerValue + "'");
+                                    headers.put(headerName, headerValue);
+                                }
                             }
                             catch(IndexOutOfBoundsException e) {
-                                logger.warn("Unable to retrieve header name and value for " + h.getValue());
-                                continue;
+                                logger.warn("Unable to retrieve header name and value for " + headerListItem.getValue());
                             }
                         };
                         access = new WoTAccess(target, contentType, headers);

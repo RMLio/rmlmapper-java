@@ -12,14 +12,21 @@ public class PredicateObjectGraphMapping {
     private final MappingInfo predicateMappingInfo;
     private final MappingInfo objectMappingInfo;
     private final MappingInfo graphMappingInfo;
+    private final MappingInfo languageMappingInfo;
     private final List<MultipleRecordsFunctionExecutor> joinConditions;
     private Term parentTriplesMap;
 
-    public PredicateObjectGraphMapping(MappingInfo predicateMappingInfo, MappingInfo objectMappingInfo, MappingInfo graphMappingInfo) {
+    public PredicateObjectGraphMapping(MappingInfo predicateMappingInfo, MappingInfo objectMappingInfo, MappingInfo graphMappingInfo, MappingInfo languageMappingInfo) {
         this.predicateMappingInfo = predicateMappingInfo;
         this.graphMappingInfo = graphMappingInfo;
         this.joinConditions = new ArrayList<MultipleRecordsFunctionExecutor>();
         this.objectMappingInfo = objectMappingInfo;
+        this.languageMappingInfo = languageMappingInfo;
+
+        // Language Maps are tightly connected to the object, merge the target lists
+        if(this.languageMappingInfo != null) {
+            this.objectMappingInfo.addTargets(this.languageMappingInfo.getTargets());
+        }
     }
 
     public Term getParentTriplesMap() {
@@ -48,5 +55,9 @@ public class PredicateObjectGraphMapping {
 
     public MappingInfo getGraphMappingInfo() {
         return graphMappingInfo;
+    }
+
+    public MappingInfo getLanguageMappingInfo() {
+        return this.languageMappingInfo;
     }
 }

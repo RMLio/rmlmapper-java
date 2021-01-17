@@ -8,6 +8,7 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.term.NamedNode;
 import org.junit.Test;
 
 import java.io.*;
@@ -50,7 +51,7 @@ public class ReadmeFunctionTest {
             Executor executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingStream));
 
             // Execute the mapping
-            QuadStore result = executor.execute(null);
+            QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
 
             // Output the result
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
