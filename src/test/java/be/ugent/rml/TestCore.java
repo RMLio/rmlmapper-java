@@ -12,11 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -57,6 +60,30 @@ public abstract class TestCore {
         }
 
         rmlStore.addQuads(extraQuads);
+
+        return new Executor(rmlStore,
+                new RecordsFactory(parentPath), Utils.getBaseDirectiveTurtle(mappingFile));
+    }
+
+    Executor createExecutorPrivateSecurityData(String mapPath, String privateSecurityDataPath) throws Exception {
+        ClassLoader classLoader = getClass().getClassLoader();
+        // execute mapping file
+        URL url1 = classLoader.getResource(mapPath);
+        URL url2 = classLoader.getResource(privateSecurityDataPath);
+
+        if (url1 != null) {
+            mapPath = url1.getFile();
+        }
+
+        if (url2 != null) {
+            privateSecurityDataPath = url2.getFile();
+        }
+
+        File mappingFile = new File(mapPath);
+        File privateSecurityDataFile = new File(privateSecurityDataPath);
+        QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
+        rmlStore.read(new FileInputStream(privateSecurityDataFile), null, RDFFormat.TURTLE);
+        String parentPath = mappingFile.getParent();
 
         return new Executor(rmlStore,
                 new RecordsFactory(parentPath), Utils.getBaseDirectiveTurtle(mappingFile));
@@ -123,6 +150,24 @@ public abstract class TestCore {
     }
 
     /**
+     * This method executes a mapping with Logical Targets, compares it to the expected out, and returns the used Executor.
+     * @param mapPath The path of the mapping file.
+     * @param outPaths The paths of the files with the expected output.
+     * @return The Executor used to execute the mapping.
+     */
+    public Executor doMapping(String mapPath, HashMap<String, String> outPaths, String privateSecurityDataPath) {
+        try {
+            Executor executor = this.createExecutorPrivateSecurityData(mapPath, privateSecurityDataPath);
+            doMapping(executor, outPaths);
+            return executor;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            fail();
+        }
+        return null;
+    }
+
+    /**
      * This method executes a mapping, compares it to the expected out, and returns the used Executor.
      * @param mapPath The path of the mapping file.
      * @param outPath The path of the file with the expected output.
@@ -151,6 +196,22 @@ public abstract class TestCore {
         QuadStore result = executor.execute(null);
         result.removeDuplicates();
         compareStores(filePathToStore(outPath), result);
+    }
+
+    /**
+     * This method executes a mapping and compares with the expected output of Logical Targets.
+     * @param executor The Executor that is used to execute the mapping.
+     * @param outPaths The paths of the files with the expected output.
+     */
+    void doMapping(Executor executor, HashMap<String, String> outPaths) throws Exception {
+        // TODO: compare target with each output
+        QuadStore result = executor.execute(null);
+        result.removeDuplicates();
+        for (Map.Entry<String, String> entry: outPaths.entrySet()) {
+            String target = entry.getKey();
+            String outPath = entry.getValue();
+            compareStores(filePathToStore(outPath), result);
+        }
     }
 
     void doMappingExpectError(String mapPath) {

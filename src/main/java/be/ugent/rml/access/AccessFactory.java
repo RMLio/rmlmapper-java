@@ -8,7 +8,10 @@ import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.apache.commons.lang.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static be.ugent.rml.Utils.isRemoteFile;
@@ -20,6 +23,7 @@ public class AccessFactory {
 
     // The path used when local paths are not absolute.
     private String basePath;
+    private static final Logger logger = LoggerFactory.getLogger(AccessFactory.class);
 
     /**
      * The constructor of the AccessFactory.
@@ -103,6 +107,71 @@ public class AccessFactory {
                             access = new LocalFileAccess(value, this.basePath);
                         }
 
+                        break;
+                    case NAMESPACES.TD + "PropertyAffordance":
+                        HashMap<String, String> headers = new HashMap<String, String>();
+
+                        Term thing = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.TD + "hasPropertyAffordance"), source)).get(0);
+
+                        List<Term> form = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.TD + "hasForm"), null));
+                        List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "hasTarget"), null));
+                        List<Term> contentTypes = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "forContentType"), null));
+                        List<Term> headerList = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HTV + "headers"), null));
+
+                        // Security schema & data
+                        List<Term> securityConfiguration = Utils.getObjectsFromQuads(rmlStore.getQuads(thing, new NamedNode(NAMESPACES.TD + "hasSecurityConfiguration"), null));
+                        logger.warn("Security config: " + securityConfiguration.toString());
+                        for (Term sc: securityConfiguration) {
+                            // TODO: support more security configurations
+                            List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
+                            List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
+                            List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RMLP + "token"), null));
+                            logger.warn("In: " + securityIn.toString());
+                            logger.warn("Name: " + securityName.toString());
+                            logger.warn("Value: " + securityValue.toString());
+                            try {
+                                switch (securityIn.get(0).getValue()) {
+                                    case "header": {
+                                        logger.warn ("Applying security configuration of " + sc.getValue() + "in header");
+                                        logger.warn("Name: " + securityName.get(0).getValue());
+                                        logger.warn("Value: " + securityValue.get(0).getValue());
+                                        headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
+                                        break;
+                                    }
+                                    case "query":
+                                    case "body":
+                                    case "cookie":
+                                    default:
+                                        throw new NotImplementedException();
+                                }
+                            }
+                            catch (IndexOutOfBoundsException e) {
+                                logger.warn ("Unable to apply security configuration for " + sc.getValue());
+                            }
+                        }
+
+                        if (targets.isEmpty()) {
+                            throw new Error("No target found for TD Thing");
+                        }
+
+                        // TODO: determine which protocol is used to know which vocabulary is needed for the protocol specific part.
+                        String target = targets.get(0).getValue();
+                        String contentType = contentTypes.isEmpty()? null: contentTypes.get(0).getValue();
+
+                        // Retrieve HTTP headers
+                        for (Term h: headerList) {
+                            try {
+                                logger.debug(h.toString());
+                                List<Term> headerName = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldName"), null));
+                                List<Term> headerValue = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldValue"), null));
+                                headers.put(headerName.get(0).getValue(), headerValue.get(0).getValue());
+                            }
+                            catch(IndexOutOfBoundsException e) {
+                                logger.warn("Unable to retrieve header name and value for " + h.getValue());
+                                continue;
+                            }
+                        };
+                        access = new WoTAccess(target, contentType, headers);
                         break;
                     default:
                         throw new NotImplementedException();
