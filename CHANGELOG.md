@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+- Endpoints of Oracle and DBpedia Spotlight for tests
+
 ## [4.9.1] - 2020-12-04
 
 ### Added

@@ -1,6 +1,6 @@
 .idea
 target
-rmlmapper.iml
+*.iml
 .DS_Store
 .settings
 .vscode

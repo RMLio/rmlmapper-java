@@ -12,7 +12,7 @@ public class IDLabFunctionsTest {
 
     @Test
     public void dbpediaSpotlight() {
-        String endpoint = "http://hp049.utah.cloudlab.us:2222/rest";
+        String endpoint = "http://193.190.127.195/dbpedia-spotlight/rest";
         List<String> entities = IDLabFunctions.dbpediaSpotlight("Barack Obama", endpoint);
         ArrayList<String> expected = new ArrayList<>();
         expected.add("http://dbpedia.org/resource/Barack_Obama");
