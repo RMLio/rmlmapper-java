@@ -39,6 +39,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
  - XML files (XPath)
 - remote data sources:
  - relational databases (MySQL, PostgreSQL, Oracle, and SQLServer)
+ - Web APIs with W3C Web of Things
  - SPARQL endpoints
  - files via HTTP urls (via GET)
   - CSV files
@@ -50,13 +51,16 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 - metadata generation
 - output formats: nquads (default), turtle, trig, trix, jsonld, hdt
 - join conditions
+- targets:
+ - local file
+ - VoID dataset
+ - SPARQL endpoint with SPARQL UPDATE
 
 ### Future
 - functions (all cases)
 - conditions (all cases)
 - data sources:
    - NoSQL databases
-   - web APIs
    - TPF servers
 
 ## Build
