@@ -108,7 +108,9 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
                 {"RMLTC0020a", null},
                 {"RMLTC0020b", null},
                 {"RMLTC1019", null},
-                {"RMLTC1020", null}
+                {"RMLTC1020", null},
+
+                {"RMLTC1022", null},
         });
     }
 

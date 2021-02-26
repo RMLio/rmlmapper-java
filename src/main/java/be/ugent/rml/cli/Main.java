@@ -176,7 +176,7 @@ public class Main {
                     rmlStore.read(is, null, RDFFormat.TURTLE);
                 }
                 catch (RDFParseException e) {
-                    logger.error(fatal, "Unable to parse mapping rules as Turtle. Does the file exist and is it valid Turtle?");
+                    logger.error(fatal, "Unable to parse mapping rules as Turtle. Does the file exist and is it valid Turtle?", e);
                     System.exit(1);
                 }
 

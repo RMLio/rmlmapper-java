@@ -164,7 +164,7 @@ public class RDBAccess implements Access {
 
                 // Iterate over column names
                 for (int i = 1; i <= columnCount; i++) {
-                    String columnName = rsmd.getColumnName(i);
+                    String columnName = rsmd.getColumnLabel(i);
 
                     if (!filledInDataTypes) {
                         String dataType = getColumnDataType(rsmd.getColumnTypeName(i));
@@ -247,7 +247,7 @@ public class RDBAccess implements Access {
         String[] headers = new String[columnCount];
 
         for (int i = 1; i <= columnCount; i++) {
-            headers[i - 1] = rsmd.getColumnName(i);
+            headers[i - 1] = rsmd.getColumnLabel(i);
         }
 
         return headers;

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Endpoints of Oracle and DBpedia Spotlight for tests
+- getColumnLabel instead of getColumnName (see [issue 92](https://github.com/RMLio/rmlmapper-java/issues/92))
 
 ## [4.9.1] - 2020-12-04
 
