@@ -8,8 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ### Changed
+
 - Endpoints of Oracle and DBpedia Spotlight for tests
 - getColumnLabel instead of getColumnName (see [issue 92](https://github.com/RMLio/rmlmapper-java/issues/92))
+- Updated dependencies
+  - added FnO Grel v0.6.1 which adds toTitlecase, lastIndexOfMapping, sha1, md5 
+
+### Fixed
+
+- support SQL queries that have unnamed columns
 
 ## [4.9.1] - 2020-12-04
 
