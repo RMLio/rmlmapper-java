@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+
+- Docker build (see [issue 106](https://github.com/RMLio/rmlmapper-java/issues/106))
+- Consistent builds with Maven
+
 ## [4.9.2] - 2021-03-04
 
 ### Changed

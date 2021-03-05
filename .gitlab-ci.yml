@@ -1,6 +1,7 @@
 stages:
   - test
   - test-oracle
+  - test-docker
 
 variables:
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -31,6 +32,16 @@ test-oracle:
   image: gitlab.ilabt.imec.be:4567/rml/util/mvn-oracle-docker:latest
   script:
     - '/entrypoint.sh'
+
+test-docker:
+  stage: test-docker
+  image: docker:latest
+  services:
+    - docker:19.03.12-dind
+  before_script:
+    - docker info
+  script:
+    - docker build -t rmlmapper .
 
 services:
   - postgres:10.4

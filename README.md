@@ -54,6 +54,8 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 The RMLMapper is build using Maven: `mvn install`.
 A standalone jar can be found in `/target`.
 
+Two jars are found in `/target`: a slim jar without bundled dependencies, and a standalone jar (suffixed with `-all.jar`) with all dependencies bundled.
+
 ## Usage
 
 ### CLI
