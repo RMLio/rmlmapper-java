@@ -19,8 +19,8 @@ map:om_000 a rr:ObjectMap;
     rml:reference "@";
     rr:termType rr:Literal.
 map:om_001 a rr:ObjectMap;
-    rml:reference "ingredients";
-    rr:termType rr:Literal.
+    rr:template "http://example.com/{ingredients}";
+    rr:termType rr:IRI.
 map:pm_000 a rr:PredicateMap;
     rr:constant rdfs:label.
 map:pm_001 a rr:PredicateMap;
