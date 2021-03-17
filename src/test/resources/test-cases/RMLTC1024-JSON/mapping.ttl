@@ -1,0 +1,28 @@
+@prefix rr:         <http://www.w3.org/ns/r2rml#> .
+@prefix foaf:       <http://xmlns.com/foaf/0.1/> .
+@prefix ex:         <http://example.com/> .
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml:        <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql:         <http://semweb.mmlab.be/ns/ql#> .
+@prefix org:        <http://www.w3.org/ns/org#> .
+@prefix skos:       <http://www.w3.org/2004/02/skos/core#> .
+@prefix dc:         <http://purl.org/dc/terms/> .
+@base               <http://example.org/tm/> .
+
+
+<json>
+  a rr:TriplesMap;
+    
+  rml:logicalSource [
+    rml:source "data.json";
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$[*]"
+  ];
+  rr:subjectMap [
+    rr:template "http://example.org/{custom_fields[?(@.label=='OR-ID')].value}";
+    rr:class org:Organization
+  ]; 
+  rr:predicateObjectMap [ 
+    rr:predicate skos:altLabel; 
+    rr:objectMap [ rml:reference "name"; rr:language "nl" ]
+  ].

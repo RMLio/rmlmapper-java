@@ -67,7 +67,9 @@ public class JSONRecord extends Record {
                 ArrayList<String> tempList = new ArrayList<>();
 
                 for (Object o : array) {
-                    tempList.add(o.toString());
+                    if (o != null) {
+                        tempList.add(o.toString());
+                    }
                 }
 
                 results.add(tempList);
