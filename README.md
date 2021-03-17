@@ -126,6 +126,13 @@ at [./src/test/java/be/ugent/rml/readme/ReadmeTest.java](https://github.com/RMLi
 
 ### Docker
 
+#### Dockerhub
+
+We publish our Docker images automatically on Dockerhub for every release.
+You can find our images here: [rmlio/rmlmapper-java](https://hub.docker.com/r/rmlio/rmlmapper-java).
+
+#### Build image
+
 You can use Docker to run the RMLMapper by following these steps:
 
 - Build the Docker image: `docker build -t rmlmapper .`.
