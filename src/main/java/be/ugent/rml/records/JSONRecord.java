@@ -35,11 +35,14 @@ public class JSONRecord extends Record {
         List<Object> results = new ArrayList<>();
 
         // We put simple values between square brackets to make sure no non-escaped shenanigans happen.
-        if (!value.contains("[") && !value.contains(".")) {
+        if (!value.contains("[") && !value.contains(".") && !value.equals("@")) {
             value = "['" + value + "']";
+        } else if (value.equals("@")) {
+            value = "" ;
         } else {
             value = "." + value;
         }
+
         // TODO do we need to be smarter that this? Below isn't complete yet, but also doesn't seem necessary
 //        String[] valueParts = value.split("\\.");
 //        StringBuilder escapedValue = new StringBuilder();

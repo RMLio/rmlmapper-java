@@ -34,7 +34,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
  - SPARQL endpoints
  - files via HTTP urls (via GET)
   - CSV files
-  - JSON files (JSONPath)
+  - JSON files (JSONPath (`@` can be used to select the current object.))
   - XML files (XPath)
 - functions (most cases)
 - configuration file
