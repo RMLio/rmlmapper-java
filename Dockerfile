@@ -5,7 +5,7 @@ ADD . /rmlmapper-java
 
 WORKDIR rmlmapper-java
 RUN mvn clean install -DskipTests=true
-RUN mv `find target/ -iname rmlmapper*.jar;` /rmlmapper.jar
+RUN mv `find target/ -iname rmlmapper-*-all.jar;` /rmlmapper.jar
 WORKDIR /data
 
 ENTRYPOINT ["java", "-jar", "/rmlmapper.jar"]

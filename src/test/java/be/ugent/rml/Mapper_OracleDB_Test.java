@@ -19,7 +19,7 @@ import java.util.Scanner;
 @RunWith(Parameterized.class)
 public class Mapper_OracleDB_Test extends DBTestCore {
 
-    protected static String CONNECTIONSTRING = "jdbc:oracle:thin:rmlmapper_test/test@//hp074.utah.cloudlab.us:1521/XE";
+    protected static String CONNECTIONSTRING = "jdbc:oracle:thin:rmlmapper_test/test@//193.190.127.195:1521/XE";
 
     @Parameterized.Parameter(0)
     public String testCaseName;

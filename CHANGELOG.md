@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.9.4] - 2021-03-19
+
+### Changed
+- Link to our Docker images on Dockerhub in README (see [issue 109](https://github.com/RMLio/rmlmapper-java/issues/109))
+
+### Fixed
+- Support @ in JSONPath (see [issue 178](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/178))
+- JSONRecord: ignore 'null' values in JSONArray as well (see [issue 103](https://github.com/RMLio/rmlmapper-java/issues/103))
+
+## [4.9.3] - 2021-03-05
+
+### Fixed
+
+- Docker build (see [issue 106](https://github.com/RMLio/rmlmapper-java/issues/106))
+- Consistent builds with Maven
+
+## [4.9.2] - 2021-03-04
+
+### Changed
+
+- Endpoints of Oracle and DBpedia Spotlight for tests
+- getColumnLabel instead of getColumnName (see [issue 92](https://github.com/RMLio/rmlmapper-java/issues/92))
+- Updated dependencies
+  - added FnO Grel v0.6.1 which adds toTitlecase, lastIndexOfMapping, sha1, md5 
+
+### Fixed
+
+- support SQL queries that have unnamed columns
+
 ## [4.9.1] - 2020-12-04
 
 ### Added
@@ -302,6 +331,9 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.9.4]: https://github.com/RMLio/rmlmapper-java/compare/v4.9.3...v4.9.4
+[4.9.3]: https://github.com/RMLio/rmlmapper-java/compare/v4.9.2...v4.9.3
+[4.9.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.9.1...v4.9.2
 [4.9.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.9.0...v4.9.1
 [4.9.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.8.2...v4.9.0
 [4.8.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.8.1...v4.8.2

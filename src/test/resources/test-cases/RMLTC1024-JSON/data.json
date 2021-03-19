@@ -1,0 +1,32 @@
+[
+  {
+    "id": "001",
+    "name": "x",
+    "custom_fields": [
+      {
+        "value": "OR-12345",
+        "label": "OR-ID"
+      }
+    ]
+  },
+  {
+    "id": "002",
+    "name": "y",
+    "custom_fields": [
+      {
+        "value": null,
+        "label": "OR-ID"
+      }
+    ]
+  },
+  {
+    "id": "003",
+    "name": "z",
+    "custom_fields": [
+      {
+        "value": "OR-1011",
+        "label": "OR-ID"
+      }
+    ]
+  }
+]

@@ -9,6 +9,8 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,12 +24,14 @@ import java.util.stream.Collectors;
  * This class is a record factory that creates CSV records.
  */
 public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
+    private static final Logger logger = LoggerFactory.getLogger(CSVRecordFactory.class);
 
     /**
      * This method returns a list of CSV records for a data source.
-     * @param access the access from which records need to be fetched.
+     *
+     * @param access        the access from which records need to be fetched.
      * @param logicalSource the used Logical Source.
-     * @param rmlStore the QuadStore with the RML rules.
+     * @param rmlStore      the QuadStore with the RML rules.
      * @return a list of records.
      * @throws IOException
      */
@@ -69,6 +73,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
 
     /**
      * This method returns a CSVParser from a simple access (local/remote CSV file; no CSVW).
+     *
      * @param access the used access.
      * @return a CSVParser.
      * @throws IOException
@@ -81,7 +86,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
             try {
                 return CSVParser.parse(inputStream, StandardCharsets.UTF_8, csvFormat);
             } catch (IllegalArgumentException e) {
-                // TODO give warning to user
+                logger.debug("Could not parse CSV inputstream", e);
                 return null;
             }
         } else {

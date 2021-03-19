@@ -29,12 +29,13 @@ public class RDBAccess implements Access {
 
     /**
      * This constructor takes as arguments the dsn, database, username, password, query, and content type.
-     * @param dsn the data source name.
+     *
+     * @param dsn          the data source name.
      * @param databaseType the database type.
-     * @param username the username of the user that executes the query.
-     * @param password the password of the above user.
-     * @param query the SQL query to use.
-     * @param contentType the content type of the results.
+     * @param username     the username of the user that executes the query.
+     * @param password     the password of the above user.
+     * @param query        the SQL query to use.
+     * @param contentType  the content type of the results.
      */
     public RDBAccess(String dsn, DatabaseType databaseType, String username, String password, String query, String contentType) {
         this.dsn = dsn;
@@ -47,6 +48,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns an InputStream of the results of the SQL query.
+     *
      * @return an InputStream with the results.
      * @throws IOException
      */
@@ -133,6 +135,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the datatypes used for the columns in the accessed database.
+     *
      * @return a map of column names and their datatypes.
      */
     @Override
@@ -142,6 +145,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method creates an CSV-formatted InputStream from a Result Set.
+     *
      * @param rs the Result Set that is used.
      * @return a CSV-formatted InputStream.
      * @throws SQLException
@@ -164,7 +168,7 @@ public class RDBAccess implements Access {
 
                 // Iterate over column names
                 for (int i = 1; i <= columnCount; i++) {
-                    String columnName = rsmd.getColumnName(i);
+                    String columnName = rsmd.getColumnLabel(i);
 
                     if (!filledInDataTypes) {
                         String dataType = getColumnDataType(rsmd.getColumnTypeName(i));
@@ -193,6 +197,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the corresponding datatype for a SQL datatype.
+     *
      * @param type the SQL datatype.
      * @return the url of the corresponding datatype.
      */
@@ -238,7 +243,8 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the header of the CSV.
-     * @param rsmd metdata of the Result Set
+     *
+     * @param rsmd        metdata of the Result Set
      * @param columnCount the number of columns.
      * @return a String array with the headers.
      * @throws SQLException
@@ -247,7 +253,13 @@ public class RDBAccess implements Access {
         String[] headers = new String[columnCount];
 
         for (int i = 1; i <= columnCount; i++) {
-            headers[i - 1] = rsmd.getColumnName(i);
+            headers[i - 1] = rsmd.getColumnLabel(i);
+            // Setting the empty header label at be.ugent.rml.access.RDBAccess.nullheader (as otherwise CSV parsers might fail),
+            // (this header cannot be used by actual mapping files so this should actually not give any issues)
+            //  and hope that this header will NEVER be encountered in real-world tables
+            if (headers[i - 1] == null || headers[i - 1].equals("")) {
+                headers[i - 1] = "be.ugent.rml.access.RDBAccess.nullheader";
+            }
         }
 
         return headers;
@@ -256,7 +268,7 @@ public class RDBAccess implements Access {
     @Override
     public boolean equals(Object o) {
         if (o instanceof RDBAccess) {
-            RDBAccess access  = (RDBAccess) o;
+            RDBAccess access = (RDBAccess) o;
 
             return dsn.equals(access.getDSN())
                     && databaseType.equals(access.getDatabaseType())
@@ -276,6 +288,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the DNS.
+     *
      * @return the DNS.
      */
     public String getDSN() {
@@ -284,6 +297,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the database type.
+     *
      * @return the database type.
      */
     public DatabaseType getDatabaseType() {
@@ -292,6 +306,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the username.
+     *
      * @return the username.
      */
     public String getUsername() {
@@ -300,6 +315,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the password.
+     *
      * @return the password.
      */
     public String getPassword() {
@@ -308,6 +324,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the SQL query.
+     *
      * @return the SQL query.
      */
     public String getQuery() {
@@ -316,6 +333,7 @@ public class RDBAccess implements Access {
 
     /**
      * This method returns the content type.
+     *
      * @return the content type.
      */
     public String getContentType() {

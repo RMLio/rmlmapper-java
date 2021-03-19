@@ -1,0 +1,4 @@
+<http://example.org/OR-12345> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/org#Organization>.
+<http://example.org/OR-12345> <http://www.w3.org/2004/02/skos/core#altLabel> "x"@nl.
+<http://example.org/OR-1011> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/org#Organization>.
+<http://example.org/OR-1011> <http://www.w3.org/2004/02/skos/core#altLabel> "z"@nl.

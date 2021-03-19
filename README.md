@@ -34,7 +34,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
  - SPARQL endpoints
  - files via HTTP urls (via GET)
   - CSV files
-  - JSON files (JSONPath)
+  - JSON files (JSONPath (`@` can be used to select the current object.))
   - XML files (XPath)
 - functions (most cases)
 - configuration file
@@ -53,6 +53,8 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 ## Build
 The RMLMapper is build using Maven: `mvn install`.
 A standalone jar can be found in `/target`.
+
+Two jars are found in `/target`: a slim jar without bundled dependencies, and a standalone jar (suffixed with `-all.jar`) with all dependencies bundled.
 
 ## Usage
 
@@ -123,6 +125,13 @@ An example of how you can use the RMLMapper as an external library can be found
 at [./src/test/java/be/ugent/rml/readme/ReadmeTest.java](https://github.com/RMLio/rmlmapper-java/blob/master/src/test/java/be/ugent/rml/readme/ReadmeTest.java)
 
 ### Docker
+
+#### Dockerhub
+
+We publish our Docker images automatically on Dockerhub for every release.
+You can find our images here: [rmlio/rmlmapper-java](https://hub.docker.com/r/rmlio/rmlmapper-java).
+
+#### Build image
 
 You can use Docker to run the RMLMapper by following these steps:
 

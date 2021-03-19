@@ -294,12 +294,16 @@ grel:string_contains
     fno:expects         ( grel:valueParam grel:param_string_sub ) ;
     fno:returns         ( grel:output_bool ) .
 
-#TODO indexOf
+grel:prob_indexOf
+    a                   fno:Problem ;
+    fno:name            "The indexOf problem"^^xsd:string ;
+    dcterms:description "The index of the first occurence within a string."^^xsd:string .
 
 grel:string_indexOf
     a                   fno:Function ;
     fno:name            "indexOf" ;
     dcterms:description "indexOf" ;
+    fno:solves          grel:prob_indexOf ;
     fno:expects         ( grel:valueParam grel:param_string_sub ) ;
     fno:returns         ( grel:output_number ) .
 
@@ -341,8 +345,6 @@ grel:toUpperCase
     fno:solves          grel:prob_ucase ;
     fno:expects         ( grel:valueParam ) ;
     fno:returns         ( grel:stringOut ) .
-
-#TODO toTitleCase
 
 grel:string_toTitlecase
     a                   fno:Function ;
@@ -429,14 +431,18 @@ grel:p_int_i_opt_to
 #    fno:expects         ( grel:valueParam grel:p_int_i_from grel:p_int_i_opt_to ) ;
 #    fno:returns         ( grel:stringOut ) .
 
-# TODO lastIndexOf
+grel:prob_lastIndexOf
+    a                   fno:Problem ;
+    fno:name            "The lastIndexOf problem"^^xsd:string ;
+    dcterms:description "Retrieving the last index of an occurrence in a string."^^xsd:string .
 
-#grel:string_lastIndexOf
-#    a                   fno:Function ;
-#    fno:name            "lastIndexOf" ;
-#    dcterms:description "lastIndexOf" ;
-#    fno:expects         ( grel:valueParam grel:param_string_sub ) ;
-#    fno:returns         ( grel:output_number ) .
+grel:string_lastIndexOf
+    a                   fno:Function ;
+    fno:name            "lastIndexOf" ;
+    dcterms:description "lastIndexOf" ;
+    fno:solves          grel:prob_lastIndexOf ;
+    fno:expects         ( grel:valueParam grel:param_string_sub ) ;
+    fno:returns         ( grel:output_number ) .
 
 # TODO replace
 
@@ -687,8 +693,6 @@ grel:modeParam
 #    fno:expects         ( grel:valueParam grel:modeParam ) ;
 #    fno:returns         ( grel:stringOut ) .
 
-#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#md5string-s
-
 grel:prob_crypto
     a                   fno:Problem ;
     fno:name            "The crypto problem"^^xsd:string ;
@@ -699,28 +703,26 @@ grel:prob_md5
     fno:name            "The md5 problem"^^xsd:string ;
     dcterms:description "Calculating the md5 checksum."^^xsd:string .
 
-#grel:string_md5
-#    a                   fno:Function ;
-#    fno:name            "md5" ;
-#    dcterms:description "md5" ;
-#    fno:solves          grel:prob_md5 ;
-#    fno:expects         ( grel:valueParam ) ;
-#    fno:returns         ( grel:stringOut ) .
-
-#TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#sha1string-s
+grel:string_md5
+    a                   fno:Function ;
+    fno:name            "md5" ;
+    dcterms:description "md5" ;
+    fno:solves          grel:prob_md5 ;
+    fno:expects         ( grel:valueParam ) ;
+    fno:returns         ( grel:stringOut ) .
 
 grel:prob_sha1
     a                   fno:Problem ;
     fno:name            "The sha1 problem"^^xsd:string ;
     dcterms:description "Calculating the SHA1 checksum."^^xsd:string .
 
-#grel:string_sha1
-#    a                   fno:Function ;
-#    fno:name            "sha1" ;
-#    dcterms:description "sha1" ;
-#    fno:solves          grel:prob_sha1 ;
-#    fno:expects         ( grel:valueParam ) ;
-#    fno:returns         ( grel:stringOut ) .
+grel:string_sha1
+    a                   fno:Function ;
+    fno:name            "sha1" ;
+    dcterms:description "sha1" ;
+    fno:solves          grel:prob_sha1 ;
+    fno:expects         ( grel:valueParam ) ;
+    fno:returns         ( grel:stringOut ) .
 
 #TODO https://github.com/OpenRefine/OpenRefine/wiki/GREL-String-Functions#phoneticstring-s-string-encoding
 
