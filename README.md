@@ -290,6 +290,13 @@ However, the RMLMapper can be easily adapted to use a different XML parsing impl
 The processor checks whether correct language tags are not, using a regular expression.
 The regex has no support for languages of length 5-8, but this currently only applies to 'qaa..qtz'.
 
+### Duplicate removal and serialization format
+
+Performance depends on the serialization format (`--serialization <format>`)
+and if duplicate removal is enabled (`--duplicates`).
+Experimenting with various configurations may lead to better performance for 
+your use case.
+
 ## Documentation
 Generate static files at /docs/apidocs with:
 ```
