@@ -291,7 +291,7 @@ public abstract class TestCore {
 
         if (path.endsWith(".nq")) {
             store = QuadStoreFactory.read(outputFile, RDFFormat.NQUADS);
-        } else if (path.endsWith(".json")) {
+        } else if (path.endsWith(".json") || path.endsWith(".jsonld")) {
             store = QuadStoreFactory.read(outputFile, RDFFormat.JSONLD);
         } else if (path.endsWith(".trig")) {
             store = QuadStoreFactory.read(outputFile, RDFFormat.TRIG);

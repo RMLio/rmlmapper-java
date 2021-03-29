@@ -1,0 +1,78 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rmlt: <http://semweb.mmlab.be/ns/rml-target#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ex: <http://example.com/> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
+@prefix htv: <http://www.w3.org/2011/http#> .
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix wotsec: <https://www.w3.org/2019/wot/security#> .
+@prefix formats: <https://www.w3.org/ns/formats/> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@base <http://example.com/rules/> .
+
+# API key in HTTP header
+<#WotWebAPISecurity> a wotsec:APIKeySecurityScheme;
+  wotsec:in "header";
+  wotsec:name "apikey";
+.
+
+# Target
+<#TargetDump> a rmlt:LogicalTarget;
+  rmlt:target [ a void:Dataset;
+    void:dataDump <file:///tmp/out.nt>;
+  ];
+  rmlt:serialization formats:FORMAT;
+.
+
+<#WoTWebResource> a td:PropertyAffordance;
+  td:hasForm [
+    # URL and content type
+    hctl:hasTarget "http://localhost:8000/trashcans";
+    hctl:forContentType "application/json";
+    # Read only
+    hctl:hasOperationType td:readproperty ;
+    # Set HTTP method and headers
+    htv:methodName "GET";
+    htv:headers ([
+      htv:fieldName "User-Agent";
+      htv:fieldValue "RMLMapper v4.9.1";
+    ]);
+  ];
+.
+
+<#WoTWebAPI> a td:Thing;
+  td:hasPropertyAffordance <#WoTWebResource>;
+  td:hasSecurityConfiguration <#WotWebAPISecurity>;
+.
+
+<#TriplesMap> a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source <#WoTWebResource>;
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$.[*]";
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.org/bigbelly/{id}";
+    rml:logicalTarget <#TargetDump>;
+  ];
+
+  rr:predicateObjectMap [
+   rr:predicate ex:fillingLevel;
+   rr:objectMap [
+     rml:reference "fillingLevel.value";
+   ];
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate rdf:type;
+    rr:objectMap [
+      rr:constant ex:Trashcan;
+    ];
+  ];
+.
