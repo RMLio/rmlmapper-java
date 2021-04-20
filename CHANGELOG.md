@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Treat empty values in CSV columns as NULL values in RDBs (see [issue 188](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/188)).
 - Fixed reloading the function every iteration, hopefully this gives a speed boost
 - Fix R2RML conversion of multiple Triples Maps (see [issue 186](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/186)).
+- Fix datatype retrieval when RDB colum names are quoted (see [issue 185](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/185)).
 
 ## [4.9.4] - 2021-03-19
 

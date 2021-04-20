@@ -29,6 +29,17 @@ public class CSVRecord extends Record {
 
         if (datatypes != null) {
             datatype = datatypes.get(value);
+            /*
+             * Some RDBs require quotes for capitalization, but after executing the query,
+             * the quotes are dropped in the results as "ID" != ID, neither is 'ID' != ID.
+             *
+             * If the lookup fail, remove these quotes and try again.
+             */
+            if (datatype == null) {
+                value = value.replaceFirst("^\"", "").replaceFirst("\"$", "");
+                value = value.replaceFirst("^\'", "").replaceFirst("\'$", "");
+                datatype = datatypes.get(value);
+            }
         }
 
         return datatype;
