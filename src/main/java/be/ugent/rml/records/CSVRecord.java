@@ -43,15 +43,11 @@ public class CSVRecord extends Record {
     public List<Object> get(String value) {
         List<Object> result = new ArrayList<>();
         Object obj;
-
-//        try {
-            obj = this.record.get(value);
+        obj = this.record.get(value);
+        // Empty column values in CSV are the same as NULL values in RDBs and should be skipped
+        if (!String.valueOf(obj).equals("")) {
             result.add(obj);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return result;
-//        }
-
+        }
         return result;
     }
 }
