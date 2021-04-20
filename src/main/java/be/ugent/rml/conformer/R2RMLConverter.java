@@ -112,6 +112,6 @@ public class R2RMLConverter implements Converter {
 
         // Rename on whole store instead of deep search in TriplesMap Resource
         store.renameAll(new NamedNode(RR + "column"), new NamedNode(RML + "reference"));
-        store.removeQuads(null, new NamedNode(RR + "logicalTable"), null);
+        store.removeQuads(triplesMap, new NamedNode(RR + "logicalTable"), null);
     }
 }
