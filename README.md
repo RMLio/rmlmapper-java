@@ -84,33 +84,49 @@ that output is found below.
 ```
 usage: java -jar mapper.jar <options>
 options:
- -c,--configfile <arg>            path to configuration file
- -d,--duplicates                  remove duplicates in the output
- -dsn,--r2rml-jdbcDSN <arg>       DSN of the database when using R2RML
-                                  rules
- -e,--metadatafile <arg>          path to output metadata file
- -f,--functionfile <arg>          one or more function file paths (dynamic
-                                  functions with relative paths are found
-                                  relative to the cwd)
- -h,--help                        show help info
- -l,--metadataDetailLevel <arg>   generate metadata on given detail level
-                                  (dataset - triple - term)
- -m,--mappingfile <arg>           one or more mapping file paths and/or
-                                  strings (multiple values are
-                                  concatenated). r2rml is converted to rml
-                                  if needed using the r2rml arguments.
- -o,--outputfile <arg>            path to output file (default: stdout)
- -p,--r2rml-password <arg>        password of the database when using
-                                  R2RML rules
- -s,--serialization <arg>         serialization format (nquads (default),
-                                  turtle, trig, trix, jsonld, hdt)
- -t,--triplesmaps <arg>           IRIs of the triplesmaps that should be
-                                  executed in order, split by ',' (default
-                                  is all triplesmaps)
- -u,--r2rml-username <arg>        username of the database when using
-                                  R2RML rules
- -v,--verbose                     show more details in debugging output
+ -c,--configfile <arg>               path to configuration file
+ -d,--duplicates                     remove duplicates in the output
+ -dsn,--r2rml-jdbcDSN <arg>          DSN of the database when using R2RML
+                                     rules
+ -e,--metadatafile <arg>             path to output metadata file
+ -f,--functionfile <arg>             one or more function file paths (dynamic
+                                     functions with relative paths are found
+                                     relative to the cwd)
+ -h,--help                           show help info
+ -l,--metadataDetailLevel <arg>      generate metadata on given detail level
+                                     (dataset - triple - term)
+ -m,--mappingfile <arg>              one or more mapping file paths and/or
+                                     strings (multiple values are
+                                     concatenated). r2rml is converted to rml
+                                     if needed using the r2rml arguments.
+ -psd,--privatesecuritydata <arg>    one or more private security files 
+                                     containing all private security 
+                                     information such as usernames, passwords, 
+                                     certificates, etc.
+ -o,--outputfile <arg>               path to output file (default: stdout)
+ -p,--r2rml-password <arg>           password of the database when using
+                                     R2RML rules
+ -s,--serialization <arg>            serialization format (nquads (default),
+                                     turtle, trig, trix, jsonld, hdt)
+ -t,--triplesmaps <arg>              IRIs of the triplesmaps that should be
+                                     executed in order, split by ',' (default
+                                     is all triplesmaps)
+ -u,--r2rml-username <arg>           username of the database when using
+                                     R2RML rules
+ -v,--verbose                        show more details in debugging output
 ```
+
+#### Accessing Web APIs with authentication
+
+The [W3C Web of Things Security Ontology](https://www.w3.org/2019/wot/security)
+is used to describe how Web APIs authentication should be performed 
+but does not include the necessary credentials to access the Web API.
+These credentials can be supplied using the `-psd <PATH>` CLI argument.
+The `PATH` argument must point to one or more private security files
+which contain the necessary credentials to access the Web API.
+
+An example can be found in the test cases 
+[src/test/resources/web-of-things](src/test/resources/web-of-things).
 
 #### Accessing Oracle Database
 
