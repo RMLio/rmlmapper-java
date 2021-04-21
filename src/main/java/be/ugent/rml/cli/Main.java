@@ -315,7 +315,7 @@ public class Main {
                 String startTimestamp = Instant.now().toString();
 
                 try {
-                    HashMap<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                    HashMap<Term, QuadStore> targets = executor.executeV5(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                             metadataGenerator);
                     QuadStore result = targets.get(new NamedNode("rmlmapper://default.store"));
 

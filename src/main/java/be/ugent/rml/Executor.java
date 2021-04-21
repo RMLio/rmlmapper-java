@@ -96,7 +96,32 @@ public class Executor {
         }
     }
 
-    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
+    /*
+     * Backwards compatibility for the V4.X.X releases.
+     * This API will be deprecated in the first V5.X.X release in which this API will change to the new one.
+     */
+    @Deprecated
+    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
+        HashMap<Term, QuadStore> result = this.executeV5(triplesMaps, removeDuplicates, metadataGenerator);
+        return result.get(new NamedNode("rmlmapper://legacy.store"));
+    }
+
+    @Deprecated
+    public QuadStore executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
+        HashMap<Term, QuadStore> result = this.executeWithFunctionV5(triplesMaps, removeDuplicates, pogFunction);
+        return result.get(new NamedNode("rmlmapper://legacy.store"));
+    }
+
+    @Deprecated
+    public QuadStore execute(List<Term> triplesMaps) throws Exception {
+        HashMap<Term, QuadStore> result = this.executeV5(triplesMaps, false, null);
+        return result.get(new NamedNode("rmlmapper://legacy.store"));
+    }
+
+    /*
+     * New public API for the V5.X.X. releases
+     */
+    public HashMap<Term, QuadStore> executeV5(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
 
         BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
 
@@ -111,10 +136,10 @@ public class Executor {
             };
         }
 
-        return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
+        return executeWithFunctionV5(triplesMaps, removeDuplicates, pogFunction);
     }
 
-    public HashMap<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
+    public HashMap<Term, QuadStore> executeWithFunctionV5(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
@@ -200,8 +225,8 @@ public class Executor {
         return this.targetStores;
     }
 
-    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps) throws Exception {
-        return this.execute(triplesMaps, false, null);
+    public HashMap<Term, QuadStore> executeV5(List<Term> triplesMaps) throws Exception {
+        return this.executeV5(triplesMaps, false, null);
     }
 
 

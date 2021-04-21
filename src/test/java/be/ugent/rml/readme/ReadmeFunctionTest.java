@@ -51,7 +51,7 @@ public class ReadmeFunctionTest {
             Executor executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingStream));
 
             // Execute the mapping
-            QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
+            QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
 
             // Output the result
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
