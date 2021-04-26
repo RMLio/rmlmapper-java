@@ -62,16 +62,13 @@ public class RDF4JStore extends QuadStore {
 
     @Override
     public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {
-        // TODO add graph support
-        if (graph != null) {
-            throw new UnsupportedOperationException("Method not implemented.");
-        }
         Model result;
         Resource filterSubject = getFilterSubject(subject);
         IRI filterPredicate = getFilterPredicate(predicate);
         Value filterObject = getFilterObject(object);
+        Resource filterGraph = getFilterGraph(graph);
 
-        result = model.filter(filterSubject, filterPredicate, filterObject);
+        result = model.filter(filterSubject, filterPredicate, filterObject, filterGraph);
 
         List<Quad> quads = new ArrayList<>();
 
@@ -179,27 +176,21 @@ public class RDF4JStore extends QuadStore {
 
     @Override
     public void removeQuads(Term subject, Term predicate, Term object, Term graph) {
-        // TODO add graph support
-        if (graph != null) {
-            throw new UnsupportedOperationException("Method not implemented.");
-        }
         Resource filterSubject = getFilterSubject(subject);
         IRI filterPredicate = getFilterPredicate(predicate);
         Value filterObject = getFilterObject(object);
-        model.remove(filterSubject, filterPredicate, filterObject);
+        Resource filterGraph = getFilterGraph(graph);
+        model.remove(filterSubject, filterPredicate, filterObject, filterGraph);
     }
 
     @Override
     public boolean contains(Term subject, Term predicate, Term object, Term graph) {
-        // TODO add graph support
-        if (graph != null) {
-            throw new UnsupportedOperationException("Method not implemented.");
-        }
         Resource filterSubject = getFilterSubject(subject);
         IRI filterPredicate = getFilterPredicate(predicate);
         Value filterObject = getFilterObject(object);
+        Resource filterGraph = getFilterGraph(graph);
 
-        return model.contains(filterSubject, filterPredicate, filterObject);
+        return model.contains(filterSubject, filterPredicate, filterObject, filterGraph);
     }
 
     @Override
