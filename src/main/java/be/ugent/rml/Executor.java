@@ -8,6 +8,7 @@ import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
+import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
@@ -58,7 +59,7 @@ public class Executor {
 
         // Default store if no Targets are available for a triple
         if (resultingQuads == null) {
-            this.resultingQuads = new SimpleQuadStore();
+            this.resultingQuads = new RDF4JStore();
         } else {
             this.resultingQuads = resultingQuads;
         }
