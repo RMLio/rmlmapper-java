@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Fixed
 - Add remark about duplicate removal and serialization format performance (see [issue 108](https://github.com/RMLio/rmlmapper-java/issues/108)).
 - Treat empty values in CSV columns as NULL values in RDBs (see [issue 188](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/188)).
+- Fixed reloading the function every iteration, hopefully this gives a speed boost
 
 ## [4.9.4] - 2021-03-19
 

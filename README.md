@@ -1,4 +1,4 @@
-# RMLMapper
+# RMLMapper <!-- omit in toc -->
 
 [![Maven Central](https://img.shields.io/maven-central/v/be.ugent.rml/rmlmapper.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22be.ugent.rml%22%20AND%20a:%22rmlmapper%22)
 
@@ -6,19 +6,27 @@ The RMLMapper execute RML rules to generate Linked Data.
 It is a Java library, which is available via the command line ([API docs online](https://rmlio.github.io/rmlmapper-java/apidocs/)).
 The RMLMapper loads all data in memory, so be aware when working with big datasets.
 
-## Table of contents
+## Table of contents <!-- omit in toc -->
 
 - [Features](#features)
+  - [Supported](#supported)
+  - [Future](#future)
 - [Build](#build)
 - [Usage](#usage)
   - [CLI](#cli)
   - [Library](#library)
   - [Docker](#docker)
   - [Including functions](#including-functions)
+  - [Generating metadata](#generating-metadata)
 - [Testing](#testing)
+  - [RDBs](#rdbs)
 - [Deploy on Central Repository](#deploy-on-central-repository)
 - [Dependencies](#dependencies)
+- [Commercial Support](#commercial-support)
 - [Remarks](#remarks)
+  - [XML file parsing performance](#xml-file-parsing-performance)
+  - [Language tag support](#language-tag-support)
+  - [Duplicate removal and serialization format](#duplicate-removal-and-serialization-format)
 - [Documentation](#documentation)
   - [UML Diagrams](#uml-diagrams)
 
@@ -37,6 +45,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
   - JSON files (JSONPath (`@` can be used to select the current object.))
   - XML files (XPath)
 - functions (most cases)
+  - For examples on how to use functions within RML mapping documents, you can have a look at the [RML+FnO test cases](https://github.com/RMLio/rml-fno-test-cases)
 - configuration file
 - metadata generation
 - output formats: nquads (default), turtle, trig, trix, jsonld, hdt
