@@ -3,7 +3,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/be.ugent.rml/rmlmapper.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22be.ugent.rml%22%20AND%20a:%22rmlmapper%22)
 
 The RMLMapper execute RML rules to generate Linked Data.
-It is a Java library, which is available via the command line ([API docs online](https://rmlio.github.io/rmlmapper-java/apidocs/)).
+It is a Java library, which is available via the command line ([API docs online](https://javadoc.io/doc/be.ugent.rml/rmlmapper)).
 The RMLMapper loads all data in memory, so be aware when working with big datasets.
 
 ## Table of contents <!-- omit in toc -->
@@ -34,17 +34,17 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 
 ### Supported
 - local data sources:
- - CSV files (including CSVW)
- - JSON files (JSONPath)
- - XML files (XPath)
-- remote data sources:
- - relational databases (MySQL, PostgreSQL, Oracle, and SQLServer)
- - Web APIs with W3C Web of Things
- - SPARQL endpoints
- - files via HTTP urls (via GET)
-  - CSV files
-  - JSON files (JSONPath (`@` can be used to select the current object.))
+  - CSV files (including CSVW)
+  - JSON files (JSONPath)
   - XML files (XPath)
+- remote data sources:
+  - relational databases (MySQL, PostgreSQL, Oracle, and SQLServer)
+  - Web APIs with W3C Web of Things
+  - SPARQL endpoints
+  - files via HTTP urls (via GET)
+    - CSV files
+    - JSON files (JSONPath (`@` can be used to select the current object.))
+    - XML files (XPath)
 - functions (most cases)
   - For examples on how to use functions within RML mapping documents, you can have a look at the [RML+FnO test cases](https://github.com/RMLio/rml-fno-test-cases)
 - configuration file
@@ -52,16 +52,16 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 - output formats: nquads (default), turtle, trig, trix, jsonld, hdt
 - join conditions
 - targets:
- - local file
- - VoID dataset
- - SPARQL endpoint with SPARQL UPDATE
+  - local file
+  - VoID dataset
+  - SPARQL endpoint with SPARQL UPDATE
 
 ### Future
 - functions (all cases)
 - conditions (all cases)
 - data sources:
-   - NoSQL databases
-   - TPF servers
+  - NoSQL databases
+  - TPF servers
 
 ## Build
 The RMLMapper is build using Maven: `mvn install`.

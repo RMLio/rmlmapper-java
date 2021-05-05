@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- README Markdown rendering and links
+
 ## [4.10.0] - 2021-05-05
 
 ### Added
@@ -23,7 +26,7 @@ with token authentication.
 the old API is still available but deprecated. In a future release, the old API
 will be removed and the new one will drop the `V5` suffix.
 
-## Fixed
+### Fixed
 - Add remark about duplicate removal and serialization format performance (see [issue 108](https://github.com/RMLio/rmlmapper-java/issues/108)).
 - Treat empty values in CSV columns as NULL values in RDBs (see [issue 188](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/188)).
 - Fixed reloading the function every iteration, hopefully this gives a speed boost
