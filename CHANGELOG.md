@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.10.0] - 2021-05-05
+
 ### Added
 - Added support for named graphs in RDFJStore.
 - Support for Logical Target and exporting to a local file with various 
@@ -17,6 +19,9 @@ with token authentication.
 
 ### Changed
 - Use RDF4JStore by default (see [issue 108](https://github.com/RMLio/rmlmapper-java/issues/108)).
+- Public API of the Executor has been updated and is available under `<method>V5`,
+the old API is still available but deprecated. In a future release, the old API
+will be removed and the new one will drop the `V5` suffix.
 
 ## Fixed
 - Add remark about duplicate removal and serialization format performance (see [issue 108](https://github.com/RMLio/rmlmapper-java/issues/108)).
