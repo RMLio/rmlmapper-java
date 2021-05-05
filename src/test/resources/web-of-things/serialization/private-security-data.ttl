@@ -1,7 +1,7 @@
-@prefix rmlp: <http://semweb.mmlab.be/ns/rmlp#> .
+@prefix idsa: <https://w3id.org/idsa/core/> .
 @base <http://example.com/rules/> .
 
 # API key in HTTP header
-<#WotWebAPISecurity> a rmlp:APISecuritydata;
-  rmlp:token "123456789";
+<#WotWebAPISecurity> a idsa:Token;
+  idsa:tokenValue "123456789";
 .

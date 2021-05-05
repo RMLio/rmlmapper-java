@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Added support for named graphs in RDFJStore.
+- Support for Logical Target and exporting to a local file with various 
+serializations and compression, or a SPARQL endpoint using 
+SPARQL UPDATE queries.
+- W3C Web of Things Web API access support to retrieve data from Web API 
+with token authentication.
 
 ### Changed
 - Use RDF4JStore by default (see [issue 108](https://github.com/RMLio/rmlmapper-java/issues/108)).
