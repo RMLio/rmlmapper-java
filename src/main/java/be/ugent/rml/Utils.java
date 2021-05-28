@@ -178,7 +178,7 @@ public class Utils {
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setInstanceFollowRedirects(false);
+            connection.setInstanceFollowRedirects(true);
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", contentType);
             connection.setRequestProperty("charset", "utf-8");
@@ -195,7 +195,7 @@ public class Utils {
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setInstanceFollowRedirects(false);
+            connection.setInstanceFollowRedirects(true);
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", contentType);
             // Set encoding if not set before

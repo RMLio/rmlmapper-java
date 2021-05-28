@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - README Markdown rendering and links
+- Follow HTTP redirects for Web APIs (see [issue 196](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/196))
 
 ## [4.10.0] - 2021-05-05
 
