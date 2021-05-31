@@ -111,40 +111,43 @@ public class AccessFactory {
                     case NAMESPACES.TD + "PropertyAffordance":
                         HashMap<String, String> headers = new HashMap<String, String>();
 
-                        Term thing = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.TD + "hasPropertyAffordance"), source)).get(0);
-
                         List<Term> form = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.TD + "hasForm"), null));
                         List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "hasTarget"), null));
                         List<Term> contentTypes = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "forContentType"), null));
                         List<Term> headerList = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HTV + "headers"), null));
 
                         // Security schema & data
-                        List<Term> securityConfiguration = Utils.getObjectsFromQuads(rmlStore.getQuads(thing, new NamedNode(NAMESPACES.TD + "hasSecurityConfiguration"), null));
-                        logger.debug("Security config: " + securityConfiguration.toString());
-                        for (Term sc: securityConfiguration) {
-                            // TODO: support more security configurations
-                            List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
-                            List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
-                            List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "tokenValue"), null));
-                            try {
-                                switch (securityIn.get(0).getValue()) {
-                                    case "header": {
-                                        logger.info ("Applying security configuration of " + sc.getValue() + "in header");
-                                        logger.debug("Name: " + securityName.get(0).getValue());
-                                        logger.debug("Value: " + securityValue.get(0).getValue());
-                                        headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
-                                        break;
+                        try {
+                            Term thing = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.TD + "hasPropertyAffordance"), source)).get(0);
+                            List<Term> securityConfiguration = Utils.getObjectsFromQuads(rmlStore.getQuads(thing, new NamedNode(NAMESPACES.TD + "hasSecurityConfiguration"), null));
+                            logger.debug("Security config: " + securityConfiguration.toString());
+                            for (Term sc : securityConfiguration) {
+                                // TODO: support more security configurations
+                                List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
+                                List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
+                                List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "tokenValue"), null));
+                                try {
+                                    switch (securityIn.get(0).getValue()) {
+                                        case "header": {
+                                            logger.info("Applying security configuration of " + sc.getValue() + "in header");
+                                            logger.debug("Name: " + securityName.get(0).getValue());
+                                            logger.debug("Value: " + securityValue.get(0).getValue());
+                                            headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
+                                            break;
+                                        }
+                                        case "query":
+                                        case "body":
+                                        case "cookie":
+                                        default:
+                                            throw new NotImplementedException();
                                     }
-                                    case "query":
-                                    case "body":
-                                    case "cookie":
-                                    default:
-                                        throw new NotImplementedException();
+                                } catch (IndexOutOfBoundsException e) {
+                                    logger.warn("Unable to apply security configuration for " + sc.getValue());
                                 }
                             }
-                            catch (IndexOutOfBoundsException e) {
-                                logger.warn ("Unable to apply security configuration for " + sc.getValue());
-                            }
+                        }
+                        catch (IndexOutOfBoundsException e) {
+                            logger.warn("No td:Thing description, unable to determine security configurations, assuming no security policies apply");
                         }
 
                         if (targets.isEmpty()) {
