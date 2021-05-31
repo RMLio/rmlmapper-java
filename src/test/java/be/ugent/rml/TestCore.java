@@ -154,11 +154,30 @@ public abstract class TestCore {
      * This method executes a mapping with Targets, compares it to the expected out, and returns the used Executor.
      * @param mapPath The path of the mapping file.
      * @param outPaths The paths of the files with the expected output.
+     * @param privateSecurityDataPath The path of the private security data file.
      * @return The Executor used to execute the mapping.
      */
     public Executor doMapping(String mapPath, HashMap<Term, String> outPaths, String privateSecurityDataPath) {
         try {
             Executor executor = this.createExecutorPrivateSecurityData(mapPath, privateSecurityDataPath);
+            doMapping(executor, outPaths);
+            return executor;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            fail();
+        }
+        return null;
+    }
+
+    /**
+     * This method executes a mapping with Targets, compares it to the expected out, and returns the used Executor.
+     * @param mapPath The path of the mapping file.
+     * @param outPaths The paths of the files with the expected output.
+     * @return The Executor used to execute the mapping.
+     */
+    public Executor doMapping(String mapPath, HashMap<Term, String> outPaths) {
+        try {
+            Executor executor = this.createExecutor(mapPath);
             doMapping(executor, outPaths);
             return executor;
         } catch (Exception e) {

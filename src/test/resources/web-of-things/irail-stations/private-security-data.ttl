@@ -1,0 +1,2 @@
+@prefix idsa: <https://w3id.org/idsa/core/> .
+@base <http://example.com/rules/> .

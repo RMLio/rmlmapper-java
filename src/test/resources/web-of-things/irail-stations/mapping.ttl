@@ -1,0 +1,65 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
+@prefix htv: <http://www.w3.org/2011/http#> .
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
+@prefix schema: <http://schema.org/> .
+@prefix gtfs: <http://vocab.gtfs.org/terms#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@base <http://example.org/rules/> .
+
+<#WoTWebAPISource> a td:PropertyAffordance;
+  td:hasForm [
+    # URL and content type
+    hctl:hasTarget "http://localhost:8000/redirect";
+    hctl:forContentType "application/json";
+    # Read only
+    hctl:hasOperationType td:readproperty;
+    # Set HTTP method and headers
+    htv:methodName "GET";
+    htv:headers ([
+      htv:fieldName "User-Agent";
+      htv:fieldValue "RMLMapper";
+    ]);
+  ];
+.
+
+<#WoTWebAPI> a td:Thing;
+  td:hasPropertyAffordance <#WoTWebResource>;
+.
+
+<#TriplesMap> a rr:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+    rml:source <#WoTWebAPISource>;
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$.station.[*]";
+  ];
+  rr:subjectMap [
+    rml:reference "@id";
+  ];
+  rr:predicateObjectMap [
+    rr:predicate rdf:type;
+    rr:object gtfs:Station;
+  ];
+  rr:predicateObjectMap [
+    rr:predicate schema:name;
+    rr:objectMap [
+      rml:reference "name";
+    ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate geo:latitude;
+    rr:objectMap [
+      rml:reference "locationY";
+    ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate geo:longitude;
+    rr:objectMap [
+      rml:reference "locationX";
+    ];
+  ];
+.
