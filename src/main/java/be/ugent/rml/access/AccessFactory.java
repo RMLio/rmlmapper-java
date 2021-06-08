@@ -127,6 +127,13 @@ public class AccessFactory {
                                 List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
                                 List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
                                 List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "tokenValue"), null));
+                                // BearerSecurityScheme
+                                List<Term> securityScheme = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.WOTSEC + "BearerSecurityScheme")));
+                                if (securityScheme.size() != 0) {
+                                    Term bearerToken = new Literal("Bearer " + securityValue.get(0).getValue());
+                                    securityValue.set(0, bearerToken);
+                                }
+
                                 try {
                                     switch (securityIn.get(0).getValue()) {
                                         case "header": {

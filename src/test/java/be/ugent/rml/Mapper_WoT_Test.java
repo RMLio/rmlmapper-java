@@ -2,6 +2,7 @@ package be.ugent.rml;
 
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -114,4 +115,52 @@ public class Mapper_WoT_Test extends TestCore {
             os.close();
         }
     }
+
+    @Test
+    public void test_bearer_authentication_mocked() throws IOException {
+        String testcaseDirPath = "./web-of-things/bearer-security-scheme-mocked/%s";
+        // Mock server
+        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+
+        server.createContext("/api", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange exchange) throws IOException {
+                this.validateRequestHeaders(exchange.getRequestHeaders());
+                String response = "Couldn't load JSON file";
+                try {
+                    String filePath = String.format(testcaseDirPath, "input.json");
+                    response = Utils.fileToString(Utils.getFile(filePath));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                List<String> contentType = new ArrayList<>();
+                contentType.add("application/json");
+
+                // Return response if not redirected
+                exchange.getResponseHeaders().put("Content-Type", contentType);
+                exchange.sendResponseHeaders(200, response.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
+            }
+
+            private void validateRequestHeaders(Headers requestHeaders) {
+                // Assert that request header is not empty
+                assert !requestHeaders.isEmpty();
+                List<String> authorizationHeaders = requestHeaders.get("Authorization");
+                // Assert the Authorization-header is present in the request
+                assert !authorizationHeaders.isEmpty();
+                String authorizationHeader = authorizationHeaders.get(0);
+                // Assert that the bearer value is correct
+                assert authorizationHeader.equals("Bearer s3cr3tb34r3r");
+            }
+        });
+
+        server.setExecutor(null); // creates a default executor
+        server.start();
+        // TODO: create expected output: output.nq
+        doMapping(String.format(testcaseDirPath, "mapping.ttl"), String.format(testcaseDirPath, "out-default.nq"));
+        server.stop(0);
+    }
+
 }

@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CSVRecordFactory: add spreadsheet support (see [issue 42](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/42))
 - IDLabFunctions: add slugify to default idlab-fn functions (see [issue 209](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/209))
 - RDBAccess: add XML support for PostgreSQL RDB (see [issue 51](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/51))
+- AccessFactory: add WoT BearerSecurity scheme (see [issue 195](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/195))
 
 ## [4.11.0] - 2021-07-05
 
