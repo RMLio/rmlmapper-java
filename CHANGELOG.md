@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.10.1] - 2021-06-15
+
 ### Fixed
 - README Markdown rendering and links
 - Follow HTTP redirects for Web APIs (see [issue 196](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/196))
@@ -363,6 +365,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.10.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.10.0...v4.10.1
 [4.10.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.9.3...v4.10.0
 [4.9.4]: https://github.com/RMLio/rmlmapper-java/compare/v4.9.3...v4.9.4
 [4.9.3]: https://github.com/RMLio/rmlmapper-java/compare/v4.9.2...v4.9.3
