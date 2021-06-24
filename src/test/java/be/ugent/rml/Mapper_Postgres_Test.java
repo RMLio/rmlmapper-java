@@ -1,7 +1,5 @@
 package be.ugent.rml;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -9,80 +7,23 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.*;
+import java.util.Arrays;
 
 
 @RunWith(Parameterized.class)
-public class Mapper_Postgres_Test extends TestCore {
-
-    private static final Boolean LOCAL_TESTING = !Boolean.valueOf(System.getenv("CI"));
-
-    private static Logger logger = LoggerFactory.getLogger(Mapper_Postgres_Test.class);
-
-    private static String CONNECTIONSTRING = LOCAL_TESTING ?
-            "jdbc:postgresql://dia.test.iminds.be:8970/postgres?user=postgres&password=YourSTRONG!Passw0rd" :
-            "jdbc:postgresql://postgres/postgres?user=postgres&password=YourSTRONG!Passw0rd";
-
-    private static HashSet<String> tempFiles = new HashSet<>();
-
-    private static DockerDBInfo remoteDB;
-
-    private static class DockerDBInfo {
-        String connectionString;
-        String containerID;
-        DockerClient docker;
-
-        public DockerDBInfo(DockerClient docker, String connectionString, String containerID) {
-            this.docker = docker;
-            this.connectionString = connectionString;
-            this.containerID = containerID;
-        }
-
-        DockerDBInfo(String connectionString) {
-            this.connectionString = connectionString;
-        }
-    }
+public class Mapper_Postgres_Test extends PostgresTestCore {
 
     @BeforeClass
-    public static void startDBs() {
-        remoteDB = new DockerDBInfo(CONNECTIONSTRING); // see .gitlab-ci.yml file
+    public static void before() {
+        logger = LoggerFactory.getLogger(Mapper_Postgres_Test.class);
+        startDBs();
     }
 
     @AfterClass
-    public static void stopDBs() {
-        if (!LOCAL_TESTING) {
-            closeDocker(remoteDB);
-        }
-
-        // Make sure all tempFiles are removed
-        int counter = 0;
-        while (!tempFiles.isEmpty()) {
-            for (Iterator<String> i = tempFiles.iterator(); i.hasNext(); ) {
-                try {
-                    if (new File(i.next()).delete()) {
-                        i.remove();
-                    }
-                } catch (Exception ex) {
-                    counter++;
-                    ex.printStackTrace();
-                    // Prevent infinity loops
-                    if (counter > 100) {
-                        throw new Error("Could not remove all temp mapping files.");
-                    }
-                }
-            }
-        }
+    public static void after() {
+        stopDBs();
     }
 
     @Parameterized.Parameter(0)
@@ -190,62 +131,5 @@ public class Mapper_Postgres_Test extends TestCore {
 
     }
 
-    // Utils -----------------------------------------------------------------------------------------------------------
 
-    private static String replaceDSNInMappingFile(String path, String connectionString) {
-        try {
-            // Read mapping file
-            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
-
-            // Replace "PORT" in mapping file by new port
-            mapping = mapping.replace("CONNECTIONDSN", connectionString);
-
-            // Write to temp mapping file
-
-            String fileName = Integer.toString(Math.abs(path.hashCode())) + "tempMapping.ttl";
-            Path file = Paths.get(fileName);
-            Files.write(file, Arrays.asList(mapping.split("\n")));
-
-            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
-            tempFiles.add(absolutePath);
-
-            return absolutePath;
-
-        } catch (IOException ex) {
-            throw new Error(ex.getMessage());
-        }
-    }
-
-    private static void deleteTempMappingFile(String absolutePath) {
-        File file = new File(absolutePath);
-        if (file.delete()) {
-            tempFiles.remove(absolutePath);
-        }
-    }
-
-    private static void closeDocker(DockerDBInfo dockerDBInfo) {
-        if (dockerDBInfo != null && dockerDBInfo.docker != null) {
-            try {
-                // Kill container
-                dockerDBInfo.docker.killContainer(dockerDBInfo.containerID);
-
-                // Remove container
-                dockerDBInfo.docker.removeContainer(dockerDBInfo.containerID);
-
-                // Close the docker client
-                dockerDBInfo.docker.close();
-            } catch (DockerException | InterruptedException ex) {
-                logger.warn("Could not kill the database container with connection string: " + dockerDBInfo.connectionString + "!", ex);
-            }
-        }
-    }
-
-    private static void executeSQL(String connectionString, String sqlFile) throws Exception {
-        // Execute SQL
-        String sql = new String(Files.readAllBytes(Paths.get(Utils.getFile(sqlFile, null).getAbsolutePath())), StandardCharsets.UTF_8);
-        sql = sql.replaceAll("\n", "");
-        final Connection conn = DriverManager.getConnection(connectionString);
-        conn.createStatement().execute(sql);
-        conn.close();
-    }
 }

@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static be.ugent.rml.MyFileUtils.getParentPath;
 
@@ -25,6 +26,7 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
         int portNumber = Utils.getFreePortNumber();
         CONNECTIONSTRING = getConnectionString(portNumber);
         mysqlDB = setUpMySQLDBInstance(portNumber);
+        mappingOptions = new HashMap<>();
     }
 
     @AfterClass
@@ -109,7 +111,6 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
                 {"RMLTC0020b", null},
                 {"RMLTC1019", null},
                 {"RMLTC1020", null},
-
                 {"RMLTC1022", null},
         });
     }

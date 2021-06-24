@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
+import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
@@ -27,6 +28,9 @@ import static org.junit.Assert.*;
 public abstract class TestCore {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    // Mapping options to be applied by the MappingConformer
+    protected static Map<String, String> mappingOptions = new HashMap<>();
 
     Executor createExecutor(String mapPath) throws Exception {
         return createExecutor(mapPath, new ArrayList<>(), null);
@@ -61,6 +65,12 @@ public abstract class TestCore {
         }
 
         rmlStore.addQuads(extraQuads);
+
+        // Convert R2RML to RML if necessary
+        // NOTE: this is an important step in the Main method to enable R2RML mapping.
+        //       Ideally, this should code should be shared between the tests and the Main
+        //       method to avoid different behavior between test code and the CLI interface!
+        convertToRml(rmlStore);
 
         return new Executor(rmlStore,
                 new RecordsFactory(parentPath), Utils.getBaseDirectiveTurtle(mappingFile));
@@ -249,13 +259,20 @@ public abstract class TestCore {
 
         QuadStore rmlStore = null;
 
+        // Fail the test if there is an error reading the mappingFile or converting R2RML to RML.
         try {
             rmlStore = QuadStoreFactory.read(mappingFile);
+            // Convert R2RML to RML if necessary
+            // NOTE: this is an important step in the Main method to enable R2RML mapping.
+            //       Ideally, this should code should be shared between the tests and the Main
+            //       method to avoid different behavior between test code and the CLI interface!
+            convertToRml(rmlStore);
         } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
 
+        // Pass the test if an error occurs during mapping execution.
         try {
             Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), Utils.getBaseDirectiveTurtle(mappingFile));
             QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
@@ -264,7 +281,22 @@ public abstract class TestCore {
             logger.warn(e.getMessage(), e);
             return;
         }
+
+        // Fail the test if no error occurred during the execution stage.
         fail("Expecting error not found");
+    }
+
+    /**
+     * Converts the input to RML, if required.
+     * @param store The QuadStore containing the mapping rules.
+     * @throws Exception if conversion failed
+     */
+    private void convertToRml(QuadStore store) throws Exception {
+        MappingConformer conformer = new MappingConformer(store, mappingOptions);
+        boolean conversionNeeded = conformer.conform();
+        if (conversionNeeded) {
+            logger.info("Conversion to RML was needed.");
+        }
     }
 
     private void compareStores(QuadStore expectedStory, QuadStore resultStore) {
