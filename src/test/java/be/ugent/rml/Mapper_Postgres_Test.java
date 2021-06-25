@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
+import static be.ugent.rml.MyFileUtils.getParentPath;
+
 
 @RunWith(Parameterized.class)
 public class Mapper_Postgres_Test extends PostgresTestCore {
@@ -105,12 +107,6 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
 
     @Test
     public void doMapping() throws Exception {
-
-        //setup expected exception
-        if (expectedException != null) {
-            thrown.expect(expectedException);
-        }
-
         mappingTest(testCaseName);
     }
 
@@ -126,7 +122,14 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
         executeSQL(remoteDB.connectionString, resourcePath);
 
         // mapping
-        doMapping(tempMappingPath, outputPath);
+        String parentPath = getParentPath(getClass(), outputPath);
+
+        if (expectedException == null) {
+            doMapping(tempMappingPath, outputPath, parentPath);
+        } else {
+            doMappingExpectError(tempMappingPath);
+        }
+
         deleteTempMappingFile(tempMappingPath);
 
     }
