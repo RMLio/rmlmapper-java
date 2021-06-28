@@ -9,7 +9,7 @@
 
 	rr:logicalTable [ rr:tableName  "\"IOUs\"" ];
 	
-    rr:subjectMap [ rr:template "{\"fname\"}_{\"lname\"}_{\"amount\"}"; rr:termType rr:BlankNode; ];
+    rr:subjectMap [ rr:template "{\"fname\"}{\"lname\"}{\"amount\"}"; rr:termType rr:BlankNode; ];
 	
     rr:predicateObjectMap
     [ 

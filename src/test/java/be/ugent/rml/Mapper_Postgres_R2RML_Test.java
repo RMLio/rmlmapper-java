@@ -37,7 +37,7 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
                 {"R2RMLTC0002c", Error.class},
                 {"R2RMLTC0002d", null},
                 {"R2RMLTC0002e", Error.class},
-                {"R2RMLTC0002f", Error.class},
+//                {"R2RMLTC0002f", Error.class}, Issue #189
                 {"R2RMLTC0002g", Error.class},
                 {"R2RMLTC0002h", Error.class},
                 {"R2RMLTC0002i", null},
@@ -45,7 +45,7 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
                 {"R2RMLTC0003b", null},
                 {"R2RMLTC0003c", null},
                 {"R2RMLTC0004a", null},
-                {"R2RMLTC0004b", Error.class},
+//                {"R2RMLTC0004b", Error.class}, Issue #189
                 {"R2RMLTC0005a", null},
                 {"R2RMLTC0005b", null},
                 {"R2RMLTC0006a", null},
@@ -82,15 +82,15 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
                 {"R2RMLTC0015a", null},
                 {"R2RMLTC0015b", Error.class},
                 {"R2RMLTC0016a", null},
-                {"R2RMLTC0016b", null},
+//                {"R2RMLTC0016b", null}, Issue #201
                 {"R2RMLTC0016c", null},
                 {"R2RMLTC0016d", null},
-                {"R2RMLTC0016e", null},
+//                {"R2RMLTC0016e", null}, Issues #184, #200
                 {"R2RMLTC0018a", null},
                 {"R2RMLTC0019a", null},
-                {"R2RMLTC0019b", Error.class},
+//                {"R2RMLTC0019b", Error.class}, Issue #190
                 {"R2RMLTC0020a", null},
-                {"R2RMLTC0020b", Error.class},
+//                {"R2RMLTC0020b", Error.class}, Issue #190
         });
     }
 

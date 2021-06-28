@@ -293,9 +293,13 @@ public abstract class TestCore {
      */
     private void convertToRml(QuadStore store) throws Exception {
         MappingConformer conformer = new MappingConformer(store, mappingOptions);
-        boolean conversionNeeded = conformer.conform();
-        if (conversionNeeded) {
-            logger.info("Conversion to RML was needed.");
+        try {
+            boolean conversionNeeded = conformer.conform();
+            if (conversionNeeded) {
+                logger.info("Conversion to RML was needed.");
+            }
+        } catch (Exception e) {
+            logger.error("Failed to make mapping file conformant to RML spec.", e);
         }
     }
 
