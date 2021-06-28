@@ -116,7 +116,8 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
         String mappingPath = "./test-cases/" + testCaseName + "-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/" + testCaseName + "-PostgreSQL/output.nq";
 
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING);
+        // Create a temporary copy of the mapping file and replace source details
+        String tempMappingPath = CreateTempMappingFileAndReplaceDSN(mappingPath, CONNECTIONSTRING);
 
         // Execute SQL
         executeSQL(remoteDB.connectionString, resourcePath);

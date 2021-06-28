@@ -15,7 +15,6 @@ import static org.junit.Assert.fail;
 public class Arguments_Test_MySQL extends MySQLTestCore {
 
     private static String CONNECTIONSTRING;
-    private static DB mysqlDB;
 
     @BeforeClass
     public static void before() throws Exception {
@@ -26,7 +25,7 @@ public class Arguments_Test_MySQL extends MySQLTestCore {
 
     @AfterClass
     public static void after() throws ManagedProcessException {
-        stopDBs(mysqlDB);
+        stopDBs();
     }
 
     @Test

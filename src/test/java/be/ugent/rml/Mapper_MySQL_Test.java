@@ -19,7 +19,6 @@ import static be.ugent.rml.MyFileUtils.getParentPath;
 public class Mapper_MySQL_Test extends MySQLTestCore {
 
     private static String CONNECTIONSTRING;
-    private static DB mysqlDB;
 
     @BeforeClass
     public static void before() throws Exception {
@@ -31,7 +30,7 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
 
     @AfterClass
     public static void after() throws ManagedProcessException {
-        stopDBs(mysqlDB);
+        stopDBs();
     }
 
     @Parameterized.Parameter(0)
@@ -125,7 +124,8 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
         String mappingPath = "./test-cases/" + testCaseName + "-MySQL/mapping.ttl";
         String outputPath = "test-cases/" + testCaseName + "-MySQL/output.nq";
 
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING);
+        // Create a temporary copy of the mapping file and replace source details
+        String tempMappingPath = CreateTempMappingFileAndReplaceDSN(mappingPath, CONNECTIONSTRING);
 
         // Get SQL resource
         mysqlDB.source(resourcePath);

@@ -66,10 +66,9 @@ public abstract class TestCore {
 
         rmlStore.addQuads(extraQuads);
 
-        // Convert R2RML to RML if necessary
-        // NOTE: this is an important step in the Main method to enable R2RML mapping.
-        //       Ideally, this should code should be shared between the tests and the Main
-        //       method to avoid different behavior between test code and the CLI interface!
+        /* NOTE: this is an important step in the Main method to enable R2RML mapping.
+           Ideally, this should code should be shared between the tests and the Main
+           method to avoid different behavior between test code and the CLI interface! */
         convertToRml(rmlStore);
 
         return new Executor(rmlStore,
@@ -261,11 +260,10 @@ public abstract class TestCore {
 
         // Fail the test if there is an error reading the mappingFile or converting R2RML to RML.
         try {
+            /* NOTE: this is an important step in the Main method to enable R2RML mapping.
+               Ideally, this should code should be shared between the tests and the Main
+               method to avoid different behavior between test code and the CLI interface! */
             rmlStore = QuadStoreFactory.read(mappingFile);
-            // Convert R2RML to RML if necessary
-            // NOTE: this is an important step in the Main method to enable R2RML mapping.
-            //       Ideally, this should code should be shared between the tests and the Main
-            //       method to avoid different behavior between test code and the CLI interface!
             convertToRml(rmlStore);
         } catch (Exception e) {
             e.printStackTrace();

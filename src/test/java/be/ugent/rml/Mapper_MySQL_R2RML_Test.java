@@ -20,7 +20,6 @@ import static be.ugent.rml.MyFileUtils.getParentPath;
 public class Mapper_MySQL_R2RML_Test extends MySQLTestCore{
 
     private static String CONNECTIONSTRING;
-    private static DB mysqlDB;
 
     @BeforeClass
     public static void before() throws Exception {
@@ -37,7 +36,7 @@ public class Mapper_MySQL_R2RML_Test extends MySQLTestCore{
 
     @AfterClass
     public static void after() throws ManagedProcessException {
-        stopDBs(mysqlDB);
+        stopDBs();
     }
 
     @Parameterized.Parameter(0)
@@ -127,9 +126,8 @@ public class Mapper_MySQL_R2RML_Test extends MySQLTestCore{
         String mappingPath = "./test-cases-R2RML/" + testCaseName + "-MySQL/mapping.ttl";
         String outputPath = "test-cases-R2RML/" + testCaseName + "-MySQL/output.nq";
 
-        // this won't do anything for R2RML mapping files, but is still required to make
-        // the temporary copy
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING);
+        // Create a temporary copy of the mapping file
+        String tempMappingPath = createTempMappingFile(mappingPath);
 
         // Get SQL resource
         mysqlDB.source(resourcePath, "test");
@@ -145,5 +143,4 @@ public class Mapper_MySQL_R2RML_Test extends MySQLTestCore{
 
         deleteTempMappingFile(tempMappingPath);
     }
-
 }

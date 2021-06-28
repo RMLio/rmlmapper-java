@@ -123,9 +123,8 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
         String mappingPath = "./test-cases-R2RML/" + testCaseName + "-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases-R2RML/" + testCaseName + "-PostgreSQL/output.nq";
 
-        // this won't do anything for R2RML mapping files, but is still required to make
-        // the temporary copy
-        String tempMappingPath = replaceDSNInMappingFile(mappingPath, CONNECTIONSTRING);
+        // Create a temporary copy of the mapping file
+        String tempMappingPath = createTempMappingFile(mappingPath);
 
         // Execute SQL
         executeSQL(remoteDB.connectionString, resourcePath);
@@ -142,5 +141,4 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
         deleteTempMappingFile(tempMappingPath);
 
     }
-
 }

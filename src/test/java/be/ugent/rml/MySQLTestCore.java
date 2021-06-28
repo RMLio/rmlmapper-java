@@ -21,6 +21,8 @@ public abstract class MySQLTestCore extends DBTestCore {
 
     protected static String CONNECTIONSTRING_TEMPLATE = "jdbc:mysql://localhost:%d/test";
 
+    protected static DB mysqlDB;
+
     protected static String getConnectionString(int portNumber) {
         return String.format(CONNECTIONSTRING_TEMPLATE, portNumber);
     }
@@ -36,7 +38,7 @@ public abstract class MySQLTestCore extends DBTestCore {
         return mysqlDB;
     }
 
-    protected static void stopDBs(DB mysqlDB) throws ManagedProcessException {
+    protected static void stopDBs() throws ManagedProcessException {
         if (mysqlDB != null) {
             mysqlDB.stop();
         }
