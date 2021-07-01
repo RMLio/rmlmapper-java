@@ -51,7 +51,7 @@ public class Mapper_Target extends TestCore {
     }
 
     @Test
-    public void evaluate_local_file_target() throws Exception {
+    public void evaluate_local_file_target_void() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
         webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
@@ -59,9 +59,25 @@ public class Mapper_Target extends TestCore {
         webApi.start();
 
         HashMap<Term, String> outPaths = new HashMap<Term, String>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/logical-target/local-file/out-local-file.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/logical-target/local-file/out-default.nq");
-        doMapping("./web-of-things/logical-target/local-file/mapping.ttl", outPaths, "./web-of-things/logical-target/private-security-data.ttl");
+        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/logical-target/local-file/void/out-local-file.nq");
+        outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/logical-target/local-file/void/out-default.nq");
+        doMapping("web-of-things/logical-target/local-file/void/mapping.ttl", outPaths, "./web-of-things/logical-target/private-security-data.ttl");
+
+        webApi.stop(0);
+    }
+
+    @Test
+    public void evaluate_local_file_target_dcat() throws Exception {
+        // Create Web API
+        HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
+        webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
+        webApi.setExecutor(null); // creates a default executor
+        webApi.start();
+
+        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/logical-target/local-file/dcat/out-local-file.nq");
+        outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/logical-target/local-file/dcat/out-default.nq");
+        doMapping("web-of-things/logical-target/local-file/dcat/mapping.ttl", outPaths, "./web-of-things/logical-target/private-security-data.ttl");
 
         webApi.stop(0);
     }

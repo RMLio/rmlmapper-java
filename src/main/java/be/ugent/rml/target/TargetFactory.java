@@ -129,6 +129,15 @@ public class TargetFactory {
                     target = new LocalFileTarget(location, this.basePath, serializationFormat, compression);
                     break;
                 }
+                case NAMESPACES.DCAT + "Dataset": { // DCAT Dataset
+                    logger.debug("Target is a DCAT Dataset");
+                    String location = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
+                            new NamedNode(NAMESPACES.DCAT + "dataDump"), null)).get(0).getValue();
+                    location = location.replace("file://", ""); // Local file starts with file://
+                    logger.debug("DCAT datadump location: " + location);
+                    target = new LocalFileTarget(location, this.basePath, serializationFormat, compression);
+                    break;
+                }
                 case NAMESPACES.SD + "Service": { // SPARQL Service
                     logger.debug("Target is a SD Service");
                     String endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(t,

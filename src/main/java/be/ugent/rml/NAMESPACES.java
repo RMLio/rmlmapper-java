@@ -1,7 +1,7 @@
 package be.ugent.rml;
 
 public class NAMESPACES {
-
+    public static final String DCAT = "http://www.w3.org/ns/dcat#";
     public static final String RML = "http://semweb.mmlab.be/ns/rml#";
     public static final String RR = "http://www.w3.org/ns/r2rml#";
     public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
