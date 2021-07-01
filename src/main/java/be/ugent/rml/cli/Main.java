@@ -27,6 +27,8 @@ import org.eclipse.rdf4j.rio.RDFParseException;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -485,10 +487,10 @@ public class Main {
 
                 doneMessage = "Writing to " + targetFile.getPath() + " is done.";
 
-                out = new BufferedWriter(new FileWriter(targetFile));
+                out = Files.newBufferedWriter(targetFile.toPath(), StandardCharsets.UTF_8);
 
             } else {
-                out = new BufferedWriter(new OutputStreamWriter(System.out));
+                out = new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
             }
 
             store.write(out, format);
