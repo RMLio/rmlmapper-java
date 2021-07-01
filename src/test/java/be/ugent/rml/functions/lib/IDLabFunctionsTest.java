@@ -2,6 +2,7 @@ package be.ugent.rml.functions.lib;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import static org.junit.Assert.*;
 
 public class IDLabFunctionsTest {
 
+    @Ignore("DBPedia Spotlight server is down (HTTP 502)")
     @Test
     public void dbpediaSpotlight() {
         String endpoint = "http://193.190.127.195/dbpedia-spotlight/rest";
