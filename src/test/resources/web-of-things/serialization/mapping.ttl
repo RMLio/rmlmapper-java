@@ -10,7 +10,7 @@
 @prefix time: <http://www.w3.org/2006/time#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix wotsec: <https://www.w3.org/2019/wot/security#> .
-@prefix formats: <https://www.w3.org/ns/formats/> .
+@prefix formats: <http://www.w3.org/ns/formats/> .
 @prefix void: <http://rdfs.org/ns/void#> .
 @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 @base <http://example.com/rules/> .
