@@ -27,6 +27,17 @@ public class RDBAccess implements Access {
     private Map<String, String> datatypes = new HashMap<>();
     private String oracleJarPath;
 
+    // Datatype definitions
+    private final static String DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
+    private final static String VARBINARY = "http://www.w3.org/2001/XMLSchema#hexBinary";
+    private final static String DECIMAL = "http://www.w3.org/2001/XMLSchema#decimal";
+    private final static String INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
+    private final static String BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
+    private final static String DATE = "http://www.w3.org/2001/XMLSchema#date";
+    private final static String TIME = "http://www.w3.org/2001/XMLSchema#time";
+    private final static String DATETIME = "http://www.w3.org/2001/XMLSchema#dateTime";
+
+
     /**
      * This constructor takes as arguments the dsn, database, username, password, query, and content type.
      *
@@ -169,17 +180,18 @@ public class RDBAccess implements Access {
                 // Iterate over column names
                 for (int i = 1; i <= columnCount; i++) {
                     String columnName = rsmd.getColumnLabel(i);
+                    String dataType = getColumnDataType(rsmd.getColumnTypeName(i));
+                    String data = rs.getString(columnName);
 
+                    // Register datatype during first encounter
                     if (!filledInDataTypes) {
-                        String dataType = getColumnDataType(rsmd.getColumnTypeName(i));
-
                         if (dataType != null) {
                             datatypes.put(columnName, dataType);
                         }
                     }
 
-                    // Add value to CSV row.
-                    csvRow[i - 1] = rs.getString(columnName);
+                    // Normalize value and add value to CSV row.
+                    csvRow[i - 1] = normalizeData(data, dataType);
                 }
 
                 // Add CSV row to CSVPrinter.
@@ -208,35 +220,35 @@ public class RDBAccess implements Access {
             case "BINARY VARYING":
             case "BINARY LARGE OBJECT":
             case "VARBINARY":
-                return "http://www.w3.org/2001/XMLSchema#hexBinary";
+                return VARBINARY;
             case "NUMERIC":
             case "DECIMAL":
-                return "http://www.w3.org/2001/XMLSchema#decimal";
+                return DECIMAL;
             case "SMALLINT":
             case "INT":
             case "INT4":
             case "INT8":
             case "INTEGER":
             case "BIGINT":
-                return "http://www.w3.org/2001/XMLSchema#integer";
+                return INTEGER;
             case "FLOAT":
             case "FLOAT4":
             case "FLOAT8":
             case "REAL":
             case "DOUBLE":
             case "DOUBLE PRECISION":
-                return "http://www.w3.org/2001/XMLSchema#double";
+                return DOUBLE;
             case "BIT":
             case "BOOL":
             case "BOOLEAN":
-                return "http://www.w3.org/2001/XMLSchema#boolean";
+                return BOOLEAN;
             case "DATE":
-                return "http://www.w3.org/2001/XMLSchema#date";
+                return DATE;
             case "TIME":
-                return "http://www.w3.org/2001/XMLSchema#time";
+                return TIME;
             case "TIMESTAMP":
             case "DATETIME":
-                return "http://www.w3.org/2001/XMLSchema#dateTime";
+                return DATETIME;
         }
         return null;
     }
@@ -263,6 +275,20 @@ public class RDBAccess implements Access {
         }
 
         return headers;
+    }
+
+    /**
+     * Normalize the string representation of a data value given by the RDB.
+     * @param data the string representation retrieved from the RDB of the data to be normalized.
+     * @param dataType the intended datatype of the data parameter.
+     * @return Normalized string representation of the data parameter, given the datatype.
+     */
+    private static String normalizeData(String data, String dataType) {
+        if (DOUBLE.equals(dataType)) {
+            // remove trailing decimal points (Quirk from MySQL, see issue 203)
+            return data.replace(".0", "");
+        }
+        return data;
     }
 
     @Override

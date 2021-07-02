@@ -91,11 +91,11 @@ public class Mapper_MySQL_R2RML_Test extends MySQLTestCore{
                 {"R2RMLTC0010c", null},
                 {"R2RMLTC0011a", null},
                 {"R2RMLTC0011b", null},
-//                {"R2RMLTC0012a", null}, Issue #203
+                {"R2RMLTC0012a", null}, // Issue #203, resolved
                 {"R2RMLTC0012b", null},
                 {"R2RMLTC0012c", Error.class},
                 {"R2RMLTC0012d", Error.class},
-//                {"R2RMLTC0012e", null}, Issue #203
+                {"R2RMLTC0012e", null}, // Issue #203, resolved
                 {"R2RMLTC0013a", null},
                 {"R2RMLTC0014a", null},
                 {"R2RMLTC0014b", null},
