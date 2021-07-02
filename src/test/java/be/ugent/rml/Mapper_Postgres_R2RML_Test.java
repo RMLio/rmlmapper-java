@@ -85,7 +85,7 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
 //                {"R2RMLTC0016b", null}, Issue #201
                 {"R2RMLTC0016c", null},
                 {"R2RMLTC0016d", null},
-//                {"R2RMLTC0016e", null}, Issues #184, #200
+                {"R2RMLTC0016e", null}, // Issues #184, #200, resolved
                 {"R2RMLTC0018a", null},
                 {"R2RMLTC0019a", null},
 //                {"R2RMLTC0019b", Error.class}, Issue #190

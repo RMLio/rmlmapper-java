@@ -181,7 +181,6 @@ public class RDBAccess implements Access {
                 for (int i = 1; i <= columnCount; i++) {
                     String columnName = rsmd.getColumnLabel(i);
                     String dataType = getColumnDataType(rsmd.getColumnTypeName(i));
-                    String data = rs.getString(columnName);
 
                     // Register datatype during first encounter
                     if (!filledInDataTypes) {
@@ -191,7 +190,13 @@ public class RDBAccess implements Access {
                     }
 
                     // Normalize value and add value to CSV row.
-                    csvRow[i - 1] = normalizeData(data, dataType);
+                    if (VARBINARY.equals(dataType)) {
+                        byte[] data = rs.getBytes(columnName);
+                        csvRow[i - 1] = bytesToHexString(data);
+                    } else {
+                        String data = rs.getString(columnName);
+                        csvRow[i - 1] = normalizeData(data, dataType);
+                    }
                 }
 
                 // Add CSV row to CSVPrinter.
@@ -275,6 +280,20 @@ public class RDBAccess implements Access {
         }
 
         return headers;
+    }
+
+    /**
+     * Convert a sequence of bytes to a string representation using uppercase hex symbols
+     * @param bytes the bytes to convert
+     * @return a string containing the hexadecimal representation of the byte array
+     */
+    private static String bytesToHexString(byte[] bytes) {
+        StringBuilder builder = new StringBuilder();
+        for (byte b : bytes) {
+            // format: 0 flag for zero-padding, 2 character width, uppercase hexadecimal symbols
+            builder.append(String.format("%02X", b));
+        }
+        return builder.toString();
     }
 
     /**
