@@ -114,6 +114,9 @@ options:
  -u,--r2rml-username <arg>           username of the database when using
                                      R2RML rules
  -v,--verbose                        show more details in debugging output
+ -str, --strict                      Enable strict mode. In strict mode, the 
+                                     mapper will fail on invalid IRIs instead 
+                                     of skipping them.
 ```
 
 #### Accessing Web APIs with authentication

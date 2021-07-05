@@ -127,6 +127,10 @@ public class Main {
                 .desc("username of the database when using R2RML rules")
                 .hasArg()
                 .build();
+        Option strictModeOption = Option.builder("str")
+                .longOpt("strict")
+                .desc("Enable strict mode. In strict mode, the mapper will fail on invalid IRIs instead of skipping them.")
+                .build();
 
         options.addOption(mappingdocOption);
         options.addOption(privateSecurityDataOption);
@@ -143,6 +147,7 @@ public class Main {
         options.addOption(jdbcDSNOption);
         options.addOption(passwordOption);
         options.addOption(usernameOption);
+        options.addOption(strictModeOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -296,7 +301,9 @@ public class Main {
                         .collect(Collectors.toList());
                 is = new SequenceInputStream(Collections.enumeration(lis));
 
-                executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(is));
+                boolean strict = checkOptionPresence(strictModeOption, lineArgs, configFile);
+
+                executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(is), strict);
 
                 List<Term> triplesMaps = new ArrayList<>();
 
