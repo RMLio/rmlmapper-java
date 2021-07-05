@@ -127,7 +127,7 @@ public class Main {
                 .desc("username of the database when using R2RML rules")
                 .hasArg()
                 .build();
-        Option strictModeOption = Option.builder("str")
+        Option strictModeOption = Option.builder("strict")
                 .longOpt("strict")
                 .desc("Enable strict mode. In strict mode, the mapper will fail on invalid IRIs instead of skipping them.")
                 .build();
