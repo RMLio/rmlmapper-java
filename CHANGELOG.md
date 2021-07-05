@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - R2RML test cases (see [issue 192](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/192))
+- DCAT support
 
 ### Fixed
 - R2RML support: handle booleans correctly (see [issue 187](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/187))
+- W3C Formats Namespace: use http instead of https
 
 ## [4.10.1] - 2021-06-15
 
