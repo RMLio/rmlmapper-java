@@ -1,6 +1,5 @@
 package be.ugent.rml;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,7 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import static be.ugent.rml.MyFileUtils.getParentPath;
-import static be.ugent.rml.StrictMode.*;
+import static be.ugent.rml.TestStrictMode.*;
 
 @RunWith(Parameterized.class)
 public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
@@ -25,7 +24,7 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
     public Class<? extends Exception> expectedException;
 
     @Parameterized.Parameter(2)
-    public StrictMode strictMode;
+    public TestStrictMode testStrictMode;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -124,17 +123,17 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
 
     @Test
     public void doMapping() throws Exception {
-        if (strictMode.equals(BOTH) || strictMode.equals(UNSTRICT_ONLY)) {
+        if (testStrictMode.equals(BOTH) || testStrictMode.equals(BEST_EFFORT_ONLY)) {
             // test the best-effort mode of the mapper
-            mappingTest(testCaseName, expectedException, false);
+            mappingTest(testCaseName, expectedException, Executor.StrictMode.BEST_EFFORT);
         }
-        if (strictMode.equals(BOTH) || strictMode.equals(STRICT_ONLY)) {
+        if (testStrictMode.equals(BOTH) || testStrictMode.equals(STRICT_ONLY)) {
             // test the mapper in strict mode
-            mappingTest(testCaseName, expectedException, true);
+            mappingTest(testCaseName, expectedException, Executor.StrictMode.STRICT);
         }
     }
 
-    private void mappingTest(String testCaseName, Class expectedException, boolean strict) throws Exception {
+    private void mappingTest(String testCaseName, Class expectedException, Executor.StrictMode strictMode) throws Exception {
 
         String resourcePath = "test-cases-R2RML/" + testCaseName + "-PostgreSQL/resource.sql";
         String mappingPath = "./test-cases-R2RML/" + testCaseName + "-PostgreSQL/mapping.ttl";
@@ -150,12 +149,11 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
         String parentPath = getParentPath(getClass(), outputPath);
 
         if (expectedException == null) {
-            doMapping(tempMappingPath, outputPath, parentPath, strict);
+            doMapping(tempMappingPath, outputPath, parentPath, strictMode);
         } else {
-            doMappingExpectError(tempMappingPath, strict);
+            doMappingExpectError(tempMappingPath, strictMode);
         }
 
         deleteTempMappingFile(tempMappingPath);
-
     }
 }

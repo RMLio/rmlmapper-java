@@ -1,9 +1,7 @@
 package be.ugent.rml.cli;
 
 import be.ugent.rml.Executor;
-import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
-import be.ugent.rml.access.DatabaseType;
 import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabFunctions;
@@ -19,11 +17,11 @@ import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-import org.eclipse.rdf4j.rio.RDFParseException;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -32,6 +30,8 @@ import java.nio.file.Files;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static be.ugent.rml.Executor.StrictMode.*;
 
 public class Main {
 
@@ -302,8 +302,9 @@ public class Main {
                 is = new SequenceInputStream(Collections.enumeration(lis));
 
                 boolean strict = checkOptionPresence(strictModeOption, lineArgs, configFile);
+                Executor.StrictMode strictMode = strict ? STRICT : BEST_EFFORT;
 
-                executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(is), strict);
+                executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(is), strictMode);
 
                 List<Term> triplesMaps = new ArrayList<>();
 

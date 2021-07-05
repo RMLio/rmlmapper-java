@@ -1,7 +1,7 @@
 package be.ugent.rml;
 
-public enum StrictMode {
-    UNSTRICT_ONLY,
+public enum TestStrictMode {
+    BEST_EFFORT_ONLY,
     STRICT_ONLY,
     BOTH
 }

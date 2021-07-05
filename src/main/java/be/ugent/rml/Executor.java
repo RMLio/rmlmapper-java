@@ -7,8 +7,6 @@ import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JStore;
-import be.ugent.rml.store.SimpleQuadStore;
-import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
@@ -38,32 +36,46 @@ public class Executor {
     private static int blankNodeCounter;
     private HashMap<Term, Mapping> mappings;
     private String baseIRI;
-    private final boolean strict;
+    private final StrictMode strictMode;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, boolean strict) throws Exception {
-        this(rmlStore, recordsFactory, null, null, baseIRI, strict);
+    /**
+     * Indicates how the executor will handle IRI-unsafe values.
+     */
+    public enum StrictMode {
+        /**
+         * The executor will attempt to skip records that cannot be mapped to IRI-safe values.
+         */
+        BEST_EFFORT,
+        /**
+         * The executor will throw an exception when a record cannot be mapped to an IRI-safe triple.
+         */
+        STRICT,
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, String baseIRI, boolean strict) throws Exception {
-        this(rmlStore, recordsFactory, functionLoader, null, baseIRI, strict);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
+        this(rmlStore, recordsFactory, null, null, baseIRI, strictMode);
+    }
+
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, String baseIRI, StrictMode strictMode) throws Exception {
+        this(rmlStore, recordsFactory, functionLoader, null, baseIRI, strictMode);
     }
 
     /**
-     * Defaults to unstrict operation.
+     * Defaults to best effort operation.
      * @deprecated Use the constructor with explicit strict flag instead.
      */
     @Deprecated
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI) throws Exception {
-        this(rmlStore, recordsFactory, functionLoader, resultingQuads, baseIRI, false);
+        this(rmlStore, recordsFactory, functionLoader, resultingQuads, baseIRI, StrictMode.BEST_EFFORT);
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI, boolean strict) throws Exception {
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI, StrictMode strictMode) throws Exception {
         this.initializer = new Initializer(rmlStore, functionLoader);
         this.mappings = this.initializer.getMappings();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
         this.baseIRI = baseIRI;
-        this.strict = strict;
+        this.strictMode = strictMode;
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
         this.targetStores = new HashMap<Term, QuadStore>();
@@ -175,7 +187,7 @@ public class Executor {
 
                     // Is the IRI valid?
                     if (!Utils.isValidIRI(iri)) {
-                        if (strict) {
+                        if (strictMode.equals(StrictMode.STRICT)) {
                             throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
                         } else {
                             logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
@@ -197,7 +209,7 @@ public class Executor {
                             if (Utils.isValidIRI(iri)) {
                                 subject = new ProvenancedTerm(new NamedNode(iri), subject.getMetadata(), subject.getTargets());
                             } else {
-                                if (strict) {
+                                if (strictMode.equals(StrictMode.STRICT)) {
                                     throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
                                 } else {
                                     logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");

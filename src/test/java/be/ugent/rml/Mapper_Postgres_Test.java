@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
 import static be.ugent.rml.MyFileUtils.getParentPath;
-import static be.ugent.rml.StrictMode.*;
+import static be.ugent.rml.TestStrictMode.*;
 
 
 @RunWith(Parameterized.class)
@@ -36,7 +36,7 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
     public Class<? extends Exception> expectedException;
 
     @Parameterized.Parameter(2)
-    public StrictMode strictMode;
+    public TestStrictMode testStrictMode;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -106,33 +106,30 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
                     Expected output for RMLTC0019b is written for best-effort operation.
                     The case will fail in strict mode.
                  */
-                {"RMLTC0019b", null, UNSTRICT_ONLY},
+                {"RMLTC0019b", null, BEST_EFFORT_ONLY},
                 {"RMLTC0020a", null, BOTH},
                 /*
                     Expected output for RMLTC0020b is written for best-effort operation.
                     The case will fail in strict mode.
                  */
-                {"RMLTC0020b", null, UNSTRICT_ONLY},
+                {"RMLTC0020b", null, BEST_EFFORT_ONLY},
         });
 
     }
 
     @Test
     public void doMapping() throws Exception {
-        if (strictMode.equals(BOTH) || strictMode.equals(UNSTRICT_ONLY)) {
+        if (testStrictMode.equals(BOTH) || testStrictMode.equals(BEST_EFFORT_ONLY)) {
             // test the best-effort mode of the mapper
-            mappingTest(testCaseName, expectedException, false);
+            mappingTest(testCaseName, expectedException, Executor.StrictMode.BEST_EFFORT);
         }
-        if (strictMode.equals(BOTH) || strictMode.equals(STRICT_ONLY)) {
+        if (testStrictMode.equals(BOTH) || testStrictMode.equals(STRICT_ONLY)) {
             // test the mapper in strict mode
-            mappingTest(testCaseName, expectedException, true);
+            mappingTest(testCaseName, expectedException, Executor.StrictMode.STRICT);
         }
     }
 
-    /**
-     * NOTE: all tests are run in the unstrict mode of the mapper.
-     */
-    private void mappingTest(String testCaseName, Class expectedException, boolean strict) throws Exception {
+    private void mappingTest(String testCaseName, Class expectedException, Executor.StrictMode strictMode) throws Exception {
 
         String resourcePath = "test-cases/" + testCaseName + "-PostgreSQL/resource.sql";
         String mappingPath = "./test-cases/" + testCaseName + "-PostgreSQL/mapping.ttl";
@@ -148,14 +145,11 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
         String parentPath = getParentPath(getClass(), outputPath);
 
         if (expectedException == null) {
-            doMapping(tempMappingPath, outputPath, parentPath, strict);
+            doMapping(tempMappingPath, outputPath, parentPath, strictMode);
         } else {
-            doMappingExpectError(tempMappingPath, strict);
+            doMappingExpectError(tempMappingPath, strictMode);
         }
 
         deleteTempMappingFile(tempMappingPath);
-
     }
-
-
 }
