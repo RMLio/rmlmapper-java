@@ -119,6 +119,9 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
         mappingTest(testCaseName, expectedException);
     }
 
+    /**
+     * NOTE: all tests are run in the unstrict mode of the mapper.
+     */
     private void mappingTest(String testCaseName, Class expectedException) throws Exception {
         String resourcePath = "test-cases/" + testCaseName + "-MySQL/resource.sql";
         String mappingPath = "./test-cases/" + testCaseName + "-MySQL/mapping.ttl";
@@ -134,9 +137,9 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
         String parentPath = getParentPath(getClass(), outputPath);
 
         if (expectedException == null) {
-            doMapping(tempMappingPath, outputPath, parentPath);
+            doMapping(tempMappingPath, outputPath, parentPath, false);
         } else {
-            doMappingExpectError(tempMappingPath);
+            doMappingExpectError(tempMappingPath, false);
         }
 
         deleteTempMappingFile(tempMappingPath);

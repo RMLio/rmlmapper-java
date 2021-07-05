@@ -32,12 +32,18 @@ public abstract class TestCore {
     // Mapping options to be applied by the MappingConformer
     protected static Map<String, String> mappingOptions = new HashMap<>();
 
+    /**
+     *  Note: the created Executor will run in unstrict mode
+     */
     Executor createExecutor(String mapPath) throws Exception {
-        return createExecutor(mapPath, new ArrayList<>(), null);
+        return createExecutor(mapPath, new ArrayList<>(), null, false);
     }
 
+    /**
+     *  Note: the created Executor will run in unstrict mode
+     */
     Executor createExecutor(String mapPath, List<Quad> extraQuads) throws Exception {
-        return createExecutor(mapPath, extraQuads, null);
+        return createExecutor(mapPath, extraQuads, null, false);
     }
 
     /**
@@ -45,10 +51,11 @@ public abstract class TestCore {
      *
      * @param mapPath    The path to the mapping file.
      * @param extraQuads A list of extra quads that need to be added to the mapping file.
+     * @param strict Flag to indicate whether the Executor should operate in strict mode.
      * @return An executor.
      * @throws Exception
      */
-    Executor createExecutor(String mapPath, List<Quad> extraQuads, String parentPath) throws Exception {
+    Executor createExecutor(String mapPath, List<Quad> extraQuads, String parentPath, boolean strict) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
         URL url = classLoader.getResource(mapPath);
@@ -71,10 +78,13 @@ public abstract class TestCore {
            method to avoid different behavior between test code and the CLI interface! */
         convertToRml(rmlStore);
 
-        return new Executor(rmlStore,
-                new RecordsFactory(parentPath), Utils.getBaseDirectiveTurtle(mappingFile));
+        return new Executor(rmlStore, new RecordsFactory(parentPath),
+                Utils.getBaseDirectiveTurtle(mappingFile), strict);
     }
 
+    /**
+     *  Note: the created Executor will run in unstrict mode
+     */
     Executor createExecutorPrivateSecurityData(String mapPath, String privateSecurityDataPath) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
@@ -96,13 +106,16 @@ public abstract class TestCore {
         String parentPath = mappingFile.getParent();
 
         return new Executor(rmlStore,
-                new RecordsFactory(parentPath), Utils.getBaseDirectiveTurtle(mappingFile));
+                new RecordsFactory(parentPath), Utils.getBaseDirectiveTurtle(mappingFile), false);
     }
 
-    Executor createExecutor(String mapPath, String parentPath) throws Exception {
-        return createExecutor(mapPath, new ArrayList<>(), parentPath);
+    Executor createExecutor(String mapPath, String parentPath, boolean strict) throws Exception {
+        return createExecutor(mapPath, new ArrayList<>(), parentPath, strict);
     }
 
+    /**
+     *  Note: the created Executor will run in unstrict mode
+     */
     Executor createExecutor(String mapPath, FunctionLoader functionLoader) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
@@ -110,7 +123,7 @@ public abstract class TestCore {
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
         return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()),
-                functionLoader, Utils.getBaseDirectiveTurtle(mappingFile));
+                functionLoader, Utils.getBaseDirectiveTurtle(mappingFile), false);
     }
 
     /**
@@ -201,11 +214,12 @@ public abstract class TestCore {
      * @param mapPath The path of the mapping file.
      * @param outPath The path of the file with the expected output.
      * @param parentPath The path of the folder where the Executor looks for files, such as CSV files.
+     * @param strict Whether the used Executor should operate in strict mode.
      * @return The Executor used to execute the mapping.
      */
-    public Executor doMapping(String mapPath, String outPath, String parentPath) {
+    public Executor doMapping(String mapPath, String outPath, String parentPath, boolean strict) {
         try {
-            Executor executor = this.createExecutor(mapPath, parentPath);
+            Executor executor = this.createExecutor(mapPath, parentPath, strict);
             doMapping(executor, outPath);
             return executor;
         } catch (Exception e) {
@@ -247,7 +261,20 @@ public abstract class TestCore {
         }
     }
 
+
+    /**
+     *  Note: the created Executor will run in unstrict mode
+     */
     void doMappingExpectError(String mapPath) {
+        doMappingExpectError(mapPath, false);
+    }
+
+    /**
+     * Run a test where an error in the Executor should occur.
+     * @param mapPath path to the mapping file for the test
+     * @param strict should the used Executor operate in strict mode
+     */
+    void doMappingExpectError(String mapPath, boolean strict) {
         ClassLoader classLoader = getClass().getClassLoader();
 
         File mappingFile = new File(mapPath);
@@ -272,7 +299,7 @@ public abstract class TestCore {
 
         // Pass the test if an error occurs during mapping execution.
         try {
-            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), Utils.getBaseDirectiveTurtle(mappingFile));
+            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), Utils.getBaseDirectiveTurtle(mappingFile), strict);
             QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
         } catch (Exception e) {
             // I expected you!
@@ -281,7 +308,7 @@ public abstract class TestCore {
         }
 
         // Fail the test if no error occurred during the execution stage.
-        fail("Expecting error not found");
+        fail("Expecting error not found (strict mode: " + strict + ")");
     }
 
     /**

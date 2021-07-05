@@ -110,6 +110,9 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
         mappingTest(testCaseName);
     }
 
+    /**
+     * NOTE: all tests are run in the unstrict mode of the mapper.
+     */
     private void mappingTest(String testCaseName) throws Exception {
 
         String resourcePath = "test-cases/" + testCaseName + "-PostgreSQL/resource.sql";
@@ -126,9 +129,9 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
         String parentPath = getParentPath(getClass(), outputPath);
 
         if (expectedException == null) {
-            doMapping(tempMappingPath, outputPath, parentPath);
+            doMapping(tempMappingPath, outputPath, parentPath, false);
         } else {
-            doMappingExpectError(tempMappingPath);
+            doMappingExpectError(tempMappingPath, false);
         }
 
         deleteTempMappingFile(tempMappingPath);

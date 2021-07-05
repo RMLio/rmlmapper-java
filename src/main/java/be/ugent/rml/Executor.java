@@ -38,21 +38,32 @@ public class Executor {
     private static int blankNodeCounter;
     private HashMap<Term, Mapping> mappings;
     private String baseIRI;
+    private final boolean strict;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI) throws Exception {
-        this(rmlStore, recordsFactory, null, null, baseIRI);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, boolean strict) throws Exception {
+        this(rmlStore, recordsFactory, null, null, baseIRI, strict);
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, String baseIRI) throws Exception {
-        this(rmlStore, recordsFactory, functionLoader, null, baseIRI);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, String baseIRI, boolean strict) throws Exception {
+        this(rmlStore, recordsFactory, functionLoader, null, baseIRI, strict);
     }
 
+    /**
+     * Defaults to unstrict operation.
+     * @deprecated Use the constructor with explicit strict flag instead.
+     */
+    @Deprecated
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI) throws Exception {
+        this(rmlStore, recordsFactory, functionLoader, resultingQuads, baseIRI, false);
+    }
+
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI, boolean strict) throws Exception {
         this.initializer = new Initializer(rmlStore, functionLoader);
         this.mappings = this.initializer.getMappings();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
         this.baseIRI = baseIRI;
+        this.strict = strict;
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
         this.targetStores = new HashMap<Term, QuadStore>();
@@ -164,8 +175,12 @@ public class Executor {
 
                     // Is the IRI valid?
                     if (!Utils.isValidIRI(iri)) {
-                        logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
-                        subject = null;
+                        if (strict) {
+                            throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
+                        } else {
+                            logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
+                            subject = null;
+                        }
 
                     // Is the IRI relative?
                     } else if (Utils.isRelativeIRI(iri)) {
@@ -182,7 +197,11 @@ public class Executor {
                             if (Utils.isValidIRI(iri)) {
                                 subject = new ProvenancedTerm(new NamedNode(iri), subject.getMetadata(), subject.getTargets());
                             } else {
-                                logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
+                                if (strict) {
+                                    throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
+                                } else {
+                                    logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
+                                }
                             }
                         }
                     }
