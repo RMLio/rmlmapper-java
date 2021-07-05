@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## Fixed
+- R2RML: floating point differences between RDBs (see [issue 203](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/203))
+- R2RML: do not percent-encode binary data (see [issue 184](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/184))
+- R2RML: handle binary data differences between RDBs (see [issue 200](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/200))
+
 ## [4.11.0] - 2021-07-05
 
 ### Added
