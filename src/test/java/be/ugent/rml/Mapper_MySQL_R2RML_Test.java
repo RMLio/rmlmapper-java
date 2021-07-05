@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import static be.ugent.rml.MyFileUtils.getParentPath;
-import static be.ugent.rml.StrictMode.*;
+import static be.ugent.rml.TestStrictMode.*;
 
 // Adapted from Mapper_MySQL_Test to include connection options for R2RML mapping files.
 @RunWith(Parameterized.class)

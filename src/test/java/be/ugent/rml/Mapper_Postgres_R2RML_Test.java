@@ -1,5 +1,6 @@
 package be.ugent.rml;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
