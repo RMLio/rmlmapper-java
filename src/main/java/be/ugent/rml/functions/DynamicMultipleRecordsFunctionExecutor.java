@@ -73,13 +73,18 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             if (!mergedArgs.containsKey(arg.getParameter())) {
                 mergedArgs.put(arg.getParameter(), arg.getArguments());
             } else {
-
                 mergedArgs.get(arg.getParameter()).addAll(arg.getArguments());
             }
         });
         if (fnTerms.isEmpty()) {
             throw new Exception("No function was defined for parameters: " + mergedArgs.keySet());
         } else {
+            String param_rep_b = "http://users.ugent.be/~bjdmeest/function/grel.ttl#param_rep_b";
+            if (mergedArgs.containsKey(param_rep_b)) {
+                List<Boolean> boolList = new ArrayList<>();
+                mergedArgs.get(param_rep_b).forEach(str -> boolList.add(Boolean.parseBoolean((String) str)));
+                mergedArgs.replace(param_rep_b, boolList);
+            }
             return functionLoader.getFunction(fnTerms.get(0)).execute((Map) mergedArgs);
         }
     }
