@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-## Fixed
+### Fixed
 - R2RML: floating point differences between RDBs (see [issue 203](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/203))
 - R2RML: do not percent-encode binary data (see [issue 184](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/184))
 - R2RML: handle binary data differences between RDBs (see [issue 200](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/200))
 - Create an empty output file for empty JSON arrays as well (see [issue 98](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/98))
 - Always output UTF-8 encoded RDF (see [issue 119](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/119))
+
+### Added
+- FunctionLoader: throw error on missing function parameters (see [issue 125](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/125))
 
 ## [4.11.0] - 2021-07-05
 
