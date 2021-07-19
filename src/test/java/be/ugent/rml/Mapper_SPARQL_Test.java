@@ -52,7 +52,7 @@ public class Mapper_SPARQL_Test extends TestCore {
 //                {"RMLTC0003b", null}, // TODO: check if needs to be added
                 {"RMLTC0003c", null},
                 {"RMLTC0004a", null},
-                {"RMLTC0004b", null},
+                {"RMLTC0004b", Error.class},
 //                {"RMLTC0005a", null}, // TODO: check if needs to be added
 //                {"RMLTC0005b", null}, // TODO: check if needs to be added
                 {"RMLTC0006a", null},

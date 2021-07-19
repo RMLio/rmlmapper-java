@@ -69,6 +69,11 @@ public class MappingFactory {
                 Term subjectmap = subjectmaps.get(0);
                 List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
                 List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RR + "termType"), null));
+
+                if (termTypes.contains(new NamedNode(NAMESPACES.RR + "Literal"))) {
+                    throw new Exception(triplesMap + " is a Literal Term Map. Accepted term types for Subject Maps are: IRI, Blank Node");
+                }
+
                 boolean isBlankNode = !termTypes.isEmpty() && termTypes.get(0).equals(new NamedNode(NAMESPACES.RR  + "BlankNode"));
 
                 if (functionValues.isEmpty()) {
