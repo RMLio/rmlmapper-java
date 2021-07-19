@@ -79,13 +79,19 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
         if (fnTerms.isEmpty()) {
             throw new Exception("No function was defined for parameters: " + mergedArgs.keySet());
         } else {
+            FunctionModel function = functionLoader.getFunction(fnTerms.get(0));
             String param_rep_b = "http://users.ugent.be/~bjdmeest/function/grel.ttl#param_rep_b";
             if (mergedArgs.containsKey(param_rep_b)) {
-                List<Boolean> boolList = new ArrayList<>();
-                mergedArgs.get(param_rep_b).forEach(str -> boolList.add(Boolean.parseBoolean((String) str)));
-                mergedArgs.replace(param_rep_b, boolList);
+                try {
+                    List<Boolean> boolList = new ArrayList<>();
+                    mergedArgs.get(param_rep_b).forEach(str -> boolList.add(Boolean.parseBoolean((String) str)));
+                    mergedArgs.replace(param_rep_b, boolList);
+                    logger.warn("Param_rep_b has been cast to list of booleans.");
+                } catch (Exception e) {
+                    throw new Exception("Param_rep_b couldn't be cast to a list of booleans.");
+                }
             }
-            return functionLoader.getFunction(fnTerms.get(0)).execute((Map) mergedArgs);
+            return function.execute((Map) mergedArgs);
         }
     }
 }
