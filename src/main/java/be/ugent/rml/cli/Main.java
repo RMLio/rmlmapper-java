@@ -127,7 +127,7 @@ public class Main {
                 .desc("username of the database when using R2RML rules")
                 .hasArg()
                 .build();
-        Option strictModeOption = Option.builder("strict")
+        Option strictModeOption = Option.builder()
                 .longOpt("strict")
                 .desc("Enable strict mode. In strict mode, the mapper will fail on invalid IRIs instead of skipping them.")
                 .build();
@@ -408,7 +408,9 @@ public class Main {
     }
 
     private static boolean checkOptionPresence(Option option, CommandLine lineArgs, Properties properties) {
-        return lineArgs.hasOption(option.getOpt()) || (properties != null
+        return (option.getOpt() != null && lineArgs.hasOption(option.getOpt()))
+                || (option.getLongOpt() != null && lineArgs.hasOption(option.getLongOpt()))
+                || (properties != null
                 && properties.getProperty(option.getLongOpt()) != null
                 && !properties.getProperty(option.getLongOpt()).equals("false"));  // ex: 'help = false' in the config file shouldn't return the help text
     }
