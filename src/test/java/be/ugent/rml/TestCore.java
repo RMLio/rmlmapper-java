@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
 public abstract class TestCore {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
+    final String DEFAULT_BASE_IRI = "http://example.com/base/";
 
     // Mapping options to be applied by the MappingConformer
     protected static Map<String, String> mappingOptions = new HashMap<>();
@@ -81,7 +82,7 @@ public abstract class TestCore {
         convertToRml(rmlStore);
 
         return new Executor(rmlStore, new RecordsFactory(parentPath),
-                Utils.getBaseDirectiveTurtle(mappingFile), strictMode);
+                DEFAULT_BASE_IRI, strictMode);
     }
 
     /**
@@ -108,7 +109,7 @@ public abstract class TestCore {
         String parentPath = mappingFile.getParent();
 
         return new Executor(rmlStore,
-                new RecordsFactory(parentPath), Utils.getBaseDirectiveTurtle(mappingFile), BEST_EFFORT);
+                new RecordsFactory(parentPath), DEFAULT_BASE_IRI, BEST_EFFORT);
     }
 
     Executor createExecutor(String mapPath, String parentPath, StrictMode strictMode) throws Exception {
@@ -125,7 +126,7 @@ public abstract class TestCore {
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
         return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()),
-                functionLoader, Utils.getBaseDirectiveTurtle(mappingFile), BEST_EFFORT);
+                functionLoader, DEFAULT_BASE_IRI, BEST_EFFORT);
     }
 
     /**
@@ -301,7 +302,7 @@ public abstract class TestCore {
 
         // Pass the test if an error occurs during mapping execution.
         try {
-            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), Utils.getBaseDirectiveTurtle(mappingFile), strictMode);
+            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
             QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
         } catch (Exception e) {
             // I expected you!

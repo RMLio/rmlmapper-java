@@ -117,6 +117,11 @@ options:
  --strict                            Enable strict mode. In strict mode, the 
                                      mapper will fail on invalid IRIs instead 
                                      of skipping them.
+ -b --base-IRI <arg>                 base IRI used to expand relative IRIs in 
+                                     mapped terms. If not set and not in --strict 
+                                     mode, will default to the @base directive 
+                                     inside the provided mapping file.
+                                                                 
 ```
 
 #### Accessing Web APIs with authentication

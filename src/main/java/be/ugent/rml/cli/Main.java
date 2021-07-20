@@ -132,6 +132,11 @@ public class Main {
                 .longOpt("strict")
                 .desc("Enable strict mode. In strict mode, the mapper will fail on invalid IRIs instead of skipping them.")
                 .build();
+        Option baseIriOption = Option.builder("b")
+                .longOpt("base-iri")
+                .desc("Base IRI used to expand relative IRIs in generated terms in the output.")
+                .hasArg()
+                .build();
 
         options.addOption(mappingdocOption);
         options.addOption(privateSecurityDataOption);
@@ -149,6 +154,7 @@ public class Main {
         options.addOption(passwordOption);
         options.addOption(usernameOption);
         options.addOption(strictModeOption);
+        options.addOption(baseIriOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -305,7 +311,19 @@ public class Main {
                 boolean strict = checkOptionPresence(strictModeOption, lineArgs, configFile);
                 StrictMode strictMode = strict ? STRICT : BEST_EFFORT;
 
-                executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(is), strictMode);
+                // get the base IRI
+                String baseIRI = getPriorityOptionValue(baseIriOption, lineArgs, configFile);
+                if (baseIRI == null || baseIRI.isEmpty()) {
+                    // if no explicit base IRI is set
+                    if (strictMode.equals(STRICT)) {
+                        throw new Exception("When running in strict mode, a base IRI argument must be set.");
+                    } else {
+                        // Best-effort mode, use the @base directive as a fallback
+                        baseIRI = Utils.getBaseDirectiveTurtle(is);
+                    }
+                }
+
+                executor = new Executor(rmlStore, factory, functionLoader, outputStore, baseIRI, strictMode);
 
                 List<Term> triplesMaps = new ArrayList<>();
 

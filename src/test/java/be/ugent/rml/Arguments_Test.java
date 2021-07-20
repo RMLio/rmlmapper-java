@@ -6,10 +6,14 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.rdfhdt.hdt.hdt.HDT;
 import org.rdfhdt.hdt.hdt.HDTManager;
-import org.rdfhdt.hdt.triples.*;
+import org.rdfhdt.hdt.triples.IteratorTripleID;
+import org.rdfhdt.hdt.triples.TripleID;
+import org.rdfhdt.hdt.triples.Triples;
 
-import java.io.*;
-import java.net.URL;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -329,5 +333,25 @@ public class Arguments_Test extends TestCore {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testMissingBaseIRIInStrictMode() {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(stdout));
+        Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq --strict".split(" "));
+        assertThat(stdout.toString(), containsString("When running in strict mode, a base IRI argument must be set."));
+    }
+
+    @Test
+    public void testExplicitBaseIRI() throws Exception {
+        String cwd = (new File( "./src/test/resources/argument/base-iri")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(stdout));
+        Main.main(("-v --strict -b http://example2.com/ -m " + mappingFilePath).split(" "), cwd);
+        assertThat(stdout.toString(), containsString("<http://example2.com/10/Venus>"));
+
     }
 }
