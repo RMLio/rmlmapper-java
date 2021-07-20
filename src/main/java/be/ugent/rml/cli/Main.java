@@ -1,6 +1,7 @@
 package be.ugent.rml.cli;
 
 import be.ugent.rml.Executor;
+import be.ugent.rml.StrictMode;
 import be.ugent.rml.Utils;
 import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.functions.FunctionLoader;
@@ -31,7 +32,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static be.ugent.rml.Executor.StrictMode.*;
+import static be.ugent.rml.StrictMode.*;
 
 public class Main {
 
@@ -302,7 +303,7 @@ public class Main {
                 is = new SequenceInputStream(Collections.enumeration(lis));
 
                 boolean strict = checkOptionPresence(strictModeOption, lineArgs, configFile);
-                Executor.StrictMode strictMode = strict ? STRICT : BEST_EFFORT;
+                StrictMode strictMode = strict ? STRICT : BEST_EFFORT;
 
                 executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(is), strictMode);
 

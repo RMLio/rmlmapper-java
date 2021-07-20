@@ -20,6 +20,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+import static be.ugent.rml.StrictMode.*;
+
 public class Executor {
 
     private static final Logger logger = LoggerFactory.getLogger(Executor.class);
@@ -37,20 +39,6 @@ public class Executor {
     private HashMap<Term, Mapping> mappings;
     private String baseIRI;
     private final StrictMode strictMode;
-
-    /**
-     * Indicates how the executor will handle IRI-unsafe values.
-     */
-    public enum StrictMode {
-        /**
-         * The executor will attempt to skip records that cannot be mapped to IRI-safe values.
-         */
-        BEST_EFFORT,
-        /**
-         * The executor will throw an exception when a record cannot be mapped to an IRI-safe triple.
-         */
-        STRICT,
-    }
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
         this(rmlStore, recordsFactory, null, null, baseIRI, strictMode);

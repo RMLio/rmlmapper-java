@@ -121,15 +121,15 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
     public void doMapping() throws Exception {
         if (testStrictMode.equals(BOTH) || testStrictMode.equals(BEST_EFFORT_ONLY)) {
             // test the best-effort mode of the mapper
-            mappingTest(testCaseName, expectedException, Executor.StrictMode.BEST_EFFORT);
+            mappingTest(testCaseName, expectedException, StrictMode.BEST_EFFORT);
         }
         if (testStrictMode.equals(BOTH) || testStrictMode.equals(STRICT_ONLY)) {
             // test the mapper in strict mode
-            mappingTest(testCaseName, expectedException, Executor.StrictMode.STRICT);
+            mappingTest(testCaseName, expectedException, StrictMode.STRICT);
         }
     }
 
-    private void mappingTest(String testCaseName, Class expectedException, Executor.StrictMode strictMode) throws Exception {
+    private void mappingTest(String testCaseName, Class expectedException, StrictMode strictMode) throws Exception {
 
         String resourcePath = "test-cases/" + testCaseName + "-PostgreSQL/resource.sql";
         String mappingPath = "./test-cases/" + testCaseName + "-PostgreSQL/mapping.ttl";

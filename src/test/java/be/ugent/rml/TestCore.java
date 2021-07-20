@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static be.ugent.rml.Executor.StrictMode.*;
+import static be.ugent.rml.StrictMode.*;
 
 import static org.junit.Assert.*;
 
@@ -57,7 +57,7 @@ public abstract class TestCore {
      * @return An executor.
      * @throws Exception
      */
-    Executor createExecutor(String mapPath, List<Quad> extraQuads, String parentPath, Executor.StrictMode strictMode) throws Exception {
+    Executor createExecutor(String mapPath, List<Quad> extraQuads, String parentPath, StrictMode strictMode) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
         URL url = classLoader.getResource(mapPath);
@@ -111,7 +111,7 @@ public abstract class TestCore {
                 new RecordsFactory(parentPath), Utils.getBaseDirectiveTurtle(mappingFile), BEST_EFFORT);
     }
 
-    Executor createExecutor(String mapPath, String parentPath, Executor.StrictMode strictMode) throws Exception {
+    Executor createExecutor(String mapPath, String parentPath, StrictMode strictMode) throws Exception {
         return createExecutor(mapPath, new ArrayList<>(), parentPath, strictMode);
     }
 
@@ -219,7 +219,7 @@ public abstract class TestCore {
      * @param strictMode Whether the used Executor should operate in strict mode.
      * @return The Executor used to execute the mapping.
      */
-    public Executor doMapping(String mapPath, String outPath, String parentPath, Executor.StrictMode strictMode) {
+    public Executor doMapping(String mapPath, String outPath, String parentPath, StrictMode strictMode) {
         try {
             Executor executor = this.createExecutor(mapPath, parentPath, strictMode);
             doMapping(executor, outPath);
@@ -276,7 +276,7 @@ public abstract class TestCore {
      * @param mapPath path to the mapping file for the test
      * @param strictMode should the used Executor operate in strict mode
      */
-    void doMappingExpectError(String mapPath, Executor.StrictMode strictMode) {
+    void doMappingExpectError(String mapPath, StrictMode strictMode) {
         ClassLoader classLoader = getClass().getClassLoader();
 
         File mappingFile = new File(mapPath);
