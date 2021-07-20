@@ -49,10 +49,9 @@ public class Executor {
     }
 
     /**
-     * Defaults to best effort operation.
-     * @deprecated Use the constructor with explicit strict flag instead.
+     * Defaults to best effort operation. For strict mode,
+     * use {@link Executor#Executor(QuadStore, RecordsFactory, FunctionLoader, QuadStore, String, StrictMode)}
      */
-    @Deprecated
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI) throws Exception {
         this(rmlStore, recordsFactory, functionLoader, resultingQuads, baseIRI, StrictMode.BEST_EFFORT);
     }
