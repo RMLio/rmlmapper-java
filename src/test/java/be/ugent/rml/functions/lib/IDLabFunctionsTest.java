@@ -60,4 +60,10 @@ public class IDLabFunctionsTest {
         assertTrue(IDLabFunctions.inRange(3.0, null, null));
         assertFalse(IDLabFunctions.inRange(null, null, null));
     }
+
+    @Test
+    public void slugify() {
+        String result = IDLabFunctions.slugify("Ben De Mééster");
+        assertEquals("ben-de-meester", result);
+    }
 }

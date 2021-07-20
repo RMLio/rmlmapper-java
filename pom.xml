@@ -240,6 +240,11 @@
             <artifactId>grel-functions-java</artifactId>
             <version>v0.6.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.slugify</groupId>
+            <artifactId>slugify</artifactId>
+            <version>2.4</version>
+        </dependency>
     </dependencies>
 
     <build>

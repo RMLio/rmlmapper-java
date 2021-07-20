@@ -87,6 +87,14 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     }
 
     /**
+     * Tests whether the function idlab-fn:slugify is supported correctly by the mapper
+     */
+    @Test
+    public void evaluate_A007() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCA007/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA007/output.ttl");
+    }
+
+    /**
      * Tests whether the function millisecondsToInstant can be loaded and is supported correctly by the mapper
      */
     @Test

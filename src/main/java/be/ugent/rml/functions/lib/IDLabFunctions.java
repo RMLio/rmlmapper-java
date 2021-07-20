@@ -1,6 +1,7 @@
 package be.ugent.rml.functions.lib;
 
 import be.ugent.rml.Utils;
+import com.github.slugify.Slugify;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
@@ -163,6 +164,19 @@ public class IDLabFunctions {
             return testNumber >= from;
         }
         return testNumber >= from && testNumber < to;
+    }
+
+    /**
+     * Convert a string to its slugified equivalent.
+     * @param str The String to slugify
+     * @return the slugified string. Returns null if the input was also null.
+     */
+    public static String slugify(String str) {
+        if (str != null) {
+            Slugify slg = new Slugify();
+            return slg.slugify(str);
+        }
+        return null;
     }
 
     // TODO below are currently not part of any tests

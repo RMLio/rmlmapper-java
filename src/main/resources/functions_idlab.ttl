@@ -134,6 +134,18 @@ idlab-fn:inRange
                           lib:class        "IDLabFunctions" ;
                           lib:method       "inRange" ] .
 
+idlab-fn:slugify
+    a                   fno:Function ;
+    fno:name            "slugify" ;
+    rdfs:label          "slugify" ;
+    dcterms:description "Converts an arbitrary string to its slugified equivalent." ;
+    fno:expects         ( idlab-fn:_str ) ;
+    fno:returns         ( idlab-fn:_stringOut ) ;
+    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
+                          lib:class        "IDLabFunctions" ;
+                          lib:method       "slugify" ] .
+
+
 grel:valueParam
     a             fno:Parameter ;
     fno:name      "input value" ;
