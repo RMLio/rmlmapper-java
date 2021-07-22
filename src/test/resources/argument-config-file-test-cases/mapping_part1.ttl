@@ -11,7 +11,7 @@
 <TriplesMap1>
   a rr:TriplesMap;
 
-  rml:logicalSource [ 
+  rml:logicalSource [
     rml:source "src/test/resources/argument-config-file-test-cases/student.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$.students[*]"
@@ -21,16 +21,16 @@
     rr:class <http://example.com/ontology/Student>;
     rr:graph <http://example.com/graph/students> ;
  ];
-	
-  rr:predicateObjectMap [ 
+
+  rr:predicateObjectMap [
     rr:predicate foaf:name ;
     rr:objectMap [ rml:reference "Name" ];
     rr:graph <http://example.com/graph/students> ;
   ] ;
 
-  rr:predicateObjectMap [ 
+  rr:predicateObjectMap [
     rr:predicate <http://example.com/ontology/practises> ;
-    rr:objectMap [ 
+    rr:objectMap [
       a rr:RefObjectMap ;
       rr:parentTriplesMap <TriplesMap2>;
       rr:joinCondition [
@@ -40,22 +40,3 @@
     ];
     rr:graph <http://example.com/graph/practise> ;
   ] .
-
-<TriplesMap2>
-  a rr:TriplesMap;
-
-  rml:logicalSource [
-    rml:source "src/test/resources/argument-config-file-test-cases/sport.json";
-    rml:referenceFormulation ql:JSONPath;
-    rml:iterator "$.sports[*]"
-  ];
-
-  rr:subjectMap [ rr:template "http://example.com/resource/sport_{ID}";
-    rr:class <http://example.com/ontology/Sport>;
-    rr:graph <http://example.com/graph/sports> ;
-  ];
-
-  rr:predicateObjectMap [
-    rr:predicate rdfs:label ;
-    rr:objectMap [ rml:reference "Name" ];
-  ].

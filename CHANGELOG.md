@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - README: mention [RML questions repository](https://github.com/kg-construct/rml-questions) (see [issue 216](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/216))
 - XML parsing: allow parsing of fully namespaced xml by injecting xml source's namespaces in the XPath compiler (see [issue 134](https://github.com/RMLio/rmlmapper-java/pull/134))
 
+### Added
+
+- Main: add piping support of mapping rules (see [issue 124](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/124))
+
 ## [4.12.0] - 2021-08-02
 
 ### Fixed

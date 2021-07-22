@@ -7,24 +7,23 @@
 @base <http://example.com/base/> .
 
 <TriplesMap1> a rr:TriplesMap;
-    
-  rml:logicalSource [ 
+
+  rml:logicalSource [
     rml:source "student.csv";
     rml:referenceFormulation ql:CSV
   ];
 
-  rr:subjectMap [ 
+  rr:subjectMap [
     rr:template "http://example.com/{ID}/{Name}";
-    rr:class foaf:Person 
+    rr:class foaf:Person
   ];
 
-  rr:predicateObjectMap [ 
-    rr:predicate ex:id ; 
+  rr:predicateObjectMap [
+    rr:predicate ex:id ;
     rr:objectMap [ rml:reference "ID" ]
   ];
 
-  rr:predicateObjectMap [ 
-    rr:predicate foaf:name ; 
+  rr:predicateObjectMap [
+    rr:predicate foaf:name ;
     rr:objectMap [ rml:reference "Name" ; rr:language "en" ]
   ].
-

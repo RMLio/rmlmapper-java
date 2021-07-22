@@ -17,6 +17,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
@@ -180,193 +181,214 @@ public class Main {
             }
 
             String[] mOptionValue = getOptionValues(mappingdocOption, lineArgs, configFile);
-            if (mOptionValue == null) {
+            List<InputStream> lis = new ArrayList<>();
+
+            if (mOptionValue == null && System.console() != null) {
                 printHelp(options);
-            } else {
+                System.exit(1);
+            }
+
+            if (mOptionValue != null) {
                 // Concatenate all mapping files
-                List<InputStream> lis = Arrays.stream(mOptionValue)
-                        .map(Utils::getInputStreamFromFileOrContentString)
-                        .collect(Collectors.toList());
-                InputStream is = new SequenceInputStream(Collections.enumeration(lis));
-
-                Map<String, String> mappingOptions = new HashMap<>();
-                for (Option option : new Option[]{jdbcDSNOption, passwordOption, usernameOption}) {
-                    if (checkOptionPresence(option, lineArgs, configFile)) {
-                        mappingOptions.put(option.getLongOpt().replace("r2rml-", ""), getOptionValues(option, lineArgs, configFile)[0]);
-                    }
-                }
-
-                // Read mapping file.
-                RDF4JStore rmlStore = new RDF4JStore();
-                try {
-                    rmlStore.read(is, null, RDFFormat.TURTLE);
-                }
-                catch (RDFParseException e) {
-                    logger.error(fatal, "Unable to parse mapping rules as Turtle. Does the file exist and is it valid Turtle?", e);
-                    System.exit(1);
-                }
-
-                // Private security data is optionally
-                if (lineArgs.hasOption("psd")) {
-                    // Read the private security data.
-                    String[] mOptionValuePrivateSecurityData = getOptionValues(privateSecurityDataOption, lineArgs, configFile);
-                    List<InputStream> lisPrivateSecurityData = Arrays.stream(mOptionValuePrivateSecurityData)
-                            .map(Utils::getInputStreamFromFileOrContentString)
-                            .collect(Collectors.toList());
-                    InputStream isPrivateSecurityData = new SequenceInputStream(Collections.enumeration(lisPrivateSecurityData));
-                    try {
-                        rmlStore.read(isPrivateSecurityData, null, RDFFormat.TURTLE);
-                    } catch (RDFParseException e) {
-                        logger.debug(e.getMessage());
-                        logger.error(fatal, "Unable to parse private security data as Turtle. Does the file exist and is it valid Turtle?");
-                        System.exit(1);
-                    }
-                }
-
-                // Convert mapping file to RML if needed.
-                MappingConformer conformer = new MappingConformer(rmlStore, mappingOptions);
-
-                try {
-                    boolean conversionNeeded = conformer.conform();
-
-                    if (conversionNeeded) {
-                        logger.info("Conversion to RML was needed.");
-                    }
-                } catch (Exception e) {
-                    logger.error(fatal, "Failed to make mapping file conformant to RML spec.", e);
-                }
-
-                RecordsFactory factory = new RecordsFactory(basePath);
-
-                String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
-                QuadStore outputStore = getStoreForFormat(outputFormat);
-
-                Executor executor;
-
-                // Extract required information and create the MetadataGenerator
-                MetadataGenerator metadataGenerator = null;
-                String metadataFile = getPriorityOptionValue(metadataOption, lineArgs, configFile);
-                String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
-
-                if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
-                    if (requestedDetailLevel != null) {
-                        MetadataGenerator.DETAIL_LEVEL detailLevel;
-                        switch (requestedDetailLevel) {
-                            case "dataset":
-                                detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
-                                break;
-                            case "triple":
-                                detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
-                                break;
-                            case "term":
-                                detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
-                                break;
-                            default:
-                                logger.error("Unknown metadata detail level option. Use the -h flag for more info.");
-                                return;
-                        }
-
-                        QuadStore metadataStore = getStoreForFormat(outputFormat);
-
-                        metadataGenerator = new MetadataGenerator(
-                                detailLevel,
-                                getPriorityOptionValue(metadataOption, lineArgs, configFile),
-                                mOptionValue,
-                                rmlStore,
-                                metadataStore
-                        );
-                    } else {
-                        logger.error("Please specify the detail level when requesting metadata generation. Use the -h flag for more info.");
-                    }
-                }
-
-                String[] fOptionValue = getOptionValues(functionfileOption, lineArgs, configFile);
-                FunctionLoader functionLoader;
-
-                // Read function description files.
-                if (fOptionValue == null) {
-                    functionLoader = new FunctionLoader();
-                } else {
-                    logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
-                    RDF4JStore functionDescriptionTriples = new RDF4JStore();
-                    functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
-                    Map<String, Class> libraryMap = new HashMap<>();
-                    libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-                    List<InputStream> lisF = Arrays.stream(fOptionValue)
-                            .map(Utils::getInputStreamFromFileOrContentString)
-                            .collect(Collectors.toList());
-                    for (int i = 0; i < lisF.size(); i++) {
-                        functionDescriptionTriples.read(lisF.get(i), null, RDFFormat.TURTLE);
-                    }
-                    functionLoader = new FunctionLoader(functionDescriptionTriples, libraryMap);
-                }
-
-                // We have to get the. InputStreams of the RML documents again,
-                //                // because we can only use an InputStream once
                 lis = Arrays.stream(mOptionValue)
                         .map(Utils::getInputStreamFromFileOrContentString)
                         .collect(Collectors.toList());
-                is = new SequenceInputStream(Collections.enumeration(lis));
+            }
 
-                boolean strict = checkOptionPresence(strictModeOption, lineArgs, configFile);
-                StrictMode strictMode = strict ? STRICT : BEST_EFFORT;
-
-                // get the base IRI
-                String baseIRI = getPriorityOptionValue(baseIriOption, lineArgs, configFile);
-                if (baseIRI == null || baseIRI.isEmpty()) {
-                    // if no explicit base IRI is set
-                    if (strictMode.equals(STRICT)) {
-                        throw new Exception("When running in strict mode, a base IRI argument must be set.");
-                    } else {
-                        // Best-effort mode, use the @base directive as a fallback
-                        baseIRI = Utils.getBaseDirectiveTurtle(is);
-                    }
+            try {
+                BufferedInputStream bis = new BufferedInputStream(System.in);
+                int available = bis.available();
+                if (bis.available() != 0) {
+                    lis.add(bis);
                 }
+            } catch (IOException ex) {
+                // The inputstream is closed when read. Leads to IOExceptions for tests that don't provide their own inputstream
+            }
 
-                executor = new Executor(rmlStore, factory, functionLoader, outputStore, baseIRI, strictMode);
+            InputStream is = new SequenceInputStream(Collections.enumeration(lis));;
 
-                List<Term> triplesMaps = new ArrayList<>();
-
-                String tOptionValue = getPriorityOptionValue(triplesmapsOption, lineArgs, configFile);
-                if (tOptionValue != null) {
-                    List<String> triplesMapsIRI = Arrays.asList(tOptionValue.split(","));
-                    triplesMapsIRI.forEach(iri -> {
-                        triplesMaps.add(new NamedNode(iri));
-                    });
-                }
-
-                if (metadataGenerator != null) {
-                    metadataGenerator.preMappingGeneration(triplesMaps.isEmpty() ?
-                            executor.getTriplesMaps() : triplesMaps, rmlStore);
-                }
-
-                // Get start timestamp for post mapping metadata
-                String startTimestamp = Instant.now().toString();
-
-                try {
-                    HashMap<Term, QuadStore> targets = executor.executeV5(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
-                            metadataGenerator);
-                    QuadStore result = targets.get(new NamedNode("rmlmapper://default.store"));
-
-                    // Get stop timestamp for post mapping metadata
-                    String stopTimestamp = Instant.now().toString();
-
-                    // Generate post mapping metadata and output all metadata
-                    if (metadataGenerator != null) {
-                        metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
-                                result);
-
-                        writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
-                    }
-
-                    String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-                    result.copyNameSpaces(rmlStore);
-
-                    writeOutputTargets(targets, rmlStore, basePath, outputFile, outputFormat);
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
+            Map<String, String> mappingOptions = new HashMap<>();
+            for (Option option : new Option[]{jdbcDSNOption, passwordOption, usernameOption}) {
+                if (checkOptionPresence(option, lineArgs, configFile)) {
+                    mappingOptions.put(option.getLongOpt().replace("r2rml-", ""), getOptionValues(option, lineArgs, configFile)[0]);
                 }
             }
+
+            // Read mapping file.
+            RDF4JStore rmlStore = new RDF4JStore();
+            try {
+                rmlStore.read(is, null, RDFFormat.TURTLE);
+            }
+            catch (RDFParseException e) {
+                logger.error(fatal, "Unable to parse mapping rules as Turtle. Does the file exist and is it valid Turtle?", e);
+                System.exit(1);
+            }
+
+            // Private security data is optionally
+            if (lineArgs.hasOption("psd")) {
+                // Read the private security data.
+                String[] mOptionValuePrivateSecurityData = getOptionValues(privateSecurityDataOption, lineArgs, configFile);
+                List<InputStream> lisPrivateSecurityData = Arrays.stream(mOptionValuePrivateSecurityData)
+                        .map(Utils::getInputStreamFromFileOrContentString)
+                        .collect(Collectors.toList());
+                InputStream isPrivateSecurityData = new SequenceInputStream(Collections.enumeration(lisPrivateSecurityData));
+                try {
+                    rmlStore.read(isPrivateSecurityData, null, RDFFormat.TURTLE);
+                } catch (RDFParseException e) {
+                    logger.debug(e.getMessage());
+                    logger.error(fatal, "Unable to parse private security data as Turtle. Does the file exist and is it valid Turtle?");
+                    System.exit(1);
+                }
+            }
+
+            // Convert mapping file to RML if needed.
+            MappingConformer conformer = new MappingConformer(rmlStore, mappingOptions);
+
+            try {
+                boolean conversionNeeded = conformer.conform();
+
+                if (conversionNeeded) {
+                    logger.info("Conversion to RML was needed.");
+                }
+            } catch (Exception e) {
+                logger.error(fatal, "Failed to make mapping file conformant to RML spec.", e);
+            }
+
+            RecordsFactory factory = new RecordsFactory(basePath);
+
+            String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
+            QuadStore outputStore = getStoreForFormat(outputFormat);
+
+            Executor executor;
+
+            // Extract required information and create the MetadataGenerator
+            MetadataGenerator metadataGenerator = null;
+            String metadataFile = getPriorityOptionValue(metadataOption, lineArgs, configFile);
+            String requestedDetailLevel = getPriorityOptionValue(metadataDetailLevelOption, lineArgs, configFile);
+
+            if (checkOptionPresence(metadataOption, lineArgs, configFile)) {
+                if (requestedDetailLevel != null) {
+                    MetadataGenerator.DETAIL_LEVEL detailLevel;
+                    switch (requestedDetailLevel) {
+                        case "dataset":
+                            detailLevel = MetadataGenerator.DETAIL_LEVEL.DATASET;
+                            break;
+                        case "triple":
+                            detailLevel = MetadataGenerator.DETAIL_LEVEL.TRIPLE;
+                            break;
+                        case "term":
+                            detailLevel = MetadataGenerator.DETAIL_LEVEL.TERM;
+                            break;
+                        default:
+                            logger.error("Unknown metadata detail level option. Use the -h flag for more info.");
+                            return;
+                    }
+
+                    QuadStore metadataStore = getStoreForFormat(outputFormat);
+
+                    metadataGenerator = new MetadataGenerator(
+                            detailLevel,
+                            getPriorityOptionValue(metadataOption, lineArgs, configFile),
+                            mOptionValue,
+                            rmlStore,
+                            metadataStore
+                    );
+                } else {
+                    logger.error("Please specify the detail level when requesting metadata generation. Use the -h flag for more info.");
+                }
+            }
+
+            String[] fOptionValue = getOptionValues(functionfileOption, lineArgs, configFile);
+            FunctionLoader functionLoader;
+
+            // Read function description files.
+            if (fOptionValue == null) {
+                functionLoader = new FunctionLoader();
+            } else {
+                logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
+                RDF4JStore functionDescriptionTriples = new RDF4JStore();
+                functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
+                Map<String, Class> libraryMap = new HashMap<>();
+                libraryMap.put("IDLabFunctions", IDLabFunctions.class);
+                List<InputStream> lisF = Arrays.stream(fOptionValue)
+                        .map(Utils::getInputStreamFromFileOrContentString)
+                        .collect(Collectors.toList());
+                for (int i = 0; i < lisF.size(); i++) {
+                    functionDescriptionTriples.read(lisF.get(i), null, RDFFormat.TURTLE);
+                }
+                functionLoader = new FunctionLoader(functionDescriptionTriples, libraryMap);
+            }
+
+            if (mOptionValue != null) {
+                /*
+                 * We have to get the InputStreams of the RML documents again,
+                 * because we can only use an InputStream once
+                 */
+                lis = Arrays.stream(mOptionValue)
+                        .map(Utils::getInputStreamFromFileOrContentString)
+                        .collect(Collectors.toList());
+            }
+            is = new SequenceInputStream(Collections.enumeration(lis));
+
+            boolean strict = checkOptionPresence(strictModeOption, lineArgs, configFile);
+            StrictMode strictMode = strict ? STRICT : BEST_EFFORT;
+
+            // get the base IRI
+            String baseIRI = getPriorityOptionValue(baseIriOption, lineArgs, configFile);
+            if (baseIRI == null || baseIRI.isEmpty()) {
+                // if no explicit base IRI is set
+                if (strictMode.equals(STRICT)) {
+                    throw new Exception("When running in strict mode, a base IRI argument must be set.");
+                } else {
+                    // Best-effort mode, use the @base directive as a fallback
+                    baseIRI = Utils.getBaseDirectiveTurtle(is);
+                }
+            }
+
+            executor = new Executor(rmlStore, factory, functionLoader, outputStore, baseIRI, strictMode);
+
+            List<Term> triplesMaps = new ArrayList<>();
+
+            String tOptionValue = getPriorityOptionValue(triplesmapsOption, lineArgs, configFile);
+            if (tOptionValue != null) {
+                List<String> triplesMapsIRI = Arrays.asList(tOptionValue.split(","));
+                triplesMapsIRI.forEach(iri -> {
+                    triplesMaps.add(new NamedNode(iri));
+                });
+            }
+
+            if (metadataGenerator != null) {
+                metadataGenerator.preMappingGeneration(triplesMaps.isEmpty() ?
+                        executor.getTriplesMaps() : triplesMaps, rmlStore);
+            }
+
+            // Get start timestamp for post mapping metadata
+            String startTimestamp = Instant.now().toString();
+
+            try {
+                HashMap<Term, QuadStore> targets = executor.executeV5(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                        metadataGenerator);
+                QuadStore result = targets.get(new NamedNode("rmlmapper://default.store"));
+
+                // Get stop timestamp for post mapping metadata
+                String stopTimestamp = Instant.now().toString();
+
+                // Generate post mapping metadata and output all metadata
+                if (metadataGenerator != null) {
+                    metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
+                            result);
+
+                    writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
+                }
+
+                String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
+                result.copyNameSpaces(rmlStore);
+
+                writeOutputTargets(targets, rmlStore, basePath, outputFile, outputFormat);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+
         } catch (ParseException exp) {
             // oops, something went wrong
             logger.error("Parsing failed. Reason: " + exp.getMessage());

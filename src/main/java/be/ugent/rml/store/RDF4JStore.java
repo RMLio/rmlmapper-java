@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,7 +69,12 @@ public class RDF4JStore extends QuadStore {
         Value filterObject = getFilterObject(object);
         Resource filterGraph = getFilterGraph(graph);
 
-        result = model.filter(filterSubject, filterPredicate, filterObject, filterGraph);
+        // Needed to get quads with any graph (null as wildcard)
+        if (graph != null) {
+            result = model.filter(filterSubject, filterPredicate, filterObject, filterGraph);
+        } else {
+            result = model.filter(filterSubject, filterPredicate, filterObject);
+        }
 
         List<Quad> quads = new ArrayList<>();
 
@@ -138,6 +145,15 @@ public class RDF4JStore extends QuadStore {
                 break;
             default:
                 throw new Exception("Serialization " + format + " not supported");
+        }
+    }
+
+    public String getBase() {
+        Optional<Namespace> base = model.getNamespace("");
+        if (base.isPresent()) {
+            return base.get().getName();
+        } else {
+            return "";
         }
     }
 

@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -281,7 +282,7 @@ public class Arguments_Test extends TestCore {
     @Test
     public void outputHDT() throws IOException {
         String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
-        String mappingFilePath = (new File("./src/test/resources/argument/mapping.ttl")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualHDTPath = (new File("./generated_output.hdt")).getAbsolutePath();
         String expectedHDTPath = (new File( "./src/test/resources/argument/output-hdt/target_output.hdt")).getAbsolutePath();
 
@@ -354,5 +355,49 @@ public class Arguments_Test extends TestCore {
         Main.main(("-v --strict -b http://example2.com/ -m " + mappingFilePath).split(" "), cwd);
         assertThat(stdout.toString(), containsString("<http://example2.com/10/Venus>"));
 
+    }
+
+    @Test
+    public void onlyPipe() throws Exception {
+        InputStream is = getClass().getClassLoader().getResourceAsStream("argument-config-file-test-cases/mapping.ttl");
+        System.setIn(is);
+
+        String[] args = {"-o" , "./generated_output.nq"};
+        Main.main(args);
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        File outputFile;
+        try {
+            outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void pipeAndMapping() throws Exception {
+        InputStream is = getClass().getClassLoader().getResourceAsStream("argument-config-file-test-cases/mapping_part2.ttl");
+        System.setIn(is);
+
+        String[] args = {"-m", "./argument-config-file-test-cases/mapping_part1.ttl", "-o" , "./generated_output.nq"};
+        Main.main(args);
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        File outputFile;
+        try {
+            outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

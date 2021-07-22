@@ -24,8 +24,10 @@ public class Executor {
 
     private Initializer initializer;
     private HashMap<Term, List<Record>> recordsHolders;
-    // this map stores for every Triples Map, which is a Term, a map with the record index and the record's corresponding subject,
-    // which is a ProvenancedTerm.
+    /*
+     * this map stores for every Triples Map, which is a Term,
+     * a map with the record index and the record's corresponding subject, which is a ProvenancedTerm.
+     */
     private HashMap<Term, HashMap<Integer, ProvenancedTerm>> subjectCache;
     private QuadStore resultingQuads;
     private QuadStore rmlStore;
@@ -101,6 +103,10 @@ public class Executor {
                 this.targetStores.put(t, new RDF4JStore());
             }
         }
+    }
+
+    public Executor(RDF4JStore rmlStore, RecordsFactory factory, FunctionLoader functionLoader, QuadStore outputStore) throws Exception {
+        this(rmlStore, factory, functionLoader, outputStore, rmlStore.getBase());
     }
 
     /*
