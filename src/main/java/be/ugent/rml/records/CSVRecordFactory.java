@@ -79,7 +79,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @throws IOException
      */
     private CSVParser getParserForNormalCSV(Access access) throws IOException, SQLException, ClassNotFoundException {
-        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false);
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false).withNullString("@@@@NULL@@@@");
         InputStream inputStream = access.getInputStream();
 
         if (inputStream != null) {

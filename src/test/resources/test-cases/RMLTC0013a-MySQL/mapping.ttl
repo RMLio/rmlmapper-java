@@ -23,7 +23,7 @@
   rr:predicateObjectMap [ 
     rr:predicate ex:BirthDay ; 
     rr:objectMap [
-      rr:reference "DateOfBirth";
+      rml:reference "DateOfBirth";
     ]
   ];
   .

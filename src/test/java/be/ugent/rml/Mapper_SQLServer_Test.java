@@ -157,7 +157,7 @@ public class Mapper_SQLServer_Test extends TestCore {
                 {"RMLTC0012c", Error.class},
                 {"RMLTC0012d", Error.class},
 //                {"RMLTC0012e", null},
-//                {"RMLTC0013a", null},
+                {"RMLTC0013a", null},
                 {"RMLTC0014d", null},
 //                {"RMLTC0015a", null},
                 {"RMLTC0015b", Error.class},

@@ -30,9 +30,10 @@ public class RecordsFactory {
         recordCache = new HashMap<>();
 
         referenceFormulationRecordFactoryMap = new HashMap<>();
-        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "XPath", new XMLRecordFactory());
-        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "JSONPath", new JSONRecordFactory());
-        referenceFormulationRecordFactoryMap.put(NAMESPACES.QL + "CSV", new CSVRecordFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.XPath, new XMLRecordFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.JSONPath, new JSONRecordFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSV, new CSVRecordFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDB, new CSVRecordFactory());
     }
 
     /**
@@ -59,7 +60,7 @@ public class RecordsFactory {
             // If no rml:referenceFormulation is given, but a table is given --> CSV
             if (referenceFormulations.isEmpty() && !tables.isEmpty()) {
                 referenceFormulations = new ArrayList<>();
-                referenceFormulations.add(0, new NamedNode(NAMESPACES.QL + "CSV"));
+                referenceFormulations.add(0, new NamedNode(ReferenceFormulation.RDB));
             }
 
             if (referenceFormulations.isEmpty()) {

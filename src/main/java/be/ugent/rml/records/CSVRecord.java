@@ -52,13 +52,23 @@ public class CSVRecord extends Record {
      */
     @Override
     public List<Object> get(String value) {
+        String toDatabaseCase;
+        if (this.record.isSet(value.toUpperCase())) {
+            toDatabaseCase = value.toUpperCase();
+        } else if (this.record.isSet(value.toLowerCase())) {
+            toDatabaseCase = value.toLowerCase();
+        } else {
+            toDatabaseCase = value;
+        }
+
         List<Object> result = new ArrayList<>();
-        Object obj;
-        obj = this.record.get(value);
-        // Empty column values in CSV are the same as NULL values in RDBs and should be skipped
-        if (!String.valueOf(obj).equals("")) {
+        Object obj = this.record.get(toDatabaseCase);
+
+        // needed for finding NULL in CSV serialization
+        if (obj != null) {
             result.add(obj);
         }
+
         return result;
     }
 }

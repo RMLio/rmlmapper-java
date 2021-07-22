@@ -170,7 +170,10 @@ public class RDBAccess implements Access {
         StringWriter writer = new StringWriter();
 
         try {
-            CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(getCSVHeader(rsmd, columnCount)));
+            // Differentiate null and ""
+            CSVFormat format = CSVFormat.DEFAULT.withHeader(getCSVHeader(rsmd, columnCount))
+                    .withNullString("@@@@NULL@@@@");
+            CSVPrinter printer = new CSVPrinter(writer, format);
             printer.printRecords();
 
             // Extract data from result set

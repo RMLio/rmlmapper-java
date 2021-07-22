@@ -91,7 +91,7 @@ public class Mapper_Postgres_Test extends PostgresTestCore {
                 {"RMLTC0012c", Error.class, BOTH},
                 {"RMLTC0012d", Error.class, BOTH},
                 {"RMLTC0012e", null, BOTH},
-//                {"RMLTC0013a", null, BOTH},
+                {"RMLTC0013a", null, BOTH},
                 {"RMLTC0014d", null, BOTH},
 //                {"RMLTC0015a", null, BOTH},
                 {"RMLTC0015b", Error.class, BOTH},
