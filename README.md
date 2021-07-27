@@ -282,6 +282,7 @@ copy `settings.example.xml` to `~/.m2/settings.xml`.
 | junit junit                             | Eclipse Public License 1.0                                         |
 | com.jayway.jsonpath json-path           | Apache License 2.0                                                 |
 | javax.xml.parsers jaxp-api              | Apache License 2.0                                                 |
+| org.jsoup                               | MIT                                                                |
 | mysql mysql-connector-java              | GNU General Public License v2.0                                    |
 | ch.vorbuger.mariaDB4j mariaDB4j         | Apache License 2.0                                                 |
 | postgresql postgresql                   | BSD                                                                |

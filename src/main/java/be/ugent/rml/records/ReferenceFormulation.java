@@ -7,4 +7,5 @@ public class ReferenceFormulation {
     public static String CSV = NAMESPACES.QL + "CSV";
     public static String RDB = NAMESPACES.QL + "RDB";
     public static String JSONPath = NAMESPACES.QL + "JSONPath";
+    public static String CSS3 = NAMESPACES.QL + "CSS3";
 }

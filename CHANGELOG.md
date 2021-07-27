@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - FunctionLoader: throw error on missing function parameters (see [issue 125](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/125))
+- HTMLRecordFactory: add CSS3 selector support (see [issue 52](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/52))
 
 ## [4.11.0] - 2021-07-05
 
