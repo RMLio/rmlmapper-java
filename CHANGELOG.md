@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Create an empty output file for empty JSON arrays as well (see [issue 98](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/98))
 - Always output UTF-8 encoded RDF (see [issue 119](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/119))
 - Refactor RDB records for better NULL and empty string handling (see [issue 131](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/131))
+- Align R2RML test cases with [kg-construct/r2rml-test-cases](https://github.com/kg-construct/r2rml-test-cases-support/pull/16) (see [issue 211](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/211))
 
 ### Added
 - FunctionLoader: throw error on missing function parameters (see [issue 125](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/125))

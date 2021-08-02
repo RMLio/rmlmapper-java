@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS "Sport" cascade;
 DROP TABLE IF EXISTS "Student" cascade;
+DROP TABLE IF EXISTS "Sport" cascade;
 CREATE TABLE "Sport" ("ID" integer,"Name" varchar (50),PRIMARY KEY ("ID"));
 CREATE TABLE "Student" ("ID" integer,"Name" varchar(50),"Sport" integer,PRIMARY KEY ("ID"), FOREIGN KEY("Sport") REFERENCES "Sport"("ID"));
 INSERT INTO "Sport" ("ID", "Name") VALUES (100,'Tennis');
