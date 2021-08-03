@@ -1,0 +1,9 @@
+{
+  "students": [
+    {
+      "id": 1,
+      "name": "Venus",
+      "friends": ["Mars", "Saturn", "Jupiter"]
+    }
+  ]
+}

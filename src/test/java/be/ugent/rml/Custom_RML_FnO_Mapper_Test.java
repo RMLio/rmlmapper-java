@@ -87,11 +87,60 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     }
 
     /**
+     * Tests whether the function idlab-fn:stringContainsOtherString is supported correctly by the mapper
+     */
+    @Test
+    public void Evaluate_idlab_F001() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF001/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF001/output.ttl");
+    }
+
+    /**
+     * Tests whether the function idlab-fn:listContainsElement is supported correctly by the mapper
+     */
+    @Test
+    public void Evaluate_idlab_F002() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF002/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF002/output.ttl");
+    }
+
+    /**
+     * Tests whether the function idlab-fn:dbpediaSpotlight is supported correctly by the mapper
+     */
+    @Test
+    public void Evaluate_idlab_F003() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF003/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF003/output.ttl");
+    }
+
+    /**
+     * Tests whether the function idlab-fn:decide is supported correctly by the mapper
+     */
+    @Test
+    public void Evaluate_idlab_f004() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF004/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF004/output.ttl");
+    }
+
+    /**
+     * Tests whether the function idlab-fn:getMIMEType is supported correctly by the mapper
+     */
+    @Test
+    public void Evaluate_idlab_F005() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF005/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF005/output.ttl");
+    }
+
+    /**
+     * Tests whether the function idlab:toUpperCaseURL is supported correctly by the mapper
+     */
+    @Test
+    public void Evaluate_idlab_F006() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF006/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF006/output.ttl");
+
+    }
+
+    /**
      * Tests whether the function idlab-fn:slugify is supported correctly by the mapper
      */
     @Test
-    public void evaluate_A007() {
-        doMapping("./rml-fno-test-cases/RMLFNOTCA007/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA007/output.ttl");
+    public void evaluate_idlab_F007() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF007/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF007/output.ttl");
     }
 
     /**

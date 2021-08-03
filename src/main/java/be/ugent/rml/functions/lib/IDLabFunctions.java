@@ -127,12 +127,13 @@ public class IDLabFunctions {
 
     public static String random() {
         return UUID.randomUUID().toString();
+
     }
 
     public static String toUpperCaseURL(String test) {
         String upperTest = test.toUpperCase();
-        if (!upperTest.startsWith("http://")) {
-            upperTest = "http://" + upperTest;
+        if (!upperTest.startsWith("HTTP://")) {
+            upperTest = "HTTP://" + upperTest;
         }
         return upperTest;
     }
