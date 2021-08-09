@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - IDLabFunctions: add slugify to default idlab-fn functions (see [issue 209](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/209))
 - RDBAccess: add XML support for PostgreSQL RDB (see [issue 51](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/51))
 - AccessFactory: add WoT BearerSecurity scheme (see [issue 195](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/195))
+- README: add clarification on where to find standalone release jars (see [issue 174](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/174))
 
 ## [4.11.0] - 2021-07-05
 

@@ -11,6 +11,7 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 - [Features](#features)
   - [Supported](#supported)
   - [Future](#future)
+- [Releases](#releases)
 - [Build](#build)
 - [Usage](#usage)
   - [CLI](#cli)
@@ -64,6 +65,10 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
 - data sources:
   - NoSQL databases
   - TPF servers
+
+## Releases
+The standalone jar file for every release can be found on the release's page on GitHub. 
+You can find the latest release [here](https://github.com/RMLio/rmlmapper-java/releases/latest).
 
 ## Build
 The RMLMapper is build using Maven: `mvn install`.
