@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 public class IDLabFunctionsTest {
 
     @Test
-    public void stringContainsOtherString_true() {
+    public void stringContainsOtherStringTrue() {
         String str = "Finding a needle in a haystack";
         String otherStr = "needle";
         String delimiter = " ";
@@ -21,7 +21,7 @@ public class IDLabFunctionsTest {
     }
 
     @Test
-    public void stringContainsOtherString_false() {
+    public void stringContainsOtherStringFalse() {
         String str = "What you are looking for is not here";
         String otherStr = "needle";
         String delimiter = " ";
@@ -29,14 +29,14 @@ public class IDLabFunctionsTest {
     }
 
     @Test
-    public void listContainsElement_true() {
+    public void listContainsElementTrue() {
         List<String> list = Arrays.asList("apple", "banana", "lemon", "orange");
         String str = "lemon";
         assertTrue(IDLabFunctions.listContainsElement(list, str));
     }
 
     @Test
-    public void listContainsElement_false() {
+    public void listContainsElementFalse() {
         List<String> list = Arrays.asList("apple", "banana", "lemon", "orange");
         String str = "pear";
         assertFalse(IDLabFunctions.listContainsElement(list, str));
@@ -76,7 +76,7 @@ public class IDLabFunctionsTest {
     }
 
     @Test
-    public void decide_true() {
+    public void decideTrue() {
         String input = "foo";
         String expected = "foo";
         String value = "success!";
@@ -84,7 +84,7 @@ public class IDLabFunctionsTest {
     }
 
     @Test
-    public void decide_false() {
+    public void decideFalse() {
         String input = "foo";
         String expected = "bar";
         String value = "success!";
@@ -101,7 +101,7 @@ public class IDLabFunctionsTest {
     }
 
     @Test
-    public void readFile_validPath() {
+    public void readFileValidPath() {
         String path = "rml-fno-test-cases/student.csv";
         String result = IDLabFunctions.readFile(path);
         assertNotNull(result);
@@ -109,7 +109,7 @@ public class IDLabFunctionsTest {
     }
 
     @Test
-    public void readFile_invalidPath() {
+    public void readFileInvalidPath() {
         String path = "rml-fno-test-cases/does_not_exist.txt";
         String result = IDLabFunctions.readFile(path);
         assertNull(result);

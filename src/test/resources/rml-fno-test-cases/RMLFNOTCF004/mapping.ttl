@@ -50,19 +50,4 @@
         ] ;
       ]
     ]
-
-    # OLD OBJECT MAP
-    # rr:objectMap [
-    #   fnml:functionValue [
-    #   	rr:predicateObjectMap [
-    #   		rr:predicate fno:executes ;
-    #   		rr:objectMap [ rr:constant idlab-fn:slugify ]
-    #   	];
-
-    #     rr:predicateObjectMap [
-    #       rr:predicate idlab-fn:str ;
-    #       rr:objectMap [ rr:constant "Ben De Mééster"]
-    #     ] ;
-    #   ]
-    # ]
   ].
