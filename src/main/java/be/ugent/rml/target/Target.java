@@ -2,7 +2,6 @@ package be.ugent.rml.target;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 
 /**
  * This interface represents the target of a knowledge graph.

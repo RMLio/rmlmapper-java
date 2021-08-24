@@ -8,8 +8,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.fail;
-
 abstract class TestFunctionCore extends TestCore {
 
     Executor doPreloadMapping(String mapPath, String outPath) throws Exception {

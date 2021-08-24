@@ -3,7 +3,6 @@ package be.ugent.rml.store;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import static be.ugent.rml.Utils.getInputStreamFromFile;

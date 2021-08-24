@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * This class is a record factory that creates XML records.
  */
-public class XMLRecordFactory extends IteratorFormat<Document> implements ReferenceFormulationRecordFactory {
+public class XMLRecordFactory extends IteratorFormat<Document> {
 
     /**
      * This method returns the records from an XML document based on an iterator.

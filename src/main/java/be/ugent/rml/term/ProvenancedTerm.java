@@ -2,7 +2,6 @@ package be.ugent.rml.term;
 
 import be.ugent.rml.MappingInfo;
 import be.ugent.rml.metadata.Metadata;
-import be.ugent.rml.store.QuadStore;
 
 import java.util.ArrayList;
 import java.util.List;

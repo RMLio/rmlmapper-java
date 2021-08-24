@@ -1,15 +1,12 @@
 package be.ugent.rml;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.fuseki.embedded.FusekiServer;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -146,14 +143,6 @@ public class Mapper_SPARQL_Test extends TestCore {
 
         System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
         System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
-    }
-
-    private ServerSocket findRandomOpenPortOnAllLocalInterfaces() {
-        try ( ServerSocket socket = new ServerSocket(0) ) {
-            return socket;
-        } catch (IOException ex) {
-            throw new Error("Couldn't find an available port for the SPARQL tests.");
-        }
     }
 
     /*

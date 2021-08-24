@@ -232,6 +232,7 @@ public class MappingFactory {
                 }
 
                 // get language maps targets for object map
+                // TODO why is this here?
                 MappingInfo languageMapInfo = null;
                 List<Term> languageMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "languageMap"), null));
 

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * This class is a record factory that creates HTML records.
  */
-public class HTMLRecordFactory extends IteratorFormat<Document> implements ReferenceFormulationRecordFactory {
+public class HTMLRecordFactory extends IteratorFormat<Document> {
 
     /**
      * This method returns the records from an HTML document based on an iterator.

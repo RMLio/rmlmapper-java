@@ -1,8 +1,6 @@
 package be.ugent.rml.access;
 
 import be.ugent.rml.NAMESPACES;
-import be.ugent.rml.records.XMLRecord;
-import com.opencsv.CSVReader;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.w3c.dom.Document;
@@ -10,15 +8,12 @@ import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.nio.Buffer;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.IntStream;
 
 import static be.ugent.rml.Utils.getHashOfString;
 
@@ -34,7 +29,6 @@ public class RDBAccess implements Access {
     private String query;
     private String contentType;
     private Map<String, String> datatypes = new HashMap<>();
-    private String oracleJarPath;
 
     // Datatype definitions
     private final static String DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
@@ -222,6 +216,7 @@ public class RDBAccess implements Access {
                 printer.printRecord((Object[]) csvRow);
                 filledInDataTypes = true;
             }
+            printer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

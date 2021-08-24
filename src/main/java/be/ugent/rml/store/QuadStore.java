@@ -7,8 +7,6 @@ import java.io.*;
 import java.util.Collections;
 import java.util.List;
 
-import static be.ugent.rml.Utils.getInputStreamFromFile;
-
 /**
  * Vendor-neutral interface for managing RDF collections.
  * Implemented for RDF4J

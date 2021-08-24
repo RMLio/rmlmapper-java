@@ -14,7 +14,6 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.NotSupportedException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;

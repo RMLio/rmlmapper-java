@@ -16,41 +16,6 @@ public class R2RMLConverterTest {
 
     /**
      * Convert r2rml mapping file and compare output rml mapping file with given
-     * rml mapping file. Show difference if needed.
-     * @param input Location r2rml mapping file
-     * @param output Location expected rml mapping file
-     */
-    private void doSimpleTest(String input, String output) throws Exception {
-        ClassLoader classLoader = R2RMLConverterTest.class.getClassLoader();
-        RDF4JStore actualStore = new RDF4JStore();
-        actualStore.read(classLoader.getResourceAsStream(input), "http://example.com/base/", RDFFormat.TURTLE);
-
-        MappingConformer conformer = new MappingConformer(actualStore);
-
-        try {
-            conformer.conform();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        QuadStore expectedStore = new RDF4JStore();
-        expectedStore.read(classLoader.getResourceAsStream(output), "http://example.com/base/", RDFFormat.TURTLE);
-
-        boolean isEqual = actualStore.isIsomorphic(expectedStore);
-
-        if (! isEqual) {
-            if (conformer.differenceInConformer(expectedStore)) {
-                System.out.println("Extra in output:");
-            }
-            if (conformer.differenceInGivenStore(expectedStore)) {
-                System.out.println("Missing in output:");
-            }
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Convert r2rml mapping file and compare output rml mapping file with given
      * rml mapping file and mapping options. Show difference if needed.
      * @param input Location r2rml mapping file
      * @param output Location expected rml mapping file

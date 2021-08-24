@@ -303,7 +303,7 @@ public abstract class TestCore {
         // Pass the test if an error occurs during mapping execution.
         try {
             Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
-            QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+            executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
         } catch (Exception e) {
             // I expected you!
             logger.warn(e.getMessage(), e);

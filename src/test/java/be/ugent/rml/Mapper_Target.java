@@ -21,19 +21,21 @@ import java.util.HashMap;
 
 public class Mapper_Target extends TestCore {
     private static int PORTNUMBER_SPARQL;
+    private static int PORTNUMBER_API;
     private FusekiServer.Builder builder;
     private FusekiServer server;
 
     @Test
     public void evaluate_sparql_target() throws Exception {
         // Create Web API
-        HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
+        HttpServer webApi = HttpServer.create(new InetSocketAddress(PORTNUMBER_API), 0);
         webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
         // Replace PORT number in mapping file
-        String tempMappingPath = replacePortInMappingFile("./web-of-things/logical-target/sparql/mapping.ttl", "" + PORTNUMBER_SPARQL);
+        String firstTempMappingPath = replaceKeyInMappingFile("./web-of-things/logical-target/sparql/mapping.ttl", "%PORT%", "" + PORTNUMBER_SPARQL);
+        String tempMappingPath = replaceKeyInMappingFile(firstTempMappingPath, "%APIPORT%", "" + PORTNUMBER_API);
         HashMap<Term, String> outPaths = new HashMap<Term, String>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetSPARQL"), "./web-of-things/logical-target/sparql/out-sparql.nq");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/logical-target/sparql/out-default.nq");
@@ -43,7 +45,9 @@ public class Mapper_Target extends TestCore {
 
         // Remove temp file
         try {
+            File firstOutputFile = Utils.getFile(firstTempMappingPath);
             File outputFile = Utils.getFile(tempMappingPath);
+            assertTrue(firstOutputFile.delete());
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
@@ -197,8 +201,9 @@ public class Mapper_Target extends TestCore {
     public static void startServer() throws Exception {
         try {
             PORTNUMBER_SPARQL = Utils.getFreePortNumber();
+            PORTNUMBER_API = Utils.getFreePortNumber();
         } catch (Exception ex) {
-            throw new Exception("Could not find a free port number for SPARQL testing.");
+            throw new Exception("Could not find a free port number for SPARQL or API testing.");
         }
     }
 
@@ -221,16 +226,16 @@ public class Mapper_Target extends TestCore {
     }
 
     /*
-        Replaces the "PORT" in the given mapping file to an available port and saves this in a new temp file
+        Replaces the key in the given mapping file to an available port and saves this in a new temp file
         Returns the absolute path to the temp mapping file
      */
-    private String replacePortInMappingFile(String path, String port) {
+    private String replaceKeyInMappingFile(String path, String key, String port) {
         try {
             // Read mapping file
             String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path).getAbsolutePath())), StandardCharsets.UTF_8);
 
-            // Replace "PORT" in mapping file by new port
-            mapping = mapping.replace("PORT", port);
+            // Replace key in mapping file by new port
+            mapping = mapping.replace(key, port);
 
             // Write to temp mapping file
             String fileName = port + ".ttl";

@@ -1,7 +1,6 @@
 package be.ugent.rml.store;
 
 import be.ugent.rml.term.Term;
-import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 import java.io.*;

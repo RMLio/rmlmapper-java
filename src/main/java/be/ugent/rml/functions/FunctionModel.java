@@ -3,17 +3,12 @@ package be.ugent.rml.functions;
 import be.ugent.rml.term.Term;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -53,74 +48,6 @@ public class FunctionModel {
 
     public Term getURI() {
         return URI;
-    }
-
-    private ArrayList<Value> toValue(Object result, IRI type) {
-        SimpleValueFactory vf = SimpleValueFactory.getInstance();
-        ArrayList<Value> values = new ArrayList<>();
-        if (!(result instanceof Collection<?>)) {
-            ArrayList<Object> arr = new ArrayList<>();
-            arr.add(result);
-            result = arr;
-        }
-        ArrayList<Object> arr = new ArrayList<>();
-        for (Object res : (List) result) {
-            if (res != null) {
-                arr.add(res);
-            }
-        }
-        result = arr;
-        switch (type.toString()) {
-            case "http://www.w3.org/2001/XMLSchema#string":
-                for (Object res : (List) result) {
-                    values.add(vf.createLiteral((String) res));
-                }
-                break;
-            case "http://www.w3.org/2001/XMLSchema#boolean":
-                for (Object res : (List) result) {
-                    values.add(vf.createLiteral((Boolean) res));
-                }
-                break;
-            case "http://www.w3.org/2001/XMLSchema#anyURI":
-                for (Object res : (List) result) {
-                    values.add(vf.createIRI((String) res));
-                }
-                break;
-            default:
-                for (Object res : (List) result) {
-                    values.add(vf.createLiteral(res.toString(), type));
-                }
-        }
-        return values;
-    }
-
-    private IRI getDataType(Map<String, Object> args) {
-        SimpleValueFactory vf = SimpleValueFactory.getInstance();
-        String type = null;
-        if (this.outputs.size() > 0) {
-            if (this.outputs.get(0).getValue().startsWith("xsd:")) {
-                type = this.outputs.get(0).getValue().replace("xsd:", "http://www.w3.org/2001/XMLSchema#");
-            }
-            if (this.outputs.get(0).getValue().startsWith("owl:")) {
-                type = this.outputs.get(0).getValue().replace("owl:", "http://www.w3.org/2002/07/owl#");
-            }
-        }
-        if ((type == null) && args.containsKey("http://dbpedia.org/function/unitParameter")) {
-            type = "http://dbpedia.org/datatype/" + args.get("http://dbpedia.org/function/unitParameter");
-        }
-        if ((type == null) && args.containsKey("http://dbpedia.org/function/dataTypeParameter")) {
-            if (args.get("http://dbpedia.org/function/dataTypeParameter").toString().equals("owl:Thing")) {
-                type = "http://www.w3.org/2001/XMLSchema#anyURI";
-            }
-        }
-        if ((type == null) && args.containsKey("http://dbpedia.org/function/equals/valueParameter")) {
-            type = "http://www.w3.org/2001/XMLSchema#boolean";
-        }
-        if (type == null) {
-            type = "http://www.w3.org/2001/XMLSchema#string";
-        }
-
-        return vf.createIRI(type);
     }
 
     private Object[] getParameters(Map<String, Object> parameters) {

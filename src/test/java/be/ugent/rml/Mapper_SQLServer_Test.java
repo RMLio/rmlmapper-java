@@ -46,12 +46,6 @@ public class Mapper_SQLServer_Test extends TestCore {
         String containerID;
         DockerClient docker;
 
-        public DockerDBInfo(DockerClient docker, String connectionString, String containerID) {
-            this.docker = docker;
-            this.connectionString = connectionString;
-            this.containerID = containerID;
-        }
-
         DockerDBInfo(String connectionString) {
             this.connectionString = connectionString;
         }

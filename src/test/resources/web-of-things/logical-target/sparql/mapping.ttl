@@ -23,7 +23,7 @@
 
 # Target
 <#SPARQLEndpoint> a sd:Service;
-  sd:endpoint <http://localhost:PORT/ds1> ;
+  sd:endpoint <http://localhost:%PORT%/ds1> ;
   sd:supportedLanguage sd:SPARQL11Update;
 .
 
@@ -34,7 +34,7 @@
 <#WoTWebResource> a td:PropertyAffordance;
   td:hasForm [
     # URL and content type
-    hctl:hasTarget "http://localhost:8000/trashcans";
+    hctl:hasTarget "http://localhost:%APIPORT%/trashcans";
     hctl:forContentType "application/json";
     # Read only
     hctl:hasOperationType td:readproperty ;

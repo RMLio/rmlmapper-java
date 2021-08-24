@@ -1,7 +1,5 @@
 package be.ugent.rml;
 
-import be.ugent.rml.access.DatabaseType;
-import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -11,7 +9,6 @@ import org.junit.runners.Parameterized;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -163,6 +160,7 @@ public class Mapper_OracleDB_Test extends DBTestCore {
                     st.execute(line);
                 }
             }
+            s.close();
         }
     }
 }

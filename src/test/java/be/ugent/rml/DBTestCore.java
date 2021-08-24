@@ -75,14 +75,6 @@ public abstract class DBTestCore extends TestCore {
         }
     }
 
-    private static String readMappingFile(String path) {
-        try {
-            return new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
-        } catch (IOException ex) {
-            throw new Error(ex.getMessage());
-        }
-    }
-
     private static String writeMappingFile(String mapping, String path) {
         try {
             String fileName = Integer.toString(Math.abs(mapping.hashCode())) + "tempMapping.ttl";

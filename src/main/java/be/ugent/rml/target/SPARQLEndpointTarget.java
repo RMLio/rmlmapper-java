@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class SPARQLEndpointTarget implements Target {
@@ -43,7 +42,7 @@ public class SPARQLEndpointTarget implements Target {
      */
     @Override
     public String getSerializationFormat() {
-        return this.serializationFormat;
+        return SPARQLEndpointTarget.serializationFormat;
     }
 
     /**
@@ -106,15 +105,16 @@ public class SPARQLEndpointTarget implements Target {
             // Query ends with '}'
             out.write("}".getBytes(StandardCharsets.UTF_8));
 
+            // Close streams
+            in.close();
+            out.close();
+
             // Throw error if query failed (HTTP status code >= 300)
             int code = connection.getResponseCode();
             if (code >= HttpURLConnection.HTTP_MULT_CHOICE) {
                 throw new HttpResponseException(code, "Executing SPARQL UPDATE query failed (" + code + ")");
             }
 
-            // Close streams
-            in.close();
-            out.close();
         }
         catch (Exception e) {
             logger.error("Failed to close target: " + e);

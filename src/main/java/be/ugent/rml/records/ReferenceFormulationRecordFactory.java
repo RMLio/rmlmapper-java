@@ -5,7 +5,6 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Term;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 /**

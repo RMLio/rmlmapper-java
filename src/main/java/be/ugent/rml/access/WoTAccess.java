@@ -1,7 +1,5 @@
 package be.ugent.rml.access;
 
-import be.ugent.rml.Utils;
-import org.apache.jena.tdb.store.Hash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

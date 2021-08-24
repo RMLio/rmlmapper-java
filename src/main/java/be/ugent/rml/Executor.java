@@ -15,12 +15,8 @@ import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.function.BiConsumer;
-
-import static be.ugent.rml.StrictMode.*;
 
 public class Executor {
 
@@ -66,7 +62,7 @@ public class Executor {
         this.recordsHolders = new HashMap<Term, List<Record>>();
         this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
         this.targetStores = new HashMap<Term, QuadStore>();
-        this.blankNodeCounter = 0;
+        Executor.blankNodeCounter = 0;
 
         // Default store if no Targets are available for a triple
         if (resultingQuads == null) {
@@ -77,7 +73,6 @@ public class Executor {
 
         // Output stores for Targets in Term Maps
         for (Map.Entry<Term, Mapping> tm: this.mappings.entrySet()) {
-            Term triplesMap = tm.getKey();
             Mapping mapping = tm.getValue();
             Set<Term> targets = new HashSet<Term>();
 

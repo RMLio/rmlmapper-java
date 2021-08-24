@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * This class is a record factory that creates JSON records.
  */
-public class JSONRecordFactory extends IteratorFormat<Object> implements ReferenceFormulationRecordFactory {
+public class JSONRecordFactory extends IteratorFormat<Object> {
 
     /**
      * This method returns the records from a JSON document based on an iterator.

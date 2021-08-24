@@ -96,6 +96,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
                 }
             }
         }
+        workbook.close();
         return output;
     }
 

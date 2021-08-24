@@ -6,7 +6,6 @@ import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

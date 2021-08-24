@@ -10,7 +10,6 @@ import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

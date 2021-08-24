@@ -1,7 +1,6 @@
 package be.ugent.rml;
 
 import ch.vorburger.exec.ManagedProcessException;
-import ch.vorburger.mariadb4j.DB;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
