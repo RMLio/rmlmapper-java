@@ -1,6 +1,9 @@
 package be.ugent.rml.functions.lib;
 
 import be.ugent.rml.Utils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.github.slugify.Slugify;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -127,12 +130,13 @@ public class IDLabFunctions {
 
     public static String random() {
         return UUID.randomUUID().toString();
+
     }
 
     public static String toUpperCaseURL(String test) {
         String upperTest = test.toUpperCase();
-        if (!upperTest.startsWith("http://")) {
-            upperTest = "http://" + upperTest;
+        if (!upperTest.startsWith("HTTP://")) {
+            upperTest = "HTTP://" + upperTest;
         }
         return upperTest;
     }
@@ -179,7 +183,8 @@ public class IDLabFunctions {
         return null;
     }
 
-    // TODO below are currently not part of any tests
+    // TODO The functions below are currently untested and undefined as idlab-fn functions.
+    // (They however do no belong to GREL functions either)
 
     // TODO check whether this is the right place for this
     public static boolean isSet(String valueParameter) {
@@ -189,20 +194,6 @@ public class IDLabFunctions {
     // TODO check whether this is the right place for this
     public static boolean booleanMatch(String valueParameter, String regexParameter) {
         return valueParameter.matches(regexParameter);
-    }
-
-    // TODO check whether this is the right place for this
-    /**
-     * Returns the string obtained by joining two strings `s1` and `s2` with the separator `sep`.
-     * For example, `join("foo", "bar", ";")` returns the string `foo;bar`.
-     *
-     * @param s1  string
-     * @param s2  string
-     * @param sep separator
-     * @return the string obtained by joining two strings `s1` and `s2` with the separator `sep`
-     */
-    public static String join2(String s1, String s2, String sep) {
-        return s1 + sep + s2;
     }
 
     // TODO check whether this is the right place for this
@@ -224,5 +215,11 @@ public class IDLabFunctions {
         }
         DateFormat xsdDateFormat = new SimpleDateFormat("yyyy-mm-dd");
         return xsdDateFormat.format(date);
+    }
+
+    // TODO check whether this is the right place for this
+    public static String jsonize(Object s) throws JsonProcessingException {
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        return ow.writeValueAsString(s);
     }
 }

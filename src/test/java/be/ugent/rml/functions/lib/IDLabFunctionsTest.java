@@ -4,12 +4,45 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 public class IDLabFunctionsTest {
+
+    @Test
+    public void stringContainsOtherStringTrue() {
+        String str = "Finding a needle in a haystack";
+        String otherStr = "needle";
+        String delimiter = " ";
+        assertTrue(IDLabFunctions.stringContainsOtherString(str, otherStr, delimiter));
+    }
+
+    @Test
+    public void stringContainsOtherStringFalse() {
+        String str = "What you are looking for is not here";
+        String otherStr = "needle";
+        String delimiter = " ";
+        assertFalse(IDLabFunctions.stringContainsOtherString(str, otherStr, delimiter));
+    }
+
+    @Test
+    public void listContainsElementTrue() {
+        List<String> list = Arrays.asList("apple", "banana", "lemon", "orange");
+        String str = "lemon";
+        assertTrue(IDLabFunctions.listContainsElement(list, str));
+    }
+
+    @Test
+    public void listContainsElementFalse() {
+        List<String> list = Arrays.asList("apple", "banana", "lemon", "orange");
+        String str = "pear";
+        assertFalse(IDLabFunctions.listContainsElement(list, str));
+    }
+
 
     @Test
     public void dbpediaSpotlight() {
@@ -44,12 +77,64 @@ public class IDLabFunctionsTest {
     }
 
     @Test
+    public void decideTrue() {
+        String input = "foo";
+        String expected = "foo";
+        String value = "success!";
+        assertEquals(value, IDLabFunctions.decide(input, expected, value));
+    }
+
+    @Test
+    public void decideFalse() {
+        String input = "foo";
+        String expected = "bar";
+        String value = "success!";
+        assertNull(IDLabFunctions.decide(input, expected, value));
+    }
+
+    @Test
     public void getMIMEType() {
         String result = IDLabFunctions.getMIMEType("test.csv");
         assertEquals("text/csv", result);
 
         result = IDLabFunctions.getMIMEType("test.json");
         assertEquals("application/json", result);
+    }
+
+    @Test
+    public void readFileValidPath() {
+        String path = "rml-fno-test-cases/student.csv";
+        String result = IDLabFunctions.readFile(path);
+        assertNotNull(result);
+        assertTrue(result.contains("Id,Name,Comment,Class"));
+    }
+
+    @Test
+    public void readFileInvalidPath() {
+        String path = "rml-fno-test-cases/does_not_exist.txt";
+        String result = IDLabFunctions.readFile(path);
+        assertNull(result);
+    }
+
+    @Test
+    public void random() {
+        String result = IDLabFunctions.random();
+        try {
+            UUID uuid = UUID.fromString(result);
+        } catch (IllegalArgumentException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void toUpperCaseURL() {
+        String noProtocol = "www.example.com";
+        String withProtocol = "http://www.example.com";
+
+        String result = IDLabFunctions.toUpperCaseURL(noProtocol);
+        assertEquals("HTTP://WWW.EXAMPLE.COM", result);
+        result = IDLabFunctions.toUpperCaseURL(withProtocol);
+        assertEquals("HTTP://WWW.EXAMPLE.COM", result);
     }
 
     @Test
