@@ -138,7 +138,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
             parser = csvw.getCSVParser();
         } else {
             // RDBs fall under this.
-            CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false).withNullString("@@@@NULL@@@@");
+            CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false).withNullString("@@@@NULL@@@@").withAllowMissingColumnNames(true);
             InputStream inputStream = access.getInputStream();
 
             try {
