@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - update dependencies
 - cleaned up code
 - fixed undefined prefices
+- CI: fix MS SQL Server docker image name
 
 ## [4.12.0] - 2021-08-02
 
