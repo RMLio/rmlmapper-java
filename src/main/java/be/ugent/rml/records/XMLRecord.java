@@ -38,9 +38,16 @@ public class XMLRecord extends Record {
             for (int i = 0; i < result.getLength(); i ++) {
                 results.add(result.item(i).getTextContent());
             }
-        } catch (XPathExpressionException e) {
-            e.printStackTrace();
+        } catch (XPathExpressionException e1) {
+            /* Fallback to string representation if not a nodeset. */
+            try {
+                results.add((String) xPath.compile(value).evaluate(node));
+            } catch (XPathExpressionException e2) {
+                e2.printStackTrace();
+            }
         }
+
+
 
         return results;
     }
