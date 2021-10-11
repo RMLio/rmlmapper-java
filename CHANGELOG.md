@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - cleaned up code
 - fixed undefined prefices
 - CI: fix MS SQL Server docker image name
+- pom: mark Jena, Docker, Jetty and Fuseki as test dependencies (see [issue 127](https://github.com/RMLio/rmlmapper-java/issues/127))
 
 ## [4.12.0] - 2021-08-02
 
