@@ -45,5 +45,5 @@ test-docker:
 
 services:
   - postgres:10.4
-  - name: microsoft/mssql-server-linux:latest
+  - name: mcr.microsoft.com/mssql/server:latest
     alias: sqlserver
