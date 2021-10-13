@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - pom: mark Jena, Docker, Jetty and Fuseki as test dependencies (see [issue 127](https://github.com/RMLio/rmlmapper-java/issues/127))
 - XMLRecord: fallback to STRING if NODESET fails (see [issue 128](https://github.com/RMLio/rmlmapper-java/issues/128))
 - Tests: Updated RML test-cases 0002i and 0003a to no longer expect an error.
+- XML parsing: allow parsing of fully namespaced xml by injecting xml source's namespaces in the XPath compiler (see [issue 134](https://github.com/RMLio/rmlmapper-java/pull/134))
 
 ## [4.12.0] - 2021-08-02
 

@@ -1,0 +1,27 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rml:    <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql:     <http://semweb.mmlab.be/ns/ql#> .
+
+@base <http://example.com/base/> .
+
+# Mapping for a `full namespaced tree`
+
+<TriplesMapStudent>
+  a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source "student.xml";
+    rml:referenceFormulation ql:XPath;
+    rml:iterator "/myNS:students/myNS:student"
+  ];
+    
+    rr:subjectMap [ rml:reference "myNS:Name"; rr:termType rr:IRI; ];
+    
+    rr:predicateObjectMap 
+    [
+    	rr:predicate rdf:type;
+    	rr:object foaf:Person;
+    ].
