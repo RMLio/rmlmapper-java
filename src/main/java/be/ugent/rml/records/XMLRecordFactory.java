@@ -1,8 +1,11 @@
 package be.ugent.rml.records;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.FieldDocument.Field.Xpath;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import be.ugent.rml.records.xpath.NamespaceResolver;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,10 +37,10 @@ public class XMLRecordFactory extends IteratorFormat<Document> {
 
         try {
             XPath xPath = XPathFactory.newInstance().newXPath();
+            xPath.setNamespaceContext(new NamespaceResolver(document));
             NodeList result = (NodeList) xPath.compile(iterator).evaluate(document, XPathConstants.NODESET);
-
             for (int i = 0; i < result.getLength(); i ++) {
-                records.add(new XMLRecord(result.item(i)));
+                records.add(new XMLRecord(result.item(i), document));
             }
         } catch (XPathExpressionException e) {
             e.printStackTrace();
@@ -56,6 +59,7 @@ public class XMLRecordFactory extends IteratorFormat<Document> {
     Document getDocumentFromStream(InputStream stream) throws IOException {
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setNamespaceAware(true);
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
 
             return builder.parse(stream);

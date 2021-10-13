@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!-- This is a `partially namespaced tree`. Name,Address,... use default NS -->
+
+<myNS:students xmlns:myNS="https://example.org/NS/my" xmlns="https://example.org/NS/default" >
+  <myNS:student>
+    <Name>Alice</Name>
+    <Address>
+      <Street>12th Avenue</Street>
+      <City>New York</City>
+      <Number>254</Number>
+    </Address>
+  </myNS:student>
+  <myNS:student>
+    <Name>Bob</Name>
+    <Address>
+      <Street>15th Avenue</Street>
+      <City>Atlanta</City>
+      <Number>291</Number>
+    </Address>
+  </myNS:student>
+  <myNS:student>
+    <Name>Charles</Name>
+  </myNS:student>
+</myNS:students>

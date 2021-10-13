@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!-- This is a `full namespaced tree`. See student-partially-NS.xml for a mixed tree-->
+
+<myNS:students xmlns:myNS="https://example.org/NS/my" xmlns="https://example.org/NS/default" >
+  <myNS:student>
+    <myNS:Name>Alice</myNS:Name>
+    <myNS:Address>
+      <myNS:Street>12th Avenue</myNS:Street>
+      <myNS:City>New York</myNS:City>
+      <myNS:Number>254</myNS:Number>
+    </myNS:Address>
+  </myNS:student>
+  <myNS:student>
+    <myNS:Name>Bob</myNS:Name>
+    <myNS:Address>
+      <myNS:Street>15th Avenue</myNS:Street>
+      <myNS:City>Atlanta</myNS:City>
+      <myNS:Number>291</myNS:Number>
+    </myNS:Address>
+  </myNS:student>
+  <myNS:student>
+    <myNS:Name>Charles</myNS:Name>
+  </myNS:student>
+</myNS:students>

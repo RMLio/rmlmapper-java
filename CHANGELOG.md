@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - XMLRecord: fallback to STRING if NODESET fails (see [issue 128](https://github.com/RMLio/rmlmapper-java/issues/128))
 - Tests: Updated RML test-cases 0002i and 0003a to no longer expect an error. (see [issue 130](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/130))
 - README: mention [RML questions repository](https://github.com/kg-construct/rml-questions) (see [issue 216](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/216))
+- XML parsing: allow parsing of fully namespaced xml by injecting xml source's namespaces in the XPath compiler (see [issue 134](https://github.com/RMLio/rmlmapper-java/pull/134))
 
 ## [4.12.0] - 2021-08-02
 
