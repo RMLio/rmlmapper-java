@@ -60,11 +60,9 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
 //                {"RMLTC0002f", null, TestMode.BOTH},
                 {"RMLTC0002g", Error.class, BOTH},
                 {"RMLTC0002h", Error.class, BOTH},
-                // TODO see issue #130
-                {"RMLTC0002i", Error.class, BOTH},
+                {"RMLTC0002i", null, BOTH},
                 {"RMLTC0002j", null, BOTH},
-                // TODO see issue #130
-                {"RMLTC0003a", Error.class, BOTH},
+                {"RMLTC0003a", null, BOTH},
                 {"RMLTC0003b", null, BOTH},
                 {"RMLTC0003c", null, BOTH},
                 {"RMLTC0004a", null, BOTH},
