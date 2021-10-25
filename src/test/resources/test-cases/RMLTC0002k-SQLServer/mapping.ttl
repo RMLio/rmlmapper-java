@@ -11,24 +11,18 @@
     
   rml:logicalSource [
     rml:source <#DB_source>;
-    rml:query """
-SELECT "ID",
-       "FirstName",
-        "LastName"
-FROM "student"
-""" ;
-    rr:tableName "student";
+    rml:query "SELECT \"student\".\"ID\", \"student\".\"Name\" FROM student";
+    rml:referenceFormulation ql:CSV
   ];
 
   rr:subjectMap [
-    rr:template "http://example.com/Student/{ID}/{FirstName}-{LastName}";
-    rr:class foaf:Person
-  ] ;
+      rr:template "http://example.com/{ID}/{Name}";
+    ];
 
-  rr:predicateObjectMap [
-    rr:predicate ex:id ;
-    rr:objectMap [ rml:reference "ID"; ]
-  ].
+    rr:predicateObjectMap [
+      rr:predicate foaf:name ;
+      rr:objectMap [ rml:reference "Name" ]
+    ].
 
 <#DB_source> a d2rq:Database;
   d2rq:jdbcDSN "CONNECTIONDSN";

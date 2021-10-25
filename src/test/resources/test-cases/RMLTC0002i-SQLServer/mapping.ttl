@@ -11,7 +11,7 @@
     
   rml:logicalSource [
     rml:source <#DB_source>;
-    rml:query "SELECT Name FROM student";
+    rml:query "SELECT ID, Name FROM student" ;
     rr:tableName "student";
   ];
 
@@ -19,10 +19,10 @@
       rr:template "http://example.com/{ID}/{Name}";
     ];
 
-    rr:predicateObjectMap [
-      rr:predicate ex:id ;
-      rr:objectMap [ rml:reference "IDs" ]
-    ].
+  rr:predicateObjectMap [
+    rr:predicate foaf:name ;
+    rr:objectMap [ rml:reference "Name" ]
+  ].
 
 <#DB_source> a d2rq:Database;
   d2rq:jdbcDSN "CONNECTIONDSN";
