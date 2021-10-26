@@ -15,9 +15,6 @@
         <http://semweb.mmlab.be/ns/rml#source>
                 <http://example.com/base/TriplesMap1_database> .
 <http://example.com/base/TriplesMap1_logicalSource>
-        <http://www.w3.org/ns/r2rml#sqlVersion>
-                <http://www.w3.org/ns/r2rml#SQL2008> .
-<http://example.com/base/TriplesMap1_logicalSource>
         <http://semweb.mmlab.be/ns/rml#referenceFormulation>
                 <http://semweb.mmlab.be/ns/ql#CSV> .
 

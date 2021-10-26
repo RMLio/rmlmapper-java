@@ -99,10 +99,6 @@ public class R2RMLConverter implements Converter {
         );
 
         // Also add old R2RML for AccessFactory property
-        // TODO issue #130
-        store.addQuad(logicalSource, new NamedNode(RR + "sqlVersion"),
-                new NamedNode(RR + "SQL2008")
-        );
         store.addQuad(logicalSource, new NamedNode(RML + "source"),
                 database
         );
