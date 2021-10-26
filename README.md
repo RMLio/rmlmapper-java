@@ -348,6 +348,14 @@ and if duplicate removal is enabled (`--duplicates`).
 Experimenting with various configurations may lead to better performance for 
 your use case.
 
+### I have a question! Where can I get help?
+
+Do you have any question related to writing RML mapping rules, 
+the RML specification, etc., feel free to ask them 
+here: https://github.com/kg-construct/rml-questions !
+If you have found a bug or need a feature for the RMLMapper itself, 
+you can make an issue in this repository.
+
 ## Documentation
 Generate static files at /docs/apidocs with:
 ```
