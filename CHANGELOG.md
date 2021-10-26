@@ -11,13 +11,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - update dependencies
 - cleaned up code
-- fixed undefined prefices
+- fixed undefined prefixes
 - CI: fix MS SQL Server docker image name
 - pom: mark Jena, Docker, Jetty and Fuseki as test dependencies (see [issue 127](https://github.com/RMLio/rmlmapper-java/issues/127))
 - XMLRecord: fallback to STRING if NODESET fails (see [issue 128](https://github.com/RMLio/rmlmapper-java/issues/128))
 - Tests: Updated RML test-cases 0002i and 0003a to no longer expect an error. (see [issue 130](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/130))
+- Tests: Added test case 0002k where no sqlVersion is present, as its presence is not mandatory.
 - README: mention [RML questions repository](https://github.com/kg-construct/rml-questions) (see [issue 216](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/216))
 - XML parsing: allow parsing of fully namespaced xml by injecting xml source's namespaces in the XPath compiler (see [issue 134](https://github.com/RMLio/rmlmapper-java/pull/134))
+- R2RML: No longer add sqlVersion 2008, as its presence is not mandatory. 
 
 ### Added
 
