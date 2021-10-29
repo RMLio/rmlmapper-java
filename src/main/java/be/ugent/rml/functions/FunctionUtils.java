@@ -56,12 +56,17 @@ public class FunctionUtils {
         return parameterPredicates;
     }
 
-    public static Class<?>[] parseFunctionParameters(QuadStore store, List<Term> parameterResources) {
+    public static Class<?>[] parseFunctionParameters(QuadStore store, List<Term> parameterResources)
+            throws IOException {
         Class<?>[] args = new Class<?>[parameterResources.size()];
 
         for (int i = 0; i < parameterResources.size(); i++) {
             Term subject = parameterResources.get(i);
-            Term type = Utils.getObjectsFromQuads(getQuadsByFunctionPrefix(store, subject, "type", null)).get(0);
+            List<Term> types = Utils.getObjectsFromQuads(getQuadsByFunctionPrefix(store, subject, "type", null));
+            if (types.isEmpty()) {
+                throw new IOException("Missing " + NAMESPACES.FNO_S + "type for " + subject + " in function descriptions.");
+            }
+            Term type = types.get(0);
 
             try {
                 args[i] = FunctionUtils.getParamType(type);

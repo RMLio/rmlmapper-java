@@ -198,7 +198,11 @@ public class FunctionLoader {
         }
 
 
-        List<Term> outputs = Utils.getList(this.functionDescriptionTriples, Utils.getObjectsFromQuads(FunctionUtils.getQuadsByFunctionPrefix(this.functionDescriptionTriples, iri, "returns", null)).get(0));
+        List<Term> returns = Utils.getObjectsFromQuads(FunctionUtils.getQuadsByFunctionPrefix(this.functionDescriptionTriples, iri, "returns", null));
+        if (returns.isEmpty()) {
+            throw new IOException("Missing " + NAMESPACES.FNO_S + "returns for " + iri + " in the function descriptions.");
+        }
+        List<Term> outputs = Utils.getList(this.functionDescriptionTriples, returns.get(0));
 
         List<Term> methodMappings = Utils.getObjectsFromQuads(FunctionUtils.getQuadsByFunctionPrefix(this.functionDescriptionTriples, mappings.get(0), "methodMapping", null));
         if (methodMappings.size() == 0) {
