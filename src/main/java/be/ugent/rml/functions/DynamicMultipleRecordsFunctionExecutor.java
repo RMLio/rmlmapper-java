@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
 
@@ -67,7 +68,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             }
         });
 
-        final HashMap<String, List> mergedArgs = new HashMap<>();
+        final Map<String, List<Object>> mergedArgs = new HashMap<>();
         //TODO check if function is list?
         args.forEach(arg -> {
             if (!mergedArgs.containsKey(arg.getParameter())) {
@@ -83,8 +84,15 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             String param_rep_b = "http://users.ugent.be/~bjdmeest/function/grel.ttl#param_rep_b";
             if (mergedArgs.containsKey(param_rep_b)) {
                 try {
-                    List<Boolean> boolList = new ArrayList<>();
-                    mergedArgs.get(param_rep_b).forEach(str -> boolList.add(Boolean.parseBoolean((String) str)));
+                    List<Object> boolList = mergedArgs.get(param_rep_b).stream().map(e -> {
+                        if(e instanceof Boolean){
+                            return e;
+                        } else if(e instanceof String){
+                            return Boolean.parseBoolean((String) e);
+                        } else {
+                            throw new IllegalArgumentException(String.format("Unable to convert %s to boolean in param_rep_b.", e));
+                        }
+                    }).collect(Collectors.toList());
                     mergedArgs.replace(param_rep_b, boolList);
                     logger.warn("Param_rep_b has been cast to list of booleans.");
                 } catch (Exception e) {
@@ -107,9 +115,9 @@ class Argument {
     /**
      * All the actual generated values for this parameter
      */
-    private List arguments;
+    private List<Object> arguments;
 
-    Argument(String parameter, List arguments) {
+    Argument(String parameter, List<Object> arguments) {
         this.parameter = parameter;
         this.arguments = arguments;
     }
@@ -118,7 +126,7 @@ class Argument {
         return parameter;
     }
 
-    public List getArguments() {
+    public List<Object> getArguments() {
         return arguments;
     }
 }
