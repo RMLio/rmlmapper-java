@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Main: add piping support of mapping rules (see [issue 124](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/124))
+- Logging: Log loaded functions when in verbose mode (see [issue 136](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/136))
 
 ## [4.12.0] - 2021-08-02
 

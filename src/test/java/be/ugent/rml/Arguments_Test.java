@@ -180,6 +180,31 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
+    public void testWithCustomFunctionFileVerboseFunctionLogging() throws Exception {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(stdout));
+        String cwd = (new File("./src/test/resources/rml-fno-test-cases/RMLFNOTCA005")).getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
+        String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
+        Main.main(("-v -f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath).split(" "), cwd);
+        compareFiles(
+                expectedOutPath,
+                actualOutPath,
+                false
+        );
+        assertThat(stdout.toString(), containsString("Loading function: "));
+
+        File outputFile = null;
+        try {
+            outputFile = Utils.getFile(actualOutPath);
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void outputTurtle() throws Exception {
         String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
