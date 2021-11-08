@@ -21,15 +21,14 @@ import javax.xml.xpath.XPathFactory;
 public class XMLRecord extends Record {
 
     private Node node;
-    private Document document;
 
-    public XMLRecord(Node node, Document document) {
+    public XMLRecord(Node node) {
         this.node = node;
-        this.document = document;
     }
 
     /**
      * This method returns the objects for a reference (XPath) in the record.
+     *
      * @param value the reference for which objects need to be returned.
      * @return a list of objects for the reference.
      */
@@ -37,11 +36,11 @@ public class XMLRecord extends Record {
     public List<Object> get(String value) {
         List<Object> results = new ArrayList<>();
         XPath xPath = XPathFactory.newInstance().newXPath();
-        xPath.setNamespaceContext(new NamespaceResolver(document));
+        xPath.setNamespaceContext(new NamespaceResolver(this.node.getOwnerDocument()));
         try {
             NodeList result = (NodeList) xPath.compile(value).evaluate(node, XPathConstants.NODESET);
 
-            for (int i = 0; i < result.getLength(); i ++) {
+            for (int i = 0; i < result.getLength(); i++) {
                 results.add(result.item(i).getTextContent());
             }
         } catch (XPathExpressionException e1) {
@@ -52,7 +51,6 @@ public class XMLRecord extends Record {
                 e2.printStackTrace();
             }
         }
-
 
 
         return results;

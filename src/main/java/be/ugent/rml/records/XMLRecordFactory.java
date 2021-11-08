@@ -26,6 +26,7 @@ public class XMLRecordFactory extends IteratorFormat<Document> {
 
     /**
      * This method returns the records from an XML document based on an iterator.
+     *
      * @param document the document from which records need to get.
      * @param iterator the used iterator.
      * @return a list of records.
@@ -39,8 +40,8 @@ public class XMLRecordFactory extends IteratorFormat<Document> {
             XPath xPath = XPathFactory.newInstance().newXPath();
             xPath.setNamespaceContext(new NamespaceResolver(document));
             NodeList result = (NodeList) xPath.compile(iterator).evaluate(document, XPathConstants.NODESET);
-            for (int i = 0; i < result.getLength(); i ++) {
-                records.add(new XMLRecord(result.item(i), document));
+            for (int i = 0; i < result.getLength(); i++) {
+                records.add(new XMLRecord(result.item(i)));
             }
         } catch (XPathExpressionException e) {
             e.printStackTrace();
@@ -51,6 +52,7 @@ public class XMLRecordFactory extends IteratorFormat<Document> {
 
     /**
      * This method returns an XML document from an InputStream.
+     *
      * @param stream the used InputStream.
      * @return an XML document.
      * @throws IOException

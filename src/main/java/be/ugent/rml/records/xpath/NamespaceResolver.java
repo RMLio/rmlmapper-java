@@ -10,7 +10,7 @@ import org.w3c.dom.Document;
 // source: https://howtodoinjava.com/java/xml/xpath-namespace-resolution-example/
 
 public class NamespaceResolver implements NamespaceContext {
-    
+
     public NamespaceResolver(Document document) {
         sourceDocument = document;
     }
@@ -19,6 +19,7 @@ public class NamespaceResolver implements NamespaceContext {
     private Document sourceDocument;
 
     //The lookup for the namespace uris is delegated to the stored document.
+    // TODO performance: verify check whether caching this would improve performance
     public String getNamespaceURI(String prefix) {
         if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
             return sourceDocument.lookupNamespaceURI(null);
@@ -26,11 +27,11 @@ public class NamespaceResolver implements NamespaceContext {
             return sourceDocument.lookupNamespaceURI(prefix);
         }
     }
- 
+
     public String getPrefix(String namespaceURI) {
         return sourceDocument.lookupPrefix(namespaceURI);
     }
- 
+
     @SuppressWarnings("rawtypes")
     public Iterator getPrefixes(String namespaceURI) {
         return null;
