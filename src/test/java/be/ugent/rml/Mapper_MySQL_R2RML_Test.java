@@ -62,15 +62,16 @@ public class Mapper_MySQL_R2RML_Test extends MySQLTestCore{
                 {"R2RMLTC0002c", Error.class, BOTH},
                 {"R2RMLTC0002d", null, BOTH},
                 {"R2RMLTC0002e", Error.class, BOTH},
-//                {"R2RMLTC0002f", Error.class, BOTH}, Issue #189
+//                {"R2RMLTC0002f", Error.class, BOTH}, Issue #189: excluded due to non-compliance:
+                // see https://github.com/kg-construct/r2rml-test-cases-support/issues/14
                 {"R2RMLTC0002g", Error.class, BOTH},
-//                {"R2RMLTC0002h", Error.class, BOTH}, Issue #189
+                // {"R2RMLTC0002h", Error.class, BOTH}, //Issue #189: excluded due to non-compliance
                 {"R2RMLTC0002i", null, BOTH},
                 {"R2RMLTC0002j", null, BOTH},
                 {"R2RMLTC0003b", null, BOTH},
                 {"R2RMLTC0003c", null, BOTH},
                 {"R2RMLTC0004a", null, BOTH},
-                {"R2RMLTC0004b", Error.class, BOTH}, // Issue #189
+                {"R2RMLTC0004b", Error.class, BOTH},
                 {"R2RMLTC0005a", null, BOTH},
                 {"R2RMLTC0005b", null, BOTH},
                 {"R2RMLTC0006a", null, BOTH},
