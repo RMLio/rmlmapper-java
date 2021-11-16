@@ -113,6 +113,7 @@ public class Mapper_Postgres_CSV_Test extends PostgresTestCore {
                     The case will fail in strict mode.
                  */
                 {"RMLTC0020b", null, BEST_EFFORT_ONLY},
+                {"RMLTC1027", null, BOTH},
         });
 
     }

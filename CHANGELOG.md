@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- Mapper_Postgres_CSV_Test: Add test RMLTC1027 to check whether NULLs are ignored in PostgreSQL (see [issue 159](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/159))
+
 ## [4.13.0] - 2021-11-22
 
 ### Fixed
@@ -28,6 +31,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Main: add piping support of mapping rules (see [issue 124](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/124))
 - Logging: Log loaded functions when in verbose mode (see [issue 136](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/136))
+- Mapper_MySQL_R2RML_Test: Add information regarding non-compliance of MySQL for certain tests cases (see [issue 189](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/189))
+- Tests: Add test RMLTC1027 to check whether NULLs are ignored properly for various data sources (see [issue 159](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/159))
 
 ## [4.12.0] - 2021-08-02
 
@@ -48,7 +53,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - RDBAccess: add XML support for PostgreSQL RDB (see [issue 51](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/51))
 - AccessFactory: add WoT BearerSecurity scheme (see [issue 195](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/195))
 - README: add clarification on where to find standalone release jars (see [issue 174](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/174))
-- Mapper_MySQL_R2RML_Test: Add information regarding non-compliance of MySQL for certain tests cases (see [issue 189](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/189))
+
 ## [4.11.0] - 2021-07-05
 
 ### Added

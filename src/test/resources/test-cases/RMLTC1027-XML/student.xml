@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<students>
+    <student>
+        <ID>10</ID>
+        <Name>Venus</Name>
+    </student>
+    <student>
+        <ID>11</ID>
+        <Name>NULL</Name>
+    </student>
+    <student>
+        <ID>12</ID>
+        <Name>Serena</Name>
+    </student>
+</students>
