@@ -417,6 +417,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.13.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.12.0...v4.13.0
 [4.12.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.11.0...v4.12.0
 [4.11.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.10.1...v4.11.0
 [4.10.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.10.0...v4.10.1
