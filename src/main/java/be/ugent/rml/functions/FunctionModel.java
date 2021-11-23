@@ -8,9 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.time.*;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Function Model
@@ -52,11 +54,11 @@ public class FunctionModel {
 
     private Object[] getParameters(Map<String, Object> parameters) {
         Object[] args = new Object[this.parameters.size()];
-        Class[] paramTypes = this.method.getParameterTypes();
+        Type[] paramTypes = this.method.getGenericParameterTypes();
 
         for (int i = 0; i < this.parameters.size(); i++) {
             if (parameters.get(this.parameters.get(i).getValue()) != null) {
-                args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i]);
+                args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i].getTypeName());
             } else {
                 logger.debug("No argument was found for following parameter: " + this.parameters.get(i).getValue());
                 args[i] = null;
@@ -66,8 +68,9 @@ public class FunctionModel {
         return args;
     }
 
-    private Object parseParameter(Object parameter, Class type) {
-        if (type.getName().equals("java.util.List")) {
+    private Object parseParameter(Object parameter, String typeName) {
+        String javaList = "java.util.List";
+        if (typeName.contains(javaList)) {
             if (parameter instanceof String) {
                 JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
                 try {
@@ -77,12 +80,18 @@ public class FunctionModel {
                     e.printStackTrace();
                     throw new Error("Could not get a List from " + parameter);
                 }
+            } else if(parameter instanceof List<?> && typeName.contains("<") && typeName.contains(">")) {
+                // Must have <T> contents to be able to recursively parse
+                String listElementType = typeName.substring(javaList.length() + 1, typeName.length() - 1);
+                return ((List<?>) parameter).stream()
+                        .map(o -> parseParameter(o, listElementType)) // recursively convert List elements
+                        .collect(Collectors.toList());
             } else {
                 return parameter;
             }
         }
         if (parameter instanceof List) {
-            List l = (List) parameter;
+            List<?> l = (List<?>) parameter;
 
             if (l.isEmpty()) {
                 return null;
@@ -90,7 +99,7 @@ public class FunctionModel {
                 parameter = l.get(0);
             }
         }
-        switch (type.getName()) {
+        switch (typeName) {
             case "java.lang.Object":
             case "java.lang.String":
                 return parameter.toString();
@@ -121,22 +130,8 @@ public class FunctionModel {
                 return Year.parse(parameter.toString());
             case "java.time.YearMonth":
                 return YearMonth.parse(parameter.toString());
-            // TODO my IDE says this case is unreachable (redundant with the check at the start of this function)
-            case "java.util.List":
-                if (parameter instanceof String) {
-                    JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
-                    try {
-                        //this should return a JSONArray, which implements java.util.List
-                        return parser.parse((String) parameter);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    return parameter;
-                }
-
             default:
-                throw new Error("Couldn't derive " + type.getName() + " from " + parameter);
+                throw new Error("Couldn't derive " + typeName + " from " + parameter);
         }
     }
 }

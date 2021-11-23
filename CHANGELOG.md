@@ -27,7 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - XML parsing: allow parsing of fully namespaced xml by injecting xml source's namespaces in the XPath compiler (see [issue 134](https://github.com/RMLio/rmlmapper-java/pull/134))
 - R2RML: No longer add sqlVersion 2008, as its presence is not mandatory. 
 - CSVRecordFactory: allow empty column names (see [issue 124](https://github.com/RMLio/rmlmapper-java/issues/124))
-
+- FunctionModel: Change the way Lists are processed to take into account generic types
+ 
 ### Added
 
 - Main: add piping support of mapping rules (see [issue 124](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/124))
