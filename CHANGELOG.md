@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - IDLabFunctions: add isNull function (see [issue 219](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/219)).
 - Replaced PowerMock with WireMock (see [issue 45](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/45))
 
+### Fixed
+- Update RELEASE.md with up-to-date notes for releasing new versions (see [issue 218](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/218)).
+
 ## [4.13.0] - 2021-11-22
 
 ### Fixed

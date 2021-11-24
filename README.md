@@ -269,17 +269,6 @@ Make sure you have [Docker](https://www.docker.com) running.
 * A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests will always succeed locally.
 * A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on Windows 7 machines.
 
-## Deploy on Central Repository
-The following steps deploy a new version to the Central Repository,
-based on [this tutorial](https://central.sonatype.org/pages/apache-maven.html).
-
-1. Check if `~/.m2/settings.xml` exists.
-2. If so, add the content of `settings.example.xml` to it, else 
-copy `settings.example.xml` to `~/.m2/settings.xml`.
-2. Fill in your JIRA user name and password in `settings.xml`.
-3. Fill in your GPG passphrase. Find more information about setting up your key [here](https://central.sonatype.org/pages/working-with-pgp-signatures.html).
-3. Deploy the latest release via `mvn clean deploy -P release -DskipTests=true`.
-
 ## Dependencies
 
 | Dependency                              | License                                                            |
