@@ -144,6 +144,14 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     }
 
     /**
+     * Tests whether the function idlab-fn:isNull is supported correctly by the mapper
+     */
+    @Test
+    public void evaluate_idlab_F008() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF008/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF008/output.nq");
+    }
+
+    /**
      * Tests whether the function millisecondsToInstant can be loaded and is supported correctly by the mapper
      */
     @Test
