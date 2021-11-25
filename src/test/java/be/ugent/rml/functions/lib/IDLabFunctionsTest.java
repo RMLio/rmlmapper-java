@@ -93,6 +93,18 @@ public class IDLabFunctionsTest {
     }
 
     @Test
+    public void isNullTrue() {
+        String input = null;
+        assertTrue(IDLabFunctions.isNull(input));
+    }
+
+    @Test
+    public void isNullFalse() {
+        String input = "Hello";
+        assertFalse(IDLabFunctions.isNull(input));
+    }
+
+    @Test
     public void getMIMEType() {
         String result = IDLabFunctions.getMIMEType("test.csv");
         assertEquals("text/csv", result);
