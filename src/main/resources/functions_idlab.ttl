@@ -79,6 +79,17 @@ idlab-fn:decide
                           lib:class        "IDLabFunctions" ;
                           lib:method       "decide" ] .
 
+idlab-fn:isNull
+    a                   fno:Function ;
+    fno:name            "Is null" ;
+    rdfs:label          "Is null" ;
+    dcterms:description "Returns true if the given value is null, else false" ;
+    fno:expects         ( idlab-fn:_str ) ;
+    fno:returns         ( idlab-fn:_boolOut ) ;
+    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
+                          lib:class        "IDLabFunctions" ;
+                          lib:method       "isNull" ] .
+
 idlab-fn:dbpediaSpotlight
     a                   fno:Function ;
     fno:name            "DBpedia Spotlight annotate" ;
