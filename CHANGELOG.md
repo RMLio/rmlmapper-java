@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Mapper_Postgres_CSV_Test: Add test RMLTC1027 to check whether NULLs are ignored in PostgreSQL (see [issue 159](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/159))
+- IDLabFunctions: add isNull function (see [issue 219](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/219)).
 
 ## [4.13.0] - 2021-11-22
 
