@@ -93,6 +93,15 @@ public class IDLabFunctions {
         }
     }
 
+    /**
+     * Tests whether a given input is null or not.
+     * @param input String to evaluate
+     * @return whether it's null or not
+     */
+    public static boolean isNull(String input) {
+        return input == null;
+    }
+
     public static String getMIMEType(String filename) {
         if (filename == null) {
             return null;
