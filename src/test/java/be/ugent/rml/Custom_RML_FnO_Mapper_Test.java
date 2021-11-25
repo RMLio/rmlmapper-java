@@ -148,7 +148,7 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
      */
     @Test
     public void evaluate_idlab_F008() {
-        doMapping("./rml-fno-test-cases/RMLFNOTCF008/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF008/output.nq");
+        doMapping("./rml-fno-test-cases/RMLFNOTCF008/mapping.rml.ttl", "./rml-fno-test-cases/RMLFNOTCF008/output.nq");
     }
 
     /**
