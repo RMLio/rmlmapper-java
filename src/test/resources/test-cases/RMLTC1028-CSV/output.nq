@@ -1,2 +1,105 @@
-<http://example.com/10/Venus> <http://xmlns.com/foaf/0.1/name> "Venus" .
-<http://example.com/12/Serena> <http://xmlns.com/foaf/0.1/name> "Serena" .
+<http://example.com/Delhaize/Location/BW01> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW01> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW01> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "BROEKOOI Z.4 120".
+<http://example.com/Delhaize/Location/BW01> <https://w3id.org/idlab/ns/ai4fl#hasCity> "ZELLIK".
+<http://example.com/Delhaize/Location/BW01> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW01".
+<http://example.com/Delhaize/Location/BW01> <https://w3id.org/idlab/ns/ai4fl#hasName> "ZELLIK FRESH".
+<http://example.com/Delhaize/Location/BW01> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1731".
+<http://example.com/Delhaize/Location/BW02> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW02> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW02> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "BROEKOOI Z.4 (SORTING)".
+<http://example.com/Delhaize/Location/BW02> <https://w3id.org/idlab/ns/ai4fl#hasCity> "ZELLIK".
+<http://example.com/Delhaize/Location/BW02> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW02".
+<http://example.com/Delhaize/Location/BW02> <https://w3id.org/idlab/ns/ai4fl#hasName> "ZELLIK SORTING CENTER".
+<http://example.com/Delhaize/Location/BW02> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1731".
+<http://example.com/Delhaize/Location/BW03> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW03> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW03> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "NEDERWIJK OOST 287".
+<http://example.com/Delhaize/Location/BW03> <https://w3id.org/idlab/ns/ai4fl#hasCity> "NINOVE".
+<http://example.com/Delhaize/Location/BW03> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW03".
+<http://example.com/Delhaize/Location/BW03> <https://w3id.org/idlab/ns/ai4fl#hasName> "NINOVE DRINKS - MATERIAL - SUP".
+<http://example.com/Delhaize/Location/BW03> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "9400".
+<http://example.com/Delhaize/Location/BW04> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW04> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW04> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "BROEKOOI Z.4 210".
+<http://example.com/Delhaize/Location/BW04> <https://w3id.org/idlab/ns/ai4fl#hasCity> "ZELLIK".
+<http://example.com/Delhaize/Location/BW04> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW04".
+<http://example.com/Delhaize/Location/BW04> <https://w3id.org/idlab/ns/ai4fl#hasName> "ZELLIK GROCERY".
+<http://example.com/Delhaize/Location/BW04> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1731".
+<http://example.com/Delhaize/Location/BW08> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW08> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW08> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "BROEKOOI Z.4 130".
+<http://example.com/Delhaize/Location/BW08> <https://w3id.org/idlab/ns/ai4fl#hasCity> "ZELLIK".
+<http://example.com/Delhaize/Location/BW08> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW08".
+<http://example.com/Delhaize/Location/BW08> <https://w3id.org/idlab/ns/ai4fl#hasName> "ZELLIK FRESH 1".
+<http://example.com/Delhaize/Location/BW08> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1731".
+<http://example.com/Delhaize/Location/BW09> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW09> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW09> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "BROEKOOI Z.4 135".
+<http://example.com/Delhaize/Location/BW09> <https://w3id.org/idlab/ns/ai4fl#hasCity> "ZELLIK".
+<http://example.com/Delhaize/Location/BW09> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW09".
+<http://example.com/Delhaize/Location/BW09> <https://w3id.org/idlab/ns/ai4fl#hasName> "ZELLIK FRESH 2".
+<http://example.com/Delhaize/Location/BW09> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1731".
+<http://example.com/Delhaize/Location/BW10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW10> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW10> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "OSSEGHEMSTRAAT 53".
+<http://example.com/Delhaize/Location/BW10> <https://w3id.org/idlab/ns/ai4fl#hasCity> "SINT-JANS-MOLENBEEK".
+<http://example.com/Delhaize/Location/BW10> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW10".
+<http://example.com/Delhaize/Location/BW10> <https://w3id.org/idlab/ns/ai4fl#hasName> "BRUSSELS WINERY".
+<http://example.com/Delhaize/Location/BW10> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1080".
+<http://example.com/Delhaize/Location/BW11> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW11> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW11> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "BROEKOOI Z.4 160".
+<http://example.com/Delhaize/Location/BW11> <https://w3id.org/idlab/ns/ai4fl#hasCity> "ZELLIK".
+<http://example.com/Delhaize/Location/BW11> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW11".
+<http://example.com/Delhaize/Location/BW11> <https://w3id.org/idlab/ns/ai4fl#hasName> "XPO LOGISTICS".
+<http://example.com/Delhaize/Location/BW11> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1731".
+<http://example.com/Delhaize/Location/BW12> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW12> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW12> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "NIJVERHEIDSSTRAAT 17".
+<http://example.com/Delhaize/Location/BW12> <https://w3id.org/idlab/ns/ai4fl#hasCity> "LONDERZEEL".
+<http://example.com/Delhaize/Location/BW12> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW12".
+<http://example.com/Delhaize/Location/BW12> <https://w3id.org/idlab/ns/ai4fl#hasName> "COLFRIDIS FRESH".
+<http://example.com/Delhaize/Location/BW12> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1840".
+<http://example.com/Delhaize/Location/BW13> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW13> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW13> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "NIJVERHEIDSSTRAAT 13".
+<http://example.com/Delhaize/Location/BW13> <https://w3id.org/idlab/ns/ai4fl#hasCity> "LONDERZEEL".
+<http://example.com/Delhaize/Location/BW13> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW13".
+<http://example.com/Delhaize/Location/BW13> <https://w3id.org/idlab/ns/ai4fl#hasName> "COLFRIDIS TOM&CO".
+<http://example.com/Delhaize/Location/BW13> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1840".
+<http://example.com/Delhaize/Location/BW14> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW14> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW14> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "EDDASTRAAT 32-36".
+<http://example.com/Delhaize/Location/BW14> <https://w3id.org/idlab/ns/ai4fl#hasCity> "GENT".
+<http://example.com/Delhaize/Location/BW14> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW14".
+<http://example.com/Delhaize/Location/BW14> <https://w3id.org/idlab/ns/ai4fl#hasName> "GHENT HANDLING & DISTRIBUTION".
+<http://example.com/Delhaize/Location/BW14> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "9042".
+<http://example.com/Delhaize/Location/BW15> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW15> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW15> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "NEDERWIJK OOST (FAST MOVER)".
+<http://example.com/Delhaize/Location/BW15> <https://w3id.org/idlab/ns/ai4fl#hasCity> "MEERBEKE".
+<http://example.com/Delhaize/Location/BW15> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW15".
+<http://example.com/Delhaize/Location/BW15> <https://w3id.org/idlab/ns/ai4fl#hasName> "NINOVE FAST MOVERS".
+<http://example.com/Delhaize/Location/BW15> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "9400".
+<http://example.com/Delhaize/Location/BW31> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW31> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW31> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "BRUSSELSESTEENWEG 464".
+<http://example.com/Delhaize/Location/BW31> <https://w3id.org/idlab/ns/ai4fl#hasCity> "ASSE".
+<http://example.com/Delhaize/Location/BW31> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW31".
+<http://example.com/Delhaize/Location/BW31> <https://w3id.org/idlab/ns/ai4fl#hasName> "ZELLIK INTERVEST".
+<http://example.com/Delhaize/Location/BW31> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1731".
+<http://example.com/Delhaize/Location/BW32> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW32> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW32> <https://w3id.org/idlab/ns/ai4fl#hasAddress> ".".
+<http://example.com/Delhaize/Location/BW32> <https://w3id.org/idlab/ns/ai4fl#hasCity> ".".
+<http://example.com/Delhaize/Location/BW32> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW32".
+<http://example.com/Delhaize/Location/BW32> <https://w3id.org/idlab/ns/ai4fl#hasName> "BE DSD SALES".
+<http://example.com/Delhaize/Location/BW32> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "0".
+<http://example.com/Delhaize/Location/BW33> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/idlab/ns/ai4fl#Location>.
+<http://example.com/Delhaize/Location/BW33> <https://w3id.org/idlab/ns/ai4fl#belongsToCompany> "Delhaize".
+<http://example.com/Delhaize/Location/BW33> <https://w3id.org/idlab/ns/ai4fl#hasAddress> "BROEKOOI Z.4 150".
+<http://example.com/Delhaize/Location/BW33> <https://w3id.org/idlab/ns/ai4fl#hasCity> "ZELLIK".
+<http://example.com/Delhaize/Location/BW33> <https://w3id.org/idlab/ns/ai4fl#hasIDCode> "BW33".
+<http://example.com/Delhaize/Location/BW33> <https://w3id.org/idlab/ns/ai4fl#hasName> "ZELLIK DC D".
+<http://example.com/Delhaize/Location/BW33> <https://w3id.org/idlab/ns/ai4fl#hasPostalCode> "1731".

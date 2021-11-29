@@ -19,7 +19,7 @@ import java.util.List;
  */
 class CSVW {
 
-    private CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false);
+    private CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false).withAllowMissingColumnNames(true);
     private Charset csvCharset = StandardCharsets.UTF_8;
     private InputStream inputStream;
 
