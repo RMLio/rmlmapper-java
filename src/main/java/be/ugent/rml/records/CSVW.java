@@ -55,7 +55,6 @@ class CSVW {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
 
-
         List<Term> nullTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "null"), null));
         if(!nullTerms.isEmpty()){
             this.nulls = nullTerms.stream().map(Term::getValue).collect(Collectors.toList());
@@ -101,7 +100,6 @@ class CSVW {
                 this.csvCharset = Charset.forName(encoding);
             }
         }
-
     }
 
     /**
