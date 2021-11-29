@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Mapper_Postgres_CSV_Test: Add test RMLTC1027 to check whether NULLs are ignored in PostgreSQL (see [issue 159](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/159))
 - IDLabFunctions: add isNull function (see [issue 219](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/219)).
 - Replaced PowerMock with WireMock (see [issue 45](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/45))
+- FunctionModel: Change the way Lists are processed to take into account generic types
+- CSVW: Add support for csvw:null (see [issue 217](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/217))
 
 ### Fixed
 - Update RELEASE.md with up-to-date notes for releasing new versions (see [issue 218](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/218)).
@@ -31,8 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - XML parsing: allow parsing of fully namespaced xml by injecting xml source's namespaces in the XPath compiler (see [issue 134](https://github.com/RMLio/rmlmapper-java/pull/134))
 - R2RML: No longer add sqlVersion 2008, as its presence is not mandatory. 
 - CSVRecordFactory: allow empty column names (see [issue 124](https://github.com/RMLio/rmlmapper-java/issues/124))
-- FunctionModel: Change the way Lists are processed to take into account generic types
- 
+
 ### Added
 
 - Main: add piping support of mapping rules (see [issue 124](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/124))
