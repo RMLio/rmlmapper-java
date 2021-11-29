@@ -24,8 +24,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class is a record factory that creates CSV records.
@@ -150,9 +152,11 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
         }
 
         if (parser != null) {
-            List<org.apache.commons.csv.CSVRecord> myEntries = parser.getRecords();
-
-            return myEntries.stream()
+            Stream<org.apache.commons.csv.CSVRecord> myEntries = parser.getRecords().stream();
+            if(csvw != null){
+                myEntries = myEntries.filter(record -> csvw.isNotNull(record.toList()));
+            }
+            return myEntries
                     .map(record -> new CSVRecord(record, access.getDataTypes()))
                     .collect(Collectors.toList());
         } else {

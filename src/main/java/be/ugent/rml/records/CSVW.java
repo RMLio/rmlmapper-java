@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class has as main goal to create a CSVParser for a Logical Source with CSVW.
@@ -26,12 +29,13 @@ class CSVW {
     private QuadStore rmlStore;
     private Term dialect;
     private Term logicalSource;
+    private List<String> nulls;
 
     CSVW(InputStream inputStream, QuadStore rmlStore, Term logicalSource) {
         this.rmlStore = rmlStore;
         this.inputStream = inputStream;
         this.logicalSource = logicalSource;
-
+        this.nulls = new ArrayList<>();
         setOptions();
     }
 
@@ -50,6 +54,12 @@ class CSVW {
     private void setOptions() {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
+
+
+        List<Term> nullTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "null"), null));
+        if(!nullTerms.isEmpty()){
+            this.nulls = nullTerms.stream().map(Term::getValue).collect(Collectors.toList());
+        }
 
         // CSVW Dialect options
         List<Term> dialectTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "dialect"), null));
@@ -91,6 +101,7 @@ class CSVW {
                 this.csvCharset = Charset.forName(encoding);
             }
         }
+
     }
 
     /**
@@ -190,5 +201,9 @@ class CSVW {
         } else {
             return output.toCharArray()[0];
         }
+    }
+
+    public boolean isNotNull(List<String> record){
+        return Collections.disjoint(record, nulls);
     }
 }
