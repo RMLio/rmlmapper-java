@@ -28,12 +28,11 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
         ValidMappingFileHandler mappingHandler = new ValidMappingFileHandler();
         mappingHandler.format = format;
-        String fileName = String.format("/mappingFile.%s", format.getDefaultFileExtension());
-        server.createContext(fileName, mappingHandler);
+        server.createContext("/mappingFile", mappingHandler);
         server.createContext("/inputFile", new ValidInputFileHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
-        Main.main(String.format("-m http://localhost:8080/%s -o ./generated_output.nq", fileName).split(" "));
+        Main.main(String.format("-m http://localhost:8080/mappingFile.%s -o ./generated_output.nq", format.getDefaultFileExtension()).split(" "));
         compareFiles(
                 "./generated_output.nq",
                 "MAPPINGFILE_URL_TEST_valid/target_output.nq",

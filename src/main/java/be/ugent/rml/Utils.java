@@ -103,6 +103,7 @@ public class Utils {
                 case "nq":
                     out =  getTurtleInputStreamForFormat(mOptionValue, RDFFormat.NQUADS);
                     break;
+                case "rdf":
                 case "xml":
                     out = getTurtleInputStreamForFormat(mOptionValue, RDFFormat.RDFXML);
                     break;
@@ -110,7 +111,6 @@ public class Utils {
                 case "jsonld":
                     out = getTurtleInputStreamForFormat(mOptionValue, RDFFormat.JSONLD);
                     break;
-                case "rdf":
                 case "ttl":
                     out = getInputStreamFromLocation(mOptionValue, null, RDFFormat.TURTLE.getDefaultMIMEType());
                     break;
