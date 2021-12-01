@@ -14,11 +14,12 @@ public class Mapper_CSVW_Test extends TestCore {
     @Parameterized.Parameters(name = "{index}: CSVW_{0}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {"delimiter"},
-                {"encoding"},
-                {"tabs"},
-                {"tabs_unicode"},
-                {"trim"}
+                {"RMLTC0002a_delimiter"},
+                {"RMLTC0002a_encoding"},
+                {"RMLTC0002a_tabs"},
+                {"RMLTC0002a_tabs_unicode"},
+                {"RMLTC0002a_trim"},
+                {"RMLTC1025_missing_column_names"}
         });
 
     }
@@ -34,7 +35,7 @@ public class Mapper_CSVW_Test extends TestCore {
     }
 
     private void doCSVWTest(String name) {
-        String base = "./test-cases-CSVW/RMLTC0002a_" + name + "-CSVW/";
+        String base = "./test-cases-CSVW/" + name + "-CSVW/";
         doMapping(base + "mapping.ttl", base + "output.nq");
     }
 }
