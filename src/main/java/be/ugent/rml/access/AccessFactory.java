@@ -87,9 +87,7 @@ public class AccessFactory {
                         List<Term> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "resultFormat"), null));
                         SPARQLResultFormat resultFormat = getSPARQLResultFormat(resultFormatObject, referenceFormulations);
 
-                        String queryString = query.get(0).getValue().replaceAll("[\r\n]+", " ").trim();
-
-                        access = new SPARQLEndpointAccess(resultFormat.getContentType(), endpoint.get(0).getValue(), queryString);;
+                        access = new SPARQLEndpointAccess(resultFormat.getContentType(), endpoint.get(0).getValue(), query.get(0).getValue());;
 
                         break;
                     case NAMESPACES.CSVW + "Table": // CSVW

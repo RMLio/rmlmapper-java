@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Update RELEASE.md with up-to-date notes for releasing new versions (see [issue 218](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/218)).
 - RELEASE: Fixed Maven Central deployment instructions (see [issue 223](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/223))
+- AccessFactory: Do not clean SPARQL queries by default (see [issue 214](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/214))
 
 ## [4.13.0] - 2021-11-22
 

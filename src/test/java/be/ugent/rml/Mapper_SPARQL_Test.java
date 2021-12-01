@@ -92,6 +92,7 @@ public class Mapper_SPARQL_Test extends TestCore {
 //                {"RMLTC0019b", null}, // TODO: check if needs to be added
 //                {"RMLTC0020a", null}, // TODO: check if needs to be added
 //                {"RMLTC0020b", null}, // TODO: check if needs to be added
+                {"RMLTC1029a", null}
         });
     }
 

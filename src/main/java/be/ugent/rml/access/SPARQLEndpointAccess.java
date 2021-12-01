@@ -1,6 +1,7 @@
 package be.ugent.rml.access;
 
 import be.ugent.rml.Utils;
+import org.apache.jena.base.Sys;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -110,5 +111,15 @@ public class SPARQLEndpointAccess implements Access {
      */
     public String getQuery() {
         return query;
+    }
+
+    /**
+     * Clean a SPARQLQuery by removing whitespaces or comments
+     * @param query The SPARQL query
+     * @return The cleaned query
+     */
+    public static String cleanQuery(String query){
+        // Original, naive implementation that could lead to malformed queries
+        return query.replaceAll("[\r\n]+", " ").trim();
     }
 }
