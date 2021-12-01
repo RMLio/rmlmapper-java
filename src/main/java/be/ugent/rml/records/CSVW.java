@@ -82,6 +82,7 @@ class CSVW {
                     // @type
                     // withQuoteChar
                     .withQuote(getQuoteCharacter())
+                    .withNullString(getNullString())
             ;
 
             // Encoding
@@ -189,6 +190,20 @@ class CSVW {
             return this.csvFormat.getQuoteCharacter();
         } else {
             return output.toCharArray()[0];
+        }
+    }
+
+    /**
+     * This method returns the string that indicates a null value.
+     * @return the null string.
+     */
+    private String getNullString() {
+        String output = getValueFromTerm("null");
+
+        if (output == null) {
+            return this.csvFormat.getNullString();
+        } else {
+            return output;
         }
     }
 }
