@@ -57,7 +57,7 @@ class CSVW {
 
         List<Term> nullTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "null"), null));
         if(!nullTerms.isEmpty()){
-            this.nulls = nullTerms.stream().map(Term::getValue).collect(Collectors.toList());
+            this.nulls.addAll(nullTerms.stream().map(Term::getValue).collect(Collectors.toList()));
         }
 
         // CSVW Dialect options
