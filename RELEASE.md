@@ -27,7 +27,8 @@ based on [this tutorial](https://central.sonatype.org/pages/apache-maven.html).
 copy `settings.example.xml` to `~/.m2/settings.xml`.
 3. Fill in your JIRA user name and password in `settings.xml`.
 4. Fill in your GPG passphrase. Find more information about setting up your key [here](https://central.sonatype.org/pages/working-with-pgp-signatures.html).
-5. Deploy the latest release via `mvn clean deploy -P release -DskipTests=true`.
+5. Make sure `JAVA_HOME` is properly set for your setup. Example: `export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64`
+6. Deploy the latest release via `mvn clean deploy -P release -DskipTests=true`.
 
 ## Create a release on Github
 
