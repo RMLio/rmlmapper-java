@@ -19,7 +19,10 @@ public class Mapper_CSVW_Test extends TestCore {
                 {"RMLTC0002a_tabs"},
                 {"RMLTC0002a_tabs_unicode"},
                 {"RMLTC0002a_trim"},
-                {"RMLTC1025_missing_column_names"}
+                {"RMLTC1002a_null"},
+                {"RMLTC1002a_null_ignore"},
+                {"RMLTC1002a_nulls"},
+                {"RMLTC1025_missing_column_names"},
         });
 
     }
