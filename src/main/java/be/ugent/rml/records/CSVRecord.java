@@ -11,11 +11,11 @@ import java.util.Map;
 public class CSVRecord extends Record {
 
     // The CSV record that is provided by the Apache CSVParser.
-    private org.apache.commons.csv.CSVRecord record;
+    private Map<String, String> data;
     private Map<String, String> datatypes;
 
-    CSVRecord(org.apache.commons.csv.CSVRecord record, Map<String, String> datatypes) {
-        this.record = record;
+    CSVRecord(Map<String, String> data, Map<String, String> datatypes) {
+        this.data = data;
         this.datatypes = datatypes;
     }
 
@@ -53,16 +53,19 @@ public class CSVRecord extends Record {
     @Override
     public List<Object> get(String value) {
         String toDatabaseCase;
-        if (this.record.isSet(value.toUpperCase())) {
+        if (this.data.containsKey(value.toUpperCase())) {
             toDatabaseCase = value.toUpperCase();
-        } else if (this.record.isSet(value.toLowerCase())) {
+        } else if (this.data.containsKey(value.toLowerCase())) {
             toDatabaseCase = value.toLowerCase();
         } else {
             toDatabaseCase = value;
         }
+        if(!this.data.containsKey(toDatabaseCase)){
+            throw new IllegalArgumentException(String.format("Mapping for %s not found, expected one of %s", toDatabaseCase, data.keySet()));
+        }
 
         List<Object> result = new ArrayList<>();
-        Object obj = this.record.get(toDatabaseCase);
+        Object obj = this.data.get(toDatabaseCase);
 
         // needed for finding NULL in CSV serialization
         if (obj != null) {
@@ -70,5 +73,9 @@ public class CSVRecord extends Record {
         }
 
         return result;
+    }
+
+    public Map<String, String> getData() {
+        return data;
     }
 }

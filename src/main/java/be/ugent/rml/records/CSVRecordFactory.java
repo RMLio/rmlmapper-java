@@ -152,12 +152,12 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
         }
 
         if (parser != null) {
-            Stream<org.apache.commons.csv.CSVRecord> myEntries = parser.getRecords().stream();
+            Stream<CSVRecord> myEntries = parser.getRecords().stream()
+                    .map(record -> new CSVRecord(record.toMap(), access.getDataTypes()));
             if(csvw != null){
-                myEntries = myEntries.filter(record -> csvw.isNotNull(record.toList()));
+                myEntries = myEntries.map(csvw::replaceNulls);
             }
             return myEntries
-                    .map(record -> new CSVRecord(record, access.getDataTypes()))
                     .collect(Collectors.toList());
         } else {
             // We still return an empty list of records when a parser is not found.

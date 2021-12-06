@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -201,7 +202,13 @@ class CSVW {
         }
     }
 
-    public boolean isNotNull(List<String> record){
-        return Collections.disjoint(record, nulls);
+    public CSVRecord replaceNulls(CSVRecord record){
+        Map<String, String> data = record.getData();
+        data.forEach((key, value) -> {
+            if (this.nulls.contains(value)) {
+                data.put(key, null);
+            }
+        });
+        return record;
     }
 }
