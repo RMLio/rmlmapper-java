@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - FunctionModel: Change the way Lists are processed to take into account generic types
 - CSVW: Add support for csvw:null (see [issue 217](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/217))
 - FnO: improve error messages for incomplete descriptions (see [issue 222](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/222))
+- CSVW: Ignore nulls instead of removing (see [issue 224](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/224))
 
 ### Fixed
 - Update RELEASE.md with up-to-date notes for releasing new versions (see [issue 218](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/218)).
