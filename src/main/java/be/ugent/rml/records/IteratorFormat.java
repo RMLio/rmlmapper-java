@@ -39,7 +39,7 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
         if (! documentMap.containsKey(access)) {
             logger.debug("No document found for {}. Creating new one", access);
             InputStream stream = access.getInputStream();
-            documentMap.put(access, getDocumentFromStream(stream));
+            documentMap.put(access, getDocumentFromStream(stream, access.getContentType()));
         }
 
         List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "iterator"), null));
@@ -73,4 +73,8 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
      * @throws IOException
      */
     abstract DocumentClass getDocumentFromStream(InputStream stream) throws IOException;
+
+    DocumentClass getDocumentFromStream(InputStream stream, String contentType) throws IOException {
+        return getDocumentFromStream(stream);
+    }
 }

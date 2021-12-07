@@ -8,6 +8,7 @@ import java.util.Map;
 import static be.ugent.rml.Utils.getHashOfString;
 import static be.ugent.rml.Utils.getInputStreamFromFile;
 import static org.apache.commons.io.FileUtils.getFile;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 
 /**
  * This class represents access to a local file.
@@ -42,6 +43,7 @@ public class LocalFileAccess implements Access {
 
         return getInputStreamFromFile(file);
     }
+
 
     /**
      * This methods returns the datatypes of the file.
@@ -87,5 +89,10 @@ public class LocalFileAccess implements Access {
     @Override
     public String toString() {
         return this.path;
+    }
+
+    @Override
+    public String getContentType() {
+        return getExtension(this.path);
     }
 }
