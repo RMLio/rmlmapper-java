@@ -24,4 +24,6 @@ public interface Access {
      * @return map of datatypes.
      */
     Map<String, String> getDataTypes();
+
+    String getContentType();
 }
