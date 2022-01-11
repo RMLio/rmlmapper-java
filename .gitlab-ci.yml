@@ -1,8 +1,8 @@
 stages:
-  - test
-  - test-oracle
-  - test-docker
-  - push-docker
+  - unittests
+  - mirror
+  - deploy
+  - deploy-docker
 
 variables:
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -16,28 +16,114 @@ variables:
   # SQLServer
   ACCEPT_EULA: "Y"
   SA_PASSWORD: "YourSTRONG!Passw0rd"
+  # https://hub.docker.com/r/alpine/git/tags
+  GIT_VERSION: v2.32.0
 
 cache:
   key: ${CI_JOB_NAME}
   paths:
     - .m2/repository
 
-test:
-  stage: test
+###############################
+#                             #
+#     Templates               #
+#                             #
+###############################
+# Thanks to: https://www.benjaminrancourt.ca/how-to-push-to-a-git-repository-from-a-gitlab-ci-pipeline
+# Description
+#   This script allows to store the artefacts of a step into the current
+#   repository, to improve the efficiency of the next build process.
+
+# Set up this script
+#   1. Create a new personal access token (https://gitlab.com/-/profile/personal_access_tokens)
+#      with the following scopes:
+#        - read_repository
+#        - write_repository
+#   2. Inside Settings -> CI / CD -> Variables, create the following variables:
+#
+#   GITLAB_TOKEN          Personal access token previously created.             XGE2-k445hd5fbs94v9d
+#     (masked)
+#   GITLAB_USERNAME       Username associated with the personal access token.   ranb2002
+#   COMMIT_MESSAGE        Commit message                                        Automatic update from the weekly schedule
+
+# Other variables used by this script
+#   The following variables are defined automatically by GitLab CI. Thus, you
+#   don't need to override them.
+#
+#   CI_COMMIT_SHA         Commit SHA, to use a unique directory name.           e46f153dd47ce5f3ca8c56be3fb5d55039853655
+#   CI_DEFAULT_BRANCH     Default branch.                                       main
+#   CI_PROJECT_PATH       Current project path.                                 ranb2002/benjaminrancourt.ca
+#   CI_SERVER_HOST        Hostname of the current GitLab instance.              gitlab.com
+#   GITLAB_USER_EMAIL     Email of the user used to commit the changes to the   ranb2002@gitlab.com
+#                         secondary repository.
+#   GITLAB_USER_NAME      User name of the user used to commit the changes to   Benjamin Rancourt
+#                         the secondary repository.
+#
+
+# Cancel pipeline if a newer pipeline is running
+default:
+    interruptible: true
+
+.git:push:
+  before_script:
+    # Clone the repository via HTTPS inside a new directory
+    - git clone "https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "${CI_COMMIT_SHA}"
+
+    # Set the displayed user with the commits that are about to be made
+    - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
+    - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
+  after_script:
+    # Go to the new directory
+    - cd "${CI_COMMIT_SHA}"
+
+    # Add all generated files to Git
+    - git add .
+    - |-
+      # Check if we have modifications to commit
+      CHANGES=$(git status --porcelain | wc -l)
+
+      if [ "$CHANGES" -gt "0" ]; then
+        # Show the status of files that are about to be created, updated or deleted
+        git diff --cached --shortstat
+
+        # Commit all changes
+        echo "Commit message: ${COMMIT_MESSAGE}"
+        git commit -m "${COMMIT_MESSAGE}"
+
+        # Update the repository and make sure to skip the pipeline create for this commit
+        git push origin "${CI_DEFAULT_BRANCH}" -o ci.skip
+      fi
+  image:
+    entrypoint: ['']
+    name: alpine/git:${GIT_VERSION}
+  stage: deploy
+
+###############################
+#                             #
+#     Unittests               #
+#                             #
+###############################
+
+unittests 1/3:
+  stage: unittests
   image: maven:3.5.0-jdk-8
   script:
     - echo "SKIP"
 #   - 'mvn $MAVEN_CLI_OPTS -Dtest=!Mapper_OracleDB_Test test'
+# except:
+#  - master
 
-test-oracle:
-  stage: test-oracle
+unittests 2/3:
+  stage: unittests
   image: gitlab.ilabt.imec.be:4567/rml/util/mvn-oracle-docker:latest
   script:
     - echo "SKIP"
 #   - '/entrypoint.sh'
+# except:
+#  - master
 
-test-docker:
-  stage: test-docker
+unittests 3/3:
+  stage: unittests
   image: docker:latest
   services:
     - docker:19.03.12-dind
@@ -49,15 +135,42 @@ test-docker:
 # except:
 #  - master
 
-push-docker:
-  stage: push-docker
+###############################
+#                             #
+#     Automated Releases      #
+#                             #
+###############################
+
+# Bump version, create changelog, commit changes to master
+# Only happens when manually clicked in the CI pipeline
+deploy:
+  extends: .git:push
+  before_script:
+    - apk add node
+    - npm install changefrog
+  script:
+    # Update pom.xml
+    - head -n6 pom.xml | sed "/<version>/s/>.*</>$CI_COMMIT_TAG</" > pom_updated.xml
+    - tail -n +7 pom.xml >> pom_updated.xml 
+    - mv pom_updated.xml pom.xml  
+    # Update changelog. Changefrog does not like vX.X.X so drop 'v'
+    - changefrog -n $(echo "$CI_COMMIT_TAG" | cut -c 2-)
+    # Stage changes for commit to master
+    - cp -u pom.xml "${CI_COMMIT_SHA}/pom.xml"
+    - cp -u CHANGELOG.md "${CI_COMMIT_SHA}/CHANGELOG.md"
+  when: manual
+
+# Push Docker image of the latest master branch to Docker Hub
+# Updates 'latest' and the last git tag that is available
+# Only triggered when a deployment is done from development -> master (manual)
+deploy-docker:
+  stage: deploy-docker
   image: docker:latest
   variables:
     DOCKER_IMAGE_NAME: "rmlio/rmlmapper-java"
   services:
     - docker:19.03.12-dind
   before_script:
-    - docker info
     - apk add git
     - docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_PASSWORD" docker.io
   script:
@@ -69,8 +182,40 @@ push-docker:
     - echo "Deploying image $DOCKER_IMAGE_NAME":$(git tag -l "v*" --sort=-creatordate | head -n1)
     - docker build -t "$DOCKER_IMAGE_NAME":$(git tag -l "v*" --sort=-creatordate | head -n1) .
     - docker push "$DOCKER_IMAGE_NAME":$(git tag -l "v*" --sort=-creatordate | head -n1)
-#  only:
-#    - master
+  only:
+    - master
+
+###############################
+#                             #
+#     Automated Mirroring     #
+#                             #
+###############################
+
+# Sync internal Gitlab master & development branches and tags with public Github repo
+# Make sure you configure the following CI variable: GITHUB_ACCESS_TOKEN
+github:
+  stage: mirror
+  image: 
+    entrypoint: ['']
+    name: alpine/git:${GIT_VERSION}
+  before_script:
+    - apk add git
+    # Set the displayed user with the commits that are about to be made
+    - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
+    - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
+  script:
+    - echo "Pushing to Github $CI_COMMIT_BRANCH branch"
+    - git remote set-url origin "https://${GITHUB_ACCESS_TOKEN}@github.com/RMLio/rmlmapper-java.git"
+    - git checkout "$CI_COMMIT_BRANCH"
+    - git remote -v
+    - git status
+    - git branch
+    - git push origin "$CI_COMMIT_BRANCH"
+    - git push --tags origin "$CI_COMMIT_BRANCH"
+  only:
+    - master
+    - development
+    - release-ci # TODO: remove
 
 services:
   - postgres:10.4
