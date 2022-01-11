@@ -195,6 +195,23 @@ Docker Hub:
   only:
     - tags
 
+# Create Github Releases on new tags
+Github Release:
+  stage: deploy
+  image: maven:3.5.0-jdk-8
+  before_script:
+    - apk add github-cli
+  script:
+    # Build fat jar for Github Release
+    - mvn install -DskipTests=true
+    # Create Github Release
+    - TAG=$(git tag -l "v*" --sort=-creatordate | head -n1)
+    - CHANGES=$(./get-changes.sh)
+    - echo "Creating Github release $TAG with changes\n$CHANGES"
+    - gh release create "$TAG" -n "$CHANGES" -t "$TAG" target/*.jar
+  only:
+    - tags
+
 ###############################
 #                             #
 #     Automated Mirroring     #
