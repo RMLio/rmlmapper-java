@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 FOUND_CHANGES=false
 cat CHANGELOG.md | while read line; do
