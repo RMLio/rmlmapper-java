@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Github CLI needs to specify a repo to create a release.
+
 ## [4.14.2] - 2022-01-13
 
 ### Fixed
