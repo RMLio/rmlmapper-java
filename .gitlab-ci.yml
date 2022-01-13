@@ -56,6 +56,7 @@ Oracle DB:
   except:
     - master
     - development
+    - tags # Gitlab CI bot cannot access Docker images
 
 Docker Build:
   stage: unittests
