@@ -225,7 +225,7 @@ Github Release:
     - TAG=$(git tag -l "v*" --sort=-creatordate | head -n1)
     - CHANGES=$(./get-changes.sh)
     - echo "Creating Github release $TAG with changes\n$CHANGES"
-    - gh release create "$TAG" -n "$CHANGES" -t "$TAG" target/*.jar
+    - gh release create "$TAG" -n "$CHANGES" -t "$TAG" -R "github.com/RMLio/rmlmapper-java" target/*.jar
   only:
     - tags
 
