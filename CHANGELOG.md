@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Mirror development branch to Github when releasing new versions.
+
 ## [4.14.0] - 2022-01-13
 
 ### Added
