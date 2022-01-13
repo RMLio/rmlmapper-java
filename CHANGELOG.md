@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.14.2] - 2022-01-13
+
 ### Fixed
 - Maven Central automatic builds fixed.
 - Upstream R2RML test cases.
@@ -447,6 +449,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[4.14.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.14.1...v4.14.2
 [4.14.1]: https://github.com/RMLio/rmlmapper-java/compare/v4.14.0...v4.14.1
 [4.14.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.13.0...v4.14.0
 [4.13.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.12.0...v4.13.0
