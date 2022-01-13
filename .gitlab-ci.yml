@@ -142,9 +142,6 @@ Create Release:
     # Go to the new directory
     - cd "${CI_COMMIT_SHA}"
 
-    # Create git tag
-    - git tag "v$RELEASE_TAG_NAME"
-
     # Add all generated files to Git
     - git add .
     - |-
@@ -159,6 +156,9 @@ Create Release:
         COMMIT_MESSAGE="CHANGELOG: release v$RELEASE_TAG_NAME"
         echo "Commit message: ${COMMIT_MESSAGE}"
         git commit -m "${COMMIT_MESSAGE}"
+
+        # Create git tag
+        git tag "v$RELEASE_TAG_NAME"
 
         # Update the repository and make sure to skip the pipeline create for this commit
         git push origin "${CI_DEFAULT_BRANCH}"
