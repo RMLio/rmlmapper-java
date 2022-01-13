@@ -208,6 +208,9 @@ Github Release:
     # Set the displayed user with the commits that are about to be made
     - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
     - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
+
+    # Install dependencies
+    - apk add github-cli bash
   script:
     # Build fat jar for Github Release
     - mvn install -DskipTests=true
