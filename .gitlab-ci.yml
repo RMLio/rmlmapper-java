@@ -161,7 +161,7 @@ Create Release:
         git commit -m "${COMMIT_MESSAGE}"
 
         # Update the repository and make sure to skip the pipeline create for this commit
-        git push origin "${CI_DEFAULT_BRANCH}" -o ci.skip
+        git push origin "${CI_DEFAULT_BRANCH}"
         # Push new tags and trigger the pipeline since we're deploying
         git push --tags origin "${CI_DEFAULT_BRANCH}"
 
