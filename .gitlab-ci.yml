@@ -210,8 +210,14 @@ Github Release:
     - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
 
     # Install dependencies
-    - apk add github-cli bash
+    - apt install -y apt-transport-https
+    - curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+    - echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+    - apt update
+    - apt install gh
   script:
+    # Login into Github
+    - gh auth login -s repo --with-token < $GITHUB_ACCESS_TOKEN_FILE
     # Build fat jar for Github Release
     - mvn install -DskipTests=true
     # Create Github Release
@@ -219,8 +225,8 @@ Github Release:
     - CHANGES=$(./get-changes.sh)
     - echo "Creating Github release $TAG with changes\n$CHANGES"
     - gh release create "$TAG" -n "$CHANGES" -t "$TAG" target/*.jar
-  only:
-    - tags
+#  only:
+#    - tags
 
 # Create a Maven Central release on new tags
 # Thanks to https://1337codersblog.wordpress.com/2019/09/18/automatical-artifact-deployment-to-maven-central-using-gitlab-ci-part-1/
