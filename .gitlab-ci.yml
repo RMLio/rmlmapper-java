@@ -142,7 +142,7 @@ Create Release:
     - cd "${CI_COMMIT_SHA}"
 
     # Create git tag
-    - git tag "$RELEASE_TAG_NAME"
+    - git tag "v$RELEASE_TAG_NAME"
 
     # Add all generated files to Git
     - git add .
