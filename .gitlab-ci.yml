@@ -259,7 +259,7 @@ R2RML Test Report:
 
     # Clone the repository via HTTPS inside a new directory
     - git clone "https://${GITLAB_USERNAME}:${GITLAB_TOKEN_WEBSITE}@${CI_SERVER_HOST}/rml/doc/rmlio-website.git"
-    - git clone "https://github.com/DylanVanAssche/r2rml-test-cases-support" # TODO: change this when patch is merged
+    - git clone "https://github.com/kg-construct/r2rml-test-cases-support"
 
     # Set the displayed user with the commits that are about to be made
     - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
