@@ -2,28 +2,33 @@ package be.ugent.rml.records;
 
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
+import be.ugent.rml.access.Access;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.enums.CSVReaderNullFieldIndicator;
+import com.opencsv.exceptions.CsvException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class has as main goal to create a CSVParser for a Logical Source with CSVW.
  */
 class CSVW {
 
-    private CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false).withAllowMissingColumnNames(true);
+    private com.opencsv.CSVParserBuilder csvParser = new CSVParserBuilder().withIgnoreLeadingWhiteSpace(true);
     private Charset csvCharset = StandardCharsets.UTF_8;
     private InputStream inputStream;
 
@@ -31,6 +36,8 @@ class CSVW {
     private Term dialect;
     private Term logicalSource;
     private List<String> nulls;
+    private boolean skipHeader = false;
+    private String commentPrefix = "#";
 
     CSVW(InputStream inputStream, QuadStore rmlStore, Term logicalSource) {
         this.rmlStore = rmlStore;
@@ -40,13 +47,33 @@ class CSVW {
         setOptions();
     }
 
+
+
     /**
-     * This method returns a CSVParser.
-     * @return a CSVParser.
-     * @throws IOException
+     * Read the records from the given Access
+     * @param access The access containing the records
+     * @return The list of records in the Access
      */
-    CSVParser getCSVParser() throws IOException {
-        return CSVParser.parse(inputStream, csvCharset, csvFormat);
+    List<Record> getRecords(Access access) throws IOException, CsvException {
+        int skipLines = this.skipHeader ? 1 : 0;
+        List<String[]> records =  new CSVReaderBuilder(new InputStreamReader(inputStream, csvCharset))
+                .withCSVParser(this.csvParser.build())
+                .withSkipLines(skipLines)
+                .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
+                .build()
+                .readAll();
+        String[] header = records.get(0);
+        Stream<String[]> readRecords = records.subList(1, records.size())
+                .stream()
+                // throw away empty records
+                .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null));
+        if(this.getTrim()){ // trim each record value
+            readRecords = readRecords.map(r -> Arrays.stream(r).map(String::trim).toArray(String[]::new));
+        }
+        return readRecords
+                .map(record -> new CSVRecord(header, record, access.getDataTypes()))
+                .map(this::replaceNulls)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -67,23 +94,22 @@ class CSVW {
         if (!dialectTerms.isEmpty()) {
 
             this.dialect = dialectTerms.get(0);
-
             // TODO implement rest of https://www.w3.org/TR/tabular-metadata/#dialect-descriptions
             // TODO implement CSVW Schema class to add header types
-            this.csvFormat = this.csvFormat
-                    // commentPrefix
-                    .withCommentMarker(getCommentPrefix())
+            this.csvParser = this.csvParser
+                    // commentPrefix TODO
+                   // .withComment(getCommentPrefix())
                     // delimiter
-                    .withDelimiter(getDelimiter())
+                    .withSeparator(getDelimiter())
                     // doubleQuote
-                    .withEscape(getEscapeCharacter())
-                    // header
-                    .withSkipHeaderRecord(getSkipHeaderRecord())
+                    .withEscapeChar(getEscapeCharacter())
+                    // header TODO
+                    //.(getSkipHeaderRecord())
                     // headerRowCount
                     // lineTerminators
                     // trim
                     // TODO Commons CSV doesn't support start or end trimming
-                    .withTrim(getTrim())
+                    .withIgnoreLeadingWhiteSpace(getTrim())
                     // skipBlankRows
                     // skipColumns
                     // skipInitialSpace
@@ -91,9 +117,10 @@ class CSVW {
                     // @id
                     // @type
                     // withQuoteChar
-                    .withQuote(getQuoteCharacter())
+                    .withQuoteChar(getQuoteCharacter())
             ;
-
+            this.skipHeader = getSkipHeaderRecord();
+            this.commentPrefix = getCommentPrefix();
             // Encoding
             String encoding = getValueFromTerm("encoding");
 
@@ -122,13 +149,13 @@ class CSVW {
      * This method determines the comment prefix.
      * @return the comment prefix.
      */
-    private Character getCommentPrefix() {
+    private String getCommentPrefix() {
         String output = getValueFromTerm("commentPrefix");
 
         if (output == null) {
-            return this.csvFormat.getCommentMarker();
+            return this.commentPrefix;
         } else {
-            return output.toCharArray()[0];
+            return output;
         }
     }
 
@@ -140,7 +167,7 @@ class CSVW {
         String output = getValueFromTerm("header");
 
         if (output == null) {
-            return this.csvFormat.getSkipHeaderRecord();
+            return this.skipHeader;
         } else {
             return output.equals("true");
         }
@@ -154,7 +181,7 @@ class CSVW {
         String output = getValueFromTerm("trim");
 
         if (output == null) {
-            return this.csvFormat.getTrim();
+            return this.csvParser.isIgnoreLeadingWhiteSpace();
         } else {
             return output.equals("true");
         }
@@ -168,7 +195,7 @@ class CSVW {
         String output = getValueFromTerm("delimiter");
 
         if (output == null) {
-            return this.csvFormat.getDelimiter();
+            return this.csvParser.getSeparator();
         } else {
             return output.toCharArray()[0];
         }
@@ -182,7 +209,7 @@ class CSVW {
         String output = getValueFromTerm("doubleQuote");
 
         if (output == null) {
-            return this.csvFormat.getEscapeCharacter();
+            return this.csvParser.getEscapeChar();
         } else {
             return output.equals("true") ? '\\' : '"';
         }
@@ -196,7 +223,7 @@ class CSVW {
         String output = getValueFromTerm("quoteChar");
 
         if (output == null) {
-            return this.csvFormat.getQuoteCharacter();
+            return this.csvParser.getQuoteChar();
         } else {
             return output.toCharArray()[0];
         }

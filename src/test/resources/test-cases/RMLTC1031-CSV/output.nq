@@ -1,0 +1,4 @@
+<http://example.com/1> <http://example.com/A> "1" .
+<http://example.com/1> <http://example.com/B> "" .
+<http://example.com/4> <http://example.com/A> "4" .
+<http://example.com/4> <http://example.com/B> "5" .

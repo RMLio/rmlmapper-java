@@ -1,1 +1,2 @@
-<http://example.com/s> <http://example.com/something> <http://example.com/o>.
+_:0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme>.
+_:0 <http://www.w3.org/2004/02/skos/core#prefLabel> "test2"@nl.

@@ -7,27 +7,28 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.enums.CSVReaderNullFieldIndicator;
+import com.opencsv.exceptions.CsvException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.commons.io.FilenameUtils;
 import org.odftoolkit.simple.Document;
 import org.odftoolkit.simple.SpreadsheetDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class is a record factory that creates CSV records.
@@ -134,35 +135,31 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @throws IOException
      */
     private List<Record> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException, ClassNotFoundException {
-        CSVParser parser;
-        // Check if we are dealing with CSVW.
-        if (csvw != null) {
-            parser = csvw.getCSVParser();
-        } else {
-            // RDBs fall under this.
-            CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false).withNullString("@@@@NULL@@@@").withAllowMissingColumnNames(true);
-            InputStream inputStream = access.getInputStream();
-
-            try {
-                parser = CSVParser.parse(inputStream, StandardCharsets.UTF_8, csvFormat);
-            } catch (IllegalArgumentException e) {
-                logger.debug("Could not parse CSV inputstream", e);
-                parser = null;
+        try {
+            // Check if we are dealing with CSVW.
+            if (csvw == null) {
+                // RDBs fall under this
+                InputStream inputStream = access.getInputStream();
+                CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                        .withSkipLines(0)
+                        .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
+                        .build();
+                List<String[]> records = reader.readAll();
+                final String[] header = records.get(0);
+                return records.subList(1, records.size()).stream()
+                        // throw away empty records
+                        .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
+                        .map(record -> new CSVRecord(header, record, access.getDataTypes()))
+                        .collect(Collectors.toList());
+            } else {
+                return csvw.getRecords(access);
             }
-        }
 
-        if (parser != null) {
-            Stream<CSVRecord> myEntries = parser.getRecords().stream()
-                    .map(record -> new CSVRecord(record.toMap(), access.getDataTypes()));
-            if(csvw != null){
-                myEntries = myEntries.map(csvw::replaceNulls);
-            }
-            return myEntries
-                    .collect(Collectors.toList());
-        } else {
+        } catch (IllegalArgumentException | CsvException e) {
             // We still return an empty list of records when a parser is not found.
             // This is to support certain use cases with RDBs where queries might not be valid,
             // but you don't want the RMLMapper to crash.
+            logger.debug("Could not parse CSV inputstream", e);
             return new ArrayList<>();
         }
     }

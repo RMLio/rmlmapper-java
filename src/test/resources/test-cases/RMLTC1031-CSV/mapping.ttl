@@ -1,0 +1,51 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix : <http://mapping.example.com/> .
+@prefix ex: <http://example.com/> .
+
+:rules_000 rdf:type void:Dataset ;
+	void:exampleResource :map_test_000 .
+
+:map_test_000 rml:logicalSource :source_000 ;
+	rdf:type rr:TriplesMap ;
+	rdfs:label "test" ;
+	rr:subjectMap :s_000 ;
+	rr:predicateObjectMap :pom_000, :pom_001 .
+
+:source_000 rdf:type rml:LogicalSource ;
+	rml:source "sparseInput.csv" ;
+	rml:referenceFormulation ql:CSV .
+
+:s_000 rdf:type rr:SubjectMap ;
+	rr:template "http://example.com/{A}" .
+
+:pom_000 rdf:type rr:PredicateObjectMap ;
+	rr:predicateMap :pm_000 ;
+	rr:objectMap :om_000 .
+
+:pm_000 rdf:type rr:PredicateMap ;
+	rr:constant ex:A .
+
+:om_000 rdf:type rr:ObjectMap ;
+	rml:reference "A" ;
+	rr:termType rr:Literal .
+
+:pom_001 rdf:type rr:PredicateObjectMap ;
+	rr:predicateMap :pm_001 ;
+	rr:objectMap :om_001 .
+
+:pm_001 rdf:type rr:PredicateMap ;
+	rr:constant ex:B .
+
+:om_001 rdf:type rr:ObjectMap ;
+	rml:reference "B" ;
+	rr:termType rr:Literal .

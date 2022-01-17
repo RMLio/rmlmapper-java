@@ -275,7 +275,7 @@ Make sure you have [Docker](https://www.docker.com) running.
 |:---------------------------------------:|--------------------------------------------------------------------|
 | ch.qos.logback logback-classic          | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
 | commons-cli commons-lang                | Apache License 2.0                                                 |
-| org.apache.commons commons-csv          | Apache License 2.0                                                 |
+| com.opencsv opencsv                     | Apache License 2.0                                                 |
 | commons-cli commons-cli                 | Apache License 2.0                                                 |
 | org.eclipse.rdf4j rdf4j-runtime         | Eclipse Public License 1.0                                         |
 | junit junit                             | Eclipse Public License 1.0                                         |

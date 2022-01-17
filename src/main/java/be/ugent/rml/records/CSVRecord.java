@@ -1,6 +1,7 @@
 package be.ugent.rml.records;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +15,11 @@ public class CSVRecord extends Record {
     private Map<String, String> data;
     private Map<String, String> datatypes;
 
-    CSVRecord(Map<String, String> data, Map<String, String> datatypes) {
-        this.data = data;
+    CSVRecord(String[] header, String[] data, Map<String, String> datatypes) {
+        this.data = new HashMap<>();
+        for(int i = 0; i < header.length; i += 1){
+            this.data.put(header[i], data[i]);
+        }
         this.datatypes = datatypes;
     }
 
