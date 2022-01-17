@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Bump buildnumber during release (see [issue 227](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/227))
+
 ## [4.14.3] - 2022-01-13
 
 ### Fixed
