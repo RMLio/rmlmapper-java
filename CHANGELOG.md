@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Github CLI needs to specify a repo to create a release.
 
+### Changed
+- CSVRecordFactory: Replace Apache CSV library with OpenCSV to be able to differentiate between empty string and null (see [issue 140](https://github.com/RMLio/rmlmapper-java/issues/140))
+
+### Added
+- JSONRecordFactory: support JSONL files (see [issue 221](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/221)).
+
 ## [4.14.2] - 2022-01-13
 
 ### Fixed
@@ -39,7 +45,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CSVW: Add support for csvw:null (see [issue 217](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/217))
 - FnO: improve error messages for incomplete descriptions (see [issue 222](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/222))
 - CSVW: Ignore nulls instead of removing (see [issue 224](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/224))
-- CSVRecordFactory: Replace Apache CSV library with OpenCSV to be able to differentiate between empty string and null (see [issue 140](https://github.com/RMLio/rmlmapper-java/issues/140))
 
 ### Fixed
 - Update RELEASE.md with up-to-date notes for releasing new versions (see [issue 218](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/218)).
