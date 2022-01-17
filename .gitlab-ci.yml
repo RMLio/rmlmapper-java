@@ -115,6 +115,8 @@ Create Release:
     name: alpine/git:${GIT_VERSION}
   stage: release
   before_script:
+    # Dependencies
+    - apk add maven java-jdk
     # Clone the repository via HTTPS inside a new directory
     - git clone "https://${GITLAB_USERNAME}:${GITLAB_TOKEN_RMLMAPPER}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "${CI_COMMIT_SHA}"
 
@@ -135,9 +137,12 @@ Create Release:
     - mv pom_updated.xml pom.xml  
     # Update changelog. Changefrog does not like vX.X.X so drop 'v'
     - changefrog -n "$RELEASE_TAG_NAME"
+    # Build a Jar
+    - mvn install -DskipTests=true
     # Stage changes for commit to master
     - cp -u pom.xml "${CI_COMMIT_SHA}/pom.xml"
     - cp -u CHANGELOG.md "${CI_COMMIT_SHA}/CHANGELOG.md"
+    - cp -u buildNumber.properties "${CI_COMMIT_SHA}/buildNumber.properties"
   after_script:
     # Go to the new directory
     - cd "${CI_COMMIT_SHA}"
