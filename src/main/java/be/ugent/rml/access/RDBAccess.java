@@ -1,19 +1,24 @@
 package be.ugent.rml.access;
 
 import be.ugent.rml.NAMESPACES;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import com.opencsv.CSVWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.sql.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import static be.ugent.rml.Utils.getHashOfString;
 
@@ -180,10 +185,8 @@ public class RDBAccess implements Access {
 
         try {
             // Differentiate null and ""
-            CSVFormat format = CSVFormat.DEFAULT.withHeader(getCSVHeader(rsmd, columnCount))
-                    .withNullString("@@@@NULL@@@@");
-            CSVPrinter printer = new CSVPrinter(writer, format);
-            printer.printRecords();
+            CSVWriter csvWriter = new CSVWriter(writer);
+            csvWriter.writeNext(getCSVHeader(rsmd, columnCount));
 
             // Extract data from result set
             while (rs.next()) {
@@ -213,10 +216,10 @@ public class RDBAccess implements Access {
 
                 // Add CSV row to CSVPrinter.
                 // non-varargs call
-                printer.printRecord((Object[]) csvRow);
+                csvWriter.writeNext(csvRow);
                 filledInDataTypes = true;
             }
-            printer.close();
+            csvWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
