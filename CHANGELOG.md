@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Bump buildnumber during release (see [issue 227](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/227))
+- Always include xml: prefix (see [issue 144](https://github.com/RMLio/rmlmapper-java/issues/144))
 
 ## [4.14.3] - 2022-01-13
 
