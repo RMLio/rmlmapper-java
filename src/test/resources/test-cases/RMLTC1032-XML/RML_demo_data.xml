@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:rdaw="http://rdaregistry.info/Elements/w/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <rdf:Description rdf:about="http://example.org/example">
+      <rdaw:P10223 xml:lang="ru">Zapiski iz mertvogo doma</rdaw:P10223>
+   </rdf:Description>
+</rdf:RDF>

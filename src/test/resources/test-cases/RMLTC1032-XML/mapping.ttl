@@ -1,0 +1,28 @@
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/>.
+@prefix ex: <http://example.org/rules/>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+
+ex:ExampleMap a rr:TriplesMap;
+   rml:logicalSource [
+      rml:source "RML_demo_data.xml";
+      rml:referenceFormulation ql:XPath;
+      rml:iterator "/rdf:RDF/rdf:Description"
+   ];
+
+   rr:subjectMap [
+      rml:reference "@rdf:about";
+      rr:class bf:Work
+   ];
+
+   rr:predicateObjectMap [
+      rr:predicate bf:title;
+      rr:objectMap [
+         rml:reference "rdaw:P10223";
+         rr:termType rr:Literal;
+         rml:languageMap [
+            rml:reference "rdaw:P10223/@xml:lang"
+         ]
+      ]
+   ].
+
