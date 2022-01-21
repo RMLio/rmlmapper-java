@@ -4,6 +4,12 @@ stages:
   - release
   - deploy
 
+include:
+  # Make sure the CHANGELOG is always updated
+  - project: 'rml/util/ci-templates'
+    ref: main
+    file: 'CHANGELOG.gitlab-ci.yml'
+
 variables:
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
   # `showDateTime` will show the passed time in milliseconds.

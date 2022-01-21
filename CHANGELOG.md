@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - CSVRecordFactory: Replace Apache CSV library with OpenCSV to be able to differentiate between empty string and null (see [issue 140](https://github.com/RMLio/rmlmapper-java/issues/140))
 - CI: use Gitlab's own mirror feature instead of mirroring in a CI job.
+- CI: enforce CHANGELOG updates.
 
 ### Added
 - JSONRecordFactory: support JSONL files (see [issue 221](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/221)).
