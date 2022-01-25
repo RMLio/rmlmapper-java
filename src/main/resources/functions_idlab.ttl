@@ -156,6 +156,50 @@ idlab-fn:slugify
                           lib:class        "IDLabFunctions" ;
                           lib:method       "slugify" ] .
 
+idlab-fn:normalizeDate
+    a                   fno:Function ;
+    fno:name            "normalizeDate" ;
+    rdfs:label          "normalizeDate" ;
+    dcterms:description "Parses the input as a date and returns it as a string in the ISO-8601 format uuuu-MM-dd. It uses the current language to parse month or day names." ;
+    fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern ) ;
+    fno:returns         ( idlab-fn:_stringOut ) ;
+    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
+                          lib:class        "IDLabFunctions" ;
+                          lib:method       "normalizeDate" ] .
+
+ idlab-fn:normalizeDateWithLang
+     a                   fno:Function ;
+     fno:name            "normalizeDateWithLang" ;
+     rdfs:label          "normalizeDateWithLang" ;
+     dcterms:description "Parses the input as a date and returns it as a string in the ISO-8601 format uuuu-MM-dd. It uses the given language to parse month or day names." ;
+     fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern idlab-fn:_lang ) ;
+     fno:returns         ( idlab-fn:_stringOut ) ;
+     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
+                           lib:class        "IDLabFunctions" ;
+                           lib:method       "normalizeDateWithLang" ] .
+
+idlab-fn:normalizeDateTime
+    a                   fno:Function ;
+    fno:name            "normalizeDateTime" ;
+    rdfs:label          "normalizeDateTime" ;
+    dcterms:description "Parses the input as a datetime and returns it as a string in the ISO-8601 format uuuu-MM-ddTHH:mm:ss. It uses the current language to parse month or day names." ;
+    fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern ) ;
+    fno:returns         ( idlab-fn:_stringOut ) ;
+    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
+                          lib:class        "IDLabFunctions" ;
+                          lib:method       "normalizeDateTime" ] .
+
+ idlab-fn:normalizeDateTimeWithLang
+     a                   fno:Function ;
+     fno:name            "normalizeDateTimeWithLang" ;
+     rdfs:label          "normalizeDateTimeWithLang" ;
+     dcterms:description "Parses the input as a datetime and returns it as a string in the ISO-8601 format uuuu-MM-ddTHH:mm:ss. It uses the given language to parse month or day names." ;
+     fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern idlab-fn:_lang ) ;
+     fno:returns         ( idlab-fn:_stringOut ) ;
+     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
+                           lib:class        "IDLabFunctions" ;
+                           lib:method       "normalizeDateTimeWithLang" ] .
+
 
 grel:valueParam
     a             fno:Parameter ;
@@ -293,3 +337,24 @@ idlab-fn:_boolOut
     rdfs:label    "output boolean" ;
     fno:type      xsd:boolean ;
     fno:predicate idlab-fn:o_boolOut .
+
+idlab-fn:_strDate
+    a             fno:Parameter ;
+    fno:name      "string parsable to a date" ;
+    rdfs:label    "string parsable to a date" ;
+    fno:type      xsd:string ;
+    fno:predicate idlab-fn:strDate .
+
+idlab-fn:_pattern
+    a             fno:Parameter ;
+    fno:name      "string representing a date pattern" ;
+    rdfs:label    "string representing a date pattern" ;
+    fno:type      xsd:string ;
+    fno:predicate idlab-fn:pattern .
+
+idlab-fn:_lang
+    a             fno:Parameter ;
+    fno:name      "string representing a BCP 47 language tag" ;
+    rdfs:label    "string representing a BCP 47 language tag" ;
+    fno:type      xsd:string ;
+    fno:predicate idlab-fn:lang .

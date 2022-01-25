@@ -164,4 +164,59 @@ public class IDLabFunctionsTest {
         String result = IDLabFunctions.slugify("Ben De Mééster");
         assertEquals("ben-de-meester", result);
     }
+
+	@Test
+	public void normalizeDateWithLang() {
+		String input1 = "20220121";
+		String format1 = "yyyyMMdd";
+		assertEquals("2022-01-21", IDLabFunctions.normalizeDateWithLang(input1, format1, "en"));
+
+		String input2 = "01 April 22";
+		// String format2 = "dd LLLL uu";	// This does not work on Java 8!
+		String format2 = "dd MMMM uu";
+		assertEquals("2022-04-01", IDLabFunctions.normalizeDateWithLang(input2, format2, "en"));
+
+		assertNull(IDLabFunctions.normalizeDateWithLang("rubbish", "yodelahiti", "en"));
+
+		// will fail because "April" is no French
+		assertNull(IDLabFunctions.normalizeDateWithLang(input2, format2, "fr"));
+
+        String input3 = "01-avr.-22";   // yes, French abbreviations need a '.' !
+        String format3 = "dd-MMM-yy";
+        assertEquals("2022-04-01", IDLabFunctions.normalizeDateWithLang(input3, format3, "fr"));
+	}
+
+	@Test
+	public void normalizeDate() {
+		String input1 = "20220121";
+		String format1 = "yyyyMMdd";
+		assertEquals("2022-01-21", IDLabFunctions.normalizeDate(input1, format1));
+
+		assertNull(IDLabFunctions.normalizeDate("rubbish", "yodelahiti"));
+
+	}
+
+    @Test
+    public void normalizeDateTimeWithLang() {
+        String input1 = "20220121 7 14 33";
+        String format1 = "yyyyMMdd H m s";
+        assertEquals("2022-01-21T07:14:33", IDLabFunctions.normalizeDateTimeWithLang(input1, format1, "en"));
+    }
+
+    @Test
+    public void normalizeDateTime() {
+        String input1 = "20200521 17 14 33";
+        String format1 = "yyyyMMdd H m s";
+        assertEquals("2020-05-21T17:14:33", IDLabFunctions.normalizeDateTime(input1, format1));
+
+        // 20220124T09:36:04,yyyyMMdd'THH:mm:ss
+        String input2 = "20220124T09:36:04";
+        String format2 = "yyyyMMdd'T'HH:mm:ss";
+        assertEquals("2022-01-24T09:36:04", IDLabFunctions.normalizeDateTime(input2, format2));
+
+        String input3 = "01-Apr-20 9u4";
+        String format3 = "dd-MMM-yy H'u'm";
+        assertEquals("2020-04-01T09:04:00", IDLabFunctions.normalizeDateTime(input3, format3));
+
+    }
 }

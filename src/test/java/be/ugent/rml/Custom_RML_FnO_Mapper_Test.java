@@ -152,6 +152,38 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     }
 
     /**
+     * Tests whether the function idlab-fn:normalizeDate is supported correctly by the mapper
+     */
+    @Test
+    public void evaluate_idlab_F009() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF009/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF009/output.ttl");
+    }
+
+    /**
+     * Tests whether the function idlab-fn:normalizeDateWithLang is supported correctly by the mapper
+     */
+    @Test
+    public void evaluate_idlab_F010() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF010/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF010/output.ttl");
+    }
+
+    /**
+     * Tests whether the function idlab-fn:normalizeDateTime is supported correctly by the mapper
+     */
+    @Test
+    public void evaluate_idlab_F011() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF011/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF011/output.ttl");
+    }
+
+    /**
+     * Tests whether the function idlab-fn:normalizeDateTimeWithLang is supported correctly by the mapper
+     */
+    @Test
+    public void evaluate_idlab_F012() {
+        doMapping("./rml-fno-test-cases/RMLFNOTCF012/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF012/output.ttl");
+    }
+
+    /**
      * Tests whether the function millisecondsToInstant can be loaded and is supported correctly by the mapper
      */
     @Test

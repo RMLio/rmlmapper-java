@@ -10,11 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Bump buildnumber during release (see [issue 227](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/227))
 - Always include xml: prefix (see [issue 144](https://github.com/RMLio/rmlmapper-java/issues/144))
+- `normalizeDate` function uses wrong pattern (see [issue 228](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/228))
 
 ### Changed
 - CSVRecordFactory: Replace Apache CSV library with OpenCSV to be able to differentiate between empty string and null (see [issue 140](https://github.com/RMLio/rmlmapper-java/issues/140))
 - CI: use Gitlab's own mirror feature instead of mirroring in a CI job.
 - CI: enforce CHANGELOG updates.
+- Added functions to normalize dates and datetimes.
 
 ### Added
 - JSONRecordFactory: support JSONL files (see [issue 221](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/221)).
