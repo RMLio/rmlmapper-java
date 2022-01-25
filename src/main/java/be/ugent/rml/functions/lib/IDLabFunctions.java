@@ -19,9 +19,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class IDLabFunctions {
@@ -205,26 +206,87 @@ public class IDLabFunctions {
         return valueParameter.matches(regexParameter);
     }
 
+    ///////////////////////////////
+    // Date formatting functions //
+    ///////////////////////////////
     // TODO check whether this is the right place for this
+
     /**
-     * Returns `s` as a normalized xsd:date string, using `f` as current date form.
+     * Returns a given date(time) string as an ISO-8601 formatted date(time) string.
      *
-     * @param s string
-     * @param f format
-     * @return a normalized xsd:date string
+     * @param dateStr     Input string representing a parsable date or dateTime, e.g. "01 April 22"
+     * @param pattern     DateTime format pattern used to parse the given dateStr as defined in {@link DateTimeFormatter}, e.g. "dd LLLL uu"
+     * @param language    The language of dateStr, as defined in {@link Locale}
+     * @param includeTime If <code>true</code>, include the time part in the output.
+     * @return A normalized date string in the ISO-8601 format uuuu-MM-dd (xs:date) or uuuu-MM-ddTHH:mm:ss,
+     * or null if parsing the input fails.
      */
-    public static String normalizeDate(String s, String f) {
-        DateFormat format = new SimpleDateFormat(f);
-        Date date = null;
+    private static String normalizeDateTimeStr(String dateStr, String pattern, String language, boolean includeTime) {
         try {
-            date = format.parse(s);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return s;
+            Locale locale = new Locale(language);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, locale);
+            if (includeTime) {
+                LocalDateTime dateTime = LocalDateTime.parse(dateStr, formatter);
+                return dateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+            } else {
+                LocalDate date = LocalDate.parse(dateStr, formatter);
+                return date.toString();
+            }
+        } catch (Throwable e) {
+            logger.error("{}; format pattern: \"{}\", input: \"{}\", language: \"{}\"", e.getMessage(), pattern, dateStr, language);
+            return null;
         }
-        DateFormat xsdDateFormat = new SimpleDateFormat("yyyy-mm-dd");
-        return xsdDateFormat.format(date);
     }
+
+    /**
+     * Returns `dateStr` as a normalized xs:date string, using `pattern` as current date form.
+     *
+     * @param dateStr  Input string representing a parsable date, e.g. "01 April 22"
+     * @param pattern  Date format pattern used to parse the given dateStr as defined in {@link DateTimeFormatter}, e.g. "dd LLLL uu"
+     * @param language The language of dateStr, as defined in {@link Locale}
+     * @return A normalized date string in the ISO-8601 format uuuu-MM-dd (xs:date), or null if parsing the input fails.
+     */
+    public static String normalizeDateWithLang(String dateStr, String pattern, String language) {
+        return normalizeDateTimeStr(dateStr, pattern, language, false);
+    }
+
+    /**
+     * Returns `dateStr` as a normalized xs:date string, using `pattern` as current date form. It uses the language of
+     * the current locale of the JVM to parse certain input strings, like names of months.
+     *
+     * @param dateStr Input string representing a parsable date, e.g. "01 April 22"
+     * @param pattern Date format pattern used to parse the given dateStr as defined in {@link SimpleDateFormat}, e.g. "dd LLL y"
+     * @return A normalized date string in the ISO-8601 format uuuu-MM-dd (xs:date), or null if parsing the input fails.
+     */
+    public static String normalizeDate(String dateStr, String pattern) {
+        return normalizeDateWithLang(dateStr, pattern, Locale.getDefault().getLanguage());
+    }
+
+    /**
+     * Returns `dateTimeStr` as a normalized xs:date string, using `pattern` as current datetime form.
+     *
+     * @param dateTimeStr Input string representing a parsable datetime, e.g. "01 April 22T11:44:00"
+     * @param pattern     Date format pattern used to parse the given dateStr as defined in {@link DateTimeFormatter}, e.g. "dd LLLL uuTHH:mm:ss"
+     * @param language    The language of dateStr, as defined in {@link Locale}
+     * @return A normalized date string in the ISO-8601 format uuuu-MM-ddTHH:mm:ss (xs:datetime), or null if parsing the input fails.
+     */
+    public static String normalizeDateTimeWithLang(String dateTimeStr, String pattern, String language) {
+        return normalizeDateTimeStr(dateTimeStr, pattern, language, true);
+    }
+
+    /**
+     * Returns `dateTimeStr` as a normalized xs:date string, using `pattern` as current datetime form.
+     * It uses the language of the current locale of the JVM to parse certain input strings, like names of months.
+     *
+     * @param dateTimeStr Input string representing a parsable datetime, e.g. "01 April 22T11:44:00"
+     * @param pattern     Date format pattern used to parse the given dateStr as defined in {@link DateTimeFormatter}, e.g. "dd LLLL uuTHH:mm:ss"
+     * @return A normalized date string in the ISO-8601 format uuuu-MM-ddTHH:mm:ss (xs:datetime), or null if parsing the input fails.
+     */
+    public static String normalizeDateTime(String dateTimeStr, String pattern) {
+        return normalizeDateTimeWithLang(dateTimeStr, pattern, Locale.getDefault().getLanguage());
+    }
+
+
 
     // TODO check whether this is the right place for this
     public static String jsonize(Object s) throws JsonProcessingException {

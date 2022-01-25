@@ -1,0 +1,2 @@
+<http://example.com/0> <http://example.com/createdAt> "2022-01-24T09:36:04" .
+<http://example.com/1> <http://example.com/createdAt> "2020-04-01T09:04:00" .
