@@ -13,6 +13,10 @@ include:
   - project: 'rml/util/ci-templates'
     ref: main
     file: 'Github-Release.gitlab-ci.yml'
+  # Push a Docker Image to Docker Hub on new tags
+  - project: 'rml/util/ci-templates'
+    ref: main
+    file: 'Docker-Hub.gitlab-ci.yml'
 
 variables:
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -186,31 +190,6 @@ Create Release:
         git push origin master
       fi
   when: manual
-
-# Push Docker image of the latest master branch to Docker Hub
-# Updates 'latest' and the last git tag that is available
-# Only triggered when a deployment is done from development -> master (manual)
-Docker Hub:
-  stage: deploy
-  image: docker:latest
-  variables:
-    DOCKER_IMAGE_NAME: "rmlio/rmlmapper-java"
-  services:
-    - docker:19.03.12-dind
-  before_script:
-    - apk add git
-    - docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_PASSWORD" docker.io
-  script:
-    # Docker 'latest' tag
-    - echo "Deploying image $DOCKER_IMAGE_NAME":latest
-    - docker build -t "$DOCKER_IMAGE_NAME":latest .
-    - docker push "$DOCKER_IMAGE_NAME":latest
-    # Get latest git tag and push it as well
-    - echo "Deploying image $DOCKER_IMAGE_NAME":$(git tag -l "v*" --sort=-creatordate | head -n1)
-    - docker build -t "$DOCKER_IMAGE_NAME":$(git tag -l "v*" --sort=-creatordate | head -n1) .
-    - docker push "$DOCKER_IMAGE_NAME":$(git tag -l "v*" --sort=-creatordate | head -n1)
-  only:
-    - tags
 
 # Create a Maven Central release on new tags
 # Thanks to https://1337codersblog.wordpress.com/2019/09/18/automatical-artifact-deployment-to-maven-central-using-gitlab-ci-part-1/
