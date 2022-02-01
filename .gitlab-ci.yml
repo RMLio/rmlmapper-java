@@ -9,6 +9,10 @@ include:
   - project: 'rml/util/ci-templates'
     ref: main
     file: 'CHANGELOG.gitlab-ci.yml'
+  # Make a Github Release on new tags
+  - project: 'rml/util/ci-templates'
+    ref: main
+    file: 'Github-Release.gitlab-ci.yml'
 
 variables:
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -205,38 +209,6 @@ Docker Hub:
     - echo "Deploying image $DOCKER_IMAGE_NAME":$(git tag -l "v*" --sort=-creatordate | head -n1)
     - docker build -t "$DOCKER_IMAGE_NAME":$(git tag -l "v*" --sort=-creatordate | head -n1) .
     - docker push "$DOCKER_IMAGE_NAME":$(git tag -l "v*" --sort=-creatordate | head -n1)
-  only:
-    - tags
-
-# Create Github Releases on new tags
-Github Release:
-  stage: deploy
-  image: maven:3.5.0-jdk-8
-  before_script:
-    # Clone the repository via HTTPS inside a new directory
-    - git clone "https://${GITLAB_USERNAME}:${GITLAB_TOKEN_RMLMAPPER}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "${CI_COMMIT_SHA}"
-
-    # Set the displayed user with the commits that are about to be made
-    - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
-    - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
-
-    # Install dependencies
-    - apt update
-    - apt install -y apt-transport-https
-    - curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-    - echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-    - apt update
-    - apt install gh
-  script:
-    # Login into Github
-    - gh auth login -s repo --with-token < $GITHUB_ACCESS_TOKEN_FILE
-    # Build fat jar for Github Release
-    - mvn install -DskipTests=true
-    # Create Github Release
-    - TAG=$(git tag -l "v*" --sort=-creatordate | head -n1)
-    - CHANGES=$(./get-changes.sh)
-    - echo "Creating Github release $TAG with changes\n$CHANGES"
-    - gh release create "$TAG" -n "$CHANGES" -t "$TAG" -R "github.com/RMLio/rmlmapper-java" target/*-all.jar
   only:
     - tags
 
