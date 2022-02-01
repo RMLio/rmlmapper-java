@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Always include xml: prefix (see [issue 144](https://github.com/RMLio/rmlmapper-java/issues/144))
 - `normalizeDate` function uses wrong pattern (see [issue 228](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/228))
 - CI: only publish `-all.jar` releases on Github (see [issue 145](https://github.com/RMLio/rmlmapper-java/issues/145))
+- CI: make use of templates
 
 ### Changed
 - CSVRecordFactory: Replace Apache CSV library with OpenCSV to be able to differentiate between empty string and null (see [issue 140](https://github.com/RMLio/rmlmapper-java/issues/140))
