@@ -17,6 +17,10 @@ include:
   - project: 'rml/util/ci-templates'
     ref: main
     file: 'Docker-Hub.gitlab-ci.yml'
+  # Push a build to Maven Central on new tags
+  - project: 'rml/util/ci-templates'
+    ref: main
+    file: 'Maven-Central.gitlab-ci.yml'
 
 variables:
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -190,24 +194,6 @@ Create Release:
         git push origin master
       fi
   when: manual
-
-# Create a Maven Central release on new tags
-# Thanks to https://1337codersblog.wordpress.com/2019/09/18/automatical-artifact-deployment-to-maven-central-using-gitlab-ci-part-1/
-# Define the following CI variables:
-# - MAVEN_REPO_USER: Maven user for deployment
-# - MAVEN_REPO_PASSWORD: Maven password for deployment
-# - GPG_SECRET_KEY: file with your secret key to sign things
-# You can get these credentials by creating an user access token on oss.sonatype.org > Profile > User Token
-Maven Central:
-  stage: deploy
-  image: maven:3.5.0-jdk-8
-  before_script:
-    - gpg --version
-    - gpg --import --batch --yes $GPG_SECRET_KEY
-  script:
-    - mvn $MAVEN_CLI_OPTS clean deploy -P release -DskipTests=true
-  only:
-    - tags
 
 # Generate R2RML test report and send MR to rml.io website
 # Push options: https://docs.gitlab.com/ee/user/project/push_options.html
