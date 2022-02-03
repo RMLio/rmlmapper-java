@@ -6,6 +6,9 @@ The RMLMapper execute RML rules to generate Linked Data.
 It is a Java library, which is available via the command line ([API docs online](https://javadoc.io/doc/be.ugent.rml/rmlmapper)).
 The RMLMapper loads all data in memory, so be aware when working with big datasets.
 
+Want to get started quickly? Check out [Releases](#releases) on where to find the latest CLI build as a jar,
+and see [Usage](#cli) on how to use the commandline interface!
+
 ## Table of contents <!-- omit in toc -->
 
 - [Features](#features)
@@ -21,13 +24,14 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
   - [Generating metadata](#generating-metadata)
 - [Testing](#testing)
   - [RDBs](#rdbs)
-- [Deploy on Central Repository](#deploy-on-central-repository)
 - [Dependencies](#dependencies)
 - [Commercial Support](#commercial-support)
 - [Remarks](#remarks)
+  - [Typed spreadsheet files](#typed-spreadsheet-files)
   - [XML file parsing performance](#xml-file-parsing-performance)
   - [Language tag support](#language-tag-support)
   - [Duplicate removal and serialization format](#duplicate-removal-and-serialization-format)
+  - [I have a question! Where can I get help?](#i-have-a-question-where-can-i-get-help)
 - [Documentation](#documentation)
   - [UML Diagrams](#uml-diagrams)
 
@@ -67,11 +71,19 @@ The RMLMapper loads all data in memory, so be aware when working with big datase
   - TPF servers
 
 ## Releases
-The standalone jar file for every release can be found on the release's page on GitHub. 
+
+The standalone jar file (that has a [commandline interface](#cli)) for every release can be found on the release's page on GitHub.
 You can find the latest release [here](https://github.com/RMLio/rmlmapper-java/releases/latest).
+This is the recommended way to get started with RMLMapper.
+Do you want to build from source yourself? Check [Build](#build).
 
 ## Build
-The RMLMapper is build using Maven: `mvn install`.
+The RMLMapper is build using Maven.
+As it is also tested against Oracle (check [here](#accessing-oracle-database) for details),
+it needs a specific set-up to run all tests.
+That's why we recommend to build without testing: `mvn install -DskipTests=true`.
+If you want, you can install with tests, and just skip the Oracle tests: `mvn test -Dtest=!Mapper_OracleDB_Test`.
+
 A standalone jar can be found in `/target`.
 
 Two jars are found in `/target`: a slim jar without bundled dependencies, and a standalone jar (suffixed with `-all.jar`) with all dependencies bundled.
