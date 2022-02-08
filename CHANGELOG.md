@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Clarified Readme for quick start
 
+### Changed
+
+- Upgrade postgresql JDBC driver to 42.3.2 (see [issue 146](https://github.com/RMLio/rmlmapper-java/issues/146))
+
 ## [4.15.0] - 2022-02-01
 
 ### Fixed
