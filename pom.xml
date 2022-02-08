@@ -176,9 +176,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
+            <version>42.3.2</version>
         </dependency>
         <!-- jre version must be the same as the gitlab runner -->
         <dependency>
