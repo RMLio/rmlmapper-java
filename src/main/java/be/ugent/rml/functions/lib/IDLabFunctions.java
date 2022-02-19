@@ -13,17 +13,21 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.Files;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class IDLabFunctions {
 
@@ -286,6 +290,70 @@ public class IDLabFunctions {
         return normalizeDateTimeWithLang(dateTimeStr, pattern, Locale.getDefault().getLanguage());
     }
 
+
+
+    public static String generateUniqueIRI(String template, String watchedValue, boolean isUnique, String stateDirPathStr) {
+        //TODO: move this to the parameter of the function? (might get too bloated in RML definitions)
+        int m_buckets = 10;
+        if (isUnique){
+            return template;
+        }
+        int templateHash = template.hashCode();
+        String hexBucketFileName=  Integer.toHexString(templateHash % m_buckets);
+        String hexKey = Integer.toHexString(templateHash);
+        String hexPairs = String.format("%s:%s", hexKey, watchedValue);
+
+
+        Path stateFilePath = Paths.get(String.format("%s/%s.log", stateDirPathStr, hexBucketFileName));
+
+        List<String> outputPairs = new ArrayList<>();
+
+        File stateFile = stateFilePath.toFile();
+        AtomicBoolean found = new AtomicBoolean(false);
+        AtomicBoolean isDifferent = new AtomicBoolean(true);
+
+        try{
+
+            if (Files.notExists(stateFilePath) ) {
+                Files.createDirectories(stateFilePath);
+            };
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(stateFile))) {
+
+                outputPairs = reader.lines().map(s -> {
+                    String[] strings = s.split(":");
+                    String key = strings[0];
+                    String val = strings[1];
+                    if (hexKey.equals(key)) {
+                        isDifferent.set(!val.equals(watchedValue));
+                        if (isDifferent.get()){
+                            val = watchedValue;
+                        }
+                        found.set(true);
+                    }
+                    return String.format("%s:%s", key,val);
+                }).collect(Collectors.toList());
+
+            }
+
+            if (!found.get()) {
+                outputPairs.add(hexPairs);
+            }
+
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        String output = null;
+        if (isDifferent.get()){
+            OffsetDateTime now = OffsetDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+            output = String.format("%s#%s", template, formatter.format(now) );
+        }
+
+        return output;
+    }
 
 
     // TODO check whether this is the right place for this
