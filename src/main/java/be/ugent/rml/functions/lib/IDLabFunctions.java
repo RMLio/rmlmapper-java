@@ -306,19 +306,22 @@ public class IDLabFunctions {
 
         Path stateFilePath = Paths.get(String.format("%s/%s.log", stateDirPathStr, hexBucketFileName));
 
-        List<String> outputPairs = new ArrayList<>();
+        System.out.println(String.format("State file path for ldes is: %s", stateFilePath));
 
-        File stateFile = stateFilePath.toFile();
+        List<String> outputPairs;
+
         AtomicBoolean found = new AtomicBoolean(false);
         AtomicBoolean isDifferent = new AtomicBoolean(true);
+        String output = null;
 
         try{
 
+            Files.createDirectories(Paths.get(stateDirPathStr));
             if (Files.notExists(stateFilePath) ) {
-                Files.createDirectories(stateFilePath);
+                Files.createFile(stateFilePath);
             };
 
-            try (BufferedReader reader = new BufferedReader(new FileReader(stateFile))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(stateFilePath.toFile()))) {
 
                 outputPairs = reader.lines().map(s -> {
                     String[] strings = s.split(":");
@@ -339,18 +342,23 @@ public class IDLabFunctions {
             if (!found.get()) {
                 outputPairs.add(hexPairs);
             }
-
+            try (BufferedWriter writer= new BufferedWriter(new FileWriter(stateFilePath.toFile()))){
+                for(String line : outputPairs){
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+            if (isDifferent.get()){
+                OffsetDateTime now = OffsetDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+                output = String.format("%s#%s", template, formatter.format(now) );
+            }
 
         } catch (IOException e){
             e.printStackTrace();
+            output = null;
         }
 
-        String output = null;
-        if (isDifferent.get()){
-            OffsetDateTime now = OffsetDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-            output = String.format("%s#%s", template, formatter.format(now) );
-        }
 
         return output;
     }
