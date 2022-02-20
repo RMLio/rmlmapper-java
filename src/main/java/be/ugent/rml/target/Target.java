@@ -1,7 +1,10 @@
 package be.ugent.rml.target;
 
+import be.ugent.rml.store.Quad;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * This interface represents the target of a knowledge graph.
@@ -26,4 +29,9 @@ public interface Target {
      * This method closes the target.
      */
     void close();
+
+    /**
+     * This method returns the metadata associated with the target.
+     */
+    List<Quad> getMetadata();
 }

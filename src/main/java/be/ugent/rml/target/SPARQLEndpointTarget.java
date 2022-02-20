@@ -1,5 +1,7 @@
 package be.ugent.rml.target;
 
+import be.ugent.rml.store.Quad;
+import be.ugent.rml.term.Term;
 import org.apache.http.client.HttpResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,10 +10,12 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class SPARQLEndpointTarget implements Target {
 
     private final String url;
+    private final List<Quad> metadata;
     private final File tempFile;
     private static final Logger logger = LoggerFactory.getLogger(SPARQLEndpointTarget.class);
     private static final int BUFFER_SIZE = 8192;
@@ -21,8 +25,9 @@ public class SPARQLEndpointTarget implements Target {
      * This constructor takes an URL of the SPARQL endpoint as argument.
      * @param url URL of the SPARQL endpoint
      */
-    public SPARQLEndpointTarget(String url) throws IOException {
+    public SPARQLEndpointTarget(String url, List<Quad> metadata) throws IOException {
         this.url = url;
+        this.metadata = metadata;
         this.tempFile = File.createTempFile("rmlmapper-", ".nt");
         this.tempFile.deleteOnExit();
     }
@@ -119,5 +124,10 @@ public class SPARQLEndpointTarget implements Target {
         catch (Exception e) {
             logger.error("Failed to close target: " + e);
         }
+    }
+
+    @Override
+    public List<Quad> getMetadata() {
+        return this.metadata;
     }
 }
