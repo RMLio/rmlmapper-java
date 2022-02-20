@@ -28,7 +28,7 @@
 .
 
 <#TargetSPARQL> a rmlt:LogicalTarget;
-  rmlt:target <SPARQLEndpoint>;
+  rmlt:target <#SPARQLEndpoint>;
 .
 
 <#WoTWebResource> a td:PropertyAffordance;
