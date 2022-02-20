@@ -30,4 +30,6 @@ public class NAMESPACES {
     public static final String RMLT = "http://semweb.mmlab.be/ns/rml-target#";
     public static final String FORMATS = "http://www.w3.org/ns/formats/";
     public static final String COMP = "http://semweb.mmlab.be/ns/rml-compression#";
+    public static final String LDES = "https://w3id.org/ldes#";
+    public static final String TREE = "https://w3id.org/tree#";
 }
