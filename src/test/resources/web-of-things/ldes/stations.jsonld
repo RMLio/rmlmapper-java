@@ -1,0 +1,2178 @@
+{
+  "@context": {
+    "mv": "http://schema.mobivoc.org/",
+    "name": {
+      "@id": "http://xmlns.com/foaf/0.1/name",
+      "@type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "longitude": {
+      "@id": "http://www.w3.org/2003/01/geo/wgs84_pos#long",
+      "@type": "xsd:float"
+    },
+    "latitude": {
+      "@id": "http://www.w3.org/2003/01/geo/wgs84_pos#lat",
+      "@type": "xsd:float"
+    },
+    "alternative": {
+      "@id": "http://purl.org/dc/terms/alternative",
+      "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+      "@container": "@set"
+    },
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "features": "@graph",
+    "properties": "@graph",
+    "generatedAtTime": {
+      "@id": "http://www.w3.org/ns/prov#generatedAtTime",
+      "@type": "xsd:date"
+    },
+    "nearby": {
+      "@id": "http://www.geonames.org/ontology#nearby",
+      "@type": "@id"
+    },
+    "bikes_available": {
+      "@id": "mv:capacity",
+      "@type": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "capacity": {
+      "@id": "mv:totalCapacity",
+      "@type": "http://www.w3.org/2001/XMLSchema#integer"
+    }
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.421050071716,
+          51.217498779297
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:06.338Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Antwerpen-Centraal",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Antwerpen-Centraal",
+        "longitude": 4.421050071716,
+        "latitude": 51.217498779297,
+        "bikes_available": 31,
+        "capacity": 43,
+        "docks_available": 12,
+        "nearby": "http://irail.be/stations/NMBS/008821006"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.35586977005,
+          50.844898223877
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:07.205Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Brussel-Centraal",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Brussel-Centraal",
+        "longitude": 4.35586977005,
+        "latitude": 50.844898223877,
+        "bikes_available": 13,
+        "capacity": 14,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008813003"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.038559913635,
+          50.942901611328
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:08.208Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Aalst",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Aalst",
+        "longitude": 4.038559913635,
+        "latitude": 50.942901611328,
+        "bikes_available": 11,
+        "capacity": 11,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008895000"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.207960128784,
+          50.906700134277
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:09.208Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Asse",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Asse",
+        "longitude": 4.207960128784,
+        "latitude": 50.906700134277,
+        "bikes_available": 7,
+        "capacity": 10,
+        "docks_available": 3,
+        "nearby": "http://irail.be/stations/NMBS/008812070"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.944180011749,
+          50.455600738525
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:09.940Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Bergen",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Bergen",
+        "longitude": 3.944180011749,
+        "latitude": 50.455600738525,
+        "bikes_available": 5,
+        "capacity": 5,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008881000"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.218539953232,
+          51.196998596191
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:10.484Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Brugge",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Brugge",
+        "longitude": 3.218539953232,
+        "latitude": 51.196998596191,
+        "bikes_available": 34,
+        "capacity": 63,
+        "docks_available": 29,
+        "nearby": "http://irail.be/stations/NMBS/008891009"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.431789875031,
+          51.199600219727
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:11.221Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Antwerpen-Berchem",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Antwerpen-Berchem",
+        "longitude": 4.431789875031,
+        "latitude": 51.199600219727,
+        "bikes_available": 51,
+        "capacity": 60,
+        "docks_available": 9,
+        "nearby": "http://irail.be/stations/NMBS/008821121"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.824250221252,
+          50.984699249268
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:12.927Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Aarschot",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Aarschot",
+        "longitude": 4.824250221252,
+        "latitude": 50.984699249268,
+        "bikes_available": 9,
+        "capacity": 14,
+        "docks_available": 5,
+        "nearby": "http://irail.be/stations/NMBS/008833209"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.372889995575,
+          50.838199615479
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:13.845Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Brussel-Luxemburg",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Brussel-Luxemburg",
+        "longitude": 4.372889995575,
+        "latitude": 50.838199615479,
+        "bikes_available": 4,
+        "capacity": 6,
+        "docks_available": 2,
+        "nearby": "http://irail.be/stations/NMBS/008811304"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.360489845276,
+          50.86009979248
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:14.572Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/BrusselNoord",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Brussel Noord",
+        "longitude": 4.360489845276,
+        "latitude": 50.86009979248,
+        "bikes_available": 27,
+        "capacity": 28,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008812005"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.534009933472,
+          50.978199005127
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:15.386Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Deinze",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Deinze",
+        "longitude": 3.534009933472,
+        "latitude": 50.978199005127,
+        "bikes_available": 4,
+        "capacity": 62,
+        "docks_available": 58,
+        "nearby": "http://irail.be/stations/NMBS/008892106"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.101920127869,
+          51.023498535156
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:16.315Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Dendermonde",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Dendermonde",
+        "longitude": 4.101920127869,
+        "latitude": 51.023498535156,
+        "bikes_available": 22,
+        "capacity": 27,
+        "docks_available": 5,
+        "nearby": "http://irail.be/stations/NMBS/008893401"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.051129817963,
+          50.993000030518
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:17.089Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Diest",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Diest",
+        "longitude": 5.051129817963,
+        "latitude": 50.993000030518,
+        "bikes_available": 10,
+        "capacity": 12,
+        "docks_available": 2,
+        "nearby": "http://irail.be/stations/NMBS/008831401"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.496369838715,
+          50.967098236084
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:17.608Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Genk",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Genk",
+        "longitude": 5.496369838715,
+        "latitude": 50.967098236084,
+        "bikes_available": 5,
+        "capacity": 6,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008831765"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.740159988403,
+          51.055999755859
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:18.137Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Gent-Dampoort",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Gent-Dampoort",
+        "longitude": 3.740159988403,
+        "latitude": 51.055999755859,
+        "bikes_available": 31,
+        "capacity": 41,
+        "docks_available": 10,
+        "nearby": "http://irail.be/stations/NMBS/008893120"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.709640026093,
+          51.034900665283
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:18.962Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Gent-Sint-Pieters(St.-Denijslaan)",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Gent-Sint-Pieters (St.-Denijslaan)",
+        "longitude": 3.709640026093,
+        "latitude": 51.034900665283,
+        "bikes_available": 52,
+        "capacity": 70,
+        "docks_available": 18,
+        "nearby": "http://irail.be/stations/NMBS/008892007"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.239940166473,
+          50.7333984375
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:19.671Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Halle",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Halle",
+        "longitude": 4.239940166473,
+        "latitude": 50.7333984375,
+        "bikes_available": 7,
+        "capacity": 12,
+        "docks_available": 5,
+        "nearby": "http://irail.be/stations/NMBS/008814308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.32742023468,
+          50.930999755859
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:20.529Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Hasselt",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Hasselt",
+        "longitude": 5.32742023468,
+        "latitude": 50.930999755859,
+        "bikes_available": 35,
+        "capacity": 59,
+        "docks_available": 24,
+        "nearby": "http://irail.be/stations/NMBS/008831005"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.828859806061,
+          51.180999755859
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:21.475Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Herentals",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Herentals",
+        "longitude": 4.828859806061,
+        "latitude": 51.180999755859,
+        "bikes_available": 11,
+        "capacity": 12,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008821717"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.263269901276,
+          50.823799133301
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:21.952Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Kortrijk",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Kortrijk",
+        "longitude": 3.263269901276,
+        "latitude": 50.823799133301,
+        "bikes_available": 28,
+        "capacity": 47,
+        "docks_available": 19,
+        "nearby": "http://irail.be/stations/NMBS/008896008"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.715939998627,
+          50.87979888916
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:22.664Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Leuven(Tiensevest)",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Leuven (Tiensevest)",
+        "longitude": 4.715939998627,
+        "latitude": 50.87979888916,
+        "bikes_available": 57,
+        "capacity": 86,
+        "docks_available": 29,
+        "nearby": "http://irail.be/stations/NMBS/008833001"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.56152009964,
+          51.135799407959
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:23.383Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Lier",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Lier",
+        "longitude": 4.56152009964,
+        "latitude": 51.135799407959,
+        "bikes_available": 21,
+        "capacity": 26,
+        "docks_available": 5,
+        "nearby": "http://irail.be/stations/NMBS/008821600"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.986469984055,
+          51.107398986816
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:24.095Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Lokeren",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Lokeren",
+        "longitude": 3.986469984055,
+        "latitude": 51.107398986816,
+        "bikes_available": 13,
+        "capacity": 17,
+        "docks_available": 4,
+        "nearby": "http://irail.be/stations/NMBS/008894201"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.565639972687,
+          50.625801086426
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:24.831Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Luik",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Luik",
+        "longitude": 5.565639972687,
+        "latitude": 50.625801086426,
+        "bikes_available": 0,
+        "capacity": 4,
+        "docks_available": 4,
+        "nearby": "http://irail.be/stations/NMBS/008841004"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.48299,
+          51.0178
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:25.537Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Mechelen",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Mechelen",
+        "longitude": 4.48299,
+        "latitude": 51.0178,
+        "bikes_available": 47,
+        "capacity": 76,
+        "docks_available": 29,
+        "nearby": "http://irail.be/stations/NMBS/008822004"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.115129947662,
+          51.190498352051
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:26.232Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Mol",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Mol",
+        "longitude": 5.115129947662,
+        "latitude": 51.190498352051,
+        "bikes_available": 10,
+        "capacity": 15,
+        "docks_available": 5,
+        "nearby": "http://irail.be/stations/NMBS/008832409"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.455999851227,
+          51.171199798584
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:26.934Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Mortsel-Oude-God",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Mortsel-Oude-God",
+        "longitude": 4.455999851227,
+        "latitude": 51.171199798584,
+        "bikes_available": 4,
+        "capacity": 6,
+        "docks_available": 2,
+        "nearby": "http://irail.be/stations/NMBS/008821238"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.862239837646,
+          50.468601226807
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:27.637Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Namen",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Namen",
+        "longitude": 4.862239837646,
+        "latitude": 50.468601226807,
+        "bikes_available": 6,
+        "capacity": 6,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008863008"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.925649881363,
+          51.228298187256
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:28.362Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Oostende",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Oostende",
+        "longitude": 2.925649881363,
+        "latitude": 51.228298187256,
+        "bikes_available": 53,
+        "capacity": 69,
+        "docks_available": 16,
+        "nearby": "http://irail.be/stations/NMBS/008891702"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.130480051041,
+          50.949001312256
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:29.065Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Roeselare",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Roeselare",
+        "longitude": 3.130480051041,
+        "latitude": 50.949001312256,
+        "bikes_available": 14,
+        "capacity": 27,
+        "docks_available": 13,
+        "nearby": "http://irail.be/stations/NMBS/008896800"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.143700122833,
+          51.171398162842
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:29.783Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Sint-Niklaas",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Sint-Niklaas",
+        "longitude": 4.143700122833,
+        "latitude": 51.171398162842,
+        "bikes_available": 15,
+        "capacity": 30,
+        "docks_available": 15,
+        "nearby": "http://irail.be/stations/NMBS/008894508"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.176330089569,
+          50.817401885986
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:30.506Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Sint-Truiden",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Sint-Truiden",
+        "longitude": 5.176330089569,
+        "latitude": 50.817401885986,
+        "bikes_available": 9,
+        "capacity": 9,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008831807"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.105509996414,
+          51.064800262451
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:31.284Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Torhout",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Torhout",
+        "longitude": 3.105509996414,
+        "latitude": 51.064800262451,
+        "bikes_available": 3,
+        "capacity": 4,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008891314"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.937900066376,
+          51.322101593018
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:32.245Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Turnhout",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Turnhout",
+        "longitude": 4.937900066376,
+        "latitude": 51.322101593018,
+        "bikes_available": 9,
+        "capacity": 13,
+        "docks_available": 4,
+        "nearby": "http://irail.be/stations/NMBS/008821907"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.433000087738,
+          50.924701690674
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:33.067Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Vilvoorde",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Vilvoorde",
+        "longitude": 4.433000087738,
+        "latitude": 50.924701690674,
+        "bikes_available": 20,
+        "capacity": 40,
+        "docks_available": 20,
+        "nearby": "http://irail.be/stations/NMBS/008811189"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.424420118332,
+          50.891799926758
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:33.881Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Waregem",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Waregem",
+        "longitude": 3.424420118332,
+        "latitude": 50.891799926758,
+        "bikes_available": 12,
+        "capacity": 16,
+        "docks_available": 4,
+        "nearby": "http://irail.be/stations/NMBS/008896149"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.575040102005,
+          51.180801391602
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:34.600Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Eeklo",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Eeklo",
+        "longitude": 3.575040102005,
+        "latitude": 51.180801391602,
+        "bikes_available": 1,
+        "capacity": 11,
+        "docks_available": 10,
+        "nearby": "http://irail.be/stations/NMBS/008893708"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.989160060883,
+          51.168800354004
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:35.295Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Geel",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Geel",
+        "longitude": 4.989160060883,
+        "latitude": 51.168800354004,
+        "bikes_available": 8,
+        "capacity": 15,
+        "docks_available": 7,
+        "nearby": "http://irail.be/stations/NMBS/008832433"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.026179790497,
+          50.839500427246
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:36.006Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Ninove",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Ninove",
+        "longitude": 4.026179790497,
+        "latitude": 50.839500427246,
+        "bikes_available": 7,
+        "capacity": 10,
+        "docks_available": 3,
+        "nearby": "http://irail.be/stations/NMBS/008895760"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.708779811859,
+          51.074199676514
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:36.712Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Heist-op-den-Berg",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Heist-op-den-Berg",
+        "longitude": 4.708779811859,
+        "latitude": 51.074199676514,
+        "bikes_available": 12,
+        "capacity": 12,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821832"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.473400115967,
+          50.78450012207
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:37.434Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Tongeren",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Tongeren",
+        "longitude": 5.473400115967,
+        "latitude": 50.78450012207,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008831310"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.489570140839,
+          51.030200958252
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:38.128Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Mechelen-Nekkerspoel",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Mechelen-Nekkerspoel",
+        "longitude": 4.489570140839,
+        "latitude": 51.030200958252,
+        "bikes_available": 17,
+        "capacity": 20,
+        "docks_available": 3,
+        "nearby": "http://irail.be/stations/NMBS/008822343"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.601880073547,
+          50.851299285889
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:39.151Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Oudenaarde",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Oudenaarde ",
+        "longitude": 3.601880073547,
+        "latitude": 50.851299285889,
+        "bikes_available": 0,
+        "capacity": 2,
+        "docks_available": 2,
+        "nearby": "http://irail.be/stations/NMBS/008892601"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.872560024261,
+          50.770500183105
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:39.838Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Geraardsbergen",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Geraardsbergen ",
+        "longitude": 3.872560024261,
+        "latitude": 50.770500183105,
+        "bikes_available": 2,
+        "capacity": 2,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008895505"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.876270055771,
+          50.848400115967
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:41.845Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Ieper",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Ieper",
+        "longitude": 2.876270055771,
+        "latitude": 50.848400115967,
+        "bikes_available": 5,
+        "capacity": 10,
+        "docks_available": 5,
+        "nearby": "http://irail.be/stations/NMBS/008896503"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.583220005035,
+          51.128299713135
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:42.586Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/LierVeemarkt",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Lier Veemarkt",
+        "longitude": 4.583220005035,
+        "latitude": 51.128299713135,
+        "bikes_available": 7,
+        "capacity": 7,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821600"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.573339939117,
+          51.125301361084
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:43.366Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/LierP%2BR%20De%20Mol",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Lier P+R De Mol",
+        "longitude": 4.573339939117,
+        "latitude": 51.125301361084,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821600"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.494080066681,
+          51.16849899292
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:44.070Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/BoechoutP%2BR%20Capenberg",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Boechout P+R Capenberg",
+        "longitude": 4.494080066681,
+        "latitude": 51.16849899292,
+        "bikes_available": 5,
+        "capacity": 5,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821634"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.449820041656,
+          51.092498779297
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:44.789Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Aalter",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Aalter",
+        "longitude": 3.449820041656,
+        "latitude": 51.092498779297,
+        "bikes_available": 6,
+        "capacity": 6,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008891140"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.525919914246,
+          50.982398986816
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:45.522Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/DeinzeLeiespiegel",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Deinze Leiespiegel",
+        "longitude": 3.525919914246,
+        "latitude": 50.982398986816,
+        "bikes_available": 9,
+        "capacity": 11,
+        "docks_available": 2,
+        "nearby": "http://irail.be/stations/NMBS/008892106"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.92561006546,
+          50.808200836182
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:46.217Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Tienen",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Tienen ",
+        "longitude": 4.92561006546,
+        "latitude": 50.808200836182,
+        "bikes_available": 5,
+        "capacity": 13,
+        "docks_available": 8,
+        "nearby": "http://irail.be/stations/NMBS/008833308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.735719919205,
+          50.854499816895
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:46.915Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Poperinge",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Poperinge",
+        "longitude": 2.735719919205,
+        "latitude": 50.854499816895,
+        "bikes_available": 7,
+        "capacity": 7,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008896735"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.632410049438,
+          51.35710144043
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:47.633Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Noorderkempen",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Noorderkempen",
+        "longitude": 4.632410049438,
+        "latitude": 51.35710144043,
+        "bikes_available": 10,
+        "capacity": 10,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821105"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.460559844971,
+          51.365100860596
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:48.339Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Heide",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Heide",
+        "longitude": 4.460559844971,
+        "latitude": 51.365100860596,
+        "bikes_available": 11,
+        "capacity": 12,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008821519"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.484320163727,
+          51.029300689697
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:49.040Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/MechelenVeemarkt",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Mechelen Veemarkt",
+        "longitude": 4.484320163727,
+        "latitude": 51.029300689697,
+        "bikes_available": 6,
+        "capacity": 7,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008822343"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.476119995117,
+          51.134300231934
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:49.729Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Kontich-Lint",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Kontich-Lint",
+        "longitude": 4.476119995117,
+        "latitude": 51.134300231934,
+        "bikes_available": 5,
+        "capacity": 7,
+        "docks_available": 2,
+        "nearby": "http://irail.be/stations/NMBS/008821311"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.329819917679,
+          50.990600585938
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:50.446Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Tielt",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Tielt",
+        "longitude": 3.329819917679,
+        "latitude": 50.990600585938,
+        "bikes_available": 7,
+        "capacity": 7,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008892254"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.470870018005,
+          50.885200500488
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:51.139Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Zaventem",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Zaventem",
+        "longitude": 4.470870018005,
+        "latitude": 50.885200500488,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008811221"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.390810012817,
+          51.198001861572
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:51.829Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Antwerpen-Zuid",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Antwerpen-Zuid",
+        "longitude": 4.390810012817,
+        "latitude": 51.198001861572,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821196"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.214819908142,
+          50.9208984375
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:52.530Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Izegem",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Izegem",
+        "longitude": 3.214819908142,
+        "latitude": 50.9208984375,
+        "bikes_available": 6,
+        "capacity": 8,
+        "docks_available": 2,
+        "nearby": "http://irail.be/stations/NMBS/008896909"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.711899995804,
+          51.035999298096
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:53.258Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Gent-Sint-Pieters(M.%20Hendrikaplein)",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Gent-Sint-Pieters (M. Hendrikaplein)",
+        "longitude": 3.711899995804,
+        "latitude": 51.035999298096,
+        "bikes_available": 16,
+        "capacity": 26,
+        "docks_available": 10,
+        "nearby": "http://irail.be/stations/NMBS/008892007"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.716639995575,
+          50.882499694824
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:53.955Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Leuven(Kop%20van%20Kessel-Lo)",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Leuven (Kop van Kessel-Lo)",
+        "longitude": 4.716639995575,
+        "latitude": 50.882499694824,
+        "bikes_available": 16,
+        "capacity": 24,
+        "docks_available": 8,
+        "nearby": "http://irail.be/stations/NMBS/008833001"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.216079950333,
+          51.196800231934
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:54.646Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Brugge(Kamgebouw)",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Brugge (Kamgebouw)",
+        "longitude": 3.216079950333,
+        "latitude": 51.196800231934,
+        "bikes_available": 17,
+        "capacity": 27,
+        "docks_available": 10,
+        "nearby": "http://irail.be/stations/NMBS/008891009"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.260260105133,
+          51.208499908447
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:55.643Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Beveren",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Beveren",
+        "longitude": 4.260260105133,
+        "latitude": 51.208499908447,
+        "bikes_available": 10,
+        "capacity": 11,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008894748"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.695439815521,
+          50.862598419189
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:56.370Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Heverlee",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Heverlee ",
+        "longitude": 4.695439815521,
+        "latitude": 50.862598419189,
+        "bikes_available": 7,
+        "capacity": 9,
+        "docks_available": 2,
+        "nearby": "http://irail.be/stations/NMBS/008833126"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.31374001503,
+          50.855701446533
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:57.256Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Harelbeke",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Harelbeke",
+        "longitude": 3.31374001503,
+        "latitude": 50.855701446533,
+        "bikes_available": 8,
+        "capacity": 9,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008896115"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.64013004303,
+          50.929401397705
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:57.946Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Gavere-Asper",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Gavere-Asper",
+        "longitude": 3.64013004303,
+        "latitude": 50.929401397705,
+        "bikes_available": 7,
+        "capacity": 7,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008892643"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.654690027237,
+          50.930500030518
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:58.653Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Gaveremobipunt",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Gavere mobipunt",
+        "longitude": 3.654690027237,
+        "latitude": 50.930500030518,
+        "bikes_available": 4,
+        "capacity": 4,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008892643"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.43501996994,
+          51.284198760986
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:20:59.366Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Ekeren(perron%201)",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Ekeren (perron 1)",
+        "longitude": 4.43501996994,
+        "latitude": 51.284198760986,
+        "bikes_available": 3,
+        "capacity": 4,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008821071"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.434390068054,
+          51.281398773193
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:00.100Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Ekeren(perron%202)",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Ekeren (perron 2)",
+        "longitude": 4.434390068054,
+        "latitude": 51.281398773193,
+        "bikes_available": 7,
+        "capacity": 7,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821071"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.424610137939,
+          51.245498657227
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:00.798Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Antwerpen-Luchtbal",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Antwerpen-Luchtbal",
+        "longitude": 4.424610137939,
+        "latitude": 51.245498657227,
+        "bikes_available": 5,
+        "capacity": 5,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821063"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.42755,
+          51.2617
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:01.494Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Antwerpen-Noorderdokken",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Antwerpen-Noorderdokken",
+        "longitude": 4.42755,
+        "latitude": 51.2617,
+        "bikes_available": 7,
+        "capacity": 7,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821089"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.447710037231,
+          50.889099121094
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:02.217Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Diegem",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Diegem",
+        "longitude": 4.447710037231,
+        "latitude": 50.889099121094,
+        "bikes_available": 4,
+        "capacity": 4,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008811213"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.426719903946,
+          50.881999969482
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:02.941Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/WaregemExpo%20P%2BR",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Waregem Expo P+R",
+        "longitude": 3.426719903946,
+        "latitude": 50.881999969482,
+        "bikes_available": 4,
+        "capacity": 4,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008896149"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.281699,
+          51.03833
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:03.654Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Heusden",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Heusden",
+        "longitude": 5.281699,
+        "latitude": 51.03833,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008832243"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.329922,
+          51.033617
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:04.377Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Zolder",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Zolder",
+        "longitude": 5.329922,
+        "latitude": 51.033617,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008832250"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.329820851913,
+          50.932948204381
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:05.094Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Meise",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Meise",
+        "longitude": 4.329820851913,
+        "latitude": 50.932948204381,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008812047"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.746427,
+          51.165508
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:05.822Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Bouwel",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Bouwel",
+        "longitude": 4.746427,
+        "latitude": 51.165508,
+        "bikes_available": 6,
+        "capacity": 6,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821725"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.613315,
+          50.966578
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:06.544Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Haacht",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Haacht",
+        "longitude": 4.613315,
+        "latitude": 50.966578,
+        "bikes_available": 7,
+        "capacity": 8,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008822517"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.814341,
+          50.86948
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:07.245Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Zottegem",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Zottegem ",
+        "longitude": 3.814341,
+        "latitude": 50.86948,
+        "bikes_available": 7,
+        "capacity": 8,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008895208"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.221333,
+          51.125867
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:07.957Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Temse",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Temse",
+        "longitude": 4.221333,
+        "latitude": 51.125867,
+        "bikes_available": 5,
+        "capacity": 5,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008894672"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.041885,
+          51.073108
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:08.664Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Zele",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Zele",
+        "longitude": 4.041885,
+        "latitude": 51.073108,
+        "bikes_available": 6,
+        "capacity": 7,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008894235"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.182521,
+          50.810926
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:09.366Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Wevelgem",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Wevelgem",
+        "longitude": 3.182521,
+        "latitude": 50.810926,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008896370"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.312579,
+          51.21177
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:10.091Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Lommel",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Lommel",
+        "longitude": 5.312579,
+        "latitude": 51.21177,
+        "bikes_available": 6,
+        "capacity": 6,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008832565"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.464733,
+          51.1541195
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:10.807Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Hove",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Hove",
+        "longitude": 4.464733,
+        "latitude": 51.1541195,
+        "bikes_available": 7,
+        "capacity": 7,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008821337"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.451532,
+          51.462176
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:11.779Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Essen",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Essen",
+        "longitude": 4.451532,
+        "latitude": 51.462176,
+        "bikes_available": 7,
+        "capacity": 8,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008821402"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.079402,
+          50.74829
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:12.535Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Landen",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Landen",
+        "longitude": 5.079402,
+        "latitude": 50.74829,
+        "bikes_available": 7,
+        "capacity": 8,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008833605"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.601611,
+          51.077376
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:13.294Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/DePanne",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "De Panne",
+        "longitude": 2.601611,
+        "latitude": 51.077376,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008892338"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.1338,
+          51.3119
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:14.201Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Blankenberge",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Blankenberge",
+        "longitude": 3.1338,
+        "latitude": 51.3119,
+        "bikes_available": 6,
+        "capacity": 7,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008891405"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.195476,
+          51.32651
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:14.998Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Zeebrugge-dorp",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Zeebrugge-dorp",
+        "longitude": 3.195476,
+        "latitude": 51.32651,
+        "bikes_available": 2,
+        "capacity": 2,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008891553"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.239668,
+          51.334168
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:15.934Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Heist",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Heist",
+        "longitude": 3.239668,
+        "latitude": 51.334168,
+        "bikes_available": 5,
+        "capacity": 5,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008891645"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.28454,
+          51.34018
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:16.629Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Knokke",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Knokke",
+        "longitude": 3.28454,
+        "latitude": 51.34018,
+        "bikes_available": 7,
+        "capacity": 8,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008891660"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.361626,
+          50.747786
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:17.346Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Sint-Genesius-Rode",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Sint-Genesius-Rode",
+        "longitude": 4.361626,
+        "latitude": 50.747786,
+        "bikes_available": 9,
+        "capacity": 9,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008814167"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.575647,
+          51.064208
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:18.066Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Landegem",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Landegem",
+        "longitude": 3.575647,
+        "latitude": 51.064208,
+        "bikes_available": 8,
+        "capacity": 8,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008892056"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.413591,
+          50.923187
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:18.772Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/VilvoordeHoppin%20De%20Kassei",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Vilvoorde Hoppin De Kassei",
+        "longitude": 4.413591,
+        "latitude": 50.923187,
+        "bikes_available": 6,
+        "capacity": 7,
+        "docks_available": 1,
+        "nearby": "http://irail.be/stations/NMBS/008811189"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.333756181866,
+          50.835529468767
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:19.556Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Brussel-Zuid",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Brussel-Zuid",
+        "longitude": 4.333756181866,
+        "latitude": 50.835529468767,
+        "bikes_available": 4,
+        "capacity": 6,
+        "docks_available": 2,
+        "nearby": "http://irail.be/stations/NMBS/008814001"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.112421,
+          51.18119
+        ]
+      },
+      "generatedAtTime": "2021-10-12T06:21:20.277Z",
+      "properties": {
+        "@id": "http://irail.be/stations/bluebike/Mol-%20De%20Nete",
+        "@type": "http://schema.org/ParkingFacility",
+        "name": "Mol - De Nete",
+        "longitude": 5.112421,
+        "latitude": 51.18119,
+        "bikes_available": 7,
+        "capacity": 7,
+        "docks_available": 0,
+        "nearby": "http://irail.be/stations/NMBS/008832409"
+      }
+    }
+  ]
+}

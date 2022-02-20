@@ -7,6 +7,8 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
+import be.ugent.rml.target.Target;
+import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -251,7 +253,9 @@ public abstract class TestCore {
      */
     void doMapping(Executor executor, HashMap<Term, String> outPaths) throws Exception {
         logger.debug("Comparing target outputs");
+        TargetFactory targetFactory = new TargetFactory("http://example.org/rules/");
         HashMap<Term, QuadStore> results = executor.executeV5(null);
+
         for (Map.Entry<Term, String> entry: outPaths.entrySet()) {
             Term target = entry.getKey();
             String outPath = entry.getValue();
@@ -259,6 +263,12 @@ public abstract class TestCore {
             logger.debug("\tOutput path:" + outPath);
             logger.debug("\tSize:" + results.get(target).size());
             results.get(target).removeDuplicates();
+
+            // Targets may have additional metadata that needs to be included such as LDES encapsulation
+            if (!target.getValue().equals("rmlmapper://default.store")) {
+                Target t = targetFactory.getTarget(target, executor.getRMLStore(), results.get(target));
+                results.get(target).addQuads(t.getMetadata());
+            }
 
             compareStores(filePathToStore(outPath), results.get(target));
         }
