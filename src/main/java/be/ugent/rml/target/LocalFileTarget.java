@@ -1,6 +1,8 @@
 package be.ugent.rml.target;
 
 import be.ugent.rml.access.COMPRESSION;
+import be.ugent.rml.store.Quad;
+import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 import static org.apache.commons.io.FileUtils.getFile;
@@ -21,6 +24,7 @@ public class LocalFileTarget implements Target {
     private String basePath;
     private String serializationFormat;
     private String compression;
+    private List<Quad> metadata;
     private OutputStream outputStream;
     private static final Logger logger = LoggerFactory.getLogger(LocalFileTarget.class);
 
@@ -30,12 +34,14 @@ public class LocalFileTarget implements Target {
      * @param basePath the used base path.
      * @param serializationFormat serialization format to use.
      * @param compression compression to apply.
+     * @param metadata additional metadata to add when writing.
      */
-    public LocalFileTarget(String path, String basePath, String serializationFormat, String compression) {
+    public LocalFileTarget(String path, String basePath, String serializationFormat, String compression, List<Quad> metadata) {
         this.path = path;
         this.basePath = basePath;
         this.serializationFormat = serializationFormat;
         this.compression = compression;
+        this.metadata = metadata;
     }
 
     /**
@@ -118,5 +124,10 @@ public class LocalFileTarget implements Target {
         catch (Exception e) {
             logger.error("Failed to close target: " + e);
         }
+    }
+
+    @Override
+    public List<Quad> getMetadata() {
+        return this.metadata;
     }
 }
