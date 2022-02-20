@@ -8,6 +8,7 @@ import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
@@ -428,9 +429,10 @@ public class Main {
                     logger.info(store.size() + " quad was generated " + term + " Target");
                 }
 
-                Target target = targetFactory.getTarget(term, rmlStore);
+                Target target = targetFactory.getTarget(term, rmlStore, store);
                 String serializationFormat = target.getSerializationFormat();
                 OutputStream output = target.getOutputStream();
+                store.addQuads(target.getMetadata());
 
                 // Set character encoding
                 Writer out = new BufferedWriter(new OutputStreamWriter(output, Charset.defaultCharset()));
