@@ -1,6 +1,7 @@
 package be.ugent.rml.functions.lib;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -219,4 +220,43 @@ public class IDLabFunctionsTest {
         assertEquals("2020-04-01T09:04:00", IDLabFunctions.normalizeDateTime(input3, format3));
 
     }
+    public static class LDESGenerationTests{
+
+        private static final String STATE_DIRECTORY = "/tmp/test-state";
+
+
+        @Test
+        public void skipGenerateUniqueIRI(){
+            String template = "http://example.com/sensor1/";
+            String value = "5";
+            boolean isUnique = false;
+
+            String generated_iri = IDLabFunctions.generateUniqueIRI(template, value, isUnique, STATE_DIRECTORY);
+            assertNull(generated_iri);
+        }
+
+
+        @Test
+        public void generateUniqueIRI(){
+            String template = "http://example.com/sensor2/";
+            String value = "5";
+            boolean isUnique = true;
+
+            String generated_iri = IDLabFunctions.generateUniqueIRI(template, value, isUnique, STATE_DIRECTORY);
+            assertEquals(generated_iri, template);
+
+        }
+
+        @Test
+        public void generateUniqueIRIWithDate(){
+
+            String template = "http://example.com/sensor2/";
+            String value = "5";
+            boolean isUnique = false;
+
+            String generated_iri = IDLabFunctions.generateUniqueIRI(template, value, isUnique, STATE_DIRECTORY);
+            assertEquals(generated_iri, template);
+        }
+    }
+
 }
