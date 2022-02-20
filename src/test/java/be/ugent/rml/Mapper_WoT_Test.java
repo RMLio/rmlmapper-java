@@ -81,6 +81,27 @@ public class Mapper_WoT_Test extends TestCore {
         }
     }
 
+    static class BlueBikeStationHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String response = "couldn't load iRail stations JSON file";
+            try {
+                response = Utils.fileToString(Utils.getFile("./web-of-things/ldes/stations.jsonld"));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            List<String> contentType = new ArrayList<>();
+            contentType.add("application/json");
+
+            // Return stations if not redirected
+            t.getResponseHeaders().put("Content-Type", contentType);
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
     static class IRailStationHandler1 implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {

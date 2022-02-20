@@ -87,6 +87,38 @@ public class Mapper_Target extends TestCore {
     }
 
     @Test
+    public void evaluate_ldes_default_target_dcat() throws Exception {
+        // Create Web API
+        HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
+        webApi.createContext("/bluebike", new Mapper_WoT_Test.BlueBikeStationHandler());
+        webApi.setExecutor(null); // creates a default executor
+        webApi.start();
+
+        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/ldes/defaults/out-local-file.nq");
+        outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/ldes/defaults/out-default.nq");
+        doMapping("web-of-things/ldes/defaults/mapping.ttl", outPaths, "./web-of-things/ldes/private-security-data.ttl");
+
+        webApi.stop(0);
+    }
+
+    @Test
+    public void evaluate_ldes_paths_target_dcat() throws Exception {
+        // Create Web API
+        HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
+        webApi.createContext("/bluebike", new Mapper_WoT_Test.BlueBikeStationHandler());
+        webApi.setExecutor(null); // creates a default executor
+        webApi.start();
+
+        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/ldes/paths/out-local-file.nq");
+        outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/ldes/paths/out-default.nq");
+        doMapping("web-of-things/ldes/paths/mapping.ttl", outPaths, "./web-of-things/ldes/private-security-data.ttl");
+
+        webApi.stop(0);
+    }
+
+    @Test
     public void evaluate_nquads_serialization() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
