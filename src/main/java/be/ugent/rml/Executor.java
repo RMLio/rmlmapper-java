@@ -464,4 +464,8 @@ public class Executor {
     public List<Term> getTriplesMaps() {
         return initializer.getTriplesMaps();
     }
+
+    public QuadStore getRMLStore() {
+        return this.rmlStore;
+    }
 }
