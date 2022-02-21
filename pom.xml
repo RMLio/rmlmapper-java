@@ -184,7 +184,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>7.2.2.jre8</version>
+            <version>9.4.0.jre8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
