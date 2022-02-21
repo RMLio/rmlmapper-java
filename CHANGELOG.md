@@ -26,8 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upgraded com.fasterxml.jackson.core to 2.13.1
 - Upgraded org.jsoup to 1.14.3
 - Upgraded org.apache.poi to 5.0.0
-- Upgraded org.apache.jena to 4.3.2
-- Upgraded org.eclipse.rdf4j to 3.7.4
+
 
 ### Changed
 
