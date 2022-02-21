@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+- TestCore: enable debug logs when VERBOSE env variable is set (see [issue 230](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/230))
 
 ### Added
 

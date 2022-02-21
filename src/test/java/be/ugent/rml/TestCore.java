@@ -11,6 +11,7 @@ import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import ch.qos.logback.classic.Level;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +32,22 @@ import static org.junit.Assert.*;
 
 public abstract class TestCore {
 
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
     final String DEFAULT_BASE_IRI = "http://example.com/base/";
-
+    final ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     // Mapping options to be applied by the MappingConformer
     protected static Map<String, String> mappingOptions = new HashMap<>();
+
+    TestCore(){
+        if(System.getenv("VERBOSE") != null){
+            logger.setLevel(Level.DEBUG);
+        };
+    }
+
 
     /**
      *  Note: the created Executor will run in best effort mode
      */
+
     Executor createExecutor(String mapPath) throws Exception {
         return createExecutor(mapPath, new ArrayList<>(), null, BEST_EFFORT);
     }
