@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upgrade com.jayway.jsonpath to 2.7.0
 - Upgrade ch.vorburger.mariaDB4j to 2.5.3
 - Upgrade com.microsoft.sqlserver to 9.4.0.jre8
+- Upgrade com.fasterxml.jackson.core to 2.13.1
 
 ### Changed
 
