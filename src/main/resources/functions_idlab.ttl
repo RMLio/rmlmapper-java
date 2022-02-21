@@ -204,9 +204,9 @@ idlab-fn:generateUniqueIRI
     a                   fno:Function;
     fno:name            "generateUniqueIRI";
     rdfs:label          "generateUniqueIRI";
-    dcterms:description "Generates a unique IRI by watching the given property value"
-    fno:expects         ( idlab-fn:iri idlab-fn:watchedProperty idlab-fn:unique idlab-fn:_state);
-    fno:returns         ( idlab-fn:_str );
+    dcterms:description "Generates a unique IRI by watching the given property value";
+    fno:expects         ( idlab-fn:iri idlab-fn:watchedProperty idlab-fn:unique idlab-fn:_state );
+    fno:returns         ( idlab-fn:_stringOut );
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
                           lib:class        "IDLabFunctions" ;
                           lib:method       "generateUniqueIRI" ] .
