@@ -16,16 +16,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Clarified Readme for quick start
 - No cartesian product when referring to the same logical source (see [issue 28](https://github.com/RMLio/rmlmapper-java/issues/28)])
   - If you still want the cartesian product, update your mappings to refer to different logical sources with the same contents
-- Upgrade jetty-server and jetty-security to 9.4.44.v20210927
-- Upgrade wiremock-jre8 to 2.32.0
-- Upgrade ch.qos.logback to 1.2.10
-- Upgrade commons-cli to 1.5.0
-- Upgrade com.jayway.jsonpath to 2.7.0
-- Upgrade ch.vorburger.mariaDB4j to 2.5.3
-- Upgrade com.microsoft.sqlserver to 9.4.0.jre8
-- Upgrade com.fasterxml.jackson.core to 2.13.1
-- Upgrade org.jsoup to 1.14.3
-- Upgrade org.apache.poi to 5.0.0
+- Upgraded jetty-server and jetty-security to 9.4.44.v20210927
+- Upgraded wiremock-jre8 to 2.32.0
+- Upgraded ch.qos.logback to 1.2.10
+- Upgraded commons-cli to 1.5.0
+- Upgraded com.jayway.jsonpath to 2.7.0
+- Upgraded ch.vorburger.mariaDB4j to 2.5.3
+- Upgraded com.microsoft.sqlserver to 10.2.0.jre8
+- Upgraded com.fasterxml.jackson.core to 2.13.1
+- Upgraded org.jsoup to 1.14.3
+- Upgraded org.apache.poi to 5.0.0
+- Upgraded org.apache.jena to 4.3.2
+- Upgraded org.eclipse.rdf4j to 3.7.4
 
 ### Changed
 
