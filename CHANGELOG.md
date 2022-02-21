@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upgrade ch.qos.logback to 1.2.10
 - Upgrade commons-cli to 1.5.0
 - Upgrade com.jayway.jsonpath to 2.7.0
+- Upgrade ch.vorburger.mariaDB4j to 2.5.3
 
 ### Changed
 
