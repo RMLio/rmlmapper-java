@@ -292,7 +292,7 @@ public class IDLabFunctions {
 
 
 
-    public static String generateUniqueIRI(String template, String watchedValue, boolean isUnique, String stateDirPathStr) {
+    public static String generateUniqueIRI(String template, String watchedValue, Boolean isUnique, String stateDirPathStr) {
         //TODO: move this to the parameter of the function? (might get too bloated in RML definitions)
         int m_buckets = 10;
         if (isUnique){

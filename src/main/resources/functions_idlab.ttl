@@ -201,12 +201,12 @@ idlab-fn:normalizeDateTime
                            lib:method       "normalizeDateTimeWithLang" ] .
 
 idlab-fn:generateUniqueIRI
-    a                   fno:Function;
-    fno:name            "generateUniqueIRI";
-    rdfs:label          "generateUniqueIRI";
-    dcterms:description "Generates a unique IRI by watching the given property value";
-    fno:expects         ( idlab-fn:iri idlab-fn:watchedProperty idlab-fn:unique idlab-fn:_state );
-    fno:returns         ( idlab-fn:_stringOut );
+    a                   fno:Function ;
+    fno:name            "generateUniqueIRI" ;
+    rdfs:label          "generateUniqueIRI" ;
+    dcterms:description "Generates a unique IRI by watching the given property value" ;
+    fno:expects         ( idlab-fn:_iri idlab-fn:_watchedProperty idlab-fn:_unique idlab-fn:_state ) ;
+    fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
                           lib:class        "IDLabFunctions" ;
                           lib:method       "generateUniqueIRI" ] .
@@ -370,21 +370,21 @@ idlab-fn:_lang
     fno:type      xsd:string ;
     fno:predicate idlab-fn:lang .
 
-idlab-fn:iri
+idlab-fn:_iri
     a             fno:Parameter;
     fno:name      "String representation of an IRI";
     rdfs:label    "String representation of an IRI";
     fno:type      xsd:string;
     fno:predicate idlab-fn:iri .
 
-idlab-fn:watchedProperty
+idlab-fn:_watchedProperty
     a             fno:Parameter;
     fno:name      "Property field of the data record to be watched";
     rdfs:label    "Property field of the data record to be watched";
     fno:type      xsd:string ;
     fno:predicate idlab-fn:watchedProperty.
 
-idlab-fn:unique
+idlab-fn:_unique
     a             fno:Parameter;
     fno:name      "Indicates if a field contains unique values";
     rdfs:label    "Indicates if a field contains unique values";
