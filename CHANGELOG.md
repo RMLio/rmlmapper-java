@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upgrade com.microsoft.sqlserver to 9.4.0.jre8
 - Upgrade com.fasterxml.jackson.core to 2.13.1
 - Upgrade org.jsoup to 1.14.3
+- Upgrade org.apache.poi to 5.0.0
 
 ### Changed
 
