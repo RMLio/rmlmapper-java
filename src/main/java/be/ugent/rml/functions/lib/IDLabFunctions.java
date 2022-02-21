@@ -306,7 +306,6 @@ public class IDLabFunctions {
 
         Path stateFilePath = Paths.get(String.format("%s/%s.log", stateDirPathStr, hexBucketFileName));
 
-        System.out.println(String.format("State file path for ldes is: %s", stateFilePath));
 
         List<String> outputPairs;
 
