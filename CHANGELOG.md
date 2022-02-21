@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Clarified Readme for quick start
 - No cartesian product when referring to the same logical source (see [issue 28](https://github.com/RMLio/rmlmapper-java/issues/28)])
   - If you still want the cartesian product, update your mappings to refer to different logical sources with the same contents
+- Upgrade jetty-server and jetty-security to 9.4.44.v20210927
+- Upgrade wiremock-jre8 to 2.32.0 
 
 ### Changed
 
