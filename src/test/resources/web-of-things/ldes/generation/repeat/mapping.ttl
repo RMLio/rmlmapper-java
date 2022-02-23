@@ -33,7 +33,7 @@
         # Note that the template does not need to match with these properties!
         rr:predicateObjectMap [
           rr:predicate idlab-fn:watchedProperty ;
-          rr:objectMap [ rml:reference "value" ]
+          rr:objectMap [ rml:template "temperature={temperature}&pressure={pressure}" ]
         ];
         # Flag to indicate if the properties are unique on their own
         rr:predicateObjectMap [
@@ -49,7 +49,7 @@
   ];
 
   rr:predicateObjectMap [
-    rr:predicate ex:value;
-    rr:objectMap [ rml:reference "value" ];
+    rr:predicate ex:temperature;
+    rr:objectMap [ rml:reference "temperature" ];
   ];
  .

@@ -1,4 +1,4 @@
-id,value
-sensor1,3
-sensor2,3
-sensor3,4
+id,temperature,pressure
+sensor1,3,10
+sensor2,3,10
+sensor3,4,10
