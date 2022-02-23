@@ -10,7 +10,6 @@ public class NAMESPACES {
     public static final String D2RQ = "http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#";
     public static final String SD = "http://www.w3.org/ns/sparql-service-description#";
     public static final String FNO_S = "https://w3id.org/function/ontology#";
-    public static final String LDES =  "https://w3id.org/ldes#";
     @Deprecated
     public static final String FNO = "http://w3id.org/function/ontology#";
     @Deprecated
