@@ -312,7 +312,17 @@ public class IDLabFunctions {
 
     private static String updateStatePropertyRecord(Map<String, String> watchedMap,
                                                     String hexKey, AtomicBoolean found, AtomicBoolean isDifferent,
+                                                    boolean isUnique,
                                                     String storedStateRecord) {
+        //No need to check the properties, we just need to know if the
+        //given hexKey has already been seen in the state file.
+        if (isUnique){
+            found.set(storedStateRecord.equals(hexKey));
+            isDifferent.set(found.get());
+            return storedStateRecord;
+        }
+
+
         int split_idx = storedStateRecord.indexOf(':');
         String storedHexKey = storedStateRecord.substring(0, split_idx);
         if (!storedHexKey.equals(hexKey)){
@@ -342,8 +352,14 @@ public class IDLabFunctions {
         return String.format("%s:%s", storedHexKey, String.join("&", propertyValPairs));
     }
 
+
+    private static Path getStateFilePath(String stateDirPathStr, int m_buckets, int templateHash) {
+        String hexBucketFileName=  Integer.toHexString(templateHash % m_buckets);
+        return Paths.get(String.format("%s/%s.log", stateDirPathStr, hexBucketFileName));
+    }
+
+
     /**
-     * Handles the case if the isUniqueIRI flag is not set for the method {@link #generateUniqueIRI(String, String, Boolean, String)}.
      * The generation of the IRI depends on the value of the watched properties.
      * If any of the watched properties changes in value or gets dropped, a unique IRI will be
      * generated. Otherwise, null String will be returned.
@@ -354,21 +370,26 @@ public class IDLabFunctions {
      *
      * @param template The template string used to generate unique IRI by appending current date timestamp
      * @param watchedValueTemplate The template string containing the key-value pairs of properties being watched
+     * @param isUnique A flag to indicate if the given template already creates unique IRI
      * @param stateDirPathStr String representation of the directory path in which the state of the function
      *                        will be stored
-     * @param m_buckets The number of bucket files to be created
      * @return A unique IRI will be generated from the provided "template" string by appending the current
      * date timestamp if possible. Otherwise, null is returned
      */
-    private static String handleNonUniqueIRI(String template, String watchedValueTemplate, String stateDirPathStr, int m_buckets) {
+    public static String generateUniqueIRI(String template, String watchedValueTemplate, Boolean isUnique, String stateDirPathStr) {
+        //TODO: move this to the parameter of the function? (might get too bloated in RML definitions)
+        int m_buckets = 10;
+
+        // null check just in case idlab-fn:_watchedProperty is not provided in the mapping file
+        watchedValueTemplate = (watchedValueTemplate == null)? "" : watchedValueTemplate;
         Map<String,String>  watchedMap = parseWatchedPropertyTemplate(watchedValueTemplate);
 
         int templateHash = template.hashCode();
-        String hexBucketFileName=  Integer.toHexString(templateHash % m_buckets);
+        Path stateFilePath = getStateFilePath(stateDirPathStr, m_buckets, templateHash);
+
         String hexKey = Integer.toHexString(templateHash);
 
-        Path stateFilePath = Paths.get(String.format("%s/%s.log", stateDirPathStr, hexBucketFileName));
-        List<String> outputPairs;
+        List<String> outputRecords;
         AtomicBoolean found = new AtomicBoolean(false);
         AtomicBoolean isDifferent = new AtomicBoolean(false);
         String output = null;
@@ -380,49 +401,41 @@ public class IDLabFunctions {
                 Files.createFile(stateFilePath);
             };
 
+            // Get and update the state records which will be rewritten back to the state file by overwriting
             try (BufferedReader reader = new BufferedReader(new FileReader(stateFilePath.toFile()))) {
-                outputPairs = reader.lines()
-                        .map(s -> updateStatePropertyRecord(watchedMap, hexKey, found, isDifferent, s))
+                outputRecords = reader.lines()
+                        .map(s -> updateStatePropertyRecord(watchedMap, hexKey, found, isDifferent, isUnique, s))
                         .collect(Collectors.toList());
             }
 
             if (!found.get()) {
-                String hexPairs = String.format("%s:%s", hexKey, watchedValueTemplate);
-                outputPairs.add(hexPairs);
+                String hexedStateRecord = (isUnique)? hexKey:String.format("%s:%s", hexKey, watchedValueTemplate);
+                outputRecords.add(hexedStateRecord);
             }
-            System.out.println(Arrays.toString(outputPairs.toArray()));
 
             try (BufferedWriter writer= new BufferedWriter(new FileWriter(stateFilePath.toFile()))){
-                for(String line : outputPairs){
+                for(String line : outputRecords){
                     writer.write(line);
                     writer.newLine();
                 }
             }
 
+
+            // The unique IRI will be generated if there's any differences found with the corresponding record in
+            // the state file
             if (isDifferent.get() || !found.get()){
-                OffsetDateTime now = OffsetDateTime.now();
-                DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-                output = String.format("%s#%s", template, formatter.format(now) );
+                if (isUnique) {
+                    output= template;
+                }else {
+                    OffsetDateTime now = OffsetDateTime.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+                    output = String.format("%s#%s", template, formatter.format(now));
+                }
             }
 
         } catch (IOException e){
             e.printStackTrace();
         }
-
-        return output;
-    }
-
-
-    public static String generateUniqueIRI(String template, String watchedValueTemplate, Boolean isUnique, String stateDirPathStr) {
-        //TODO: move this to the parameter of the function? (might get too bloated in RML definitions)
-        int m_buckets = 10;
-
-        if (isUnique){
-            return template;
-        }
-
-        String output = handleNonUniqueIRI(template, watchedValueTemplate, stateDirPathStr, m_buckets);
-
 
         return output;
     }

@@ -29,12 +29,6 @@
           rr:predicate idlab-fn:iri ;
           rr:objectMap [ rr:template "http://ex.org/{id}/" ]
         ];
-        # Properties to watch, can be one or multiple
-        # Note that the template does not need to match with these properties!
-        rr:predicateObjectMap [
-          rr:predicate idlab-fn:watchedProperty ;
-          rr:objectMap [ rr:template "pressure={pressure}&temperature={temperature}" ]
-        ];
         # Flag to indicate if the properties are unique on their own
         rr:predicateObjectMap [
           rr:predicate idlab-fn:unique ;
