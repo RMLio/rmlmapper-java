@@ -291,26 +291,86 @@ public class IDLabFunctions {
     }
 
 
+    /**
+     * Returns a HashMap containing the key,value pairs of the watched properties from the given
+     * template string of the form  "key1=val1&key2=val2&...."
+     *
+     * @param watchedValueTemplate Input string template representing the key,value pairs of
+     *                             the form "key1=val1&key2=val2&..."
+     * @return A map containing the parsed pairs of the properties which are being watched.
+     */
+    private static Map<String, String> parseWatchedPropertyTemplate(String watchedValueTemplate){
+        Map<String, String> result = new HashMap<>();
 
-    public static String generateUniqueIRI(String template, String watchedValue, Boolean isUnique, String stateDirPathStr) {
-        //TODO: move this to the parameter of the function? (might get too bloated in RML definitions)
-        int m_buckets = 10;
-        if (isUnique){
-            return template;
+        Arrays.stream(watchedValueTemplate.split("&"))
+                .map(s -> s.split("="))
+                .filter(sArr -> sArr.length == 2)
+                .forEach(sArr -> result.put(sArr[0], sArr[1]));
+
+        return result;
+    }
+
+    private static String updateStatePropertyRecord(Map<String, String> watchedMap,
+                                                    String hexKey, AtomicBoolean found, AtomicBoolean isDifferent,
+                                                    String storedStateRecord) {
+        int split_idx = storedStateRecord.indexOf(':');
+        String storedHexKey = storedStateRecord.substring(0, split_idx);
+        if (!storedHexKey.equals(hexKey)){
+            return storedStateRecord;
         }
+
+        found.set(true);
+
+        List<String> propertyValPairs =
+                Arrays.stream(storedStateRecord.substring(split_idx+1)
+                                .split("&"))
+                        .map(str -> {
+                            String[] propVal =  str.split("=");
+                            String property = propVal[0];
+                            String storeVal = propVal[1];
+                            String watchedVal = watchedMap.getOrDefault(property, null);
+
+                            if(!watchedVal.equals(storeVal)){
+                                isDifferent.set(true);
+                                storeVal = watchedVal;
+                            }
+
+                           return String.format("%s=%s", property, storeVal);
+                        })
+                        .collect(Collectors.toList());
+
+        return String.format("%s:%s", storedHexKey, String.join("&", propertyValPairs));
+    }
+
+    /**
+     * Handles the case if the isUniqueIRI flag is not set for the method {@link #generateUniqueIRI(String, String, Boolean, String)}.
+     * The generation of the IRI depends on the value of the watched properties.
+     * If any of the watched properties changes in value or gets dropped, a unique IRI will be
+     * generated. Otherwise, null String will be returned.
+     * In order to check if the watched properties have changed, a file state is written to keep track of
+     * previously seen property values.
+     * A unique IRI will be generated from the provided "template" string by appending the current
+     * date timestamp.
+     *
+     * @param template The template string used to generate unique IRI by appending current date timestamp
+     * @param watchedValueTemplate The template string containing the key-value pairs of properties being watched
+     * @param stateDirPathStr String representation of the directory path in which the state of the function
+     *                        will be stored
+     * @param m_buckets The number of bucket files to be created
+     * @return A unique IRI will be generated from the provided "template" string by appending the current
+     * date timestamp if possible. Otherwise, null is returned
+     */
+    private static String handleNonUniqueIRI(String template, String watchedValueTemplate, String stateDirPathStr, int m_buckets) {
+        Map<String,String>  watchedMap = parseWatchedPropertyTemplate(watchedValueTemplate);
+
         int templateHash = template.hashCode();
         String hexBucketFileName=  Integer.toHexString(templateHash % m_buckets);
         String hexKey = Integer.toHexString(templateHash);
-        String hexPairs = String.format("%s:%s", hexKey, watchedValue);
-
 
         Path stateFilePath = Paths.get(String.format("%s/%s.log", stateDirPathStr, hexBucketFileName));
-
-
         List<String> outputPairs;
-
         AtomicBoolean found = new AtomicBoolean(false);
-        AtomicBoolean isDifferent = new AtomicBoolean(true);
+        AtomicBoolean isDifferent = new AtomicBoolean(false);
         String output = null;
 
         try{
@@ -321,33 +381,25 @@ public class IDLabFunctions {
             };
 
             try (BufferedReader reader = new BufferedReader(new FileReader(stateFilePath.toFile()))) {
-
-                outputPairs = reader.lines().map(s -> {
-                    String[] strings = s.split(":");
-                    String key = strings[0];
-                    String val = strings[1];
-                    if (hexKey.equals(key)) {
-                        isDifferent.set(!val.equals(watchedValue));
-                        if (isDifferent.get()){
-                            val = watchedValue;
-                        }
-                        found.set(true);
-                    }
-                    return String.format("%s:%s", key,val);
-                }).collect(Collectors.toList());
-
+                outputPairs = reader.lines()
+                        .map(s -> updateStatePropertyRecord(watchedMap, hexKey, found, isDifferent, s))
+                        .collect(Collectors.toList());
             }
 
             if (!found.get()) {
+                String hexPairs = String.format("%s:%s", hexKey, watchedValueTemplate);
                 outputPairs.add(hexPairs);
             }
+            System.out.println(Arrays.toString(outputPairs.toArray()));
+
             try (BufferedWriter writer= new BufferedWriter(new FileWriter(stateFilePath.toFile()))){
                 for(String line : outputPairs){
                     writer.write(line);
                     writer.newLine();
                 }
             }
-            if (isDifferent.get()){
+
+            if (isDifferent.get() || !found.get()){
                 OffsetDateTime now = OffsetDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
                 output = String.format("%s#%s", template, formatter.format(now) );
@@ -355,12 +407,26 @@ public class IDLabFunctions {
 
         } catch (IOException e){
             e.printStackTrace();
-            output = null;
         }
+
+        return output;
+    }
+
+
+    public static String generateUniqueIRI(String template, String watchedValueTemplate, Boolean isUnique, String stateDirPathStr) {
+        //TODO: move this to the parameter of the function? (might get too bloated in RML definitions)
+        int m_buckets = 10;
+
+        if (isUnique){
+            return template;
+        }
+
+        String output = handleNonUniqueIRI(template, watchedValueTemplate, stateDirPathStr, m_buckets);
 
 
         return output;
     }
+
 
 
     // TODO check whether this is the right place for this
