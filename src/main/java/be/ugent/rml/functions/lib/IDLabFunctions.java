@@ -317,7 +317,9 @@ public class IDLabFunctions {
         //No need to check the properties, we just need to know if the
         //given hexKey has already been seen in the state file.
         if (isUnique){
-            found.set(storedStateRecord.equals(hexKey));
+            if (storedStateRecord.equals(hexKey)) {
+                found.set(true);
+            }
             return storedStateRecord;
         }
 
@@ -423,6 +425,7 @@ public class IDLabFunctions {
             // The unique IRI will be generated if there's any differences found with the corresponding record in
             // the state file
             if (isDifferent.get() || !found.get()){
+                logger.debug("Update found! Generating IRI...");
                 if (isUnique) {
                     output= template;
                 }else {
