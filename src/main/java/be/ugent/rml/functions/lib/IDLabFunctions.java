@@ -318,7 +318,6 @@ public class IDLabFunctions {
         //given hexKey has already been seen in the state file.
         if (isUnique){
             found.set(storedStateRecord.equals(hexKey));
-            isDifferent.set(found.get());
             return storedStateRecord;
         }
 
