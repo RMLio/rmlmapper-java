@@ -1,9 +1,13 @@
 package be.ugent.rml.functions.lib;
 
+import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -225,12 +229,18 @@ public class IDLabFunctionsTest {
         private static final String STATE_DIRECTORY = "/tmp/test-state";
 
 
+        @After
+        public void cleanUp() throws IOException {
+            FileUtils.deleteDirectory(Paths.get(STATE_DIRECTORY).toFile());
+        }
+
         @Test
         public void skipGenerateUniqueIRI(){
             String template = "http://example.com/sensor1/";
-            String value = "5";
+            String value = "pressure=5";
             boolean isUnique = false;
 
+            IDLabFunctions.generateUniqueIRI(template, value, isUnique, STATE_DIRECTORY);
             String generated_iri = IDLabFunctions.generateUniqueIRI(template, value, isUnique, STATE_DIRECTORY);
             assertNull(generated_iri);
         }
@@ -239,7 +249,7 @@ public class IDLabFunctionsTest {
         @Test
         public void generateUniqueIRI(){
             String template = "http://example.com/sensor2/";
-            String value = "5";
+            String value = "pressure=5";
             boolean isUnique = true;
 
             String generated_iri = IDLabFunctions.generateUniqueIRI(template, value, isUnique, STATE_DIRECTORY);
@@ -251,11 +261,12 @@ public class IDLabFunctionsTest {
         public void generateUniqueIRIWithDate(){
 
             String template = "http://example.com/sensor2/";
-            String value = "5";
+            String value = "pressure=5";
             boolean isUnique = false;
 
             String generated_iri = IDLabFunctions.generateUniqueIRI(template, value, isUnique, STATE_DIRECTORY);
-            assertEquals(generated_iri, template);
+            assertNotNull(generated_iri);
+            assertTrue(generated_iri.contains(template));
         }
     }
 
