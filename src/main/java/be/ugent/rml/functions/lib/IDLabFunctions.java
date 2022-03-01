@@ -323,7 +323,6 @@ public class IDLabFunctions {
             return storedStateRecord;
         }
 
-
         int split_idx = storedStateRecord.indexOf(':');
         String storedHexKey = storedStateRecord.substring(0, split_idx);
         if (!storedHexKey.equals(hexKey)){
@@ -336,12 +335,20 @@ public class IDLabFunctions {
                 Arrays.stream(storedStateRecord.substring(split_idx+1)
                                 .split("&"))
                         .map(str -> {
-                            String[] propVal =  str.split("=");
+                            String[] propVal = str.split("=");
                             String property = propVal[0];
-                            String storeVal = propVal[1];
+                            String storeVal = "NULL";
+                            // Data may not provide a given property value so try and fail gracefully
+                            try {
+                                storeVal = propVal[1];
+                            }
+                            catch (IndexOutOfBoundsException e) {
+
+                            }
+
                             String watchedVal = watchedMap.getOrDefault(property, null);
 
-                            if(!watchedVal.equals(storeVal)){
+                            if(watchedVal != null && !watchedVal.equals(storeVal)){
                                 isDifferent.set(true);
                                 storeVal = watchedVal;
                             }
