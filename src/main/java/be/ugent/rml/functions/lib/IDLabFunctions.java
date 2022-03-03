@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.Buffer;
 import java.nio.file.Files;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -28,10 +29,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class IDLabFunctions {
 
     private static final Logger logger = LoggerFactory.getLogger(IDLabFunctions.class);
+    private static Map<String, Map<String, String>> LDES_FILE_STATE_MAP = new HashMap<>();
+    private static Path STATE_DIR = null;
 
     public static boolean stringContainsOtherString(String str, String otherStr, String delimiter) {
         String[] split = str.split(delimiter);
@@ -299,7 +303,7 @@ public class IDLabFunctions {
      *                             the form "key1=val1&key2=val2&..."
      * @return A map containing the parsed pairs of the properties which are being watched.
      */
-    private static Map<String, String> parseWatchedPropertyTemplate(String watchedValueTemplate){
+    private static Map<String, String> parsePropertyValueTemplate(String watchedValueTemplate){
         Map<String, String> result = new HashMap<>();
 
         Arrays.stream(watchedValueTemplate.split("&"))
@@ -388,13 +392,13 @@ public class IDLabFunctions {
      * @return A unique IRI will be generated from the provided "template" string by appending the current
      * date timestamp if possible. Otherwise, null is returned
      */
-    public static String generateUniqueIRI(String template, String watchedValueTemplate, Boolean isUnique, String stateDirPathStr) {
+    public static String generateUniqueIRIOLD(String template, String watchedValueTemplate, Boolean isUnique, String stateDirPathStr) {
         //TODO: move this to the parameter of the function? (might get too bloated in RML definitions)
         int m_buckets = 10;
 
         // null check just in case idlab-fn:_watchedProperty is not provided in the mapping file
         watchedValueTemplate = (watchedValueTemplate == null)? "" : watchedValueTemplate;
-        Map<String,String>  watchedMap = parseWatchedPropertyTemplate(watchedValueTemplate);
+        Map<String,String>  watchedMap = parsePropertyValueTemplate(watchedValueTemplate);
 
         int templateHash = template.hashCode();
         Path stateFilePath = getStateFilePath(stateDirPathStr, m_buckets, templateHash);
@@ -411,7 +415,7 @@ public class IDLabFunctions {
             Files.createDirectories(Paths.get(stateDirPathStr));
             if (Files.notExists(stateFilePath) ) {
                 Files.createFile(stateFilePath);
-            };
+            }
 
             // Get and update the state records which will be rewritten back to the state file by overwriting
             try (BufferedReader reader = new BufferedReader(new FileReader(stateFilePath.toFile()))) {
@@ -432,24 +436,146 @@ public class IDLabFunctions {
                 }
             }
 
-
-            // The unique IRI will be generated if there's any differences found with the corresponding record in
-            // the state file
-            if (isDifferent.get() || !found.get()){
-                if (isUnique) {
-                    output= template;
-                }else {
-                    OffsetDateTime now = OffsetDateTime.now();
-                    DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-                    output = String.format("%s#%s", template, formatter.format(now));
-                }
-            }
+            output = getOutput(template, isUnique, found, isDifferent);
 
         } catch (IOException e){
             e.printStackTrace();
         }
 
         return output;
+    }
+
+    private static String getOutput(String template, Boolean isUnique, AtomicBoolean found, AtomicBoolean isDifferent) {
+        // The unique IRI will be generated if there's any differences found with the corresponding record in
+        // the state file
+        String output = null;
+        if (isDifferent.get() || !found.get()){
+            logger.debug("Update found! Generating IRI...");
+            if (isUnique) {
+                output = template;
+            }else {
+                OffsetDateTime now = OffsetDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+                output = String.format("%s#%s", template, formatter.format(now));
+            }
+        }
+        return output;
+    }
+
+    private static void initStateFile(Path stateDirPath){
+        try (Stream<Path> statePaths = Files.find(stateDirPath, 1, (filePath, fileAttr) -> fileAttr.isRegularFile())){
+
+            Stream<AbstractMap.SimpleImmutableEntry> readers = statePaths.map(path -> {
+                try {
+                    return new AbstractMap.SimpleImmutableEntry(path,  new BufferedReader(new FileReader(path.toFile())));
+                } catch (FileNotFoundException e) {
+                    return null;
+                }
+            }).filter(Objects::nonNull);
+
+
+            readers.forEach( entry -> {
+                try (BufferedReader bReader = (BufferedReader) entry.getValue()){
+                    String fileName = ((Path) entry.getKey()).toString();
+                    bReader.lines().forEach(
+                            line -> {
+                                String[] pairs = line.split(":");
+                                String key = pairs[0];
+                                String val = null;
+                                try {
+                                    val =  pairs[1];
+                                }catch (IndexOutOfBoundsException e) {
+                                    e.printStackTrace();
+                                }
+                                LDES_FILE_STATE_MAP.computeIfAbsent(fileName, k -> new HashMap<>()).put(key, val);
+                            }
+                    );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveState() throws IOException {
+        if (Objects.nonNull(STATE_DIR)){
+
+            Files.createDirectories(STATE_DIR);
+            for (Map.Entry<String, Map<String,String>> entry: LDES_FILE_STATE_MAP.entrySet()){
+
+                Path file = Paths.get(entry.getKey());
+                Map<String, String> storedMap = entry.getValue();
+
+                if (Files.notExists(file)){
+                    Files.createFile(file);
+                }
+
+
+                try( BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))){
+                    for( Map.Entry<String, String> record: storedMap.entrySet()){
+                        String line = String.format("%s:%s", record.getKey(), record.getValue());
+                        writer.write(line);
+                        writer.newLine();
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    public static void resetState(){
+        LDES_FILE_STATE_MAP = new HashMap<>();
+        STATE_DIR = null;
+    }
+    public static String generateUniqueIRI(String template, String watchedValueTemplate, Boolean isUnique, String stateDirPathStr) {
+        if (STATE_DIR == null){
+            STATE_DIR = Paths.get(stateDirPathStr);
+            initStateFile(STATE_DIR);
+        }
+        int m_buckets = 10;
+
+        // null check just in case idlab-fn:_watchedProperty is not provided in the mapping file
+        watchedValueTemplate = (watchedValueTemplate == null)? "" : watchedValueTemplate;
+        Map<String,String>  watchedMap = parsePropertyValueTemplate(watchedValueTemplate);
+
+        int templateHash = template.hashCode();
+        String stateFilePathStr = getStateFilePath(stateDirPathStr, m_buckets, templateHash).toString();
+
+        String hexKey = Integer.toHexString(templateHash);
+
+        AtomicBoolean found = new AtomicBoolean(false);
+        AtomicBoolean isDifferent = new AtomicBoolean(false);
+
+        Map<String, String> keyValMap = LDES_FILE_STATE_MAP.computeIfAbsent(stateFilePathStr, f ->  new HashMap<>());
+        if (keyValMap.containsKey(hexKey)){
+            found.set(true);
+            String storedProp = keyValMap.get(hexKey);
+            Map<String, String> storedPropMap = parsePropertyValueTemplate(storedProp);
+            for (Map.Entry<String, String> kv : watchedMap.entrySet()){
+                String prop = kv.getKey();
+                String val = kv.getValue();
+
+                String storedVal = storedPropMap.getOrDefault(prop, null);
+                if (!val.equals(storedVal)){
+                    isDifferent.set(true);
+                }
+            }
+
+        }
+        keyValMap.put(hexKey, watchedValueTemplate);
+
+
+
+
+
+
+        return getOutput(template,isUnique, found, isDifferent);
+
     }
 
 

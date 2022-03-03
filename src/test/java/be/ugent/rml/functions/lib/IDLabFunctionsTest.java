@@ -253,7 +253,7 @@ public class IDLabFunctionsTest {
             boolean isUnique = true;
 
             String generated_iri = IDLabFunctions.generateUniqueIRI(template, value, isUnique, STATE_DIRECTORY);
-            assertEquals(generated_iri, template);
+            assertEquals(template, generated_iri);
 
         }
 
