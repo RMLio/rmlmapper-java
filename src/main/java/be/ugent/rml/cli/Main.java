@@ -386,6 +386,8 @@ public class Main {
                 String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
                 result.copyNameSpaces(rmlStore);
 
+                IDLabFunctions.saveState();
+
                 writeOutputTargets(targets, rmlStore, basePath, outputFile, outputFormat);
             } catch (Exception e) {
                 logger.error(e.getMessage());
