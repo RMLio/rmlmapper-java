@@ -1,0 +1,22 @@
+{
+    "venue": [
+        {
+            "latitude": "50.901389",
+            "longitude": "4.484444",
+            "location": {
+                "continent": "EU",
+                "country": "BE",
+                "city": "Brussels"
+            }
+        },
+        {
+            "latitude": "51.51334",
+            "longitude": "-0.08901",
+            "location": {
+                "continent": "EU",
+                "country": "GB",
+                "city": "London"
+            }
+        }
+    ]
+}

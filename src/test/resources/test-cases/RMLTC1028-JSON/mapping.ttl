@@ -1,0 +1,54 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix ex: <http://example.com/ns#>.
+@base <http://example.com/ns#>.
+
+<#LogicalSource> rml:source "venue.json";
+    rml:referenceFormulation ql:JSONPath ;
+    rml:iterator "$.venue[*]" .
+
+<#VenueMapping> a rr:TriplesMap;
+  rml:logicalSource <#LogicalSource> ;
+  rr:subjectMap
+  [
+    rr:template "http://loc.example.com/city/{location.city}";
+    rr:class ex:City;
+  ];
+  rr:predicateObjectMap [
+    rr:predicate ex:latlong;
+    rr:objectMap [
+      rr:parentTriplesMap <#LocationMapping_JSON>
+    ]
+  ];
+  rr:predicateObjectMap [
+    rr:predicate ex:countryCode;
+    rr:objectMap [
+      rml:reference "location.country"
+    ]
+  ];
+  rr:predicateObjectMap [
+    rr:predicate ex:onContinent;
+    rr:objectMap [
+      rml:reference "location.continent"
+    ]
+  ].
+
+<#LocationMapping_JSON> a rr:TriplesMap;
+  rml:logicalSource <#LogicalSource> ;
+  rr:subjectMap [
+    rr:template "http://loc.example.com/latlong/{latitude},{longitude}"
+  ];
+  rr:predicateObjectMap [
+    rr:predicate ex:lat;
+    rr:objectMap [
+      rml:reference "latitude"
+    ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:long;
+    rr:objectMap [
+      rml:reference "longitude"
+    ]
+  ].
