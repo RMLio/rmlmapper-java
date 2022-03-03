@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.rml.extractor.ConstantExtractor;
+import be.ugent.rml.extractor.HashExtractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.*;
 import be.ugent.rml.store.QuadStore;
@@ -282,6 +283,26 @@ public class MappingFactory {
                     joinConditionFunctionExecutors.add(parseJoinConditionFunctionTermMap(functionValue));
                 }
 
+                // get logical source of parentTriplesMap
+                List<Term> logicalSources = Utils.getObjectsFromQuads(store.getQuads(this.triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
+                Term logicalSource = null;
+                if (!logicalSources.isEmpty()) {
+                    logicalSource = logicalSources.get(0);
+                }
+
+                List<Term> parentLogicalSources = Utils.getObjectsFromQuads(store.getQuads(parentTriplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
+                Term parentLogicalSource = null;
+                if (!parentLogicalSources.isEmpty()) {
+                    parentLogicalSource = parentLogicalSources.get(0);
+                }
+                // Check if there is at least one Logical Source.
+                // If logical sources are the same (i.e., have the same IRI): the condition is 'join on same record'
+                if (logicalSource.equals(parentLogicalSource)) {
+                    // TODO this is a _WILDLY_ inefficient way of handling this: a join is still executed, but then on the hashcode of the record.
+                    // I'm not sure what a more elegant solution would entail in the current architecture: joins are currently hard to optimize
+                    joinConditionFunctionExecutors.add(generateSameLogicalSourceJoinConditionFunctionTermMap());
+                }
+
                 if (refObjectMapCallback != null) {
                     refObjectMapCallback.accept(parentTriplesMap, joinConditionFunctionExecutors);
                 }
@@ -454,6 +475,26 @@ public class MappingFactory {
         }
 
         return new DynamicMultipleRecordsFunctionExecutor(params, functionLoader);
+    }
+
+    /**
+     * Generate a join condition that only returns true if the same record hash is encountered
+     * @return
+     * @throws IOException
+     */
+    private MultipleRecordsFunctionExecutor generateSameLogicalSourceJoinConditionFunctionTermMap() throws IOException {
+        FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
+        Map<String, Object[]> parameters = new HashMap<>();
+
+        SingleRecordFunctionExecutor parent = new HashExtractor();
+        Object[] detailsParent = {"parent", parent};
+        parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
+
+        SingleRecordFunctionExecutor child = new HashExtractor();
+        Object[] detailsChild = {"child", child};
+        parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
+
+        return new StaticMultipleRecordsFunctionExecutor(equal, parameters);
     }
 
     private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {
