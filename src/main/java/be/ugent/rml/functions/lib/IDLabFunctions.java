@@ -324,6 +324,10 @@ public class IDLabFunctions {
         }
 
         int split_idx = storedStateRecord.indexOf(':');
+        // Ignore if no split is possible
+        if (split_idx == -1) {
+            return storedStateRecord;
+        }
         String storedHexKey = storedStateRecord.substring(0, split_idx);
         if (!storedHexKey.equals(hexKey)){
             return storedStateRecord;
@@ -432,7 +436,6 @@ public class IDLabFunctions {
             // The unique IRI will be generated if there's any differences found with the corresponding record in
             // the state file
             if (isDifferent.get() || !found.get()){
-                logger.debug("Update found! Generating IRI...");
                 if (isUnique) {
                     output= template;
                 }else {
