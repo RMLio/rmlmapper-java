@@ -231,6 +231,7 @@ public class IDLabFunctionsTest {
 
         @After
         public void cleanUp() throws IOException {
+            IDLabFunctions.resetState();
             FileUtils.deleteDirectory(Paths.get(STATE_DIRECTORY).toFile());
         }
 
