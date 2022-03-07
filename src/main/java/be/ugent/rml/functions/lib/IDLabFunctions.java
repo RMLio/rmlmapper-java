@@ -306,10 +306,12 @@ public class IDLabFunctions {
     private static Map<String, String> parsePropertyValueTemplate(String watchedValueTemplate){
         Map<String, String> result = new HashMap<>();
 
-        Arrays.stream(watchedValueTemplate.split("&"))
-                .map(s -> s.split("="))
-                .filter(sArr -> sArr.length == 2)
-                .forEach(sArr -> result.put(sArr[0], sArr[1]));
+        if (watchedValueTemplate != null || watchedValueTemplate.length() > 0) {
+            Arrays.stream(watchedValueTemplate.split("&"))
+                    .map(s -> s.split("="))
+                    .filter(sArr -> sArr.length == 2)
+                    .forEach(sArr -> result.put(sArr[0], sArr[1]));
+        }
 
         return result;
     }
