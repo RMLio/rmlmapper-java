@@ -303,11 +303,12 @@ public class IDLabFunctions {
      *                             the form "key1=val1&key2=val2&..."
      * @return A map containing the parsed pairs of the properties which are being watched.
      */
-    private static Map<String, String> parsePropertyValueTemplate(String watchedValueTemplate){
+    private static Map<String, String> parsePropertyValueTemplate(Optional<String> watchedValueTemplate){
         Map<String, String> result = new HashMap<>();
+        String watchedVal = watchedValueTemplate.orElse("");
 
-        if (watchedValueTemplate != null || watchedValueTemplate.length() > 0) {
-            Arrays.stream(watchedValueTemplate.split("&"))
+        if (watchedVal.length() > 0) {
+            Arrays.stream(watchedVal.split("&"))
                     .map(s -> s.split("="))
                     .filter(sArr -> sArr.length == 2)
                     .forEach(sArr -> result.put(sArr[0], sArr[1]));
@@ -398,9 +399,7 @@ public class IDLabFunctions {
         //TODO: move this to the parameter of the function? (might get too bloated in RML definitions)
         int m_buckets = 10;
 
-        // null check just in case idlab-fn:_watchedProperty is not provided in the mapping file
-        watchedValueTemplate = (watchedValueTemplate == null)? "" : watchedValueTemplate;
-        Map<String,String>  watchedMap = parsePropertyValueTemplate(watchedValueTemplate);
+        Map<String,String>  watchedMap = parsePropertyValueTemplate(Optional.ofNullable(watchedValueTemplate));
 
         int templateHash = template.hashCode();
         Path stateFilePath = getStateFilePath(stateDirPathStr, m_buckets, templateHash);
@@ -519,7 +518,11 @@ public class IDLabFunctions {
 
                 try( BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))){
                     for( Map.Entry<String, String> record: storedMap.entrySet()){
-                        String line = String.format("%s:%s", record.getKey(), record.getValue());
+                        String line = record.getKey();
+                        if (record.getValue() != null) {
+                            line = String.format("%s:%s", record.getKey(), record.getValue());
+                        }
+
                         writer.write(line);
                         writer.newLine();
                     }
@@ -542,8 +545,9 @@ public class IDLabFunctions {
         int m_buckets = 10;
 
         // null check just in case idlab-fn:_watchedProperty is not provided in the mapping file
-        watchedValueTemplate = (watchedValueTemplate == null)? "" : watchedValueTemplate;
-        Map<String,String>  watchedMap = parsePropertyValueTemplate(watchedValueTemplate);
+
+        Optional<String> watchedValueOption = Optional.ofNullable(watchedValueTemplate);
+        Map<String,String>  watchedMap = parsePropertyValueTemplate(watchedValueOption);
 
         int templateHash = template.hashCode();
         String stateFilePathStr = getStateFilePath(stateDirPathStr, m_buckets, templateHash).toString();
@@ -557,7 +561,7 @@ public class IDLabFunctions {
         if (keyValMap.containsKey(hexKey)){
             found.set(true);
             String storedProp = keyValMap.get(hexKey);
-            Map<String, String> storedPropMap = parsePropertyValueTemplate(storedProp);
+            Map<String, String> storedPropMap = parsePropertyValueTemplate(Optional.ofNullable(storedProp));
             for (Map.Entry<String, String> kv : watchedMap.entrySet()){
                 String prop = kv.getKey();
                 String val = kv.getValue();
