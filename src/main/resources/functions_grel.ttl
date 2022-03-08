@@ -412,7 +412,7 @@ grel:output_number
     fno:name      "number" ;
     rdfs:label    "number" ;
     fno:predicate grel:o_number ;
-    fno:type      xsd:number .
+    fno:type      xsd:integer .
 
 #TOSTRING
 
