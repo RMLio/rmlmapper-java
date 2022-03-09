@@ -33,8 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upgraded org.jsoup to 1.14.3
 - Upgraded org.apache.poi to 5.0.0
 - Resources: functions_grel: use xsd:integer (see [issue 234](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/234))
-
-
+- Print error if referenceformulation is unsupported
 
 ### Changed
 

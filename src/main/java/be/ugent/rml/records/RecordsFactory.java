@@ -6,8 +6,11 @@ import be.ugent.rml.access.Access;
 import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ public class RecordsFactory {
     private Map<Access, Map<String, Map<String, List<Record>>>> recordCache;
     private AccessFactory accessFactory;
     private Map<String, ReferenceFormulationRecordFactory> referenceFormulationRecordFactoryMap;
+    private static final Logger logger = LoggerFactory.getLogger(RecordsFactory.class);
 
     public RecordsFactory(String basePath) {
         accessFactory = new AccessFactory(basePath);
@@ -133,6 +137,9 @@ public class RecordsFactory {
         if (records == null) {
             try {
                 // Select the Record Factory based on the reference formulation.
+                if (!referenceFormulationRecordFactoryMap.containsKey(referenceFormulation)) {
+                    logger.error("Referenceformulation " + referenceFormulation + " is unsupported!");
+                }
                 ReferenceFormulationRecordFactory factory = referenceFormulationRecordFactoryMap.get(referenceFormulation);
                 records = factory.getRecords(access, logicalSource, rmlStore);
 
