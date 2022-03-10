@@ -288,33 +288,7 @@
             <groupId>org.odftoolkit</groupId>
             <artifactId>simple-odf</artifactId>
             <version>0.9.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>tools</artifactId>
-                    <groupId>com.sun</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.odftoolkit/simple-odf -->
-<!--        <dependency>-->
-<!--
-            This should be below Apache Jena dependencies
-            in the pom declaration order for the correct dependency mediation
-            Otherwise: java.lang.NoClassDefFoundError: org/apache/jena/shared/JenaException
-            and no 0.8-incubating version yet
-            https://issues.apache.org/jira/browse/ODFTOOLKIT-415?jql=project%20%3D%20ODFTOOLKIT%20AND%20fixVersion%20%3D%200.7-incubating
--->
-<!--            <groupId>org.apache.odftoolkit</groupId>-->
-<!--            <artifactId>simple-odf</artifactId>-->
-<!--            <version>0.8.2-incubating</version>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <artifactId>tools</artifactId>-->
-<!--                    <groupId>com.sun</groupId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
         <!-- END spreadsheet dependencies-->
     </dependencies>
 
