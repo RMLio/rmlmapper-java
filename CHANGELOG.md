@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 - TestCore: enable debug logs when VERBOSE env variable is set (see [issue 230](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/230))
+- Switched to fork of ODFtoolkit (see [issue 237](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/237))
 
 ### Added
 
