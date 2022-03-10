@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Add support for LDES Logical Target
 - Add support for generating unique reproducible IRIs for LDES
+- Integration of independent function handler
 
 ### Changed
 
