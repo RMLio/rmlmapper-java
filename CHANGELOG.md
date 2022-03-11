@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## [5.0.0] - 2022-03-11
 - TestCore: enable debug logs when VERBOSE env variable is set (see [issue 230](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/230))
 - Switched to fork of ODFtoolkit (see [issue 237](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/237))
 
@@ -505,6 +507,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[5.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.15.0...v5.0.0
 [4.15.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.14.3...v4.15.0
 [4.14.3]: https://github.com/RMLio/rmlmapper-java/compare/v4.14.2...v4.14.3
 [4.14.2]: https://github.com/RMLio/rmlmapper-java/compare/v4.14.1...v4.14.2
