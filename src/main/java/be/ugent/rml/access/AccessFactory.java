@@ -7,6 +7,7 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import ch.qos.logback.classic.Level;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class AccessFactory {
 
     // The path used when local paths are not absolute.
     private String basePath;
-    private static final Logger logger = LoggerFactory.getLogger(AccessFactory.class);
+    final ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     /**
      * The constructor of the AccessFactory.
@@ -40,6 +41,7 @@ public class AccessFactory {
      * @return an Access instance based on the RML rules in rmlStore.
      */
     public Access getAccess(Term logicalSource, QuadStore rmlStore) {
+        logger.setLevel(Level.DEBUG);
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Access access = null;
 
@@ -113,41 +115,54 @@ public class AccessFactory {
                         List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "hasTarget"), null));
                         List<Term> contentTypes = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "forContentType"), null));
                         List<Term> headerList = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HTV + "headers"), null));
-
+                        HashMap<String, String> auth = new HashMap<>();
                         // Security schema & data
                         try {
                             Term thing = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.TD + "hasPropertyAffordance"), source)).get(0);
                             List<Term> securityConfiguration = Utils.getObjectsFromQuads(rmlStore.getQuads(thing, new NamedNode(NAMESPACES.TD + "hasSecurityConfiguration"), null));
                             logger.debug("Security config: " + securityConfiguration.toString());
+
                             for (Term sc : securityConfiguration) {
-                                // TODO: support more security configurations
-                                List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
-                                List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
-                                List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "tokenValue"), null));
-                                // BearerSecurityScheme
-                                List<Term> securityScheme = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"), new NamedNode(NAMESPACES.WOTSEC + "BearerSecurityScheme")));
-                                if (securityScheme.size() != 0) {
+                                boolean isOAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
+                                        new NamedNode(NAMESPACES.WOTSEC + "OAuth2SecurityScheme"))).size() != 0;
+                                boolean isBearer = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
+                                        new NamedNode(NAMESPACES.WOTSEC + "BearerSecurityScheme"))).size() != 0;
+                                if (isOAuth || isBearer) {
+                                    // BearerSecurityScheme
+
+                                    List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
+                                    List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
+                                    List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "tokenValue"), null));
+
+                                    if (isOAuth) {
+                                        Term securityRefresh = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "refresh"), null)).get(0);
+                                        Term securityAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "authorisation"), null)).get(0);
+                                        auth.put("refresh", securityRefresh.getValue());
+                                        auth.put("authorisation", securityAuth.getValue());
+                                        auth.put("name", securityName.get(0).getValue());
+                                    }
+
                                     Term bearerToken = new Literal("Bearer " + securityValue.get(0).getValue());
                                     securityValue.set(0, bearerToken);
-                                }
 
-                                try {
-                                    switch (securityIn.get(0).getValue()) {
-                                        case "header": {
-                                            logger.info("Applying security configuration of " + sc.getValue() + "in header");
-                                            logger.debug("Name: " + securityName.get(0).getValue());
-                                            logger.debug("Value: " + securityValue.get(0).getValue());
-                                            headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
-                                            break;
+                                    try {
+                                        switch (securityIn.get(0).getValue()) {
+                                            case "header": {
+                                                logger.info("Applying security configuration of " + sc.getValue() + "in header");
+                                                logger.debug("Name: " + securityName.get(0).getValue());
+                                                logger.debug("Value: " + securityValue.get(0).getValue());
+                                                headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
+                                                break;
+                                            }
+                                            case "query":
+                                            case "body":
+                                            case "cookie":
+                                            default:
+                                                throw new NotImplementedException();
                                         }
-                                        case "query":
-                                        case "body":
-                                        case "cookie":
-                                        default:
-                                            throw new NotImplementedException();
+                                    } catch (IndexOutOfBoundsException e) {
+                                        logger.warn("Unable to apply security configuration for " + sc.getValue());
                                     }
-                                } catch (IndexOutOfBoundsException e) {
-                                    logger.warn("Unable to apply security configuration for " + sc.getValue());
                                 }
                             }
                         }
@@ -178,7 +193,7 @@ public class AccessFactory {
                                 logger.warn("Unable to retrieve header name and value for " + headerListItem.getValue());
                             }
                         };
-                        access = new WoTAccess(target, contentType, headers);
+                        access = new WoTAccess(target, contentType, headers, auth);
                         break;
                     default:
                         throw new NotImplementedException();
