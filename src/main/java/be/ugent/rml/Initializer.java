@@ -32,7 +32,9 @@ public class Initializer {
         }
 
         final Agent initialisedFunctionAgent = functionAgent == null ?
-                AgentFactory.createFromFnO("functions_idlab.ttl")
+                AgentFactory.createFromFnO("functions_idlab.ttl",
+                        "https://users.ugent.be/~bjdmeest/function/grel.ttl",
+                        "grel_java_mapping.ttl")
                 : functionAgent;
 
         this.factory = new MappingFactory(this.functionLoader, initialisedFunctionAgent);
