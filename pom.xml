@@ -290,6 +290,18 @@
             <version>0.9.0</version>
         </dependency>
         <!-- END spreadsheet dependencies-->
+
+        <dependency>
+            <groupId>be.ugent.idlab.knows</groupId>
+            <artifactId>function-agent-java</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.jena</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion></exclusions>
+        </dependency>
+
     </dependencies>
 
     <build>

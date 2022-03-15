@@ -1,5 +1,6 @@
 package be.ugent.rml;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
@@ -17,7 +18,7 @@ public class Initializer {
     private List<Term> triplesMaps;
     private HashMap<Term, Mapping> mappings;
 
-    public Initializer(QuadStore rmlStore, FunctionLoader functionLoader) throws Exception {
+    public Initializer(QuadStore rmlStore, FunctionLoader functionLoader, final Agent functionAgent) throws Exception {
         this.rmlStore = rmlStore;
         //we get all the TriplesMaps from the mapping
         this.triplesMaps = this.getAllTriplesMaps();
@@ -29,7 +30,7 @@ public class Initializer {
             this.functionLoader = functionLoader;
         }
 
-        this.factory = new MappingFactory(this.functionLoader);
+        this.factory = new MappingFactory(this.functionLoader, functionAgent);
         extractMappings();
     }
 

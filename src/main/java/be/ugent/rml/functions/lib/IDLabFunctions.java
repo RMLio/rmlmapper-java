@@ -14,11 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.Buffer;
-import java.nio.file.Files;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -86,7 +85,7 @@ public class IDLabFunctions {
         return new ArrayList<>();
     }
 
-    public static Object trueCondition(String bool, String value) {
+    public static String trueCondition(String bool, String value) {
         if (bool == null || !bool.equals("true")) {
             return null;
         } else {

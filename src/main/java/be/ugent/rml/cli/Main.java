@@ -1,5 +1,7 @@
 package be.ugent.rml.cli;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.Executor;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.Utils;
@@ -8,7 +10,6 @@ import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
@@ -18,7 +19,6 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
@@ -34,7 +34,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static be.ugent.rml.StrictMode.*;
+import static be.ugent.rml.StrictMode.BEST_EFFORT;
+import static be.ugent.rml.StrictMode.STRICT;
 
 public class Main {
 
@@ -301,13 +302,24 @@ public class Main {
             }
 
             String[] fOptionValue = getOptionValues(functionfileOption, lineArgs, configFile);
-            FunctionLoader functionLoader;
+            final FunctionLoader functionLoader;
+            final Agent functionAgent;
 
             // Read function description files.
             if (fOptionValue == null) {
                 functionLoader = new FunctionLoader();
+                // default initialisation with IDLab functions and GREL functions...
+                functionAgent = AgentFactory.createFromFnO(
+                        "functions_idlab.ttl",
+                        "https://users.ugent.be/~bjdmeest/function/grel.ttl",
+                        "grel_java_mapping.ttl");
             } else {
                 logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
+                String[] optionWithIDLabFunctionArgs = new String[fOptionValue.length + 1];
+                optionWithIDLabFunctionArgs[0] = "functions_idlab.ttl" ;
+                System.arraycopy(fOptionValue, 0, optionWithIDLabFunctionArgs, 1, optionWithIDLabFunctionArgs.length);
+                functionAgent = AgentFactory.createFromFnO(optionWithIDLabFunctionArgs);
+
                 RDF4JStore functionDescriptionTriples = new RDF4JStore();
                 functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
                 Map<String, Class> libraryMap = new HashMap<>();
@@ -319,6 +331,8 @@ public class Main {
                     functionDescriptionTriples.read(lisF.get(i), null, RDFFormat.TURTLE);
                 }
                 functionLoader = new FunctionLoader(functionDescriptionTriples, libraryMap);
+
+
             }
 
             if (mOptionValue != null) {
@@ -347,7 +361,7 @@ public class Main {
                 }
             }
 
-            executor = new Executor(rmlStore, factory, functionLoader, outputStore, baseIRI, strictMode);
+            executor = new Executor(rmlStore, factory, functionLoader, outputStore, baseIRI, strictMode, functionAgent);
 
             List<Term> triplesMaps = new ArrayList<>();
 

@@ -1,11 +1,13 @@
 package be.ugent.rml.functions;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class DynamicSingleRecordFunctionExecutor extends AbstractSingleRecordFunctionExecutor {
 
-    public DynamicSingleRecordFunctionExecutor(List<ParameterValuePair> parameterValuePairs, FunctionLoader functionLoader) {
+    public DynamicSingleRecordFunctionExecutor(List<ParameterValuePair> parameterValuePairs, final Agent functionAgent) {
         ArrayList<ParameterValueOriginPair> pairs = new ArrayList<>();
 
         parameterValuePairs.forEach(pair -> {
@@ -18,6 +20,6 @@ public class DynamicSingleRecordFunctionExecutor extends AbstractSingleRecordFun
             pairs.add(new ParameterValueOriginPair(pair.getParameterGenerators(), objectGeneratorOriginPairs));
         });
 
-        functionExecutor = new DynamicMultipleRecordsFunctionExecutor(pairs, functionLoader);
+        functionExecutor = new DynamicMultipleRecordsFunctionExecutor(pairs, functionAgent);
     }
 }

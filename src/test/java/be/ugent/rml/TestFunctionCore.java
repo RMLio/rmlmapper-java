@@ -1,5 +1,7 @@
 package be.ugent.rml;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabTestFunctions;
 import be.ugent.rml.store.RDF4JStore;
@@ -26,7 +28,15 @@ abstract class TestFunctionCore extends TestCore {
         functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("grel_java_mapping.ttl")), null, RDFFormat.TURTLE);
 //            File myFile = Utils.getFile("rml-fno-test-cases/functions_test.ttl");
         FunctionLoader functionLoader = new FunctionLoader(functionDescriptionTriples, libraryMap);
-        Executor executor = this.createExecutor(mapPath, functionLoader);
+
+        Agent functionAgent = AgentFactory.createFromFnO(
+                "functions_idlab.ttl",
+                "rml-fno-test-cases/functions_test.ttl",
+                "grel_java_mapping.ttl",
+                "https://users.ugent.be/~bjdmeest/function/grel.ttl"
+                );
+
+        Executor executor = this.createExecutor(mapPath, functionLoader, functionAgent);
         doMapping(executor, outPath);
         return executor;
     }

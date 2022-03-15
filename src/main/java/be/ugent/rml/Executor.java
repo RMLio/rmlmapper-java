@@ -1,15 +1,16 @@
 package be.ugent.rml;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.RDF4JStore;
-import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.term.ProvenancedTerm;
 import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
@@ -39,23 +40,23 @@ public class Executor {
     private final StrictMode strictMode;
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
-        this(rmlStore, recordsFactory, null, null, baseIRI, strictMode);
+        this(rmlStore, recordsFactory, null, null, baseIRI, strictMode, null);
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, String baseIRI, StrictMode strictMode) throws Exception {
-        this(rmlStore, recordsFactory, functionLoader, null, baseIRI, strictMode);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
+        this(rmlStore, recordsFactory, functionLoader, null, baseIRI, strictMode, functionAgent);
     }
 
     /**
      * Defaults to best effort operation. For strict mode,
-     * use {@link Executor#Executor(QuadStore, RecordsFactory, FunctionLoader, QuadStore, String, StrictMode)}
+     * use {@link Executor#Executor(QuadStore, RecordsFactory, FunctionLoader, QuadStore, String, StrictMode, Agent)}
      */
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI) throws Exception {
-        this(rmlStore, recordsFactory, functionLoader, resultingQuads, baseIRI, StrictMode.BEST_EFFORT);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI, final Agent functionAgent) throws Exception {
+        this(rmlStore, recordsFactory, functionLoader, resultingQuads, baseIRI, StrictMode.BEST_EFFORT, functionAgent);
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI, StrictMode strictMode) throws Exception {
-        this.initializer = new Initializer(rmlStore, functionLoader);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
+        this.initializer = new Initializer(rmlStore, functionLoader, functionAgent);
         this.mappings = this.initializer.getMappings();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
@@ -105,8 +106,8 @@ public class Executor {
         }
     }
 
-    public Executor(RDF4JStore rmlStore, RecordsFactory factory, FunctionLoader functionLoader, QuadStore outputStore) throws Exception {
-        this(rmlStore, factory, functionLoader, outputStore, rmlStore.getBase());
+    public Executor(RDF4JStore rmlStore, RecordsFactory factory, FunctionLoader functionLoader, QuadStore outputStore, final Agent functionAgent) throws Exception {
+        this(rmlStore, factory, functionLoader, outputStore, rmlStore.getBase(), functionAgent);
     }
 
     /*

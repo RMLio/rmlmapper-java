@@ -21,7 +21,7 @@ idlab-fn:equal
     fno:expects         ( grel:valueParam grel:valueParam2 ) ;
     fno:returns         ( grel:stringOut ) ;
     lib:providedBy      [ lib:localLibrary "UtilFunctions.jar" ;
-                          lib:class        "UtilFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.UtilFunctions" ;
                           lib:method       "equal" ] .
 
 idlab-fn:notEqual
@@ -32,7 +32,7 @@ idlab-fn:notEqual
     fno:expects         ( grel:valueParam grel:valueParam2 ) ;
     fno:returns         ( grel:stringOut ) ;
     lib:providedBy      [ lib:localLibrary "UtilFunctions.jar" ;
-                          lib:class        "UtilFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.UtilFunctions" ;
                           lib:method       "notEqual" ] .
 
 idlab-fn:stringContainsOtherString
@@ -43,7 +43,7 @@ idlab-fn:stringContainsOtherString
     fno:expects         ( idlab-fn:_str idlab-fn:_otherStr idlab-fn:_delimiter ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "stringContainsOtherString" ] .
 
 idlab-fn:listContainsElement
@@ -54,7 +54,7 @@ idlab-fn:listContainsElement
     fno:expects         ( idlab-fn:_list idlab-fn:_str ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "listContainsElement" ] .
 
 idlab-fn:getMIMEType
@@ -65,7 +65,7 @@ idlab-fn:getMIMEType
     fno:expects         ( idlab-fn:_str ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "getMIMEType" ] .
 
 idlab-fn:decide
@@ -76,7 +76,7 @@ idlab-fn:decide
     fno:expects         ( idlab-fn:_str idlab-fn:_expectedStr idlab-fn:_result ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "decide" ] .
 
 idlab-fn:isNull
@@ -87,7 +87,7 @@ idlab-fn:isNull
     fno:expects         ( idlab-fn:_str ) ;
     fno:returns         ( idlab-fn:_boolOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "isNull" ] .
 
 idlab-fn:dbpediaSpotlight
@@ -98,7 +98,7 @@ idlab-fn:dbpediaSpotlight
     fno:expects         ( idlab-fn:_str idlab-fn:_endpoint ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "dbpediaSpotlight" ] .
 
 idlab-fn:trueCondition
@@ -109,7 +109,7 @@ idlab-fn:trueCondition
     fno:expects         ( idlab-fn:_strBoolean idlab-fn:_str ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "trueCondition" ] .
 
 idlab-fn:readFile
@@ -120,7 +120,7 @@ idlab-fn:readFile
     fno:expects         ( idlab-fn:_path ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "readFile" ] .
 
 idlab-fn:random
@@ -131,7 +131,7 @@ idlab-fn:random
     fno:expects         ( ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "random" ] .
 
 idlab-fn:inRange
@@ -142,7 +142,7 @@ idlab-fn:inRange
     fno:expects         ( idlab-fn:_test idlab-fn:_from idlab-fn:_to ) ;
     fno:returns         ( idlab-fn:_boolOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "inRange" ] .
 
 idlab-fn:slugify
@@ -153,7 +153,7 @@ idlab-fn:slugify
     fno:expects         ( idlab-fn:_str ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "slugify" ] .
 
 idlab-fn:normalizeDate
@@ -164,7 +164,7 @@ idlab-fn:normalizeDate
     fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "normalizeDate" ] .
 
  idlab-fn:normalizeDateWithLang
@@ -175,7 +175,7 @@ idlab-fn:normalizeDate
      fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern idlab-fn:_lang ) ;
      fno:returns         ( idlab-fn:_stringOut ) ;
      lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                           lib:class        "IDLabFunctions" ;
+                           lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                            lib:method       "normalizeDateWithLang" ] .
 
 idlab-fn:normalizeDateTime
@@ -186,7 +186,7 @@ idlab-fn:normalizeDateTime
     fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "normalizeDateTime" ] .
 
  idlab-fn:normalizeDateTimeWithLang
@@ -197,7 +197,7 @@ idlab-fn:normalizeDateTime
      fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern idlab-fn:_lang ) ;
      fno:returns         ( idlab-fn:_stringOut ) ;
      lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                           lib:class        "IDLabFunctions" ;
+                           lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                            lib:method       "normalizeDateTimeWithLang" ] .
 
 idlab-fn:generateUniqueIRI
@@ -208,7 +208,7 @@ idlab-fn:generateUniqueIRI
     fno:expects         ( idlab-fn:_iri idlab-fn:_watchedProperty idlab-fn:_unique idlab-fn:_state ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "generateUniqueIRI" ] .
 
 
@@ -241,7 +241,7 @@ idlab-fn:toUpperCaseURL
     fno:expects         ( idlab-fn:_str ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "toUpperCaseURL" ] .
 
 idlab-fn:_path

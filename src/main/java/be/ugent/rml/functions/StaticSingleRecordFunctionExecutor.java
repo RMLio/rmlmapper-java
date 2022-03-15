@@ -1,5 +1,6 @@
 package be.ugent.rml.functions;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.rml.Template;
 
 import java.util.HashMap;
@@ -8,7 +9,7 @@ import java.util.Map;
 
 public class StaticSingleRecordFunctionExecutor extends AbstractSingleRecordFunctionExecutor {
 
-    public StaticSingleRecordFunctionExecutor(FunctionModel model, Map<String, List<Template>> parameters) {
+    public StaticSingleRecordFunctionExecutor(FunctionModel model, final Agent functionAgent, final String functionId, Map<String, List<Template>> parameters) {
         HashMap<String, Object[]> parametersForOtherExecutor = new HashMap<>();
 
         parameters.keySet().forEach(parameter -> {
@@ -20,6 +21,6 @@ public class StaticSingleRecordFunctionExecutor extends AbstractSingleRecordFunc
            parametersForOtherExecutor.put(parameter, objects);
         });
 
-        functionExecutor = new StaticMultipleRecordsFunctionExecutor(model, parametersForOtherExecutor);
+        functionExecutor = new StaticMultipleRecordsFunctionExecutor(model, parametersForOtherExecutor, functionAgent, functionId);
     }
 }
