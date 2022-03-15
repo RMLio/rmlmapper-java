@@ -41,7 +41,7 @@ idlab-fn:stringContainsOtherString
     rdfs:label          "stringContainsOtherString" ;
     dcterms:description "Returns true if a string is found in a delimited string." ;
     fno:expects         ( idlab-fn:_str idlab-fn:_otherStr idlab-fn:_delimiter ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
+    fno:returns         ( idlab-fn:_boolOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
                           lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "stringContainsOtherString" ] .
@@ -52,7 +52,7 @@ idlab-fn:listContainsElement
     rdfs:label          "listContainsElement" ;
     dcterms:description "Returns true if the string is found in the list" ;
     fno:expects         ( idlab-fn:_list idlab-fn:_str ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
+    fno:returns         ( idlab-fn:_boolOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
                           lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "listContainsElement" ] .
@@ -96,7 +96,7 @@ idlab-fn:dbpediaSpotlight
     rdfs:label          "DBpedia Spotlight annotate" ;
     dcterms:description "Returns the DBpedia URLs of the detected entities in the input text" ;
     fno:expects         ( idlab-fn:_str idlab-fn:_endpoint ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
+    fno:returns         ( idlab-fn:_listOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
                           lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
                           lib:method       "dbpediaSpotlight" ] .

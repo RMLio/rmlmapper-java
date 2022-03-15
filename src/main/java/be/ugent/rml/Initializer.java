@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
@@ -13,10 +14,10 @@ import java.util.List;
 public class Initializer {
 
     private final MappingFactory factory;
-    private QuadStore rmlStore;
-    private FunctionLoader functionLoader;
-    private List<Term> triplesMaps;
-    private HashMap<Term, Mapping> mappings;
+    private final QuadStore rmlStore;
+    private final FunctionLoader functionLoader;
+    private final List<Term> triplesMaps;
+    private final HashMap<Term, Mapping> mappings;
 
     public Initializer(QuadStore rmlStore, FunctionLoader functionLoader, final Agent functionAgent) throws Exception {
         this.rmlStore = rmlStore;
@@ -30,7 +31,11 @@ public class Initializer {
             this.functionLoader = functionLoader;
         }
 
-        this.factory = new MappingFactory(this.functionLoader, functionAgent);
+        final Agent initialisedFunctionAgent = functionAgent == null ?
+                AgentFactory.createFromFnO("functions_idlab.ttl")
+                : functionAgent;
+
+        this.factory = new MappingFactory(this.functionLoader, initialisedFunctionAgent);
         extractMappings();
     }
 
