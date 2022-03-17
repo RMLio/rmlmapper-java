@@ -1,5 +1,6 @@
 package be.ugent.rml.functions.lib;
 
+import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
@@ -269,6 +270,31 @@ public class IDLabFunctionsTest {
             assertNotNull(generated_iri);
             assertTrue(generated_iri.contains(template));
         }
+    }
+
+    @Test
+    public void lookup() throws CsvValidationException, IOException {
+        String searchString = "A";
+        String inputFile =  "src/test/resources/rml-fno-test-cases/class.csv";
+        Integer fromColumn = 0;
+        Integer toColumn = 1;
+        assertEquals("Class A", IDLabFunctions.lookup(searchString, inputFile, fromColumn, toColumn));
+
+        String delimiter = ",";
+        assertEquals("Class A", IDLabFunctions.lookupWithDelimiter(searchString, inputFile, fromColumn, toColumn, delimiter));
+
+        searchString = "Class B";
+        assertEquals(null, IDLabFunctions.lookup(searchString, inputFile, fromColumn, toColumn));
+
+        searchString = "Class B";
+        fromColumn = 2;
+        assertEquals(null, IDLabFunctions.lookup(searchString, inputFile, fromColumn, toColumn));
+
+        searchString = "B";
+        fromColumn = 0;
+        inputFile = "src/test/resources/rml-fno-test-cases/classB.csv";
+        delimiter = ";";
+        assertEquals("Class B", IDLabFunctions.lookupWithDelimiter(searchString, inputFile, fromColumn, toColumn, delimiter));
     }
 
 }
