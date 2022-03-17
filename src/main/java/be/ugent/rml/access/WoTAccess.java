@@ -42,10 +42,21 @@ public class WoTAccess implements Access {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        InputStream response = getInputStreamFromURL(new URL(location), contentType, headers);
-        if(response == null && auth.get("data").containsKey("refresh")){
-            refreshToken();
-            return getInputStreamFromURL(new URL(location), contentType, headers);
+        logger.debug("get inputstream");
+        InputStream response ;
+
+        if(auth.get("data").containsKey("refresh")){
+            try{
+                response = getInputStreamFromAuthURL(new URL(location), contentType, headers);
+            } catch (Exception e){
+                logger.debug("Refresh token");
+                refreshToken();
+                logger.debug("try again with new token");
+                logger.debug("new token = " + this.headers.get(this.auth.get("info").get("name")));
+                return getInputStreamFromURL(new URL(location), contentType, headers);
+            }
+        } else {
+            response = getInputStreamFromURL(new URL(location), contentType, headers);
         }
         return response;
     }
@@ -96,12 +107,12 @@ public class WoTAccess implements Access {
         StringBuilder data = new StringBuilder();
         data.append("{\"grant_type\": \"refresh_token\"");
         for(String name: auth.get("data").keySet()) {
-            data.append(",\"").append(name).append("\":\"").append(auth.get(name)).append("\",");
+            data.append(" ,\"").append(name).append("\":\"").append(auth.get("data").get(name)).append("\"");
         }
         data.append("}");
-
+        logger.debug(data.toString());
         InputStream response = getPostRequestResponse(new URL(auth.get("info").get("authorisation")), contentType, data.toString().getBytes());
         HashMap<String, String> jsonResponse = (HashMap<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(response, "utf-8");
-        this.headers.put(auth.get("info").get("name"), jsonResponse.get("acces_token"));
+        this.headers.put(auth.get("info").get("name"), "Bearer " + jsonResponse.get("access_token"));
     }
 }
