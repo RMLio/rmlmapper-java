@@ -258,6 +258,29 @@ public class Utils {
         return new FileInputStream(file);
     }
 
+    public static InputStream getPostRequestResponse(URL url, String contentType, byte[] auth ){
+        InputStream inputStream = null;
+        HashMap<String, String> headers = new HashMap<>();
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Accept", contentType);
+            // Set encoding if not set before
+            if(! headers.containsKey("charset")) {
+                headers.put("charset", "utf-8");
+            }
+            connection.connect();
+            OutputStream outputStream = connection.getOutputStream();
+            outputStream.write(auth);
+            inputStream = connection.getInputStream();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return inputStream;
+    }
+
     public static boolean isRemoteFile(String location) {
         return location.startsWith("https://") || location.startsWith("http://");
     }
