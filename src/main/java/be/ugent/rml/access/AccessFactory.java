@@ -136,19 +136,19 @@ public class AccessFactory {
                                     // BearerSecurityScheme
                                     // OAuth2 specific
                                     if (isOAuth) {
-                                        Term securityAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "authorisation"), null)).get(0);
+                                        Term securityAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "authorization"), null)).get(0);
                                         auth.get("info").put("authorisation", securityAuth.getValue());
                                         auth.get("info").put("name", securityName.get(0).getValue());
 
-                                        Term securityRefresh = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "refresh"), null)).get(0);
-                                        Term securityClientID = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "client_id"), null)).get(0);
-                                        Term securityClientSecret = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "client_secret"), null)).get(0);
+                                        Term securityRefresh = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "refreshValue"), null)).get(0);
+                                        Term securityClientID = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "clientID"), null)).get(0);
+                                        Term securityClientSecret = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "clientSecret"), null)).get(0);
 //                                        Term securityGrantType = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "grant_type"), null)).get(0);
 
                                         auth.get("data").put("refresh", securityRefresh.getValue());
                                         auth.get("data").put("client_id", securityClientID.getValue());
                                         auth.get("data").put("client_secret", securityClientSecret.getValue());
-                                        // can this not be set default?
+////                                      //can this not be set default?
 //                                        auth.get("data").put("grant_type", securityGrantType.getValue());
                                     }
                                     // both oath and bearer
