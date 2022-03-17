@@ -19,7 +19,7 @@ idlab-fn:equal
     rdfs:label          "equal" ;
     dcterms:description "Returns true if strings are equal." ;
     fno:expects         ( grel:valueParam grel:valueParam2 ) ;
-    fno:returns         ( grel:stringOut ) ;
+    fno:returns         ( idlab-fn:_boolOut ) ;
     lib:providedBy      [ lib:localLibrary "UtilFunctions.jar" ;
                           lib:class        "be.ugent.rml.functions.lib.UtilFunctions" ;
                           lib:method       "equal" ] .
@@ -30,7 +30,7 @@ idlab-fn:notEqual
     rdfs:label          "not equal" ;
     dcterms:description "Returns true if strings are not equal." ;
     fno:expects         ( grel:valueParam grel:valueParam2 ) ;
-    fno:returns         ( grel:stringOut ) ;
+    fno:returns         ( idlab-fn:_boolOut ) ;
     lib:providedBy      [ lib:localLibrary "UtilFunctions.jar" ;
                           lib:class        "be.ugent.rml.functions.lib.UtilFunctions" ;
                           lib:method       "notEqual" ] .

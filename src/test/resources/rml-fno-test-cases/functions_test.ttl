@@ -21,7 +21,7 @@ idlab-fn:generateNull
     fno:expects         ( ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabTestFunctions" ;
                           lib:method       "getNull" ] .
 
 idlab-fn:generateA
@@ -32,7 +32,7 @@ idlab-fn:generateA
     fno:expects         ( ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+                          lib:class        "be.ugent.rml.functions.lib.IDLabTestFunctions" ;
                           lib:method       "generateA" ] .
 
 idlab-fn:_stringOut
