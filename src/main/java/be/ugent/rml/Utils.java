@@ -246,8 +246,40 @@ public class Utils {
                 logger.debug(name + ": " + value);
                 connection.setRequestProperty(name, value);
             });
+            logger.debug("trying to connect");
             connection.connect();
+            logger.debug("getting inputstream");
             inputStream = connection.getInputStream();
+            logger.debug("got inputstream");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return inputStream;
+    }
+
+    public static InputStream getInputStreamFromAuthURL(URL url, String contentType, HashMap<String, String> headers) throws Exception {
+        InputStream inputStream = null;
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", contentType);
+            // Set encoding if not set before
+            if(!headers.containsKey("charset")) {
+                headers.put("charset", "utf-8");
+            }
+            // Apply all headers
+            headers.forEach((name, value) -> {
+                logger.debug(name + ": " + value);
+                connection.setRequestProperty(name, value);
+            });
+            logger.debug("trying to connect");
+            connection.connect();
+            if(connection.getResponseCode() == 401) throw new Exception("not authenticated");
+            logger.debug("getting inputstream");
+            inputStream = connection.getInputStream();
+            logger.debug("got inputstream");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
