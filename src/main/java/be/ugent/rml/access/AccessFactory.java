@@ -9,6 +9,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.jena.tdb.store.Hash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,6 @@ public class AccessFactory {
      * @return an Access instance based on the RML rules in rmlStore.
      */
     public Access getAccess(Term logicalSource, QuadStore rmlStore) {
-        logger.setLevel(Level.DEBUG);
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Access access = null;
 
@@ -110,12 +110,14 @@ public class AccessFactory {
                         break;
                     case NAMESPACES.TD + "PropertyAffordance":
                         HashMap<String, String> headers = new HashMap<String, String>();
+                        HashMap<String, HashMap<String, String>> auth = new HashMap<>();
+                        auth.put("data", new HashMap<String, String>());
+                        auth.put("info", new HashMap<String, String>());
 
                         List<Term> form = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.TD + "hasForm"), null));
                         List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "hasTarget"), null));
                         List<Term> contentTypes = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "forContentType"), null));
                         List<Term> headerList = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HTV + "headers"), null));
-                        HashMap<String, String> auth = new HashMap<>();
                         // Security schema & data
                         try {
                             Term thing = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.TD + "hasPropertyAffordance"), source)).get(0);
@@ -127,44 +129,52 @@ public class AccessFactory {
                                         new NamedNode(NAMESPACES.WOTSEC + "OAuth2SecurityScheme"))).size() != 0;
                                 boolean isBearer = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
                                         new NamedNode(NAMESPACES.WOTSEC + "BearerSecurityScheme"))).size() != 0;
+                                List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
+                                List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
+                                List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "tokenValue"), null));
                                 if (isOAuth || isBearer) {
                                     // BearerSecurityScheme
-
-                                    List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
-                                    List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
-                                    List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "tokenValue"), null));
-
+                                    // OAuth2 specific
                                     if (isOAuth) {
-                                        Term securityRefresh = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "refresh"), null)).get(0);
                                         Term securityAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "authorisation"), null)).get(0);
-                                        auth.put("refresh", securityRefresh.getValue());
-                                        auth.put("authorisation", securityAuth.getValue());
-                                        auth.put("name", securityName.get(0).getValue());
-                                    }
+                                        auth.get("info").put("authorisation", securityAuth.getValue());
+                                        auth.get("info").put("name", securityName.get(0).getValue());
 
+                                        Term securityRefresh = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "refresh"), null)).get(0);
+                                        Term securityClientID = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "client_id"), null)).get(0);
+                                        Term securityClientSecret = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "client_secret"), null)).get(0);
+//                                        Term securityGrantType = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "grant_type"), null)).get(0);
+
+                                        auth.get("data").put("refresh", securityRefresh.getValue());
+                                        auth.get("data").put("client_id", securityClientID.getValue());
+                                        auth.get("data").put("client_secret", securityClientSecret.getValue());
+                                        // can this not be set default?
+//                                        auth.get("data").put("grant_type", securityGrantType.getValue());
+                                    }
+                                    // both oath and bearer
                                     Term bearerToken = new Literal("Bearer " + securityValue.get(0).getValue());
                                     securityValue.set(0, bearerToken);
-
-                                    try {
-                                        switch (securityIn.get(0).getValue()) {
-                                            case "header": {
-                                                logger.info("Applying security configuration of " + sc.getValue() + "in header");
-                                                logger.debug("Name: " + securityName.get(0).getValue());
-                                                logger.debug("Value: " + securityValue.get(0).getValue());
-                                                headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
-                                                break;
-                                            }
-                                            case "query":
-                                            case "body":
-                                            case "cookie":
-                                            default:
-                                                throw new NotImplementedException();
+                                }
+                                try {
+                                    switch (securityIn.get(0).getValue()) {
+                                        case "header": {
+                                            logger.info("Applying security configuration of " + sc.getValue() + "in header");
+                                            logger.debug("Name: " + securityName.get(0).getValue());
+                                            logger.debug("Value: " + securityValue.get(0).getValue());
+                                            headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
+                                            break;
                                         }
-                                    } catch (IndexOutOfBoundsException e) {
-                                        logger.warn("Unable to apply security configuration for " + sc.getValue());
+                                        case "query":
+                                        case "body":
+                                        case "cookie":
+                                        default:
+                                            throw new NotImplementedException();
                                     }
+                                } catch (IndexOutOfBoundsException e) {
+                                    logger.warn("Unable to apply security configuration for " + sc.getValue());
                                 }
                             }
+
                         }
                         catch (IndexOutOfBoundsException e) {
                             logger.warn("No td:Thing description, unable to determine security configurations, assuming no security policies apply");
