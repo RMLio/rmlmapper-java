@@ -1,0 +1,118 @@
+# Variant of contact-transfer-using-schema-org.ttl, but using WoT spec.
+# Requires RML Mapper v4.10.0+
+# Status: WIP
+
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#>.
+@prefix fno: <https://w3id.org/function/ontology#>.
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#>.
+@prefix void: <http://rdfs.org/ns/void#>.
+@prefix dc: <http://purl.org/dc/terms/>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix : <http://mapping.example.com/>.
+@prefix ex: <http://example.com/>.
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>.
+@prefix ssn-system: <http://www.w3.org/ns/ssn/systems/>.
+@prefix ssn: <http://www.w3.org/ns/ssn/>.
+@prefix sosa: <http://www.w3.org/ns/sosa/>.
+@prefix idlab-fn: <http://example.com/idlab/function/>.
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#>.
+@prefix schema: <http://schema.org/>.
+@prefix wotsec: <https://www.w3.org/2019/wot/security#> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
+@prefix htv: <http://www.w3.org/2011/http#> .
+@base <http://example.com/rules/> .
+
+@prefix idsa: <https://w3id.org/idsa/core/> .
+
+:rules_000 a void:Dataset;
+           void:exampleResource :map_google-contacts-parent_000.
+:map_google-contacts-parent_000 rml:logicalSource :source_000.
+
+# wot-version
+# BearerSecurityScheme in HTTP header
+<#WotWebAPISecurity> a wotsec:OAuth2SecurityScheme;
+                     wotsec:in "header";
+                     wotsec:name "Authorization";
+                     wotsec:authorization "http://localhost:8000/auth"
+.
+
+# Bearer token in HTTP header
+<#WotWebAPISecurity> a wotsec:Token;
+                     idsa:tokenValue "s3cr3tb34r3r";
+.
+
+# Bearer token in HTTP header
+<#WotWebAPISecurity> a wotsec:Refresh;
+                     idsa:refreshValue "xur2saef4s";
+                     idsa:clientID "testID";
+                     idsa:clientSecret "testSecret";
+.
+
+<#WoTWebAPI> a td:Thing;
+             td:hasPropertyAffordance <#WoTWebResource>;
+             td:hasSecurityConfiguration <#WotWebAPISecurity>;
+.
+
+
+<#WoTWebResource> a td:PropertyAffordance;
+                  td:hasForm [
+                    # URL and content type
+                      hctl:hasTarget "http://localhost:8000/api";
+                      hctl:forContentType "application/json";
+                    # Read only
+                      hctl:hasOperationType td:readproperty ;
+                    # Set HTTP method and headers
+                      htv:methodName "GET";
+                      htv:headers ([
+                                     htv:fieldName "User-Agent";
+                                     htv:fieldValue "RML Processor";
+                                   ]);
+                    ];
+.
+
+:source_000 a rml:LogicalSource;
+            rml:source  <#WoTWebResource>;
+            rml:iterator "$.connections[*]";
+            rml:referenceFormulation ql:JSONPath.
+
+
+
+
+:map_google-contacts-parent_000 a rr:TriplesMap;
+                                rdfs:label "google-contacts-parent".
+:s_000 a rr:SubjectMap.
+:map_google-contacts-parent_000 rr:subjectMap :s_000.
+:s_000 rr:template "http://example.com/contact/{resourceName}".
+:pom_000 a rr:PredicateObjectMap.
+:map_google-contacts-parent_000 rr:predicateObjectMap :pom_000.
+:pm_000 a rr:PredicateMap.
+:pom_000 rr:predicateMap :pm_000.
+:pm_000 rr:constant rdf:type.
+:pom_000 rr:objectMap :om_000.
+:om_000 a rr:ObjectMap;
+        rr:constant "http://schema.org/Person";
+        rr:termType rr:IRI.
+:pom_001 a rr:PredicateObjectMap.
+:map_google-contacts-parent_000 rr:predicateObjectMap :pom_001.
+:pm_001 a rr:PredicateMap.
+:pom_001 rr:predicateMap :pm_001.
+:pm_001 rr:constant schema:givenName.
+:pom_001 rr:objectMap :om_001.
+:om_001 a rr:ObjectMap;
+        rml:reference "names[0].givenName";
+        rr:termType rr:Literal.
+:pom_002 a rr:PredicateObjectMap.
+:map_google-contacts-parent_000 rr:predicateObjectMap :pom_002.
+:pm_002 a rr:PredicateMap.
+:pom_002 rr:predicateMap :pm_002.
+:pm_002 rr:constant schema:familyName.
+:pom_002 rr:objectMap :om_002.
+:om_002 a rr:ObjectMap;
+        rml:reference "names[0].familyName";
+        rr:termType rr:Literal.

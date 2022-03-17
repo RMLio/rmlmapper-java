@@ -1,0 +1,66 @@
+{
+  "connections": [
+    {
+      "resourceName": "people/c6507602529271697277",
+      "etag": "%EgUBAj03LhoEAQIFByIMc2NFSkV3QnFwSnc9",
+      "names": [
+        {
+          "metadata": {
+            "primary": true,
+            "source": {
+              "type": "CONTACT",
+              "id": "5a4fa60588ac4f7d"
+            }
+          },
+          "displayName": "Ben De Meester",
+          "familyName": "De Meester",
+          "givenName": "Ben",
+          "displayNameLastFirst": "De Meester, Ben",
+          "unstructuredName": "Ben De Meester"
+        }
+      ]
+    },
+    {
+      "resourceName": "people/c8686830351419956474",
+      "etag": "%EgUBAj03LhoEAQIFByIMN29jTWxqV1Y3TW89",
+      "names": [
+        {
+          "metadata": {
+            "primary": true,
+            "source": {
+              "type": "CONTACT",
+              "id": "788dd22e0877dcfa"
+            }
+          },
+          "displayName": "Pieter Heyvaert",
+          "familyName": "Heyvaert",
+          "givenName": "Pieter",
+          "displayNameLastFirst": "Heyvaert, Pieter",
+          "unstructuredName": "Pieter Heyvaert"
+        }
+      ]
+    },
+    {
+      "resourceName": "people/c9122742535995630067",
+      "etag": "%EgUBAj03LhoEAQIFByIMWlJaOUVHRTIrRWM9",
+      "names": [
+        {
+          "metadata": {
+            "primary": true,
+            "source": {
+              "type": "CONTACT",
+              "id": "7e9a7e008b5da1f3"
+            }
+          },
+          "displayName": "Ruben Taelman",
+          "familyName": "Taelman",
+          "givenName": "Ruben",
+          "displayNameLastFirst": "Taelman, Ruben",
+          "unstructuredName": "Ruben Taelman"
+        }
+      ]
+    }
+  ],
+  "totalPeople": 3,
+  "totalItems": 3
+}

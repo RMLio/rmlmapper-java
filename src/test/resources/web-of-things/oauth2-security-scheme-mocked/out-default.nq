@@ -1,0 +1,9 @@
+<http://example.com/contact/people%2Fc6507602529271697277> <http://schema.org/familyName> "De Meester" .
+<http://example.com/contact/people%2Fc6507602529271697277> <http://schema.org/givenName> "Ben" .
+<http://example.com/contact/people%2Fc6507602529271697277> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
+<http://example.com/contact/people%2Fc8686830351419956474> <http://schema.org/familyName> "Heyvaert" .
+<http://example.com/contact/people%2Fc8686830351419956474> <http://schema.org/givenName> "Pieter" .
+<http://example.com/contact/people%2Fc8686830351419956474> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
+<http://example.com/contact/people%2Fc9122742535995630067> <http://schema.org/familyName> "Taelman" .
+<http://example.com/contact/people%2Fc9122742535995630067> <http://schema.org/givenName> "Ruben" .
+<http://example.com/contact/people%2Fc9122742535995630067> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
