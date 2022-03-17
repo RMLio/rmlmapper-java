@@ -1,37 +1,23 @@
 package be.ugent.rml.access;
 
-import net.minidev.json.JSONObject;
-import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-import org.apache.thrift.protocol.TJSONProtocol;
+import com.jayway.jsonpath.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static be.ugent.rml.Utils.getHashOfString;
-import static be.ugent.rml.Utils.getInputStreamFromURL;
+import static be.ugent.rml.Utils.*;
 
 
 public class WoTAccess implements Access {
 
     private static final Logger logger = LoggerFactory.getLogger(WoTAccess.class);
-    private final HashMap<String, String> auth;
+    private final HashMap<String, HashMap<String, String>> auth;
     private String location;
     private String contentType;
     private HashMap<String, String> headers;
@@ -41,7 +27,7 @@ public class WoTAccess implements Access {
      * @param location the location of the WoT Thing.
      * @param contentType the content type of the WoT Thing.
      */
-    public WoTAccess (String location, String contentType, HashMap<String, String> headers, HashMap<String, String> auth) {
+    public WoTAccess (String location, String contentType, HashMap<String, String> headers, HashMap<String, HashMap<String, String>> auth) {
         this.location = location;
         this.contentType = contentType;
         this.headers = headers;
@@ -57,7 +43,7 @@ public class WoTAccess implements Access {
     @Override
     public InputStream getInputStream() throws IOException {
         InputStream response = getInputStreamFromURL(new URL(location), contentType, headers);
-        if(response == null && auth.containsKey("refresh")){
+        if(response == null && auth.get("data").containsKey("refresh")){
             refreshToken();
             return getInputStreamFromURL(new URL(location), contentType, headers);
         }
@@ -105,26 +91,17 @@ public class WoTAccess implements Access {
         return contentType;
     }
 
-    public void refreshToken() throws UnsupportedEncodingException {
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+    public void refreshToken() throws MalformedURLException {
 
-            HttpPost httpPost = new HttpPost(location);
-            List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("refresh_token", auth.get("refresh")));
-            nvps.add(new BasicNameValuePair("grant_type", "refresh_token"));
-            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-
-            try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
-                HttpEntity entity = response.getEntity();
-                //TODO krijg new token uit response body
-//                String new_token =
-//                headers.put(auth.get("name"), new_token);
-
-                EntityUtils.consume(entity);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        StringBuilder data = new StringBuilder();
+        data.append("{\"grant_type\": \"refresh_token\"");
+        for(String name: auth.get("data").keySet()) {
+            data.append(",\"").append(name).append("\":\"").append(auth.get(name)).append("\",");
         }
+        data.append("}");
 
+        InputStream response = getPostRequestResponse(new URL(auth.get("info").get("authorisation")), contentType, data.toString().getBytes());
+        HashMap<String, String> jsonResponse = (HashMap<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(response, "utf-8");
+        this.headers.put(auth.get("info").get("name"), jsonResponse.get("acces_token"));
     }
 }
