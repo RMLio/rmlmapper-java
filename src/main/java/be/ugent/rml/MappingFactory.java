@@ -26,7 +26,6 @@ import java.util.function.BiConsumer;
 import static be.ugent.rml.Utils.isValidrrLanguage;
 
 public class MappingFactory {
-    private final FunctionLoader functionLoader;    // TODO: remove
     private final Agent functionAgent;
     private MappingInfo subjectMappingInfo;
     private List<MappingInfo> graphMappingInfos;
@@ -38,8 +37,7 @@ public class MappingFactory {
     private boolean ignoreDoubleQuotes;
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public MappingFactory(FunctionLoader functionLoader, Agent functionAgent) {
-        this.functionLoader = functionLoader;
+    public MappingFactory(Agent functionAgent) {
         this.functionAgent = functionAgent;
     }
 
@@ -265,7 +263,6 @@ public class MappingFactory {
                     } else if (childs.isEmpty()) {
                         throw new Error("One of the join conditions of " + triplesMap + " is missing rr:child.");
                     } else {
-                        FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
                         Map<String, Object[]> parameters = new HashMap<>();
 
                         boolean ignoreDoubleQuotesInParent = this.areDoubleQuotesIgnored(store, parentTriplesMap);
@@ -277,7 +274,7 @@ public class MappingFactory {
                         Object[] detailsChild = {"child", child};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
-                        joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(equal, parameters, functionAgent, "http://example.com/idlab/function/equal"));
+                        joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "http://example.com/idlab/function/equal"));
                     }
                 }
 
@@ -486,7 +483,6 @@ public class MappingFactory {
      * @throws IOException
      */
     private MultipleRecordsFunctionExecutor generateSameLogicalSourceJoinConditionFunctionTermMap() throws IOException {
-        FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
         Map<String, Object[]> parameters = new HashMap<>();
 
         SingleRecordFunctionExecutor parent = new HashExtractor();
@@ -497,7 +493,7 @@ public class MappingFactory {
         Object[] detailsChild = {"child", child};
         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
-        return new StaticMultipleRecordsFunctionExecutor(equal, parameters, functionAgent, "http://example.com/idlab/function/equal");
+        return new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "http://example.com/idlab/function/equal");
     }
 
     private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {

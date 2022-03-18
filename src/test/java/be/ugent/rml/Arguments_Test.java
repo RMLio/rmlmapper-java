@@ -10,10 +10,6 @@ import org.rdfhdt.hdt.triples.IteratorTripleID;
 import org.rdfhdt.hdt.triples.TripleID;
 import org.rdfhdt.hdt.triples.Triples;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,7 +18,8 @@ import java.nio.file.Paths;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class Arguments_Test extends TestCore {
     @Rule
@@ -193,7 +190,7 @@ public class Arguments_Test extends TestCore {
                 actualOutPath,
                 false
         );
-        assertThat(stdout.toString(), containsString("Loading function: "));
+        assertThat(stdout.toString(), containsString("Loading function descriptions"));
 
         File outputFile = null;
         try {

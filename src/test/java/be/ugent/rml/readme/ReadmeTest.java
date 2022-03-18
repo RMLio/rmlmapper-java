@@ -4,8 +4,6 @@ import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.Executor;
 import be.ugent.rml.Utils;
-import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
@@ -14,8 +12,6 @@ import be.ugent.rml.term.NamedNode;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.fail;
 
@@ -37,17 +33,13 @@ public class ReadmeTest {
             RecordsFactory factory = new RecordsFactory(mappingFile.getParent());
 
             // Set up the functions used during the mapping
-            Map<String, Class> libraryMap = new HashMap<>();
-            libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-
-            FunctionLoader functionLoader = new FunctionLoader(null, libraryMap);
-            Agent functionAgent = AgentFactory.createFromFnO("functions_idlab.ttl");
+            Agent functionAgent = AgentFactory.createFromFnO("functions_idlab.ttl", "functions_idlab_classes_java_mapping_tests.ttl");
 
             // Set up the outputstore (needed when you want to output something else than nquads
             QuadStore outputStore = new RDF4JStore();
 
             // Create the Executor
-            Executor executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingStream), functionAgent);
+            Executor executor = new Executor(rmlStore, factory, outputStore, Utils.getBaseDirectiveTurtle(mappingStream), functionAgent);
 
             // Execute the mapping
             QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));

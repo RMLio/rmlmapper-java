@@ -2,7 +2,6 @@ package be.ugent.rml;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
-import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
@@ -15,29 +14,24 @@ public class Initializer {
 
     private final MappingFactory factory;
     private final QuadStore rmlStore;
-    private final FunctionLoader functionLoader;
     private final List<Term> triplesMaps;
     private final HashMap<Term, Mapping> mappings;
 
-    public Initializer(QuadStore rmlStore, FunctionLoader functionLoader, final Agent functionAgent) throws Exception {
+    public Initializer(QuadStore rmlStore, final Agent functionAgent) throws Exception {
         this.rmlStore = rmlStore;
         //we get all the TriplesMaps from the mapping
         this.triplesMaps = this.getAllTriplesMaps();
         this.mappings = new HashMap<Term, Mapping>();
 
-        if (functionLoader == null) {
-            this.functionLoader = new FunctionLoader();
-        } else {
-            this.functionLoader = functionLoader;
-        }
 
         final Agent initialisedFunctionAgent = functionAgent == null ?
                 AgentFactory.createFromFnO("functions_idlab.ttl",
+                        "functions_idlab_classes_java_mapping.ttl",
                         "https://users.ugent.be/~bjdmeest/function/grel.ttl",
                         "grel_java_mapping.ttl")
                 : functionAgent;
 
-        this.factory = new MappingFactory(this.functionLoader, initialisedFunctionAgent);
+        this.factory = new MappingFactory(initialisedFunctionAgent);
         extractMappings();
     }
 
@@ -76,7 +70,4 @@ public class Initializer {
         return this.triplesMaps;
     }
 
-    public FunctionLoader getFunctionLoader() {
-        return this.functionLoader;
-    }
 }

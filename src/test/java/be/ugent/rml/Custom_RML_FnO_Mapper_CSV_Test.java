@@ -3,6 +3,10 @@ package be.ugent.rml;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
+
+import static org.junit.Assert.assertThrows;
+
 public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     @Test
     public void evaluate_0000_CSV() throws Exception {
@@ -46,7 +50,7 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
 
     @Test
     public void evaluate_0007_CSV() throws Exception {
-        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0007-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0007-CSV/output.ttl");
+        assertThrows(InvocationTargetException.class, () -> {doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0007-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0007-CSV/output.ttl");});
     }
 
     @Test

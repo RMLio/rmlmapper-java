@@ -23,15 +23,6 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     public DynamicMultipleRecordsFunctionExecutor(final List<ParameterValueOriginPair> parameterValuePairs, final Agent functionAgent) {
         this.parameterValuePairs = parameterValuePairs;
         this.functionAgent = functionAgent;
-
-//        // TODO: this will be passed as constructor argument
-//        try {
-//            functionAgent = AgentFactory.createFromFnO("functions_idlab.ttl",
-//                    "https://users.ugent.be/~bjdmeest/function/grel.ttl", "grel_java_mapping.ttl");
-//        } catch (FnOException e) {
-//            functionAgent = null;
-//            e.printStackTrace();
-//        }
     }
 
     @Override

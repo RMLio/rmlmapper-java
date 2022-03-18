@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ConstantExtractor implements Extractor, SingleRecordFunctionExecutor {
 
-    private String constant;
+    private final String constant;
 
     public ConstantExtractor(String constant) {
         this.constant = constant;

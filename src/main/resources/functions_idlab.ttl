@@ -1,7 +1,10 @@
 @prefix dcterms:  <http://purl.org/dc/terms/> .
 @prefix fno:      <https://w3id.org/function/ontology#> .
+@prefix fnoi:    <https://w3id.org/function/vocabulary/implementation#> .
+@prefix fnom:    <https://w3id.org/function/vocabulary/mapping#> .
 @prefix grel:     <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 @prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix idlab-fn-m: <http://example.com/idlab/function-mapping/> .
 @prefix lib:      <http://example.com/library#> .
 @prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
@@ -19,10 +22,7 @@ idlab-fn:equal
     rdfs:label          "equal" ;
     dcterms:description "Returns true if strings are equal." ;
     fno:expects         ( grel:valueParam grel:valueParam2 ) ;
-    fno:returns         ( idlab-fn:_boolOut ) ;
-    lib:providedBy      [ lib:localLibrary "UtilFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.UtilFunctions" ;
-                          lib:method       "equal" ] .
+    fno:returns         ( idlab-fn:_boolOut ) .
 
 idlab-fn:notEqual
     a                   fno:Function ;
@@ -30,10 +30,7 @@ idlab-fn:notEqual
     rdfs:label          "not equal" ;
     dcterms:description "Returns true if strings are not equal." ;
     fno:expects         ( grel:valueParam grel:valueParam2 ) ;
-    fno:returns         ( idlab-fn:_boolOut ) ;
-    lib:providedBy      [ lib:localLibrary "UtilFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.UtilFunctions" ;
-                          lib:method       "notEqual" ] .
+    fno:returns         ( idlab-fn:_boolOut ) .
 
 idlab-fn:stringContainsOtherString
     a                   fno:Function ;
@@ -41,10 +38,7 @@ idlab-fn:stringContainsOtherString
     rdfs:label          "stringContainsOtherString" ;
     dcterms:description "Returns true if a string is found in a delimited string." ;
     fno:expects         ( idlab-fn:_str idlab-fn:_otherStr idlab-fn:_delimiter ) ;
-    fno:returns         ( idlab-fn:_boolOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "stringContainsOtherString" ] .
+    fno:returns         ( idlab-fn:_boolOut ) .
 
 idlab-fn:listContainsElement
     a                   fno:Function ;
@@ -52,10 +46,7 @@ idlab-fn:listContainsElement
     rdfs:label          "listContainsElement" ;
     dcterms:description "Returns true if the string is found in the list" ;
     fno:expects         ( idlab-fn:_list idlab-fn:_str ) ;
-    fno:returns         ( idlab-fn:_boolOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "listContainsElement" ] .
+    fno:returns         ( idlab-fn:_boolOut ) .
 
 idlab-fn:getMIMEType
     a                   fno:Function ;
@@ -63,10 +54,7 @@ idlab-fn:getMIMEType
     rdfs:label          "getMIMEType" ;
     dcterms:description "Returns the MIME Type of a filename" ;
     fno:expects         ( idlab-fn:_str ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "getMIMEType" ] .
+    fno:returns         ( idlab-fn:_stringOut ) .
 
 idlab-fn:decide
     a                   fno:Function ;
@@ -74,10 +62,7 @@ idlab-fn:decide
     rdfs:label          "decide" ;
     dcterms:description "Returns a given value if input is equal to another given value" ;
     fno:expects         ( idlab-fn:_str idlab-fn:_expectedStr idlab-fn:_result ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "decide" ] .
+    fno:returns         ( idlab-fn:_stringOut ) .
 
 idlab-fn:isNull
     a                   fno:Function ;
@@ -85,10 +70,7 @@ idlab-fn:isNull
     rdfs:label          "Is null" ;
     dcterms:description "Returns true if the given value is null, else false" ;
     fno:expects         ( idlab-fn:_str ) ;
-    fno:returns         ( idlab-fn:_boolOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "isNull" ] .
+    fno:returns         ( idlab-fn:_boolOut ) .
 
 idlab-fn:dbpediaSpotlight
     a                   fno:Function ;
@@ -96,10 +78,7 @@ idlab-fn:dbpediaSpotlight
     rdfs:label          "DBpedia Spotlight annotate" ;
     dcterms:description "Returns the DBpedia URLs of the detected entities in the input text" ;
     fno:expects         ( idlab-fn:_str idlab-fn:_endpoint ) ;
-    fno:returns         ( idlab-fn:_listOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "dbpediaSpotlight" ] .
+    fno:returns         ( idlab-fn:_listOut ) .
 
 idlab-fn:trueCondition
     a                   fno:Function ;
@@ -107,10 +86,7 @@ idlab-fn:trueCondition
     rdfs:label          "True condition" ;
     dcterms:description "Returns the value if the given boolean is true, else null" ;
     fno:expects         ( idlab-fn:_strBoolean idlab-fn:_str ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "trueCondition" ] .
+    fno:returns         ( idlab-fn:_stringOut ) .
 
 idlab-fn:readFile
     a                   fno:Function ;
@@ -118,10 +94,7 @@ idlab-fn:readFile
     rdfs:label          "Read local file as string" ;
     dcterms:description "Returns the content of a local file as string" ;
     fno:expects         ( idlab-fn:_path ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "readFile" ] .
+    fno:returns         ( idlab-fn:_stringOut ) .
 
 idlab-fn:random
     a                   fno:Function ;
@@ -129,10 +102,7 @@ idlab-fn:random
     rdfs:label          "random" ;
     dcterms:description "Returns a random uuid." ;
     fno:expects         ( ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "random" ] .
+    fno:returns         ( idlab-fn:_stringOut ) .
 
 idlab-fn:inRange
     a                   fno:Function ;
@@ -140,10 +110,7 @@ idlab-fn:inRange
     rdfs:label          "in range" ;
     dcterms:description "Returns whether a value is in range" ;
     fno:expects         ( idlab-fn:_test idlab-fn:_from idlab-fn:_to ) ;
-    fno:returns         ( idlab-fn:_boolOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "inRange" ] .
+    fno:returns         ( idlab-fn:_boolOut ) .
 
 idlab-fn:slugify
     a                   fno:Function ;
@@ -151,10 +118,7 @@ idlab-fn:slugify
     rdfs:label          "slugify" ;
     dcterms:description "Converts an arbitrary string to its slugified equivalent." ;
     fno:expects         ( idlab-fn:_str ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "slugify" ] .
+    fno:returns         ( idlab-fn:_stringOut ) .
 
 idlab-fn:normalizeDate
     a                   fno:Function ;
@@ -162,10 +126,7 @@ idlab-fn:normalizeDate
     rdfs:label          "normalizeDate" ;
     dcterms:description "Parses the input as a date and returns it as a string in the ISO-8601 format uuuu-MM-dd. It uses the current language to parse month or day names." ;
     fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "normalizeDate" ] .
+    fno:returns         ( idlab-fn:_stringOut ) .
 
  idlab-fn:normalizeDateWithLang
      a                   fno:Function ;
@@ -173,10 +134,7 @@ idlab-fn:normalizeDate
      rdfs:label          "normalizeDateWithLang" ;
      dcterms:description "Parses the input as a date and returns it as a string in the ISO-8601 format uuuu-MM-dd. It uses the given language to parse month or day names." ;
      fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern idlab-fn:_lang ) ;
-     fno:returns         ( idlab-fn:_stringOut ) ;
-     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                           lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                           lib:method       "normalizeDateWithLang" ] .
+     fno:returns         ( idlab-fn:_stringOut ) .
 
 idlab-fn:normalizeDateTime
     a                   fno:Function ;
@@ -184,10 +142,7 @@ idlab-fn:normalizeDateTime
     rdfs:label          "normalizeDateTime" ;
     dcterms:description "Parses the input as a datetime and returns it as a string in the ISO-8601 format uuuu-MM-ddTHH:mm:ss. It uses the current language to parse month or day names." ;
     fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "normalizeDateTime" ] .
+    fno:returns         ( idlab-fn:_stringOut ) .
 
  idlab-fn:normalizeDateTimeWithLang
      a                   fno:Function ;
@@ -195,10 +150,7 @@ idlab-fn:normalizeDateTime
      rdfs:label          "normalizeDateTimeWithLang" ;
      dcterms:description "Parses the input as a datetime and returns it as a string in the ISO-8601 format uuuu-MM-ddTHH:mm:ss. It uses the given language to parse month or day names." ;
      fno:expects         ( idlab-fn:_strDate idlab-fn:_pattern idlab-fn:_lang ) ;
-     fno:returns         ( idlab-fn:_stringOut ) ;
-     lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                           lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                           lib:method       "normalizeDateTimeWithLang" ] .
+     fno:returns         ( idlab-fn:_stringOut ) .
 
 idlab-fn:generateUniqueIRI
     a                   fno:Function ;
@@ -206,11 +158,19 @@ idlab-fn:generateUniqueIRI
     rdfs:label          "generateUniqueIRI" ;
     dcterms:description "Generates a unique IRI by watching the given property value" ;
     fno:expects         ( idlab-fn:_iri idlab-fn:_watchedProperty idlab-fn:_unique idlab-fn:_state ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "generateUniqueIRI" ] .
+    fno:returns         ( idlab-fn:_stringOut ) .
 
+idlab-fn:toUpperCaseURL
+    a                   fno:Function ;
+    fno:name            "toUpperCaseURL" ;
+    rdfs:label          "toUpperCaseURL" ;
+    dcterms:description "Returns an uppercase, valid url." ;
+    fno:expects         ( idlab-fn:_str ) ;
+    fno:returns         ( idlab-fn:_stringOut ) .
+
+##############
+# PARAMETERS #
+##############
 
 grel:valueParam
     a             fno:Parameter ;
@@ -232,17 +192,6 @@ grel:stringOut
     rdfs:label    "output string" ;
     fno:type      xsd:string ;
     fno:predicate grel:stringOutput .
-
-idlab-fn:toUpperCaseURL
-    a                   fno:Function ;
-    fno:name            "toUpperCaseURL" ;
-    rdfs:label          "toUpperCaseURL" ;
-    dcterms:description "Returns an uppercase, valid url." ;
-    fno:expects         ( idlab-fn:_str ) ;
-    fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "be.ugent.rml.functions.lib.IDLabFunctions" ;
-                          lib:method       "toUpperCaseURL" ] .
 
 idlab-fn:_path
     a             fno:Parameter ;
@@ -397,3 +346,121 @@ idlab-fn:_state
     rdfs:label    "string representing the name of the state file";
     fno:type      xsd:string ;
     fno:predicate idlab-fn:state .
+
+#####################
+# FUNCTION MAPPINGS #
+#####################
+
+idlab-fn-m:equalMapping
+    a                   fnoi:Mapping ;
+    fno:function		idlab-fn:equal;
+    fno:implementation	idlab-fn-m:utilFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "equal" ] .
+
+idlab-fn-m:notEqualMapping
+    a                   fnoi:Mapping ;
+    fno:function		idlab-fn:notEqual;
+    fno:implementation	idlab-fn-m:utilFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "notEqual" ] .
+
+idlab-fn-m:stringContainsOtherStringMapping
+    a                   fnoi:Mapping ;
+    fno:function		idlab-fn:stringContainsOtherString;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "stringContainsOtherString" ] .
+
+idlab-fn-m:listContainsElementMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:listContainsElement;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "listContainsElement" ] .
+
+idlab-fn-m:getMIMETypeMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:getMIMEType;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "getMIMEType" ] .
+
+idlab-fn-m:decideMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:decide;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "decide" ] .
+
+idlab-fn-m:isNullMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:isNull;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "isNull" ] .
+
+idlab-fn-m:dbpediaSpotlightMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:dbpediaSpotlight;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "dbpediaSpotlight" ] .
+
+idlab-fn-m:trueConditionMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:trueCondition;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "trueCondition" ] .
+
+idlab-fn-m:readFileMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:readFile;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "readFile" ] .
+
+idlab-fn-m:randomMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:random;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "random" ] .
+
+idlab-fn-m:inRangeMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:inRange;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "inRange" ] .
+
+idlab-fn-m:slugifyMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:slugify;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "slugify" ] .
+
+idlab-fn-m:normalizeDateMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:normalizeDate;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "normalizeDate" ] .
+
+ idlab-fn-m:normalizeDateWithLangMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:normalizeDateWithLang;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "normalizeDateWithLang" ] .
+
+idlab-fn-m:normalizeDateTimeMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:normalizeDateTime;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "normalizeDateTime" ] .
+
+ idlab-fn-m:normalizeDateTimeWithLangMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:normalizeDateTimeWithLang;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "normalizeDateTimeWithLang" ] .
+
+idlab-fn-m:generateUniqueIRIMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:generateUniqueIRI;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "generateUniqueIRI" ] .
+
+idlab-fn-m:toUpperCaseURLMapping
+	a                   fnoi:Mapping ;
+    fno:function		idlab-fn:toUpperCaseURL;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "toUpperCaseURL" ] .
