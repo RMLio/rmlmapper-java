@@ -136,6 +136,7 @@ public class AccessFactory {
                                     // BearerSecurityScheme
                                     // OAuth2 specific
                                     if (isOAuth) {
+                                        logger.debug("OAuth2 is used");
                                         Term securityAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "authorization"), null)).get(0);
                                         auth.get("info").put("authorization", securityAuth.getValue());
                                         auth.get("info").put("name", securityName.get(0).getValue());
@@ -148,8 +149,13 @@ public class AccessFactory {
                                         auth.get("data").put("refresh", securityRefresh.getValue());
                                         auth.get("data").put("client_id", securityClientID.getValue());
                                         auth.get("data").put("client_secret", securityClientSecret.getValue());
+                                        logger.debug("Refresh token: " + securityRefresh.getValue());
+                                        logger.debug("Client ID: " + securityClientID.getValue());
+                                        logger.debug("Client Secret: " + securityClientSecret.getValue());
 ////                                      //can this not be set default?
 //                                        auth.get("data").put("grant_type", securityGrantType.getValue());
+                                    } else {
+                                        throw new NotImplementedException();
                                     }
                                     // both oath and bearer
                                     Term bearerToken = new Literal("Bearer " + securityValue.get(0).getValue());
