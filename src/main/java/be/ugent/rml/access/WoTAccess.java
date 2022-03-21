@@ -111,7 +111,7 @@ public class WoTAccess implements Access {
         }
         data.append("}");
         logger.debug(data.toString());
-        InputStream response = getPostRequestResponse(new URL(auth.get("info").get("authorisation")), contentType, data.toString().getBytes());
+        InputStream response = getPostRequestResponse(new URL(auth.get("info").get("authorization")), contentType, data.toString().getBytes());
         HashMap<String, String> jsonResponse = (HashMap<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(response, "utf-8");
         this.headers.put(auth.get("info").get("name"), "Bearer " + jsonResponse.get("access_token"));
     }

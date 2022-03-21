@@ -137,7 +137,7 @@ public class AccessFactory {
                                     // OAuth2 specific
                                     if (isOAuth) {
                                         Term securityAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "authorization"), null)).get(0);
-                                        auth.get("info").put("authorisation", securityAuth.getValue());
+                                        auth.get("info").put("authorization", securityAuth.getValue());
                                         auth.get("info").put("name", securityName.get(0).getValue());
 
                                         Term securityRefresh = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "refreshValue"), null)).get(0);

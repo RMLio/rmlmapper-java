@@ -293,16 +293,14 @@ public class Utils {
     public static InputStream getPostRequestResponse(URL url, String contentType, byte[] auth ){
         InputStream inputStream = null;
         HashMap<String, String> headers = new HashMap<>();
+        headers.put("charset", "utf-8");
+
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setInstanceFollowRedirects(true);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Accept", contentType);
-            // Set encoding if not set before
-            if(! headers.containsKey("charset")) {
-                headers.put("charset", "utf-8");
-            }
             connection.connect();
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(auth);
