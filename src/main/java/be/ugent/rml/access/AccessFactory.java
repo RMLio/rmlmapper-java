@@ -154,8 +154,6 @@ public class AccessFactory {
                                         logger.debug("Client Secret: " + securityClientSecret.getValue());
 ////                                      //can this not be set default?
 //                                        auth.get("data").put("grant_type", securityGrantType.getValue());
-                                    } else {
-                                        throw new NotImplementedException();
                                     }
                                     // both oath and bearer
                                     Term bearerToken = new Literal("Bearer " + securityValue.get(0).getValue());
