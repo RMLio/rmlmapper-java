@@ -168,6 +168,14 @@ idlab-fn:toUpperCaseURL
     fno:expects         ( idlab-fn:_str ) ;
     fno:returns         ( idlab-fn:_stringOut ) .
 
+idlab-fn:concat
+    a                   fno:Function ;
+    fno:name            "concat" ;
+    rdfs:label          "concat" ;
+    dcterms:description "Concatenates two strings, optionally with a separator" ;
+    fno:expects         ( idlab-fn:_str idlab-fn:_otherStr idlab-fn:_delimiter ) ;
+    fno:returns         ( idlab-fn:_stringOut ) .
+
 ##############
 # PARAMETERS #
 ##############
@@ -464,3 +472,9 @@ idlab-fn-m:toUpperCaseURLMapping
     fno:function		idlab-fn:toUpperCaseURL;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "toUpperCaseURL" ] .
+
+idlab-fn-m:concatMapping
+    a                   fnoi:Mapping ;
+    fno:function		idlab-fn:concat;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "concat" ] .

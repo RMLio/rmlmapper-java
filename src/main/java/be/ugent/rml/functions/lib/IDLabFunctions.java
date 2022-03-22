@@ -583,6 +583,18 @@ public class IDLabFunctions {
 
     }
 
+    /**
+     * Concatenates two strings, optionally separated by a delimiter.
+     * @param str1  The first string
+     * @param str2  The second string
+     * @param delimiter This will be placed between the two strings in the result, or not if it is null.
+     * @return      A String in the form "<str1><delimiter><str2>"
+     */
+    public static String concat(final String str1, final String str2, final String delimiter) {
+        final String sep = delimiter == null? "" : delimiter;
+        return str1 + sep + str2;
+    }
+
 
 
     // TODO check whether this is the right place for this
