@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Added
 
 - IDLabFunctions: added functions lookup and lookupWithDelimiter 
-- IDLabFunctionsTest: added unit tests for lookup functions 
+- IDLabFunctionsTest: added unit tests for lookup functions
+- Integration of independent function handler
 
 ### Fixed
 - Upgrade postgresql JDBC driver to 42.3.3
@@ -23,7 +24,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Add support for LDES Logical Target
 - Add support for generating unique reproducible IRIs for LDES
-- Integration of independent function handler
 
 ### Changed
 
