@@ -260,7 +260,7 @@
         <dependency>
             <groupId>com.github.fnoio</groupId>
             <artifactId>function-agent-java</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>v0.0.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.jena</groupId>
@@ -270,7 +270,7 @@
         <dependency>
             <groupId>com.github.fnoio</groupId>
             <artifactId>grel-functions-java</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>v0.7.2</version>
         </dependency>
         <dependency>
             <groupId>com.github.slugify</groupId>
