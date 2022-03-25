@@ -5,7 +5,6 @@
 @prefix grel:     <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
 @prefix idlab-fn: <http://example.com/idlab/function/> .
 @prefix idlab-fn-m: <http://example.com/idlab/function-mapping/> .
-@prefix lib:      <http://example.com/library#> .
 @prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
@@ -191,7 +190,6 @@ idlab-fn:lookupWithDelimiter
      dcterms:description "Looks for the first appearance of the search string in the fromColumn of a csv file, and returns the value of the toColumn on the same row.";
      fno:expects         ( idlab-fn:_str idlab-fn:_inputFile idlab-fn:_fromColumn idlab-fn:_toColumn idlab-fn:_delimiter) ;
      fno:returns         ( idlab-fn:_stringOut ) .
-
 
 ##############
 # PARAMETERS #
