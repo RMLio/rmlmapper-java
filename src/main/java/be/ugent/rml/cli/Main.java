@@ -308,7 +308,7 @@ public class Main {
                 // default initialisation with IDLab functions and GREL functions...
                 functionAgent = AgentFactory.createFromFnO(
                         "functions_idlab.ttl", "functions_idlab_classes_java_mapping.ttl",
-                        "https://users.ugent.be/~bjdmeest/function/grel.ttl",
+                        "functions_grel.ttl",
                         "grel_java_mapping.ttl");
             } else {
                 logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));

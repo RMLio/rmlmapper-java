@@ -10,7 +10,7 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
     public void evaluate_A001() throws Exception {
         Agent functionAgent = AgentFactory.createFromFnO(
                 "./src/test/resources/rml-fno-test-cases/functions_dynamic.ttl",
-                "https://users.ugent.be/~bjdmeest/function/grel.ttl",
+                "functions_grel.ttl",
                 "grel_java_mapping.ttl");
         Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionAgent);
         doMapping(executor, "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
@@ -38,7 +38,7 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
     public void evaluate_A003() throws Exception {
         Agent functionAgent = AgentFactory.createFromFnO(
                 "./src/test/resources/rml-fno-test-cases/functions_dynamic.ttl",
-                "https://users.ugent.be/~bjdmeest/function/grel.ttl",
+                "functions_grel.ttl",
                 "grel_java_mapping.ttl");
         // You first need to execute the mapping, bc the libraryMap of loaded Jars is dynamically built
         // TODO: what kind of test is this?
