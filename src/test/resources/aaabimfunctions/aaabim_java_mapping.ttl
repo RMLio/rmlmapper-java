@@ -98,57 +98,57 @@ aaabim:concat6 a fno:Function ;
 # FUNCTION MAPPINGS #
 #####################
 
-aaabimm:latitudeMapping a fnoi:Mapping ;
+aaabimm:latitudeMapping a fno:Mapping ;
   fno:function aaabim:geoHashToLatitude ;
   fno:implementation aaabimm:geoFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "geoHashToLongitude" ] .
 
-aaabimm:longitudeMapping a fnoi:Mapping ;
+aaabimm:longitudeMapping a fno:Mapping ;
   fno:function aaabim:geoHashToLongitude ;
   fno:implementation aaabimm:geoFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "geoHashToLatitude" ] .
 
-aaabimm:instantMapping a fnoi:Mapping ;
+aaabimm:instantMapping a fno:Mapping ;
   fno:function aaabim:millisecondsToInstant ;
   fno:implementation aaabimm:timeFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "instantFromMilliseconds" ] .
 
-aaabimm:featureMapping a fnoi:Mapping ;
+aaabimm:featureMapping a fno:Mapping ;
   fno:function aaabim:featureFromMetric ;
   fno:implementation aaabimm:obeliskFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "featureFromMetric" ] .
 
-aaabimm:propertyMapping a fnoi:Mapping ;
+aaabimm:propertyMapping a fno:Mapping ;
   fno:function aaabim:propertyFromMetric ;
   fno:implementation aaabimm:obeliskFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "propertyFromMetric" ] .
 
-aaabimm:typeMapping a fnoi:Mapping ;
+aaabimm:typeMapping a fno:Mapping ;
   fno:function aaabim:typeFromMetric ;
   fno:implementation aaabimm:obeliskFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "typeFromMetric" ] .
 
-aaabimm:concat2Mapping a fnoi:Mapping ;
+aaabimm:concat2Mapping a fno:Mapping ;
   fno:function aaabim:concat2 ;
   fno:implementation aaabimm:obeliskFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat2" ] .
 
-aaabimm:concat3Mapping a fnoi:Mapping ;
+aaabimm:concat3Mapping a fno:Mapping ;
   fno:function aaabim:concat3 ;
   fno:implementation aaabimm:obeliskFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat3" ] .
 
-aaabimm:concat4Mapping a fnoi:Mapping ;
+aaabimm:concat4Mapping a fno:Mapping ;
   fno:function aaabim:concat4 ;
   fno:implementation aaabimm:obeliskFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat4" ] .
 
-aaabimm:concat5Mapping a fnoi:Mapping ;
+aaabimm:concat5Mapping a fno:Mapping ;
   fno:function aaabim:concat5 ;
   fno:implementation aaabimm:obeliskFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat5" ] .
 
-aaabimm:concat6Mapping a fnoi:Mapping ;
+aaabimm:concat6Mapping a fno:Mapping ;
   fno:function aaabim:concat6 ;
   fno:implementation aaabimm:obeliskFunctions ;
   fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat6" ] .

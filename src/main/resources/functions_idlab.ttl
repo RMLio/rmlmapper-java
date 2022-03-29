@@ -396,121 +396,121 @@ idlab-fn:_toColumn
 #####################
 
 idlab-fn-m:equalMapping
-    a                   fnoi:Mapping ;
+    a                   fno:Mapping ;
     fno:function		idlab-fn:equal;
     fno:implementation	idlab-fn-m:utilFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "equal" ] .
 
 idlab-fn-m:notEqualMapping
-    a                   fnoi:Mapping ;
+    a                   fno:Mapping ;
     fno:function		idlab-fn:notEqual;
     fno:implementation	idlab-fn-m:utilFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "notEqual" ] .
 
 idlab-fn-m:stringContainsOtherStringMapping
-    a                   fnoi:Mapping ;
+    a                   fno:Mapping ;
     fno:function		idlab-fn:stringContainsOtherString;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "stringContainsOtherString" ] .
 
 idlab-fn-m:listContainsElementMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:listContainsElement;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "listContainsElement" ] .
 
 idlab-fn-m:getMIMETypeMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:getMIMEType;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "getMIMEType" ] .
 
 idlab-fn-m:decideMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:decide;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "decide" ] .
 
 idlab-fn-m:isNullMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:isNull;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "isNull" ] .
 
 idlab-fn-m:dbpediaSpotlightMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:dbpediaSpotlight;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "dbpediaSpotlight" ] .
 
 idlab-fn-m:trueConditionMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:trueCondition;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "trueCondition" ] .
 
 idlab-fn-m:readFileMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:readFile;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "readFile" ] .
 
 idlab-fn-m:randomMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:random;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "random" ] .
 
 idlab-fn-m:inRangeMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:inRange;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "inRange" ] .
 
 idlab-fn-m:slugifyMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:slugify;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "slugify" ] .
 
 idlab-fn-m:normalizeDateMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:normalizeDate;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "normalizeDate" ] .
 
  idlab-fn-m:normalizeDateWithLangMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:normalizeDateWithLang;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "normalizeDateWithLang" ] .
 
 idlab-fn-m:normalizeDateTimeMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:normalizeDateTime;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "normalizeDateTime" ] .
 
  idlab-fn-m:normalizeDateTimeWithLangMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:normalizeDateTimeWithLang;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "normalizeDateTimeWithLang" ] .
 
 idlab-fn-m:generateUniqueIRIMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:generateUniqueIRI;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "generateUniqueIRI" ] .
 
 idlab-fn-m:toUpperCaseURLMapping
-	a                   fnoi:Mapping ;
+	a                   fno:Mapping ;
     fno:function		idlab-fn:toUpperCaseURL;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "toUpperCaseURL" ] .
 
 idlab-fn-m:concatMapping
-    a                   fnoi:Mapping ;
+    a                   fno:Mapping ;
     fno:function		idlab-fn:concat;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "concat" ] .
