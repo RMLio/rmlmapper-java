@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - IDLabFunctions: added functions lookup and lookupWithDelimiter 
 - IDLabFunctionsTest: added unit tests for lookup functions 
+- IDLabFunctionsTest: relocate csv files used by tests for lookup function
 
 ### Fixed
 - Upgrade postgresql JDBC driver to 42.3.3

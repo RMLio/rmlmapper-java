@@ -275,7 +275,7 @@ public class IDLabFunctionsTest {
     @Test
     public void lookup() throws CsvValidationException, IOException {
         String searchString = "A";
-        String inputFile =  "src/test/resources/rml-fno-test-cases/class.csv";
+        String inputFile =  "src/test/resources/rml-fno-test-cases/RMLFNOTCF013/class.csv";
         Integer fromColumn = 0;
         Integer toColumn = 1;
         assertEquals("Class A", IDLabFunctions.lookup(searchString, inputFile, fromColumn, toColumn));
@@ -292,7 +292,7 @@ public class IDLabFunctionsTest {
 
         searchString = "B";
         fromColumn = 0;
-        inputFile = "src/test/resources/rml-fno-test-cases/classB.csv";
+        inputFile = "src/test/resources/rml-fno-test-cases/RMLFNOTCF013/classB.csv";
         delimiter = ";";
         assertEquals("Class B", IDLabFunctions.lookupWithDelimiter(searchString, inputFile, fromColumn, toColumn, delimiter));
     }
