@@ -496,26 +496,6 @@ public class MappingFactory {
         return new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "http://example.com/idlab/function/equal");
     }
 
-    /**
-     * Generate a join condition that only returns true if the same record hash is encountered
-     * @return
-     * @throws IOException
-     */
-    private MultipleRecordsFunctionExecutor generateSameLogicalSourceJoinConditionFunctionTermMap() throws IOException {
-        FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
-        Map<String, Object[]> parameters = new HashMap<>();
-
-        SingleRecordFunctionExecutor parent = new HashExtractor();
-        Object[] detailsParent = {"parent", parent};
-        parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
-
-        SingleRecordFunctionExecutor child = new HashExtractor();
-        Object[] detailsChild = {"child", child};
-        parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
-
-        return new StaticMultipleRecordsFunctionExecutor(equal, parameters);
-    }
-
     private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {
         List<MappingInfo> mappingInfos = new ArrayList<>();
 
