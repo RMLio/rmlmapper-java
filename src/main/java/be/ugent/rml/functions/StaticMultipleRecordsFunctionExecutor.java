@@ -1,23 +1,27 @@
 package be.ugent.rml.functions;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.Arguments;
 import be.ugent.rml.records.Record;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
 
-    private final FunctionModel functionModel;
     private final Map<String, Object[]> parameters;
 
-    public StaticMultipleRecordsFunctionExecutor(FunctionModel model, Map<String, Object[]> parameters) {
-        this.functionModel = model;
+    private final Agent functionAgent;
+    private final String functionId;
+
+    public StaticMultipleRecordsFunctionExecutor(final Map<String, Object[]> parameters, Agent functionAgent, String functionId) {
         this.parameters = parameters;
+        this.functionAgent = functionAgent;
+        this.functionId = functionId;
     }
 
     @Override
     public Object execute(Map<String, Record> records) throws Exception {
-        Map <String, Object> filledInParameters = new HashMap<>();
+        final Arguments functionArguments = new Arguments();
 
         for (Map.Entry<String, Object[]> entry : this.parameters.entrySet()) {
             SingleRecordFunctionExecutor executor = (SingleRecordFunctionExecutor) entry.getValue()[1];
@@ -25,14 +29,10 @@ public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFun
 
             Object o = executor.execute(records.get(recordType));
 
-            if (o != null) {
-                filledInParameters.put(entry.getKey(), o);
-            } else {
-                // TODO check whether key is actually optional!
-                filledInParameters.put(entry.getKey(), null);
-            }
+            // TODO check whether key is actually optional!
+            functionArguments.add(entry.getKey(), o);
         }
 
-        return this.functionModel.execute(filledInParameters);
+        return functionAgent.execute(functionId, functionArguments);
     }
 }

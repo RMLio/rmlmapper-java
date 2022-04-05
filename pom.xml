@@ -259,8 +259,18 @@
         </dependency>
         <dependency>
             <groupId>com.github.fnoio</groupId>
+            <artifactId>function-agent-java</artifactId>
+            <version>v0.0.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.jena</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion></exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.fnoio</groupId>
             <artifactId>grel-functions-java</artifactId>
-            <version>v0.7.1</version>
+            <version>v0.7.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.slugify</groupId>
@@ -290,6 +300,7 @@
             <version>0.9.0</version>
         </dependency>
         <!-- END spreadsheet dependencies-->
+
     </dependencies>
 
     <build>

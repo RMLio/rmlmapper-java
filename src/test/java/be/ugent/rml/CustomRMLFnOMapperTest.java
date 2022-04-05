@@ -1,27 +1,19 @@
 package be.ugent.rml;
 
-import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.FunctionUtils;
-import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.RDF4JStore;
-import org.eclipse.rdf4j.rio.RDFFormat;
+import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import org.junit.Test;
 
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
+public class CustomRMLFnOMapperTest extends TestFunctionCore {
 
     @Test
     public void evaluate_A001() throws Exception {
-        QuadStore functionDescriptionTriples = new RDF4JStore();
-        functionDescriptionTriples.read(Utils.getInputStreamFromFile(new File("./src/test/resources/rml-fno-test-cases/functions_dynamic.ttl")), null, RDFFormat.TURTLE);
-        FunctionLoader functionLoader = new FunctionLoader(functionDescriptionTriples);
-        Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionLoader);
+        Agent functionAgent = AgentFactory.createFromFnO(
+                "./src/test/resources/rml-fno-test-cases/functions_dynamic.ttl",
+                "functions_grel.ttl",
+                "grel_java_mapping.ttl");
+        Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionAgent);
         doMapping(executor, "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
-        assertTrue(functionLoader.getLibraryPath("GrelFunctions").endsWith("GrelFunctions_dynamic.jar"));
     }
 
     /**
@@ -30,31 +22,28 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
      */
     @Test(expected = Exception.class)
     public void evaluate_A001_missing_params() throws Exception {
-        QuadStore functionDescriptionTriples = new RDF4JStore();
-        functionDescriptionTriples.read(Utils.getInputStreamFromFile(new File("./src/test/resources/rml-fno-test-cases/functions_dynamic_missing_params.ttl")), null, RDFFormat.TURTLE);
-        FunctionLoader functionLoader = new FunctionLoader(functionDescriptionTriples);
-        Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionLoader);
+        Agent functionAgent = AgentFactory.createFromFnO(
+                "./src/test/resources/rml-fno-test-cases/functions_dynamic_missing_params.ttl");
+        Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionAgent);
         doMapping(executor, "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
-        assertTrue(functionLoader.getLibraryPath("GrelFunctions").endsWith("GrelFunctions_dynamic.jar"));
+        //assertTrue(functionLoader.getLibraryPath("GrelFunctions").endsWith("GrelFunctions_dynamic.jar"));
     }
 
     @Test
     public void evaluate_A002() throws Exception {
-        Executor executor = doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
-        assertEquals("__local", executor.getFunctionLoader().getLibraryPath("io.fno.grel.ArrayFunctions"));
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
     }
 
     @Test
     public void evaluate_A003() throws Exception {
-        QuadStore functionDescriptionTriples = new RDF4JStore();
-        functionDescriptionTriples.read(Utils.getInputStreamFromFile(new File("./src/test/resources/rml-fno-test-cases/functions_dynamic.ttl")), null, RDFFormat.TURTLE);
-        FunctionLoader functionLoader = new FunctionLoader(functionDescriptionTriples);
+        Agent functionAgent = AgentFactory.createFromFnO(
+                "./src/test/resources/rml-fno-test-cases/functions_dynamic.ttl",
+                "functions_grel.ttl",
+                "grel_java_mapping.ttl");
         // You first need to execute the mapping, bc the libraryMap of loaded Jars is dynamically built
-        Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionLoader);
+        // TODO: what kind of test is this?
+        Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionAgent);
         doMapping(executor, "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
-        String libPath = functionLoader.getLibraryPath("GrelFunctions");
-        Class cls = FunctionUtils.functionRequire(new File(libPath), "GrelFunctions");
-        assertEquals("GrelFunctions", cls.getName());
     }
 
     /**
@@ -189,12 +178,10 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     @Test
     public void evaluate_AB0001() throws Exception {
         // load the functions from a test resource jar & description file
-        QuadStore functionDescriptionTriples = new RDF4JStore();
-        functionDescriptionTriples.read(Utils.getInputStreamFromFile(new File("./src/test/resources/aaabimfunctions/aaabim_java_mapping.ttl")), null, RDFFormat.TURTLE);
-        FunctionLoader functionLoader = new FunctionLoader(functionDescriptionTriples);
+        Agent functionAgent = AgentFactory.createFromFnO("./src/test/resources/aaabimfunctions/aaabim_java_mapping.ttl");
 
         // You first need to execute the mapping, bc the libraryMap of loaded Jars is dynamically built
-        Executor executor = this.createExecutor("rml-fno-test-cases/RMLFNOTCAB0001-JSON/mapping.ttl", functionLoader);
+        Executor executor = this.createExecutor("rml-fno-test-cases/RMLFNOTCAB0001-JSON/mapping.ttl", functionAgent);
 
         // execute mapping
         doMapping(executor, "rml-fno-test-cases/RMLFNOTCAB0001-JSON/output.ttl");
@@ -206,12 +193,10 @@ public class Custom_RML_FnO_Mapper_Test extends TestFunctionCore {
     @Test
     public void evaluate_AB0002() throws Exception {
         // load the functions from a test resource jar & description file
-        QuadStore functionDescriptionTriples = new RDF4JStore();
-        functionDescriptionTriples.read(Utils.getInputStreamFromFile(new File("./src/test/resources/aaabimfunctions/aaabim_java_mapping.ttl")), null, RDFFormat.TURTLE);
-        FunctionLoader functionLoader = new FunctionLoader(functionDescriptionTriples);
+        Agent functionAgent = AgentFactory.createFromFnO("./src/test/resources/aaabimfunctions/aaabim_java_mapping.ttl");
 
         // You first need to execute the mapping, bc the libraryMap of loaded Jars is dynamically built
-        Executor executor = this.createExecutor("rml-fno-test-cases/RMLFNOTCAB0002-JSON/mapping.ttl", functionLoader);
+        Executor executor = this.createExecutor("rml-fno-test-cases/RMLFNOTCAB0002-JSON/mapping.ttl", functionAgent);
 
         // execute mapping
         doMapping(executor, "rml-fno-test-cases/RMLFNOTCAB0002-JSON/output.ttl");

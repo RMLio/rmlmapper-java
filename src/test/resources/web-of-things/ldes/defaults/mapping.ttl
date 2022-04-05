@@ -24,6 +24,7 @@
 @prefix td: <https://www.w3.org/2019/wot/td#> .
 @prefix htv: <http://www.w3.org/2011/http#> .
 @prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
 @base <http://example.com/rules/> .
 
 <#TargetDump> a rmlt:LogicalTarget, ldes:EventStreamTarget;
@@ -67,32 +68,19 @@
     fnml:functionValue [
         rr:predicateObjectMap [
             rr:predicate fno:executes ;
-            rr:objectMap [ rr:constant grel:array_join ]
+            rr:objectMap [ rr:constant idlab-fn:concat ]
         ];
         rr:predicateObjectMap [
-            rr:predicate grel:p_array_a ;
+            rr:predicate idlab-fn:str ;
             rr:objectMap [ rml:reference "properties.@id" ]
         ];
         rr:predicateObjectMap [
-            rr:predicate grel:p_array_a ;
-            rr:objectMap [ 
-                fnml:functionValue [
-                    rr:predicateObjectMap [
-                        rr:predicate fno:executes ;
-                        rr:objectMap [ rr:constant grel:array_join ]
-                    ];
-            
-                    rr:predicateObjectMap [
-                        rr:predicate grel:p_array_a ;
-                        rr:objectMap [ rr:constant "#" ]
-                    ];
-
-                    rr:predicateObjectMap [
-                        rr:predicate grel:p_array_a ;
-                        rr:objectMap [ rml:reference "generatedAtTime" ]
-                    ];
-                ];
-            ];
+            rr:predicate idlab-fn:otherStr ;
+            rr:objectMap [ rml:reference "generatedAtTime" ]
+        ];
+        rr:predicateObjectMap [
+             rr:predicate idlab-fn:delimiter ;
+             rr:objectMap [ rr:constant "#" ]
         ];
     ];
     rr:termType rr:IRI;

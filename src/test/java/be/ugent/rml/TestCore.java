@@ -1,8 +1,8 @@
 package be.ugent.rml;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.rml.cli.Main;
 import be.ugent.rml.conformer.MappingConformer;
-import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
@@ -26,8 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static be.ugent.rml.StrictMode.*;
-
+import static be.ugent.rml.StrictMode.BEST_EFFORT;
 import static org.junit.Assert.*;
 
 public abstract class TestCore {
@@ -129,14 +128,13 @@ public abstract class TestCore {
     /**
      *  Note: the created Executor will run in best effort mode
      */
-    Executor createExecutor(String mapPath, FunctionLoader functionLoader) throws Exception {
+    Executor createExecutor(String mapPath, final Agent functionAgent) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
         File mappingFile = new File(classLoader.getResource(mapPath).getFile());
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
-        return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()),
-                functionLoader, DEFAULT_BASE_IRI, BEST_EFFORT);
+        return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, BEST_EFFORT, functionAgent);
     }
 
     /**
