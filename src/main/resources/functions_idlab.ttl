@@ -176,6 +176,23 @@ idlab-fn:concat
     fno:expects         ( idlab-fn:_str idlab-fn:_otherStr idlab-fn:_delimiter ) ;
     fno:returns         ( idlab-fn:_stringOut ) .
 
+idlab-fn:lookup
+    a                   fno:Function ;
+    fno:name            "lookup" ;
+    rdfs:label          "lookup" ;
+    dcterms:description "Looks for the first appearance of the search string in the fromColumn of a csv file (supposing default delimiter ','), and returns the value of the toColumn on the same row.";
+    fno:expects         ( idlab-fn:_str idlab-fn:_inputFile idlab-fn:_fromColumn idlab-fn:_toColumn) ;
+    fno:returns         ( idlab-fn:_stringOut ) .
+
+idlab-fn:lookupWithDelimiter
+     a                   fno:Function ;
+     fno:name            "lookup" ;
+     rdfs:label          "lookup" ;
+     dcterms:description "Looks for the first appearance of the search string in the fromColumn of a csv file, and returns the value of the toColumn on the same row.";
+     fno:expects         ( idlab-fn:_str idlab-fn:_inputFile idlab-fn:_fromColumn idlab-fn:_toColumn idlab-fn:_delimiter) ;
+     fno:returns         ( idlab-fn:_stringOut ) .
+
+
 ##############
 # PARAMETERS #
 ##############
@@ -355,6 +372,27 @@ idlab-fn:_state
     fno:type      xsd:string ;
     fno:predicate idlab-fn:state .
 
+idlab-fn:_inputFile
+    a             fno:Parameter;
+    fno:name      "string representing the path to an input file";
+    rdfs:label    "string representing the path to an input file";
+    fno:type      xsd:string ;
+    fno:predicate idlab-fn:inputFile .
+
+idlab-fn:_fromColumn
+    a             fno:Parameter;
+    fno:name      "index of the fromColumn";
+    rdfs:label    "index of the fromColumn";
+    fno:type      xsd:integer ;
+    fno:predicate idlab-fn:fromColumn .
+
+idlab-fn:_toColumn
+    a             fno:Parameter;
+    fno:name      "index of the toColumn";
+    rdfs:label    "index of the toColumn";
+    fno:type      xsd:integer ;
+    fno:predicate idlab-fn:toColumn .
+
 #####################
 # FUNCTION MAPPINGS #
 #####################
@@ -478,3 +516,15 @@ idlab-fn-m:concatMapping
     fno:function		idlab-fn:concat;
     fno:implementation	idlab-fn-m:idLabFunctions;
     fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "concat" ] .
+
+idlab-fn-m:lookupMapping
+    a                   fno:Mapping ;
+    fno:function		idlab-fn:lookup;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "lookup" ] .
+
+idlab-fn-m:lookupWithDelimiterMapping
+    a                   fno:Mapping ;
+    fno:function		idlab-fn:lookupWithDelimiter;
+    fno:implementation	idlab-fn-m:idLabFunctions;
+    fno:methodMapping   [ a fnom:StringMethodMapping ; fnom:method-name "lookupWithDelimiter" ] .
