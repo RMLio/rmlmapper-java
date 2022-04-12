@@ -1,19 +1,19 @@
 package be.ugent.rml.records;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.FieldDocument.Field.Xpath;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.functions.FunctionLibraryList;
+import net.sf.saxon.functions.registry.ConstructorFunctionLibrary;
+import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XPathCompiler;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.sxpath.IndependentContext;
 
-import be.ugent.rml.records.xpath.NamespaceResolver;
+import javax.xml.transform.stream.StreamSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import be.ugent.rml.records.xpath.SaxNamespaceResolver;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,7 +22,14 @@ import java.util.List;
 /**
  * This class is a record factory that creates XML records.
  */
-public class XMLRecordFactory extends IteratorFormat<Document> {
+public class XMLRecordFactory extends IteratorFormat<XdmNode> {
+
+    // Saxon processor to be reused across XPath query evaluations
+    private Processor saxProcessor;
+
+    public XMLRecordFactory() {
+        saxProcessor = new Processor(false);
+    }
 
     /**
      * This method returns the records from an XML document based on an iterator.
@@ -33,17 +40,31 @@ public class XMLRecordFactory extends IteratorFormat<Document> {
      * @throws IOException
      */
     @Override
-    List<Record> getRecordsFromDocument(Document document, String iterator) throws IOException {
+    List<Record> getRecordsFromDocument(XdmNode document, String iterator) throws IOException {
         List<Record> records = new ArrayList<>();
 
         try {
-            XPath xPath = XPathFactory.newInstance().newXPath();
-            xPath.setNamespaceContext(new NamespaceResolver(document));
-            NodeList result = (NodeList) xPath.compile(iterator).evaluate(document, XPathConstants.NODESET);
-            for (int i = 0; i < result.getLength(); i++) {
-                records.add(new XMLRecord(result.item(i)));
-            }
-        } catch (XPathExpressionException e) {
+            XPathCompiler compiler = saxProcessor.newXPathCompiler();
+            // Redefine compiler's supported function libraries to include XSLT 3.0 functions
+            IndependentContext env = (IndependentContext) compiler.getUnderlyingStaticContext();
+            FunctionLibraryList lib = new FunctionLibraryList();
+            lib.addFunctionLibrary(env.getConfiguration().getXSLT30FunctionSet()); // This one is missing in default context
+            lib.addFunctionLibrary(env.getConfiguration().getXPath31FunctionSet());
+            lib.addFunctionLibrary(env.getConfiguration().getBuiltInExtensionLibraryList());
+            lib.addFunctionLibrary(new ConstructorFunctionLibrary(env.getConfiguration()));
+            lib.addFunctionLibrary(env.getConfiguration().getIntegratedFunctionLibrary());
+            env.setFunctionLibrary(lib);
+            // Enable expression caching
+            compiler.setCaching(true);
+            // Extract and register existing source namespaces into the XPath compiler
+            SaxNamespaceResolver.registerNamespaces(compiler, document);
+            // Execute iterator XPath query
+            XdmValue result = compiler.evaluate(iterator, document);
+            // Extract set of records
+            result.forEach((item) -> {
+                records.add(new XMLRecord(item, compiler));
+            });
+        } catch (SaxonApiException e) {
             e.printStackTrace();
         }
 
@@ -58,14 +79,11 @@ public class XMLRecordFactory extends IteratorFormat<Document> {
      * @throws IOException
      */
     @Override
-    Document getDocumentFromStream(InputStream stream) throws IOException {
+    XdmNode getDocumentFromStream(InputStream stream) throws IOException {
         try {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            builderFactory.setNamespaceAware(true);
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
-
-            return builder.parse(stream);
-        } catch (SAXException | ParserConfigurationException e) {
+            DocumentBuilder docBuilder = saxProcessor.newDocumentBuilder();
+            return docBuilder.build(new StreamSource(stream));
+        } catch (SaxonApiException e) {
             e.printStackTrace();
         }
 
