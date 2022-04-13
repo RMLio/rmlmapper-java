@@ -30,7 +30,6 @@ public class SaxNamespaceResolver {
             compiler.declareNamespace("math", "http://www.w3.org/2005/xpath-functions/math");
             compiler.declareNamespace("map", "http://www.w3.org/2005/xpath-functions/map");
             compiler.declareNamespace("array", "http://www.w3.org/2005/xpath-functions/array");
-            compiler.declareNamespace("array","http://www.w3.org/2005/xpath-functions/array");
 
         } catch (SaxonApiException e) {
             e.printStackTrace();

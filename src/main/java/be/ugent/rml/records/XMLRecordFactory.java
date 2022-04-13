@@ -45,15 +45,6 @@ public class XMLRecordFactory extends IteratorFormat<XdmNode> {
 
         try {
             XPathCompiler compiler = saxProcessor.newXPathCompiler();
-            // Redefine compiler's supported function libraries to include XSLT 3.0 functions
-            IndependentContext env = (IndependentContext) compiler.getUnderlyingStaticContext();
-            FunctionLibraryList lib = new FunctionLibraryList();
-            lib.addFunctionLibrary(env.getConfiguration().getXSLT30FunctionSet()); // This one is missing in default context
-            lib.addFunctionLibrary(env.getConfiguration().getXPath31FunctionSet());
-            lib.addFunctionLibrary(env.getConfiguration().getBuiltInExtensionLibraryList());
-            lib.addFunctionLibrary(new ConstructorFunctionLibrary(env.getConfiguration()));
-            lib.addFunctionLibrary(env.getConfiguration().getIntegratedFunctionLibrary());
-            env.setFunctionLibrary(lib);
             // Enable expression caching
             compiler.setCaching(true);
             // Extract and register existing source namespaces into the XPath compiler
