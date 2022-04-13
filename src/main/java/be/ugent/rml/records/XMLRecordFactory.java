@@ -1,14 +1,11 @@
 package be.ugent.rml.records;
 
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.functions.FunctionLibraryList;
-import net.sf.saxon.functions.registry.ConstructorFunctionLibrary;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
-import net.sf.saxon.sxpath.IndependentContext;
 
 import javax.xml.transform.stream.StreamSource;
 
