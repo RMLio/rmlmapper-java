@@ -4,16 +4,16 @@
         <Name>Alice</Name>
         <Address>
             <Street>12th Avenue</Street>
-            <City>New York</City>
             <Number>254</Number>
+            <City>New York</City>
         </Address>
     </myNS:student>
     <myNS:student>
         <Name>Bob</Name>
         <Address>
             <Street>15th Avenue</Street>
-            <City>Atlanta</City>
             <Number>291</Number>
+            <City>Atlanta</City>
         </Address>
     </myNS:student>
     <myNS:student>

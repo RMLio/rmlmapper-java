@@ -1,0 +1,3 @@
+<http://example.com/base/relations/A/B> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/NetRelation>.
+<http://example.com/base/relations/A/B> <http://example.com/elementA> <http://example.com/base/elements/NODE-1>.
+<http://example.com/base/relations/A/B> <http://example.com/distance> "7.0710678118654755"^^<http://www.w3.org/2001/XMLSchema#double>.

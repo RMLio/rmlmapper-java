@@ -9,20 +9,34 @@
 
 @base <http://example.com/base/> .
 
+## 
+# Test mapping for some XPath 2.0 expressions and functions (https://www.w3.org/TR/xpath20/):
+# - lower-case()
+# - upper-case()
+# - string-join()
+# - for expression
+# - if-then-else conditional expression
+##
+
 <TriplesMapStudent>
   a rr:TriplesMap;
   rml:logicalSource [
     rml:source "data.xml";
     rml:referenceFormulation ql:XPath;
-    rml:iterator "/myNS:students/myNS:student"
+    rml:iterator "/myNS:students/myNS:student[Address]"
   ];
     
     rr:subjectMap [ rml:reference "Name"; rr:termType rr:IRI; ];
     
     rr:predicateObjectMap [
     	rr:predicate rdfs:label;
-    	rr:objectMap [ rml:reference "lower-case(Name)" ] # XPath 2.0 function lower-case()
+    	rr:objectMap [ rml:reference "lower-case(Name)" ]
     ], [
         rr:predicate ex:city;
-        rr:objectMap [ rml:reference "upper-case(Address/City)" ] # XPath 2.0 function upper-case()
+        rr:objectMap [ rml:reference "upper-case(Address/City)" ]
+    ], [
+        rr:predicate ex:fullAddress;
+        rr:objectMap [ # compile full address with format "${street} ${number}, ${city}" 
+            rml:reference "string-join(for $n in Address/* return (if (name($n) = 'City') then string-join((', ', $n)) else string-join((' ', $n))), '')" 
+        ]
     ].
