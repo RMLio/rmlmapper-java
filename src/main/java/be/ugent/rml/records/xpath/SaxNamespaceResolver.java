@@ -25,6 +25,12 @@ public class SaxNamespaceResolver {
                 NodeInfo ns = (NodeInfo) item.getUnderlyingValue();
                 compiler.declareNamespace(ns.getLocalPart(), ns.getStringValue());
             });
+
+            // Add additional function namespaces. These should probably be defined as constants. 
+            compiler.declareNamespace("math", "http://www.w3.org/2005/xpath-functions/math");
+            compiler.declareNamespace("map", "http://www.w3.org/2005/xpath-functions/map");
+            compiler.declareNamespace("array", "http://www.w3.org/2005/xpath-functions/array");
+
         } catch (SaxonApiException e) {
             e.printStackTrace();
         }

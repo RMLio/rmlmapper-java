@@ -1,0 +1,45 @@
+@prefix rr:   <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex:   <http://example.com/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rml:  <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql:   <http://semweb.mmlab.be/ns/ql#> .
+
+@base <http://example.com/base/> .
+
+## 
+# Test mapping for some XPath 3 expressions and functions (https://www.w3.org/TR/xpath-31/):
+# - || concatenation operator
+# - let expressions
+# - math functions abs(), sqrt() and pow()
+##
+
+<TriplesMapRails> a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source "data.xml";
+    rml:referenceFormulation ql:XPath;
+    rml:iterator "//netRelation"
+  ];
+
+  rr:subjectMap [
+    rml:reference "('relations/' || elementA/@ref || '/' || elementB/@ref)"; 
+    rr:termType rr:IRI;
+    rr:class ex:NetRelation
+  ];
+    
+  rr:predicateObjectMap [
+      rr:predicate ex:elementA;
+      rr:objectMap [
+          rr:termType rr:IRI;
+          rr:template "http://example.com/base/elements/{let $ref := elementA/@ref return (ancestor::railML//netElement[@id = $ref])/name/@name}" 
+      ]
+  ], [
+      rr:predicate ex:distance;
+      rr:objectMap [ # calculate euclidean distance based on (x,y) coordinates |sqrt((x2-x1)^2+(y2-y1)^2)|
+          rr:termType rr:Literal;
+          rr:datatype xsd:double;
+          rml:reference "let $refA := elementA/@ref, $refB := elementB/@ref return abs(math:sqrt(math:pow((ancestor::railML//netElement[@id = $refB])/@x - (ancestor::railML//netElement[@id = $refA])/@x, 2) + math:pow((ancestor::railML//netElement[@id = $refB])/@y - (ancestor::railML//netElement[@id = $refA])/@y, 2)))" 
+      ]
+  ].

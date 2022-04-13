@@ -1,14 +1,11 @@
 package be.ugent.rml.records;
 
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.functions.FunctionLibraryList;
-import net.sf.saxon.functions.registry.ConstructorFunctionLibrary;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
-import net.sf.saxon.sxpath.IndependentContext;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -45,15 +42,6 @@ public class XMLRecordFactory extends IteratorFormat<XdmNode> {
 
         try {
             XPathCompiler compiler = saxProcessor.newXPathCompiler();
-            // Redefine compiler's supported function libraries to include XSLT 3.0 functions
-            IndependentContext env = (IndependentContext) compiler.getUnderlyingStaticContext();
-            FunctionLibraryList lib = new FunctionLibraryList();
-            lib.addFunctionLibrary(env.getConfiguration().getXSLT30FunctionSet()); // This one is missing in default context
-            lib.addFunctionLibrary(env.getConfiguration().getXPath31FunctionSet());
-            lib.addFunctionLibrary(env.getConfiguration().getBuiltInExtensionLibraryList());
-            lib.addFunctionLibrary(new ConstructorFunctionLibrary(env.getConfiguration()));
-            lib.addFunctionLibrary(env.getConfiguration().getIntegratedFunctionLibrary());
-            env.setFunctionLibrary(lib);
             // Enable expression caching
             compiler.setCaching(true);
             // Extract and register existing source namespaces into the XPath compiler
