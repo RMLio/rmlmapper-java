@@ -501,7 +501,7 @@ public class IDLabFunctions {
                                 try {
                                     val = pairs[1];
                                 } catch (IndexOutOfBoundsException e) {
-                                    e.printStackTrace();
+                                    //e.printStackTrace();
                                 }
                                 LDES_FILE_STATE_MAP.computeIfAbsent(fileName, k -> new HashMap<>()).put(key, val);
                             }
