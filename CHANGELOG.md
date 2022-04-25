@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - IDLabFunctionsTest: added unit tests for lookup functions 
 - IDLabFunctionsTest: relocate csv files used by tests for lookup function
 - IDLabFunctions: silence stack trace
+- CSVW: filter out rows with a comment prefix
 
 ### Fixed
 - Upgrade postgresql JDBC driver to 42.3.3
