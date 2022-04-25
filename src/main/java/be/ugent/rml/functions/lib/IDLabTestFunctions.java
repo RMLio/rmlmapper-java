@@ -13,4 +13,11 @@ public class IDLabTestFunctions extends IDLabFunctions {
     public static String generateA() {
         return "A_by_function";
     }
+
+    public static String throwErrorIfMars(String string) throws Exception {
+        if(string.equals("Mars\"")){
+            throw new Exception();
+        }
+        return string;
+    }
 }

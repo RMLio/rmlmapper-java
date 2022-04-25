@@ -446,4 +446,11 @@ public class Executor {
     public QuadStore getRMLStore() {
         return this.rmlStore;
     }
+
+    public HashMap<Term, QuadStore> getTargets(){
+        if (this.targetStores.isEmpty()){
+            return null;
+        }
+        return this.targetStores;
+    }
 }

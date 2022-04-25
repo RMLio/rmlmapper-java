@@ -141,6 +141,8 @@ public class Arguments_Test extends TestCore {
         assertThat(stdout.toString(), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>."));
     }
 
+
+
     @Test
     public void testVerboseWithoutCustomFunctionFile() {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
@@ -237,7 +239,6 @@ public class Arguments_Test extends TestCore {
             e.printStackTrace();
         }
     }
-
     @Test
     public void outputJSON() throws Exception {
         String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
