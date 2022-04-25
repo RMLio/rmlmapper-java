@@ -188,6 +188,13 @@ public class Main {
                 System.exit(1);
             }
 
+            String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
+            // check if the output path can exist, for this we check if the path before the last "/" is valid
+            if (outputFile != null && ! Utils.checkPath(outputFile.substring(0, outputFile.lastIndexOf("/")), null)){
+                logger.error(fatal, "The given output path does not exist.");
+                System.exit(1);
+            }
+
             if (mOptionValue != null) {
                 // Concatenate all mapping files
                 lis = Arrays.stream(mOptionValue)
@@ -381,7 +388,6 @@ public class Main {
                     writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
                 }
 
-                String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
                 result.copyNameSpaces(rmlStore);
 
                 IDLabFunctions.saveState();

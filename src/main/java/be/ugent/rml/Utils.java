@@ -604,6 +604,74 @@ public class Utils {
         }
     }
 
+    public static boolean checkPath(String path, String base){
+
+        File f;
+        File basePath;
+        if (base == null) {
+            f = new File(path);
+            if (f.isAbsolute()) {
+                return f.exists();
+            }
+            base = System.getProperty("user.dir");
+        }
+        try {
+            basePath = new File(base);
+        } catch (Exception e) {
+            return false;
+        }
+
+        logger.info("Looking for file " + path + " in basePath " + basePath);
+
+        // Relative from user dir?
+        f = new File(basePath, path);
+        if (f.exists()) {
+            return true;
+        }
+
+        logger.info("File " + path + " not found in " + basePath);
+        logger.info("Looking for file " + path + " in " + basePath + "/../");
+
+
+        // Relative from parent of user dir?
+        f = new File(basePath, "../" + path);
+        if (f.exists()) {
+            return true;
+        }
+
+        logger.info("File " + path + " not found in " + basePath);
+        logger.info("Looking for file " + path + " in the resources directory");
+
+        // Resource path?
+        try {
+            logger.info("searching path: " + path + " in resources" );
+
+            File resourceFile = MyFileUtils.getResourceAsFile(path);
+            if (resourceFile.exists()){
+                logger.info("file found in resources");
+                return true;
+            } else {
+                logger.info("file not found in resources");
+            }
+        } catch (IOException e) {
+            // Too bad
+        }
+        try {
+            logger.info("searching base:" + base + " path: " + path + " in resources" );
+            logger.info(String.valueOf(MyFileUtils.ClasspathResourceFileResource.class));
+            File resourceFile =  MyFileUtils.getResourceAsFile(base + "/" + path);
+            if (resourceFile.exists()){
+                logger.info("base + file found in resources");
+                return true;
+            } else {
+                logger.info("base + file not found in resources");
+            }
+        } catch (IOException e) {
+            // Too bad
+        }
+        return false;
+    }
+
     public static String getBaseDirectiveTurtle(File file) {
         StringBuilder contentBuilder = new StringBuilder();
         try (Stream<String> stream = Files.lines(Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)) {

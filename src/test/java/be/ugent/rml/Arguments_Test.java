@@ -425,4 +425,18 @@ public class Arguments_Test extends TestCore {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void wrongOutPutFile() throws Exception{
+        exit.expectSystemExitWithStatus(1); // Handle System.exit(1)
+        Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./wrong/file/output/generated_output.nq".split(" "));
+
+        try {
+            File outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }
