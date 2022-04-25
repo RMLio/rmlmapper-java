@@ -249,7 +249,7 @@ public abstract class TestCore {
      * @param outPath The path of the file with the expected output.
      */
     void doMapping(Executor executor, String outPath) throws Exception {
-        QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+        QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         result.removeDuplicates();
         compareStores(filePathToStore(outPath), result);
     }
@@ -262,7 +262,7 @@ public abstract class TestCore {
     void doMapping(Executor executor, HashMap<Term, String> outPaths) throws Exception {
         logger.debug("Comparing target outputs");
         TargetFactory targetFactory = new TargetFactory("http://example.org/rules/");
-        HashMap<Term, QuadStore> results = executor.executeV5(null);
+        HashMap<Term, QuadStore> results = executor.execute(null);
 
         for (Map.Entry<Term, String> entry: outPaths.entrySet()) {
             Term target = entry.getKey();
@@ -321,7 +321,7 @@ public abstract class TestCore {
         // Pass the test if an error occurs during mapping execution.
         try {
             Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
-            executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+            executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         } catch (Exception e) {
             // I expected you!
             logger.warn(e.getMessage(), e);

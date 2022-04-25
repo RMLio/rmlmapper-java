@@ -14,7 +14,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 public class Mapper_LDES_Test extends TestCore {
 
@@ -42,7 +41,7 @@ public class Mapper_LDES_Test extends TestCore {
     @Test
     public void evaluate_repeat_LDES() throws Exception {
         Executor executor = this.createExecutor("./web-of-things/ldes/generation/repeat/mapping.ttl", LOADER);
-        executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+        executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         IDLabFunctions.saveState();
         executor = this.createExecutor("./web-of-things/ldes/generation/repeat/mapping.ttl", LOADER);
         doMapping(executor, "./web-of-things/ldes/generation/repeat/output.nq");
@@ -51,10 +50,10 @@ public class Mapper_LDES_Test extends TestCore {
     @Test
     public void evaluate_partial_repeat_LDES() throws Exception {
         Executor executor = this.createExecutor("./web-of-things/ldes/generation/partial/mapping.ttl", LOADER);
-        QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+        QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         IDLabFunctions.saveState();
         executor = this.createExecutor("./web-of-things/ldes/generation/partial/mapping2.ttl", LOADER);
-        QuadStore result_second = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+        QuadStore result_second = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         assertEquals(3, result.size());
         assertEquals(1, result_second.size());
 

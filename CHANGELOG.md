@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - Write LDES state to disk when mapping execution is complete.
+- Removed deprecated execute() and executeWithFunction() methods, and refactored the executeV5() executeWithFunctionV5() method to execute() and executeWithFunction().
 
 ### Fixed
 

@@ -8,7 +8,6 @@ import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
@@ -18,7 +17,6 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
@@ -368,7 +366,7 @@ public class Main {
             String startTimestamp = Instant.now().toString();
 
             try {
-                HashMap<Term, QuadStore> targets = executor.executeV5(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                HashMap<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                         metadataGenerator);
                 QuadStore result = targets.get(new NamedNode("rmlmapper://default.store"));
 
