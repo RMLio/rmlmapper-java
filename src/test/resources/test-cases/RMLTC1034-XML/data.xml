@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<railML xmlns="https://www.railml.org/schemas/3.1">
+    <netElements>
+        <netElement id="A" x="1" y="3">
+            <name language="NO" name="NODE-1"/>
+            <relation ref="A_B"/>
+        </netElement>
+        <netElement id="B" x="6" y="8">
+            <name language="NO" name="NODE-2"/>
+            <relation ref="A_B"/>
+        </netElement>
+    </netElements>
+    <netRelations>
+        <netRelation id="A_B">
+            <elementA ref="A"/>
+            <elementB ref="B"/>
+        </netRelation>
+    </netRelations>
+</railML>
