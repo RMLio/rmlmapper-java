@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+- .gitignore: ignore vscode files
+- pom.xml: add Saxon-HE v11.3 dependency
+- XMLRecord: adjusted to use Saxon
+- XMLRecordFactory: adjusted to use Saxon
+- SaxNamespaceResolver: added class for resolving namespaces in Saxon. This fixes (#154)[https://github.com/RMLio/rmlmapper-java/issues/154].
+- Added unit tests for XPath 2/3 expressions and functions
+
 ## Added
 
 - IDLabFunctions: added functions lookup and lookupWithDelimiter 
