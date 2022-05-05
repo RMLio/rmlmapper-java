@@ -164,6 +164,12 @@
             <artifactId>jaxp-api</artifactId>
             <version>1.4.5</version>
         </dependency>
+        <!-- Saxon Home Edition XML, XPath and XQuery parser API -->
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>11.3</version>
+        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
