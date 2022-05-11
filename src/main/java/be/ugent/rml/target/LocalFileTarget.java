@@ -122,7 +122,7 @@ public class LocalFileTarget implements Target {
             this.outputStream.close();
         }
         catch (Exception e) {
-            logger.error("Failed to close target: " + e);
+            logger.error("Failed to close target: {}", e);
         }
     }
 

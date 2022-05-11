@@ -50,8 +50,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
 
             if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes")) || parameters.contains(new NamedNode(NAMESPACES.FNO_S + "executes"))) {
                 if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes"))) {
-                    logger.warn("http is used instead of https for " + NAMESPACES.FNO_S + ". " +
-                            "Still works for now, but will be deprecated in the future.");
+                    logger.warn("http is used instead of https for {}. Still works for now, but will be deprecated in the future.", NAMESPACES.FNO_S);
                 }
 
                 fnTerms.add(values.get(0));

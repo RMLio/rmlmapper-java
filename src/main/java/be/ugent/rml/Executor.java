@@ -99,7 +99,7 @@ public class Executor {
 
             // Create stores
             for (Term t: targets) {
-                logger.debug("Adding target for " + t);
+                logger.debug("Adding target for {}", t);
                 this.targetStores.put(t, new RDF4JStore());
             }
         }
@@ -156,7 +156,7 @@ public class Executor {
                         if (strictMode.equals(StrictMode.STRICT)) {
                             throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
                         } else {
-                            logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
+                            logger.error("The subject \"{}\" is not a valid IRI. Skipped.", iri);
                             subject = null;
                         }
 
@@ -178,7 +178,7 @@ public class Executor {
                                 if (strictMode.equals(StrictMode.STRICT)) {
                                     throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
                                 } else {
-                                    logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
+                                    logger.error("The subject \"{}\" is not a valid IRI. Skipped.", iri);
                                 }
                             }
                         }

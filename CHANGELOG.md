@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - IDLabFunctions: silence stack trace
 - CSVW: filter out rows with a comment prefix
 - Output file path now gets checked before the mapping
+- Loggers across the codebase have been updated to use parameterized strings
 
 ### Fixed
 - Upgrade postgresql JDBC driver to 42.3.3

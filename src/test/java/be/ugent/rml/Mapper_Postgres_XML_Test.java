@@ -232,7 +232,7 @@ public class Mapper_Postgres_XML_Test extends TestCore {
                 // Close the docker client
                 dockerDBInfo.docker.close();
             } catch (DockerException | InterruptedException ex) {
-                logger.warn("Could not kill the database container with connection string: " + dockerDBInfo.connectionString + "!", ex);
+                logger.warn("Could not kill the database container with connection string: {}!", dockerDBInfo.connectionString, ex);
             }
         }
     }

@@ -243,7 +243,7 @@ public class MappingFactory {
                 objectMapCallback.accept(new MappingInfo(objectmap, oGen, oTargets), "child");
             } else if (!parentTriplesMaps.isEmpty()) {
                 if (parentTriplesMaps.size() > 1) {
-                    logger.warn(triplesMap + " has " + parentTriplesMaps.size() + " Parent Triples Maps. You can only have one. A random one is taken.");
+                    logger.warn("{} has {} Parent Triples Maps. You can only have one. A random one is taken.", triplesMap, parentTriplesMaps.size());
                 }
 
                 Term parentTriplesMap = parentTriplesMaps.get(0);

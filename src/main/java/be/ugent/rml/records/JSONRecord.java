@@ -79,7 +79,7 @@ public class JSONRecord extends Record {
                 }
             }
         } catch (JsonPathException e) {
-            logger.warn(e.getMessage() + " for path " + this.path + value, e);
+            logger.warn("{} for path {} ", e.getMessage(), this.path + value, e);
         }
 
         return results;

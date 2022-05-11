@@ -38,7 +38,7 @@ public class JSONRecordFactory extends IteratorFormat<Object> {
                 records.add(new JSONRecord(document, p));
             }
         } catch (JsonPathException e) {
-            logger.warn(e.getMessage() + " for iterator " + iterator, e);
+            logger.warn("{} for iterator {}", e.getMessage(), iterator, e);
         }
 
         return records;

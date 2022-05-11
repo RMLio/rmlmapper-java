@@ -312,7 +312,7 @@ public class Main {
             if (fOptionValue == null) {
                 functionLoader = new FunctionLoader();
             } else {
-                logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
+                logger.debug("Using custom path to functions.ttl file: {}", Arrays.toString(fOptionValue));
                 RDF4JStore functionDescriptionTriples = new RDF4JStore();
                 functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
                 Map<String, Class> libraryMap = new HashMap<>();
@@ -408,7 +408,7 @@ public class Main {
 
         } catch (ParseException exp) {
             // oops, something went wrong
-            logger.error("Parsing failed. Reason: " + exp.getMessage());
+            logger.error("Parsing failed. Reason: {}", exp.getMessage());
             printHelp(options);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -418,7 +418,7 @@ public class Main {
     private static void writeOutputTargets(HashMap<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault) throws Exception {
         boolean hasNoResults = true;
 
-        logger.debug("Writing to Targets: " + targets.keySet());
+        logger.debug("Writing to Targets: {}", targets.keySet());
         TargetFactory targetFactory = new TargetFactory(basePath);
 
         // Go over each term and export to the Target if needed
@@ -428,7 +428,7 @@ public class Main {
 
             if (store.size() > 0) {
                 hasNoResults = false;
-                logger.info("Target: " + term + " has " + store.size() + " results");
+                logger.info("Target: {} has {} results", term, store.size());
             }
 
             // Default target is exported separately for backwards compatibility reasons
@@ -437,11 +437,11 @@ public class Main {
                 writeOutput(store, outputFileDefault, outputFormatDefault);
             }
             else {
-                logger.debug("Exporting to Target: " + term);
+                logger.debug("Exporting to Target: {}", term);
                 if (store.size() > 1) {
-                    logger.info(store.size() + " quads were generated for " + term + " Target");
+                    logger.info("{} quads were generated for {} Target", store.size(), term);
                 } else {
-                    logger.info(store.size() + " quad was generated " + term + " Target");
+                    logger.info("{} quad was generated {} Target", store.size(), term);
                 }
 
                 Target target = targetFactory.getTarget(term, rmlStore, store);
@@ -536,9 +536,9 @@ public class Main {
         File targetFile = null;
 
         if (store.size() > 1) {
-            logger.info(store.size() + " quads were generated for default Target");
+            logger.info("{} quads were generated for default Target", store.size());
         } else {
-            logger.info(store.size() + " quad was generated for default Target");
+            logger.info("{} quad was generated for default Target", store.size());
         }
 
         try {
@@ -548,7 +548,7 @@ public class Main {
             //if output file provided, write to triples output file
             if (outputFile != null) {
                 targetFile = new File(outputFile);
-                logger.info("Writing quads to " + targetFile.getPath() + "...");
+                logger.info("Writing quads to {}...", targetFile.getPath());
 
                 if (!targetFile.isAbsolute()) {
                     targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);

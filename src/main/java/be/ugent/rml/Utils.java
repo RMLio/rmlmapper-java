@@ -163,7 +163,7 @@ public class Utils {
             }
         }
 
-        logger.debug("Looking for file " + path + " in basePath " + basePath);
+        logger.debug("Looking for file {} in basePath {}", path, basePath);
 
         // Relative from user dir?
         f = new File(basePath, path);
@@ -171,8 +171,8 @@ public class Utils {
             return f;
         }
 
-        logger.debug("File " + path + " not found in " + basePath);
-        logger.debug("Looking for file " + path + " in " + basePath + "/../");
+        logger.debug("File {} not found in {}", path, basePath);
+        logger.debug("Looking for file {} in {} /../", path, basePath);
 
 
         // Relative from parent of user dir?
@@ -181,8 +181,9 @@ public class Utils {
             return f;
         }
 
-        logger.debug("File " + path + " not found in " + basePath);
-        logger.debug("Looking for file " + path + " in the resources directory");
+        logger.debug("File {} not found in {}", path, basePath);
+
+        logger.debug("Looking for file {} in the resources directory", path);
 
         // Resource path?
         try {
@@ -191,7 +192,7 @@ public class Utils {
             // Too bad
         }
 
-        logger.debug("File " + path + " not found in the resources directory");
+        logger.debug("File {} not found in the resources directory", path);
 
         throw new FileNotFoundException(path);
     }
@@ -243,7 +244,7 @@ public class Utils {
             }
             // Apply all headers
             headers.forEach((name, value) -> {
-                logger.debug(name + ": " + value);
+                logger.debug("{}: {}", name, value);
                 connection.setRequestProperty(name, value);
             });
             logger.debug("trying to connect");
@@ -271,7 +272,7 @@ public class Utils {
             }
             // Apply all headers
             headers.forEach((name, value) -> {
-                logger.debug(name + ": " + value);
+                logger.debug("{}: {}", name, value);
                 connection.setRequestProperty(name, value);
             });
             logger.debug("trying to connect");
@@ -621,7 +622,7 @@ public class Utils {
             return false;
         }
 
-        logger.info("Looking for file " + path + " in basePath " + basePath);
+        logger.info("Looking for file {} in basePath {}", path, basePath);
 
         // Relative from user dir?
         f = new File(basePath, path);
@@ -629,8 +630,9 @@ public class Utils {
             return true;
         }
 
-        logger.info("File " + path + " not found in " + basePath);
-        logger.info("Looking for file " + path + " in " + basePath + "/../");
+
+        logger.info("File {} not found in {}", path, basePath);
+        logger.info("Looking for file {} in {}/../", path, basePath);
 
 
         // Relative from parent of user dir?
@@ -639,12 +641,12 @@ public class Utils {
             return true;
         }
 
-        logger.info("File " + path + " not found in " + basePath);
-        logger.info("Looking for file " + path + " in the resources directory");
+        logger.info("File {} not found in {}", path, basePath);
+        logger.info("Looking for file {} in the resources directory", path);
 
         // Resource path?
         try {
-            logger.info("searching path: " + path + " in resources" );
+            logger.info("searching path: {} in resources", path );
 
             File resourceFile = MyFileUtils.getResourceAsFile(path);
             if (resourceFile.exists()){
@@ -657,7 +659,7 @@ public class Utils {
             // Too bad
         }
         try {
-            logger.info("searching base:" + base + " path: " + path + " in resources" );
+            logger.info("searching base: {} path: {} in resources", base, path);
             logger.info(String.valueOf(MyFileUtils.ClasspathResourceFileResource.class));
             File resourceFile =  MyFileUtils.getResourceAsFile(base + "/" + path);
             if (resourceFile.exists()){

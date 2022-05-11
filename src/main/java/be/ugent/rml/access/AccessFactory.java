@@ -25,7 +25,7 @@ public class AccessFactory {
 
     // The path used when local paths are not absolute.
     private String basePath;
-    final ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     /**
      * The constructor of the AccessFactory.
@@ -122,7 +122,7 @@ public class AccessFactory {
                         try {
                             Term thing = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.TD + "hasPropertyAffordance"), source)).get(0);
                             List<Term> securityConfiguration = Utils.getObjectsFromQuads(rmlStore.getQuads(thing, new NamedNode(NAMESPACES.TD + "hasSecurityConfiguration"), null));
-                            logger.debug("Security config: " + securityConfiguration.toString());
+                            logger.debug("Security config: {}", securityConfiguration.toString());
 
                             for (Term sc : securityConfiguration) {
                                 boolean isOAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
@@ -149,9 +149,9 @@ public class AccessFactory {
                                         auth.get("data").put("refresh", securityRefresh.getValue());
                                         auth.get("data").put("client_id", securityClientID.getValue());
                                         auth.get("data").put("client_secret", securityClientSecret.getValue());
-                                        logger.debug("Refresh token: " + securityRefresh.getValue());
-                                        logger.debug("Client ID: " + securityClientID.getValue());
-                                        logger.debug("Client Secret: " + securityClientSecret.getValue());
+                                        logger.debug("Refresh token: {}", securityRefresh.getValue());
+                                        logger.debug("Client ID: {}", securityClientID.getValue());
+                                        logger.debug("Client Secret: {}", securityClientSecret.getValue());
 ////                                      //can this not be set default?
 //                                        auth.get("data").put("grant_type", securityGrantType.getValue());
                                     }
@@ -162,9 +162,9 @@ public class AccessFactory {
                                 try {
                                     switch (securityIn.get(0).getValue()) {
                                         case "header": {
-                                            logger.info("Applying security configuration of " + sc.getValue() + "in header");
-                                            logger.debug("Name: " + securityName.get(0).getValue());
-                                            logger.debug("Value: " + securityValue.get(0).getValue());
+                                            logger.info("Applying security configuration of {} in header", sc.getValue());
+                                            logger.debug("Name: {}", securityName.get(0).getValue());
+                                            logger.debug("Value: {}", securityValue.get(0).getValue());
                                             headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
                                             break;
                                         }
@@ -175,7 +175,7 @@ public class AccessFactory {
                                             throw new NotImplementedException();
                                     }
                                 } catch (IndexOutOfBoundsException e) {
-                                    logger.warn("Unable to apply security configuration for " + sc.getValue());
+                                    logger.warn("Unable to apply security configuration for {}", sc.getValue());
                                 }
                             }
 
@@ -199,12 +199,12 @@ public class AccessFactory {
                                 for(Term h: header) {
                                     String headerName = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldName"), null)).get(0).getValue();
                                     String headerValue = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldValue"), null)).get(0).getValue();
-                                    logger.debug("Retrieved HTTP header: '" + headerName + "','" + headerValue + "'");
+                                    logger.debug("Retrieved HTTP header: '{}','{}'", headerName, headerValue);
                                     headers.put(headerName, headerValue);
                                 }
                             }
                             catch(IndexOutOfBoundsException e) {
-                                logger.warn("Unable to retrieve header name and value for " + headerListItem.getValue());
+                                logger.warn("Unable to retrieve header name and value for {}", headerListItem.getValue());
                             }
                         };
                         access = new WoTAccess(target, contentType, headers, auth);

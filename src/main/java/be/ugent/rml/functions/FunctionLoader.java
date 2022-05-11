@@ -87,7 +87,7 @@ public class FunctionLoader {
 
     public FunctionModel getFunction(Term iri) throws IOException {
         if (!this.loadedMethods.containsKey(iri)) {
-            logger.debug("Loading function: " + iri);
+            logger.debug("Loading function: {}", iri);
             try {
                 findMethodOldWay(iri);
                 logger.warn("Found a function using the old `lib:` way, this is deprecated");

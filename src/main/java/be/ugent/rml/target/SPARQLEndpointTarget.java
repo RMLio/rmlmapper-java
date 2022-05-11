@@ -122,7 +122,7 @@ public class SPARQLEndpointTarget implements Target {
 
         }
         catch (Exception e) {
-            logger.error("Failed to close target: " + e);
+            logger.error("Failed to close target: {}", e, e);
         }
     }
 

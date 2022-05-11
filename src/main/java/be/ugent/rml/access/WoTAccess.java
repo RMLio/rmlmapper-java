@@ -33,10 +33,10 @@ public class WoTAccess implements Access {
         this.headers = headers;
         this.auth = auth;
 
-        logger.debug("Created WoTAccess:\n\tlocation:" + this.location + "\n\tcontent-type:" + this.contentType);
+        logger.debug("Created WoTAccess:\n\tlocation: {}\n\tcontent-type: {}", this.location, this.contentType);
         logger.debug(headers.toString());
         headers.forEach((name, value) -> {
-            logger.debug("Header: " + name + ": " + value);
+            logger.debug("Header: {} : {}", name, value);
         });
     }
 
@@ -52,7 +52,7 @@ public class WoTAccess implements Access {
                 logger.debug("Refresh token");
                 refreshToken();
                 logger.debug("try again with new token");
-                logger.debug("new token = " + this.headers.get(this.auth.get("info").get("name")));
+                logger.debug("new token = {}", this.headers.get(this.auth.get("info").get("name")));
                 return getInputStreamFromURL(new URL(location), contentType, headers);
             }
         } else {

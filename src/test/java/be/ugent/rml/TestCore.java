@@ -267,9 +267,9 @@ public abstract class TestCore {
         for (Map.Entry<Term, String> entry: outPaths.entrySet()) {
             Term target = entry.getKey();
             String outPath = entry.getValue();
-            logger.debug("Target:" + target.getValue());
-            logger.debug("\tOutput path:" + outPath);
-            logger.debug("\tSize:" + results.get(target).size());
+            logger.debug("Target: {}", target.getValue());
+            logger.debug("\tOutput path: {}", outPath);
+            logger.debug("\tSize: {}", results.get(target).size());
             results.get(target).removeDuplicates();
 
             // Targets may have additional metadata that needs to be included such as LDES encapsulation

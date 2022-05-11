@@ -78,7 +78,7 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
             }
 
             if (extractedValues.isEmpty()) {
-                logger.warn("Not all values for a template where found. More specific, the variable " + extractor + " did not provide any results.");
+                logger.warn("Not all values for a template where found. More specific, the variable {} did not provide any results.", extractor);
                 allValuesFound = false;
             }
         }

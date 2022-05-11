@@ -60,7 +60,7 @@ public class FunctionModel {
             if (parameters.get(this.parameters.get(i).getValue()) != null) {
                 args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i].getTypeName());
             } else {
-                logger.debug("No argument was found for following parameter: " + this.parameters.get(i).getValue());
+                logger.debug("No argument was found for following parameter: {}", this.parameters.get(i).getValue());
                 args[i] = null;
             }
         }

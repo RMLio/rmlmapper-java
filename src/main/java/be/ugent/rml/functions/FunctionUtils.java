@@ -165,7 +165,7 @@ public class FunctionUtils {
     }
 
     private static Class getClass(File sourceFile, String className, String mime) throws IOException {
-        logger.info("Found class on path " + sourceFile.getCanonicalPath());
+        logger.info("Found class on path {}", sourceFile.getCanonicalPath());
 
         switch (mime) {
             case "text/x-java-source":
@@ -246,7 +246,7 @@ public class FunctionUtils {
             quads = store.getQuads(s, realTerm, o);
             if (quads.size() > 0) {
                 if (i != 0) {
-                    logger.warn(prefices.get(i) + "is a deprecated prefix, please use " + preferredPrefix);
+                    logger.warn( "{} is a deprecated prefix, please use {}", prefices.get(i), preferredPrefix);
                 }
                 return quads;
             }
