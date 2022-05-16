@@ -1,11 +1,9 @@
 package be.ugent.rml.records;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.FieldDocument.Field.Xpath;
+import be.ugent.rml.records.xpath.NamespaceResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import be.ugent.rml.records.xpath.NamespaceResolver;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

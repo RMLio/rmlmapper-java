@@ -9,7 +9,6 @@ import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
@@ -169,7 +168,9 @@ public class Main {
             Properties configFile = null;
             if (lineArgs.hasOption("c")) {
                 configFile = new Properties();
-                configFile.load(Utils.getReaderFromLocation(lineArgs.getOptionValue("c")));
+                try (Reader reader = Utils.getReaderFromLocation(lineArgs.getOptionValue("c"))) {
+                    configFile.load(reader);
+                }
             }
 
             if (checkOptionPresence(helpOption, lineArgs, configFile)) {
@@ -201,10 +202,30 @@ public class Main {
             try {
                 BufferedInputStream bis = new BufferedInputStream(System.in);
                 int available = bis.available();
-                if (bis.available() != 0) {
-                    lis.add(bis);
+                if (available > 0) {
+                    // This little hack solves Maven tests: if the console is detached
+                    // the normal System.in could send EOT bytes to indicate that there is no
+                    // input.
+                    // So we check if there are other bytes than the <End of Transmission> (EOT) / End of File (EOF) bytes: 04
+                    byte[] firstBytes = new byte[32];
+                    bis.mark(32);
+                    int bytesRead = bis.read(firstBytes);
+                    bis.reset();
+                    if (bytesRead > 0) {
+                        boolean addStream = false;
+                        for (byte aByte : firstBytes) {
+                            if (aByte != 0 && aByte != 4) {     // 4 is the EOF / EOT byte
+                                addStream = true;
+                                break;
+                            }
+                        }
+                        if (addStream) {
+                            lis.add(bis);
+                        }
+                    }
                 }
             } catch (IOException ex) {
+                logger.warn("Error trying to check System.in: {}", ex.getMessage());
                 // The inputstream is closed when read. Leads to IOExceptions for tests that don't provide their own inputstream
             }
 
@@ -234,8 +255,8 @@ public class Main {
                 List<InputStream> lisPrivateSecurityData = Arrays.stream(mOptionValuePrivateSecurityData)
                         .map(Utils::getInputStreamFromFileOrContentString)
                         .collect(Collectors.toList());
-                InputStream isPrivateSecurityData = new SequenceInputStream(Collections.enumeration(lisPrivateSecurityData));
-                try {
+
+                try (InputStream isPrivateSecurityData = new SequenceInputStream(Collections.enumeration(lisPrivateSecurityData))) {
                     rmlStore.read(isPrivateSecurityData, null, RDFFormat.TURTLE);
                 } catch (RDFParseException e) {
                     logger.debug(e.getMessage());
@@ -320,17 +341,6 @@ public class Main {
                 functionAgent = AgentFactory.createFromFnO(optionWithIDLabFunctionArgs);
             }
 
-            if (mOptionValue != null) {
-                /*
-                 * We have to get the InputStreams of the RML documents again,
-                 * because we can only use an InputStream once
-                 */
-                lis = Arrays.stream(mOptionValue)
-                        .map(Utils::getInputStreamFromFileOrContentString)
-                        .collect(Collectors.toList());
-            }
-            is = new SequenceInputStream(Collections.enumeration(lis));
-
             boolean strict = checkOptionPresence(strictModeOption, lineArgs, configFile);
             StrictMode strictMode = strict ? STRICT : BEST_EFFORT;
 
@@ -341,8 +351,19 @@ public class Main {
                 if (strictMode.equals(STRICT)) {
                     throw new Exception("When running in strict mode, a base IRI argument must be set.");
                 } else {
+                    if (mOptionValue != null) {
+                        /*
+                         * We have to get the InputStreams of the RML documents again,
+                         * because we can only use an InputStream once
+                         */
+                        lis = Arrays.stream(mOptionValue)
+                                .map(Utils::getInputStreamFromFileOrContentString)
+                                .collect(Collectors.toList());
+                    }
                     // Best-effort mode, use the @base directive as a fallback
-                    baseIRI = Utils.getBaseDirectiveTurtle(is);
+                    try (InputStream is2 = new SequenceInputStream(Collections.enumeration(lis))) {
+                        baseIRI = Utils.getBaseDirectiveTurtle(is2);
+                    }
                 }
             }
 
@@ -436,13 +457,11 @@ public class Main {
                 store.addQuads(target.getMetadata());
 
                 // Set character encoding
-                Writer out = new BufferedWriter(new OutputStreamWriter(output, Charset.defaultCharset()));
-
-                // Write store to target
-                store.write(out, serializationFormat);
-
+                try (Writer out = new BufferedWriter(new OutputStreamWriter(output, Charset.defaultCharset()))) {
+                    // Write store to target
+                    store.write(out, serializationFormat);
+                }
                 // Close OS resources
-                out.close();
                 target.close();
             }
         }
@@ -527,8 +546,9 @@ public class Main {
             logger.info(store.size() + " quad was generated for default Target");
         }
 
+        Writer out = null;
         try {
-            Writer out;
+
             String doneMessage = null;
 
             //if output file provided, write to triples output file
@@ -555,7 +575,16 @@ public class Main {
                 logger.info(doneMessage);
             }
         } catch (Exception e) {
-            System.err.println("Writing output failed. Reason: " + e.getMessage());
+            logger.error("Writing output failed. Reason: " + e.getMessage());
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    logger.error("Could not close writer. ", e);
+                }
+            }
+
         }
 
         return targetFile;

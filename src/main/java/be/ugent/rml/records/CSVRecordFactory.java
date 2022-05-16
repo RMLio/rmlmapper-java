@@ -69,7 +69,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
 
             // Check if we are dealing with CSVW.
             if (sourceType.get(0).getValue().equals(NAMESPACES.CSVW + "Table")) {
-                CSVW csvw = new CSVW(access.getInputStream(), rmlStore, logicalSource);
+                CSVW csvw = new CSVW(rmlStore, logicalSource);
                 return getRecordsForCSV(access, csvw);
             } else {
                 // RDBs fall under this.
@@ -86,20 +86,21 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      */
     private List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
         List<Record> output = new ArrayList<>();
-        Workbook workbook = new XSSFWorkbook(access.getInputStream());
-        for (Sheet datatypeSheet : workbook) {
-            Row header = datatypeSheet.getRow(0);
-            boolean first = true;
-            for (Row currentRow : datatypeSheet) {
-                // remove the header
-                if (first) {
-                    first = false;
-                } else {
-                    output.add(new ExcelRecord(header, currentRow));
+        try (InputStream is = access.getInputStream();
+             Workbook workbook = new XSSFWorkbook(is)) {
+            for (Sheet datatypeSheet : workbook) {
+                Row header = datatypeSheet.getRow(0);
+                boolean first = true;
+                for (Row currentRow : datatypeSheet) {
+                    // remove the header
+                    if (first) {
+                        first = false;
+                    } else {
+                        output.add(new ExcelRecord(header, currentRow));
+                    }
                 }
             }
         }
-        workbook.close();
         return output;
     }
 
@@ -111,16 +112,17 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      */
     private List<Record> getRecordsForODT(Access access) throws Exception {
         List<Record> output = new ArrayList<>();
-        InputStream is = access.getInputStream();
-        Document document = SpreadsheetDocument.loadDocument(is);
-        for (org.odftoolkit.simple.table.Table table : document.getTableList()) {
-            org.odftoolkit.simple.table.Row header = table.getRowByIndex(0);
-            boolean first = true;
-            for (org.odftoolkit.simple.table.Row currentRow : table.getRowList()) {
-                if (first) {
-                    first = false;
-                } else {
-                    output.add(new ODSRecord(header, currentRow));
+        try (InputStream is = access.getInputStream()) {
+            Document document = SpreadsheetDocument.loadDocument(is);
+            for (org.odftoolkit.simple.table.Table table : document.getTableList()) {
+                org.odftoolkit.simple.table.Row header = table.getRowByIndex(0);
+                boolean first = true;
+                for (org.odftoolkit.simple.table.Row currentRow : table.getRowList()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        output.add(new ODSRecord(header, currentRow));
+                    }
                 }
             }
         }
@@ -139,18 +141,20 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
             // Check if we are dealing with CSVW.
             if (csvw == null) {
                 // RDBs fall under this
-                InputStream inputStream = access.getInputStream();
-                CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-                        .withSkipLines(0)
-                        .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
-                        .build();
-                List<String[]> records = reader.readAll();
-                final String[] header = records.get(0);
-                return records.subList(1, records.size()).stream()
-                        // throw away empty records
-                        .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
-                        .map(record -> new CSVRecord(header, record, access.getDataTypes()))
-                        .collect(Collectors.toList());
+                try (InputStream inputStream = access.getInputStream();
+                     CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                             .withSkipLines(0)
+                             .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
+                             .build();
+                ) {
+                    List<String[]> records = reader.readAll();
+                    final String[] header = records.get(0);
+                    return records.subList(1, records.size()).stream()
+                            // throw away empty records
+                            .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
+                            .map(record -> new CSVRecord(header, record, access.getDataTypes()))
+                            .collect(Collectors.toList());
+                }
             } else {
                 return csvw.getRecords(access);
             }

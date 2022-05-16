@@ -29,6 +29,7 @@ import java.util.Map;
 import static be.ugent.rml.StrictMode.BEST_EFFORT;
 import static org.junit.Assert.*;
 
+@net.jcip.annotations.NotThreadSafe
 public abstract class TestCore {
 
     final String DEFAULT_BASE_IRI = "http://example.com/base/";

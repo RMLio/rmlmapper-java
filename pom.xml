@@ -301,6 +301,13 @@
         </dependency>
         <!-- END spreadsheet dependencies-->
 
+        <dependency>
+            <groupId>com.github.stephenc.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <version>1.0-1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -365,6 +372,8 @@
                 <configuration>
                     <useSystemClassLoader>true</useSystemClassLoader>
                     <useManifestOnlyJar>false</useManifestOnlyJar>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
                     <!--&lt;!&ndash;<parallel>methods</parallel>&ndash;&gt;-->
                     <!--&lt;!&ndash;<threadCount>10</threadCount>&ndash;&gt;-->
                 </configuration>

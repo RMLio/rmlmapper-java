@@ -18,7 +18,7 @@ grel:toUpperCase
     dcterms:description "Returns the input with all letters in upper case." ;
     fno:expects         ( grel:valueParam ) ;
     fno:returns         ( grel:stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "./src/test/resources/rml-fno-test-cases/GrelFunctions_dynamic.jar" ;
+    lib:providedBy      [ lib:localLibrary "rml-fno-test-cases/GrelFunctions_dynamic.jar" ;
                           lib:class        "GrelFunctions" ;
                           lib:method       "toUppercase" ] .
 

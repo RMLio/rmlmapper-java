@@ -23,11 +23,11 @@ public class ReadmeFunctionTest {
     @Test
     public void function() {
         try {
-            String mapPath = "./src/test/resources/argument/mapping.ttl"; //path to the mapping file that needs to be executed
+            String mapPath = Utils.getFile("argument/mapping.ttl").getAbsolutePath(); //path to the mapping file that needs to be executed
             File mappingFile = new File(mapPath);
 
             // Use custom functions.ttl file
-            String functionPath = "./src/test/resources/rml-fno-test-cases/functions_test.ttl";
+            String functionPath = "rml-fno-test-cases/functions_test.ttl";
 
             // Get the mapping string stream
             InputStream mappingStream = new FileInputStream(mappingFile);

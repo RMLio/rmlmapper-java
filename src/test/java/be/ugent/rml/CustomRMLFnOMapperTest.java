@@ -9,7 +9,7 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
     @Test
     public void evaluate_A001() throws Exception {
         Agent functionAgent = AgentFactory.createFromFnO(
-                "./src/test/resources/rml-fno-test-cases/functions_dynamic.ttl",
+                "rml-fno-test-cases/functions_dynamic.ttl",
                 "functions_grel.ttl",
                 "grel_java_mapping.ttl");
         Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionAgent);
@@ -23,7 +23,7 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
     @Test(expected = Exception.class)
     public void evaluate_A001_missing_params() throws Exception {
         Agent functionAgent = AgentFactory.createFromFnO(
-                "./src/test/resources/rml-fno-test-cases/functions_dynamic_missing_params.ttl");
+                "rml-fno-test-cases/functions_dynamic_missing_params.ttl");
         Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionAgent);
         doMapping(executor, "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
         //assertTrue(functionLoader.getLibraryPath("GrelFunctions").endsWith("GrelFunctions_dynamic.jar"));
@@ -37,7 +37,7 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
     @Test
     public void evaluate_A003() throws Exception {
         Agent functionAgent = AgentFactory.createFromFnO(
-                "./src/test/resources/rml-fno-test-cases/functions_dynamic.ttl",
+                "rml-fno-test-cases/functions_dynamic.ttl",
                 "functions_grel.ttl",
                 "grel_java_mapping.ttl");
         // You first need to execute the mapping, bc the libraryMap of loaded Jars is dynamically built
@@ -178,7 +178,7 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
     @Test
     public void evaluate_AB0001() throws Exception {
         // load the functions from a test resource jar & description file
-        Agent functionAgent = AgentFactory.createFromFnO("./src/test/resources/aaabimfunctions/aaabim_java_mapping.ttl");
+        Agent functionAgent = AgentFactory.createFromFnO("aaabimfunctions/aaabim_java_mapping.ttl");
 
         // You first need to execute the mapping, bc the libraryMap of loaded Jars is dynamically built
         Executor executor = this.createExecutor("rml-fno-test-cases/RMLFNOTCAB0001-JSON/mapping.ttl", functionAgent);
@@ -193,7 +193,7 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
     @Test
     public void evaluate_AB0002() throws Exception {
         // load the functions from a test resource jar & description file
-        Agent functionAgent = AgentFactory.createFromFnO("./src/test/resources/aaabimfunctions/aaabim_java_mapping.ttl");
+        Agent functionAgent = AgentFactory.createFromFnO("aaabimfunctions/aaabim_java_mapping.ttl");
 
         // You first need to execute the mapping, bc the libraryMap of loaded Jars is dynamically built
         Executor executor = this.createExecutor("rml-fno-test-cases/RMLFNOTCAB0002-JSON/mapping.ttl", functionAgent);

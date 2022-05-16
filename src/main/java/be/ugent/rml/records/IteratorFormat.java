@@ -38,8 +38,9 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
         // If not, a new one is created, based on the InputStream from the access.
         if (! documentMap.containsKey(access)) {
             logger.debug("No document found for {}. Creating new one", access);
-            InputStream stream = access.getInputStream();
-            documentMap.put(access, getDocumentFromStream(stream, access.getContentType()));
+            try (InputStream stream = access.getInputStream()) {
+                documentMap.put(access, getDocumentFromStream(stream, access.getContentType()));
+            }
         }
 
         List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "iterator"), null));

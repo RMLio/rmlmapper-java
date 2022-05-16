@@ -20,8 +20,7 @@ public class ReadmeTest {
     @Test
     public void standard() {
         try {
-            String mapPath = "./src/test/resources/argument/mapping.ttl"; //path to the mapping file that needs to be executed
-            File mappingFile = new File(mapPath);
+            File mappingFile = Utils.getFile("argument/mapping.ttl");
 
             // Get the mapping string stream
             InputStream mappingStream = new FileInputStream(mappingFile);

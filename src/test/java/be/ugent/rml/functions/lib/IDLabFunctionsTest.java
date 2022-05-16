@@ -1,10 +1,10 @@
 package be.ugent.rml.functions.lib;
 
+import be.ugent.rml.Utils;
 import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -275,7 +275,7 @@ public class IDLabFunctionsTest {
     @Test
     public void lookup() throws CsvValidationException, IOException {
         String searchString = "A";
-        String inputFile =  "src/test/resources/rml-fno-test-cases/class.csv";
+        String inputFile = Utils.getFile("rml-fno-test-cases/class.csv").getAbsolutePath();
         Integer fromColumn = 0;
         Integer toColumn = 1;
         assertEquals("Class A", IDLabFunctions.lookup(searchString, inputFile, fromColumn, toColumn));
@@ -292,7 +292,7 @@ public class IDLabFunctionsTest {
 
         searchString = "B";
         fromColumn = 0;
-        inputFile = "src/test/resources/rml-fno-test-cases/classB.csv";
+        inputFile = Utils.getFile("rml-fno-test-cases/classB.csv").getAbsolutePath();
         delimiter = ";";
         assertEquals("Class B", IDLabFunctions.lookupWithDelimiter(searchString, inputFile, fromColumn, toColumn, delimiter));
     }

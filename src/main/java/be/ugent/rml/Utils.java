@@ -67,10 +67,6 @@ public class Utils {
         }
     }
 
-    public static InputStream getInputStreamFromLocation(String location) throws IOException {
-        return getInputStreamFromLocation(location, null, "");
-    }
-
     public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
         return getInputStreamFromLocation(location, basePath, contentType, new HashMap<String, String>());
     }
@@ -133,11 +129,12 @@ public class Utils {
     }
 
     private static InputStream getTurtleInputStreamForFormat(String mOptionValue, RDFFormat format) throws IOException {
-        InputStream out = getInputStreamFromLocation(mOptionValue, null, format.getDefaultMIMEType());
-        Model model = Rio.parse(out, "", format);
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Rio.write(model, output, RDFFormat.TURTLE);
-        return new ByteArrayInputStream(output.toByteArray());
+        try (InputStream out = getInputStreamFromLocation(mOptionValue, null, format.getDefaultMIMEType())) {
+            Model model = Rio.parse(out, "", format);
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            Rio.write(model, output, RDFFormat.TURTLE);
+            return new ByteArrayInputStream(output.toByteArray());
+        }
     }
 
     public static File getFile(String path) throws IOException {
