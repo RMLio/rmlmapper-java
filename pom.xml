@@ -1,6 +1,6 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>be.ugent.rml</groupId>
+    <groupId>nl.ocs.be.ugent.rml</groupId>
     <artifactId>rmlmapper</artifactId>
     <name>RMLMapper</name>
     <version>5.0.0</version>

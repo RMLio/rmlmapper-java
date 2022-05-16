@@ -18,7 +18,7 @@ public class RecordFunctionExecutorFactory {
         List<Term> constants = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "constant"), null));
 
         if (!references.isEmpty()) {
-            return new ReferenceExtractor(references.get(0).getValue(), ignoreDoubleQuotes);
+            return new ReferenceExtractor(references.get(0).getValue().toUpperCase(), ignoreDoubleQuotes);
         } else if (!templates.isEmpty()) {
             return new ConcatFunction(Utils.parseTemplate(templates.get(0).getValue(), ignoreDoubleQuotes), encodeURI);
         } else if (!constants.isEmpty()) {

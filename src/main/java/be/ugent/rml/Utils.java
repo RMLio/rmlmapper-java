@@ -458,7 +458,7 @@ public class Utils {
                         current += c;
                         previousWasBackslash = false;
                     } else if (variableBusy) {
-                        extractors.add(new ReferenceExtractor(current, ignoreDoubleQuotes));
+                        extractors.add(new ReferenceExtractor(current.toUpperCase(), ignoreDoubleQuotes));
                         current = "";
                         variableBusy = false;
                     } else {

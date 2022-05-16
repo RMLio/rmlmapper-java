@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class Executor {
 
@@ -376,14 +377,14 @@ public class Executor {
 
             Object expectedBoolean = condition.execute(recordsMap);
 
-            if (expectedBoolean instanceof Boolean) {
-                if ((boolean) expectedBoolean) {
+            //if (expectedBoolean instanceof Boolean) {
+                if (Boolean.TRUE.equals(expectedBoolean)) {
                     ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
                     iris.add(subject);
                 }
-            } else {
-                logger.warn("The used condition with the Parent Triples Map does not return a boolean.");
-            }
+//            } else {
+//                logger.warn("The used condition with the Parent Triples Map does not return a boolean.");
+//            }
         }
 
         return iris;

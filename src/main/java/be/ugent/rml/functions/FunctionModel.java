@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,9 +58,17 @@ public class FunctionModel {
         Type[] paramTypes = this.method.getGenericParameterTypes();
 
         for (int i = 0; i < this.parameters.size(); i++) {
-            if (parameters.get(this.parameters.get(i).getValue()) != null) {
-                args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i].getTypeName());
-            } else {
+//            if (parameters.get(this.parameters.get(i).getValue()) != null) {
+//                args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i].getTypeName());
+//            } else {
+//                logger.debug("No argument was found for following parameter: " + this.parameters.get(i).getValue());
+//                args[i] = null;
+//            }
+            Object obj = parameters.get(this.parameters.get(i).getValue());
+            if(obj != null) {
+                args[i] = parseParameter(obj, paramTypes[i].getTypeName());
+            }
+            else {
                 logger.debug("No argument was found for following parameter: " + this.parameters.get(i).getValue());
                 args[i] = null;
             }

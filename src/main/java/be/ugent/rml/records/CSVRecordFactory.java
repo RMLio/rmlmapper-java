@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -145,7 +146,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
                         .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
                         .build();
                 List<String[]> records = reader.readAll();
-                final String[] header = records.get(0);
+                final String[] header = Arrays.stream(records.get(0)).map(String::toUpperCase).toArray(String[]::new);
                 return records.subList(1, records.size()).stream()
                         // throw away empty records
                         .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
