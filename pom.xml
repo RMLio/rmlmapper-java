@@ -258,9 +258,9 @@
             <version>1.7</version>
         </dependency>
         <dependency>
-            <groupId>com.github.fnoio</groupId>
+            <groupId>com.github.FnOio</groupId>
             <artifactId>function-agent-java</artifactId>
-            <version>v0.0.2</version>
+            <version>v0.0.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.jena</groupId>
