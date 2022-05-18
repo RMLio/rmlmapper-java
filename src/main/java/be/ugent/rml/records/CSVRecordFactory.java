@@ -85,7 +85,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return
      * @throws IOException
      */
-    private List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
+    protected List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
         List<Record> output = new ArrayList<>();
         Workbook workbook = new XSSFWorkbook(access.getInputStream());
         for (Sheet datatypeSheet : workbook) {
@@ -110,7 +110,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return
      * @throws IOException
      */
-    private List<Record> getRecordsForODT(Access access) throws Exception {
+    protected List<Record> getRecordsForODT(Access access) throws Exception {
         List<Record> output = new ArrayList<>();
         InputStream is = access.getInputStream();
         Document document = SpreadsheetDocument.loadDocument(is);
@@ -135,7 +135,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return a CSVParser.
      * @throws IOException
      */
-    private List<Record> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException, ClassNotFoundException {
+    protected List<Record> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException, ClassNotFoundException {
         try {
             // Check if we are dealing with CSVW.
             if (csvw == null) {
