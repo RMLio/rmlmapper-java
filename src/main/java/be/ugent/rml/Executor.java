@@ -376,15 +376,10 @@ public class Executor {
             recordsMap.put("parent", parent);
 
             Object expectedBoolean = condition.execute(recordsMap);
-
-            //if (expectedBoolean instanceof Boolean) {
-                if (Boolean.TRUE.equals(expectedBoolean)) {
-                    ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
-                    iris.add(subject);
-                }
-//            } else {
-//                logger.warn("The used condition with the Parent Triples Map does not return a boolean.");
-//            }
+            if (Boolean.TRUE.equals(expectedBoolean)) {
+                ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
+                iris.add(subject);
+            }
         }
 
         return iris;

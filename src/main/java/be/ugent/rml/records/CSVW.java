@@ -62,7 +62,7 @@ class CSVW {
                 .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
                 .build()
                 .readAll();
-        String[] header = records.get(0);
+        String[] header = Arrays.stream(records.get(0)).map(String::toUpperCase).toArray(String[]::new);
         Stream<String[]> readRecords = records.subList(1, records.size())
                 .stream()
                 // throw away empty records

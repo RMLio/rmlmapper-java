@@ -25,7 +25,7 @@ public class HTMLRecordFactory extends IteratorFormat<Document> {
     List<Record> getRecordsFromDocument(Document document, String iterator) {
         Elements data = document.select(iterator);
         // Get the headers
-        List<String> headers = data.get(0).select("th").stream().map(Element::text).collect(Collectors.toList());
+        List<String> headers = data.get(0).select("th").stream().map(Element::text).map(String::toUpperCase).collect(Collectors.toList());
         data.remove(0);
         return data
                 .stream()

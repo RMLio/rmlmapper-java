@@ -12,12 +12,14 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.odftoolkit.simple.Document;
 import org.odftoolkit.simple.SpreadsheetDocument;
+import org.odftoolkit.simple.table.Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,8 +91,16 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
     protected List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
         List<Record> output = new ArrayList<>();
         Workbook workbook = new XSSFWorkbook(access.getInputStream());
+
         for (Sheet datatypeSheet : workbook) {
             Row header = datatypeSheet.getRow(0);
+
+            header.cellIterator().forEachRemaining(c -> {
+                if(c.getCellType().equals(CellType.STRING)) {
+                    c.setCellValue(c.toString().toUpperCase());
+                }
+            });
+
             boolean first = true;
             for (Row currentRow : datatypeSheet) {
                 // remove the header
@@ -116,6 +127,15 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
         Document document = SpreadsheetDocument.loadDocument(is);
         for (org.odftoolkit.simple.table.Table table : document.getTableList()) {
             org.odftoolkit.simple.table.Row header = table.getRowByIndex(0);
+
+            int cellCount = header.getCellCount();
+            for(int i = 0; i < cellCount; i++) {
+                Cell cell = header.getCellByIndex(i);
+                if(cell.getValueType().equals("string")) {
+                    cell.setStringValue(cell.getStringValue().toUpperCase());
+                }
+            }
+
             boolean first = true;
             for (org.odftoolkit.simple.table.Row currentRow : table.getRowList()) {
                 if (first) {
@@ -125,6 +145,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
                 }
             }
         }
+
         return output;
     }
 

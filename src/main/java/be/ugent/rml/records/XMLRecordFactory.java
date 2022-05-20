@@ -2,6 +2,7 @@ package be.ugent.rml.records;
 
 import org.apache.xmlbeans.impl.xb.xsdschema.FieldDocument.Field.Xpath;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -17,7 +18,11 @@ import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * This class is a record factory that creates XML records.
@@ -40,6 +45,7 @@ public class XMLRecordFactory extends IteratorFormat<Document> {
             XPath xPath = XPathFactory.newInstance().newXPath();
             xPath.setNamespaceContext(new NamespaceResolver(document));
             NodeList result = (NodeList) xPath.compile(iterator).evaluate(document, XPathConstants.NODESET);
+
             for (int i = 0; i < result.getLength(); i++) {
                 records.add(new XMLRecord(result.item(i)));
             }
