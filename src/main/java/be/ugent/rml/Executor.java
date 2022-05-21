@@ -1,7 +1,9 @@
 package be.ugent.rml;
 
+import be.ugent.rml.extractor.Extractor;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
+import be.ugent.rml.functions.StaticMultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.Record;
@@ -12,6 +14,9 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.ProvenancedTerm;
 import be.ugent.rml.term.Term;
+import com.github.jsonldjava.utils.Obj;
+import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.rdf4j.query.algebra.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +44,9 @@ public class Executor {
     private String baseIRI;
     private final StrictMode strictMode;
 
+    private Map<Term, Map<List<Object>, Pair<Record, Integer>>> cachedRecordMap = new HashMap<>();
+    private static final String EQUAL_URI = "http://example.com/idlab/function/equal";
+    
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
         this(rmlStore, recordsFactory, null, null, baseIRI, strictMode);
     }
@@ -293,8 +301,12 @@ public class Executor {
 
                 //check if need to apply a join condition
                 if (!pogMapping.getJoinConditions().isEmpty()) {
-                    objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
-                    //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
+                    if(isSimpleJoin(pogMapping)) {
+                        objects = this.getIRIsWithSimpleJoin(record, pogMapping.getParentTriplesMap(), ((StaticMultipleRecordsFunctionExecutor) pogMapping.getJoinConditions().iterator().next()).getParameters());
+                    } else {
+                        objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
+                        //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
+                    }
                 } else {
                     objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
                 }
@@ -304,6 +316,74 @@ public class Executor {
         }
 
         return results;
+    }
+
+    private List<ProvenancedTerm> getIRIsWithSimpleJoin(Record record, Term parentTriplesMap, Map<String, Object[]> parameters) throws Exception {
+        Mapping mapping = this.mappings.get(parentTriplesMap);
+
+        Extractor parentExtractor = extract(parameters, "parent");
+        Extractor childExtractor = extract(parameters, "child");
+
+        //put in cache
+        //real index instead of 0
+        List<Record> records = this.getRecords(parentTriplesMap);
+        Map<List<Object>, Pair<Record, Integer>> recordMap = this.getCachedRecordMap(parentTriplesMap);
+        if(recordMap == null) {
+            recordMap = new HashMap<>();
+            for(int i = 0; i < records.size(); i++) {
+                recordMap.put(parentExtractor.extract(records.get(i)), Pair.of(records.get(i), i));
+            }
+            this.cachedRecordMap.put(parentTriplesMap, recordMap);
+        }
+
+        //Map<List<Object>, Pair<Record, Integer>> recordMap = records.stream().collect(Collectors.toMap(parentExtractor::extract, r -> Pair.of(r, 0)));
+
+        //check if parentrecord is not null
+        Pair<Record, Integer> parentRecord = recordMap.get(childExtractor.extract(record));
+        if(parentRecord != null) {
+            ProvenancedTerm subject = this.getSubject(parentTriplesMap, mapping, parentRecord.getLeft(), parentRecord.getRight());
+            return Arrays.asList(subject);
+        }
+        else {
+            return Arrays.asList();
+        }
+    }
+
+    private Map<List<Object>, Pair<Record, Integer>> getCachedRecordMap(Term parentTriplesMap) {
+        return this.cachedRecordMap.get(parentTriplesMap);
+    }
+
+    private Extractor extract(Map<String, Object[]> parameters, String parameterName) {
+        return parameters.entrySet().stream()
+                .map(p -> p.getValue())
+                .filter(a -> a.length == 2)
+                .filter(a -> parameterName.equals(a[0]))
+                .map(a -> a[1])
+                .filter(Extractor.class::isInstance)
+                .map(Extractor.class::cast)
+                .findAny()
+                .orElse(null);
+    }
+
+    // Check if the 2 parameters exist
+    private boolean isSimpleJoin(PredicateObjectGraphMapping pogMapping) {
+        if(pogMapping.getJoinConditions().size() != 1) {
+            return false;
+        }
+        MultipleRecordsFunctionExecutor join = pogMapping.getJoinConditions().iterator().next();
+        if(!(join instanceof StaticMultipleRecordsFunctionExecutor)) {
+            return false;
+        }
+        StaticMultipleRecordsFunctionExecutor staticMultipleRecordsFunctionExecutor = (StaticMultipleRecordsFunctionExecutor) join;
+        Term uri = staticMultipleRecordsFunctionExecutor.getFunctionModel().getURI();
+        if(!(uri instanceof NamedNode)) {
+            return false;
+        }
+        NamedNode newURI = (NamedNode) uri;
+        if(!Executor.EQUAL_URI.equals(newURI.getValue())) {
+            return false;
+        }
+        return true;
     }
 
     private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {

@@ -35,4 +35,12 @@ public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFun
 
         return this.functionModel.execute(filledInParameters);
     }
+
+    public FunctionModel getFunctionModel() {
+        return functionModel;
+    }
+
+    public Map<String, Object[]> getParameters() {
+        return parameters;
+    }
 }
