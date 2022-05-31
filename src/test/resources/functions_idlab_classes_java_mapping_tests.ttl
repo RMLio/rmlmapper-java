@@ -7,12 +7,6 @@
 # CLASSES #
 ###########
 
-idlab-fn-m:idLabFunctions a fnoi:JavaClass ;
-  #doap:download-page "IDLabFunctions.jar" ;
-  #fnoi:class-name "be.ugent.rml.functions.lib.IDLabFunctions" .
-  # for testing:
-  fnoi:class-name "be.ugent.rml.functions.lib.IDLabTestFunctions" .
-
 idlab-fn-m:utilFunctions a fnoi:JavaClass ;
   #doap:download-page "IDLabFunctions.jar" ;
   fnoi:class-name "be.ugent.rml.functions.lib.UtilFunctions" .

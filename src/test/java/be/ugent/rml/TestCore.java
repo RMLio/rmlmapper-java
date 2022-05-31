@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.cli.Main;
 import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.records.RecordsFactory;
@@ -91,7 +92,7 @@ public abstract class TestCore {
            method to avoid different behavior between test code and the CLI interface! */
         convertToRml(rmlStore);
 
-        return new Executor(rmlStore, new RecordsFactory(parentPath),
+        return createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(parentPath),
                 DEFAULT_BASE_IRI, strictMode);
     }
 
@@ -118,7 +119,7 @@ public abstract class TestCore {
         rmlStore.read(new FileInputStream(privateSecurityDataFile), null, RDFFormat.TURTLE);
         String parentPath = mappingFile.getParent();
 
-        return new Executor(rmlStore,
+        return createExecutorWithIDLabFunctions(rmlStore,
                 new RecordsFactory(parentPath), DEFAULT_BASE_IRI, BEST_EFFORT);
     }
 
@@ -319,7 +320,7 @@ public abstract class TestCore {
 
         // Pass the test if an error occurs during mapping execution.
         try {
-            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
+            Executor executor = createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
             executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
         } catch (Exception e) {
             // I expected you!
@@ -401,5 +402,14 @@ public abstract class TestCore {
         }
 
         return store;
+    }
+
+    private Executor createExecutorWithIDLabFunctions(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
+        Agent functionAgent = AgentFactory.createFromFnO(
+                "fno/functions_idlab.ttl",
+                "fno/functions_idlab_classes_java_mapping.ttl",
+                "grel_java_mapping.ttl",
+                "functions_grel.ttl");
+        return new Executor(rmlStore, recordsFactory, null, baseIRI, strictMode, functionAgent);
     }
 }

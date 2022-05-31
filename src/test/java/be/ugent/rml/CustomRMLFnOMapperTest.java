@@ -71,16 +71,16 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
      * Tests whether the function idlab-fn:inRange is supported correctly by the mapper
      */
     @Test
-    public void evaluate_A006() {
-        doMapping("./rml-fno-test-cases/RMLFNOTCA006/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA006/output.ttl");
+    public void evaluate_A006() throws Exception {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTCA006/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCA006/output.ttl");
     }
 
     /**
      * Tests whether the function idlab-fn:stringContainsOtherString is supported correctly by the mapper
      */
     @Test
-    public void Evaluate_idlab_F001() {
-        doMapping("./rml-fno-test-cases/RMLFNOTCF001/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF001/output.ttl");
+    public void Evaluate_idlab_F001() throws Exception {
+        doPreloadMapping("./rml-fno-test-cases/RMLFNOTCF001/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF001/output.ttl");
     }
 
     /**

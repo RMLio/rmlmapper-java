@@ -2,11 +2,11 @@ package be.ugent.rml.cli;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
+import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.Executor;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.Utils;
 import be.ugent.rml.conformer.MappingConformer;
-import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
@@ -329,14 +329,14 @@ public class Main {
             if (fOptionValue == null) {
                 // default initialisation with IDLab functions and GREL functions...
                 functionAgent = AgentFactory.createFromFnO(
-                        "functions_idlab.ttl", "functions_idlab_classes_java_mapping.ttl",
+                        "fno/functions_idlab.ttl", "fno/functions_idlab_classes_java_mapping.ttl",
                         "functions_grel.ttl",
                         "grel_java_mapping.ttl");
             } else {
                 logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
                 String[] optionWithIDLabFunctionArgs = new String[fOptionValue.length + 2];
-                optionWithIDLabFunctionArgs[0] = "functions_idlab.ttl" ;
-                optionWithIDLabFunctionArgs[1] = "functions_idlab_classes_java_mapping.ttl" ;
+                optionWithIDLabFunctionArgs[0] = "fno/functions_idlab.ttl" ;
+                optionWithIDLabFunctionArgs[1] = "fno/functions_idlab_classes_java_mapping.ttl" ;
                 System.arraycopy(fOptionValue, 0, optionWithIDLabFunctionArgs, 2, fOptionValue.length);
                 functionAgent = AgentFactory.createFromFnO(optionWithIDLabFunctionArgs);
             }

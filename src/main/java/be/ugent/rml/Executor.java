@@ -38,10 +38,6 @@ public class Executor {
     private String baseIRI;
     private final StrictMode strictMode;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
-        this(rmlStore, recordsFactory, null, baseIRI, strictMode, null);
-    }
-
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
         this(rmlStore, recordsFactory, null, baseIRI, strictMode, functionAgent);
     }

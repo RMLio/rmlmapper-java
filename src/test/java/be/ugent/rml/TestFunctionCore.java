@@ -7,8 +7,8 @@ abstract class TestFunctionCore extends TestCore {
 
     Executor doPreloadMapping(String mapPath, String outPath) throws Exception {
         Agent functionAgent = AgentFactory.createFromFnO(
-                "functions_idlab.ttl",
-                "functions_idlab_classes_java_mapping_tests.ttl",
+                "fno/functions_idlab.ttl",
+                "fno/functions_idlab_test_classes_java_mapping.ttl",
                 "rml-fno-test-cases/functions_test.ttl",
                 "grel_java_mapping.ttl",
                 "functions_grel.ttl"

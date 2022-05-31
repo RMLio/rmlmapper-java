@@ -260,7 +260,7 @@
         <dependency>
             <groupId>com.github.FnOio</groupId>
             <artifactId>function-agent-java</artifactId>
-            <version>v0.0.4</version>
+            <version>v0.1.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.jena</groupId>
@@ -271,6 +271,11 @@
             <groupId>com.github.fnoio</groupId>
             <artifactId>grel-functions-java</artifactId>
             <version>v0.7.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.fnoio</groupId>
+            <artifactId>idlab-functions-java</artifactId>
+            <version>v0.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.slugify</groupId>

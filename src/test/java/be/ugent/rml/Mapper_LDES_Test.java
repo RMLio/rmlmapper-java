@@ -2,7 +2,7 @@ package be.ugent.rml;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
-import be.ugent.rml.functions.lib.IDLabFunctions;
+import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.NamedNode;
@@ -28,7 +28,7 @@ public class Mapper_LDES_Test extends TestCore {
     @BeforeClass
     public static void setups() throws Exception {
         QuadStore functionDescriptionTriples = new RDF4JStore();
-        functionAgent = AgentFactory.createFromFnO("functions_idlab.ttl", "functions_idlab_classes_java_mapping_tests.ttl");
+        functionAgent = AgentFactory.createFromFnO("fno/functions_idlab.ttl", "fno/functions_idlab_test_classes_java_mapping.ttl");
     }
 
     @Test

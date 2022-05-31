@@ -4,7 +4,6 @@ import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.Executor;
 import be.ugent.rml.Utils;
-import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
@@ -13,8 +12,6 @@ import be.ugent.rml.term.NamedNode;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.fail;
 
@@ -39,9 +36,6 @@ public class ReadmeFunctionTest {
             RecordsFactory factory = new RecordsFactory(mappingFile.getParent());
 
             // Set up the functions used during the mapping
-            Map<String, Class> libraryMap = new HashMap<>();
-            libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-
             Agent functionAgent = AgentFactory.createFromFnO(functionPath);
 
             // Set up the outputstore (needed when you want to output something else than nquads

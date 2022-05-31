@@ -32,7 +32,7 @@ public class ReadmeTest {
             RecordsFactory factory = new RecordsFactory(mappingFile.getParent());
 
             // Set up the functions used during the mapping
-            Agent functionAgent = AgentFactory.createFromFnO("functions_idlab.ttl", "functions_idlab_classes_java_mapping_tests.ttl");
+            Agent functionAgent = AgentFactory.createFromFnO("fno/functions_idlab.ttl", "fno/functions_idlab_test_classes_java_mapping.ttl");
 
             // Set up the outputstore (needed when you want to output something else than nquads
             QuadStore outputStore = new RDF4JStore();
