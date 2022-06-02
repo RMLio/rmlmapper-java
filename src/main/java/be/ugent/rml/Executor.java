@@ -15,6 +15,9 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.ProvenancedTerm;
 import be.ugent.rml.term.Term;
 import com.github.jsonldjava.utils.Obj;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.AbstractMultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.rdf4j.query.algebra.In;
 import org.slf4j.Logger;
@@ -22,7 +25,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Executor {
 
@@ -44,7 +50,13 @@ public class Executor {
     private String baseIRI;
     private final StrictMode strictMode;
 
-    private Map<Term, Map<List<Object>, Pair<Record, Integer>>> cachedRecordMap = new HashMap<>();
+    private Map<Pair<Term, Extractor>, MultiValuedMap<List<Object>, ProvenancedTerm>> cachedRecordMap = new HashMap<>();
+
+    public static class Vocabulary {
+        public static final String EQUAL_URI = "http://example.com/idlab/function/equal";
+        public static final String PARENT_PARAMETER = "parent";
+        public static final String CHILD_PARAMETER = "child";
+    }
     private static final String EQUAL_URI = "http://example.com/idlab/function/equal";
     
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
@@ -297,12 +309,13 @@ public class Executor {
 
                 //check if we are dealing with a parentTriplesMap (RefObjMap)
             } else if (pogMapping.getParentTriplesMap() != null) {
-                List<ProvenancedTerm> objects;
+                Collection<ProvenancedTerm> objects;
 
                 //check if need to apply a join condition
                 if (!pogMapping.getJoinConditions().isEmpty()) {
-                    if(isSimpleJoin(pogMapping)) {
-                        objects = this.getIRIsWithSimpleJoin(record, pogMapping.getParentTriplesMap(), ((StaticMultipleRecordsFunctionExecutor) pogMapping.getJoinConditions().iterator().next()).getParameters());
+                    Map<String, Object[]> parameters = ((StaticMultipleRecordsFunctionExecutor) pogMapping.getJoinConditions().iterator().next()).getParameters();
+                    if(isSimpleJoin(pogMapping, parameters)) {
+                        objects = this.getIRIsWithSimpleJoin(record, pogMapping.getParentTriplesMap(), parameters);
                     } else {
                         objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
                         //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
@@ -318,44 +331,37 @@ public class Executor {
         return results;
     }
 
-    private List<ProvenancedTerm> getIRIsWithSimpleJoin(Record record, Term parentTriplesMap, Map<String, Object[]> parameters) throws Exception {
+    private Collection<ProvenancedTerm> getIRIsWithSimpleJoin(Record record, Term parentTriplesMap, Map<String, Object[]> parameters) throws Exception {
         Mapping mapping = this.mappings.get(parentTriplesMap);
 
-        Extractor parentExtractor = extract(parameters, "parent");
-        Extractor childExtractor = extract(parameters, "child");
+        Extractor parentExtractor = extract(parameters, Vocabulary.PARENT_PARAMETER);
+        Extractor childExtractor = extract(parameters, Vocabulary.CHILD_PARAMETER);
 
-        //put in cache
-        //real index instead of 0
-        List<Record> records = this.getRecords(parentTriplesMap);
-        Map<List<Object>, Pair<Record, Integer>> recordMap = this.getCachedRecordMap(parentTriplesMap);
+        MultiValuedMap<List<Object>, ProvenancedTerm> recordMap = this.getCachedRecordMap(Pair.of(parentTriplesMap, parentExtractor));
         if(recordMap == null) {
-            recordMap = new HashMap<>();
-            for(int i = 0; i < records.size(); i++) {
-                recordMap.put(parentExtractor.extract(records.get(i)), Pair.of(records.get(i), i));
-            }
-            this.cachedRecordMap.put(parentTriplesMap, recordMap);
-        }
+            List<Record> records = this.getRecords(parentTriplesMap);
+            recordMap = IntStream.range(0, records.size())
+                    .boxed()
+                    .collect(ArrayListValuedHashMap::new, (m, i) -> {
+                        try {
+                            Record r = records.get(i);
+                            m.put(parentExtractor.extract(r), this.getSubject(parentTriplesMap, mapping, r, i));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }, AbstractMultiValuedMap::putAll);
 
-        //Map<List<Object>, Pair<Record, Integer>> recordMap = records.stream().collect(Collectors.toMap(parentExtractor::extract, r -> Pair.of(r, 0)));
-
-        //check if parentrecord is not null
-        Pair<Record, Integer> parentRecord = recordMap.get(childExtractor.extract(record));
-        if(parentRecord != null) {
-            ProvenancedTerm subject = this.getSubject(parentTriplesMap, mapping, parentRecord.getLeft(), parentRecord.getRight());
-            return Arrays.asList(subject);
+            this.cachedRecordMap.put(Pair.of(parentTriplesMap, parentExtractor), recordMap);
         }
-        else {
-            return Arrays.asList();
-        }
+        return recordMap.get(childExtractor.extract(record));
     }
 
-    private Map<List<Object>, Pair<Record, Integer>> getCachedRecordMap(Term parentTriplesMap) {
-        return this.cachedRecordMap.get(parentTriplesMap);
+    private MultiValuedMap<List<Object>, ProvenancedTerm> getCachedRecordMap(Pair<Term, Extractor> key) {
+        return this.cachedRecordMap.get(key);
     }
 
     private Extractor extract(Map<String, Object[]> parameters, String parameterName) {
-        return parameters.entrySet().stream()
-                .map(p -> p.getValue())
+        return parameters.values().stream()
                 .filter(a -> a.length == 2)
                 .filter(a -> parameterName.equals(a[0]))
                 .map(a -> a[1])
@@ -365,8 +371,7 @@ public class Executor {
                 .orElse(null);
     }
 
-    // Check if the 2 parameters exist
-    private boolean isSimpleJoin(PredicateObjectGraphMapping pogMapping) {
+    private boolean isSimpleJoin(PredicateObjectGraphMapping pogMapping, Map<String, Object[]> parameters) {
         if(pogMapping.getJoinConditions().size() != 1) {
             return false;
         }
@@ -380,10 +385,11 @@ public class Executor {
             return false;
         }
         NamedNode newURI = (NamedNode) uri;
-        if(!Executor.EQUAL_URI.equals(newURI.getValue())) {
+        if(!Executor.EQUAL_URI.equals(newURI.getValue()) || parameters.size() != 2) {
             return false;
         }
-        return true;
+        Supplier<Stream<Object[]>> streamSupplier = () -> parameters.values().stream();
+        return streamSupplier.get().anyMatch(p -> p[0].equals(Vocabulary.PARENT_PARAMETER)) && streamSupplier.get().anyMatch(p -> p[0].equals(Vocabulary.CHILD_PARAMETER));
     }
 
     private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
@@ -512,7 +518,7 @@ public class Executor {
         return this.initializer.getFunctionLoader();
     }
 
-    private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, List<ProvenancedTerm> objects, List<ProvenancedTerm> graphs) {
+    private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, Collection<ProvenancedTerm> objects, Collection<ProvenancedTerm> graphs) {
         ArrayList<PredicateObjectGraph> results = new ArrayList<>();
 
         if (graphs.isEmpty()) {
