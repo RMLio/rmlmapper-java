@@ -105,7 +105,7 @@ public class RDBAccess implements Access {
                     connectionString += "?";
                 }
 
-                connectionString += "serverTimezone=UTC&useSSL=false";
+                connectionString += "serverTimezone=UTC&useSSL=false&useCursorFetch=true&defaultFetchSize=1000";
             }
 
             if (databaseType == DatabaseType.SQL_SERVER) {
@@ -116,10 +116,13 @@ public class RDBAccess implements Access {
                 }
             }
             connection = DriverManager.getConnection(connectionString);
-
+            connection.setAutoCommit(false);
             // Execute query
-            statement = connection.createStatement();
+            statement = connection.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+                    java.sql.ResultSet.CONCUR_READ_ONLY);
+            statement.setFetchSize(1000);
             ResultSet rs = statement.executeQuery(query);
+            int f = rs.getFetchSize();
 
             switch (contentType) {
                 case NAMESPACES.QL + "XPath" :
