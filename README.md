@@ -230,7 +230,7 @@ grelm:javaString
     fnoi:class-name    "io.fno.grel.StringFunctions" .
 
 grelm:uppercaseMapping
-    a                    fnoi:Mapping ;
+    a                    fno:Mapping ;
     fno:function         grel:toUpperCase ;
     fno:implementation   grelm:javaString ;
     fno:methodMapping    [ a                fnom:StringMethodMapping ;

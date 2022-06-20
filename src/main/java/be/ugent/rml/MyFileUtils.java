@@ -2,6 +2,8 @@ package be.ugent.rml;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,6 +77,7 @@ class MyFileUtils {
     }
 
     public static class URLClassLoaderFileResource implements FileResource {
+        private static Logger logger = LoggerFactory.getLogger(URLClassLoaderFileResource.class);
 
         private ClassLoader cl;
         private String resource;
