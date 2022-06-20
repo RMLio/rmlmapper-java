@@ -306,7 +306,7 @@ Make sure you have [Docker](https://www.docker.com) running.
 | org.apache.jena jena-fuseki-embedded    | Apache License 2.0                                                 |
 | com.github.bjdmeest hdt-java            | GNU Lesser General Public License v3.0                             |
 | commons-validator commons-validator     | Apache License 2.0                                                 |
-| com.github.fnoio grel-functions-java    | MIT                                                                |
+| net.sf.saxon                            | Mozilla Public License version 2.0                                 |
 
 ## Commercial Support
 
