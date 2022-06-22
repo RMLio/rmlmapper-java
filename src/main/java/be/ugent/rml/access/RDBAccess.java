@@ -29,6 +29,7 @@ import static be.ugent.rml.Utils.getHashOfString;
 public class RDBAccess implements Access {
 
     private String dsn;
+    private String connectionParameters;
     private DatabaseType databaseType;
     private String username;
     private String password;
@@ -57,8 +58,9 @@ public class RDBAccess implements Access {
      * @param query        the SQL query to use.
      * @param contentType  the content type of the results.
      */
-    public RDBAccess(String dsn, DatabaseType databaseType, String username, String password, String query, String contentType) {
+    public RDBAccess(String dsn, String connectionParameters, DatabaseType databaseType, String username, String password, String query, String contentType) {
         this.dsn = dsn;
+        this.connectionParameters = connectionParameters;
         this.databaseType = databaseType;
         this.username = username;
         this.password = password;
@@ -105,7 +107,7 @@ public class RDBAccess implements Access {
                     connectionString += "?";
                 }
 
-                connectionString += "serverTimezone=UTC&useSSL=false&useCursorFetch=true&defaultFetchSize=1000";
+                connectionString += connectionParameters;
             }
 
             if (databaseType == DatabaseType.SQL_SERVER) {

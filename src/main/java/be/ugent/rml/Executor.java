@@ -57,7 +57,7 @@ public class Executor {
         public static final String PARENT_PARAMETER = "parent";
         public static final String CHILD_PARAMETER = "child";
     }
-    private static final String EQUAL_URI = "http://example.com/idlab/function/equal";
+
     
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
         this(rmlStore, recordsFactory, null, null, baseIRI, strictMode);
@@ -385,7 +385,7 @@ public class Executor {
             return false;
         }
         NamedNode newURI = (NamedNode) uri;
-        if(!Executor.EQUAL_URI.equals(newURI.getValue()) || parameters.size() != 2) {
+        if(!Executor.Vocabulary.EQUAL_URI.equals(newURI.getValue()) || parameters.size() != 2) {
             return false;
         }
         Supplier<Stream<Object[]>> streamSupplier = () -> parameters.values().stream();

@@ -259,10 +259,16 @@ public class AccessFactory {
             password = passwordObject.get(0).getValue();
         }
 
+        String connectionParameters = "";
+        List<Term> connectionParametersObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "connectionParameters"), null));
+        if(!connectionParametersObject.isEmpty()) {
+            connectionParameters = connectionParametersObject.get(0).getValue();
+        }
+
         // - ContentType
         List<Term> contentType = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
 
-        return new RDBAccess(dsn, database, username, password, query, (contentType.isEmpty()? "text/csv" : contentType.get(0).getValue()));
+        return new RDBAccess(dsn, connectionParameters, database, username, password, query, (contentType.isEmpty()? "text/csv" : contentType.get(0).getValue()));
     }
 
     /**
