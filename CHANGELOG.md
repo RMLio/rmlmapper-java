@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add support for WoT OAuth2 Security Scheme (see [issue 212](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/212))
 - Integration of independent function handler
 
+### Changed
+- Run all tests in parallel on CI infrastructure
+
 ### Fixed
 - Upgrade postgresql JDBC driver to 42.3.3
 - Rename `logback.xml` to `logback-test.xml` in test resources (see [issue 240](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/240))
@@ -26,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upgrade postgresql JDBC driver to 42.3.3
 - Properly close resources such as input streams
 - Upgrade Function Agent to v0.1.0
+- Github release notes are now properly extracted
 
 ## [5.0.0] - 2022-03-11
 - TestCore: enable debug logs when VERBOSE env variable is set (see [issue 230](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/230))
