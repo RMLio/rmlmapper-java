@@ -52,7 +52,7 @@ public class Mapper_LDES_Test extends TestCore {
         QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         IDLabFunctions.saveState();
         executor = this.createExecutor("./web-of-things/ldes/generation/partial/mapping2.ttl", functionAgent);
-        QuadStore result_second = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+        QuadStore result_second = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         assertEquals(3, result.size());
         assertEquals(1, result_second.size());
 

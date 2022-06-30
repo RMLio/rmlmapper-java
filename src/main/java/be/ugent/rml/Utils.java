@@ -657,7 +657,6 @@ public class Utils {
         }
         try {
             logger.info("searching base: {} path: {} in resources", base, path);
-            logger.info(String.valueOf(MyFileUtils.ClasspathResourceFileResource.class));
             File resourceFile =  MyFileUtils.getResourceAsFile(base + "/" + path);
             if (resourceFile.exists()){
                 logger.info("base + file found in resources");
