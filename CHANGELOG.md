@@ -7,29 +7,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-### Added
+### Changed
+- Run all tests in parallel on CI infrastructure
+- Upgrade Function Agent to v0.1.0
 
+### Fixed
+- Upgrade postgresql JDBC driver to 42.3.3
+- Rename `logback.xml` to `logback-test.xml` in test resources (see [issue 240](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/240))
+- If exception occurs while mapping data, already processed data gets written to output file
+- Properly close resources such as input streams
+- Github release notes are now properly extracted
+
+### Added
+- Add support for WoT OAuth2 Security Scheme (see [issue 212](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/212))
 - IDLabFunctions: added functions lookup and lookupWithDelimiter 
 - IDLabFunctionsTest: added unit tests for lookup functions 
 - IDLabFunctionsTest: relocate csv files used by tests for lookup function
 - IDLabFunctions: silence stack trace
 - CSVW: filter out rows with a comment prefix
 - Output file path now gets checked before the mapping
+- .gitignore: ignore vscode files
+- pom.xml: add Saxon-HE v11.3 dependency
+- XMLRecord: adjusted to use Saxon
+- XMLRecordFactory: adjusted to use Saxon
+- SaxNamespaceResolver: added class for resolving namespaces in Saxon. This fixes (#154)[https://github.com/RMLio/rmlmapper-java/issues/154].
+- Added unit tests for XPath 2/3 expressions and functions
 - Loggers across the codebase have been updated to use parameterized strings
 - Add support for WoT OAuth2 Security Scheme (see [issue 212](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/212))
 - Integration of independent function handler
-
-### Changed
-- Run all tests in parallel on CI infrastructure
-
-### Fixed
-- Upgrade postgresql JDBC driver to 42.3.3
-- Rename `logback.xml` to `logback-test.xml` in test resources (see [issue 240](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/240))
-- If exception occurs while mapping data, already processed data gets written to output file
-- Upgrade postgresql JDBC driver to 42.3.3
-- Properly close resources such as input streams
-- Upgrade Function Agent to v0.1.0
-- Github release notes are now properly extracted
 
 ## [5.0.0] - 2022-03-11
 - TestCore: enable debug logs when VERBOSE env variable is set (see [issue 230](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/230))

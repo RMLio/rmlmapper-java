@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<myNS:students xmlns:myNS="https://example.org/NS/my" xmlns="https://example.org/NS/default">
+    <myNS:student>
+        <Name>Alice</Name>
+        <Address>
+            <Street>12th Avenue</Street>
+            <Number>254</Number>
+            <City>New York</City>
+        </Address>
+    </myNS:student>
+    <myNS:student>
+        <Name>Bob</Name>
+        <Address>
+            <Street>15th Avenue</Street>
+            <Number>291</Number>
+            <City>Atlanta</City>
+        </Address>
+    </myNS:student>
+    <myNS:student>
+        <Name>Charles</Name>
+    </myNS:student>
+</myNS:students>
