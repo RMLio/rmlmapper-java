@@ -62,6 +62,11 @@ class CSVW {
                     .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
                     .build()
                     .readAll();
+
+            records = records.stream()
+                    .filter(row -> ! row[0].startsWith(getCommentPrefix()))
+                    .collect(Collectors.toList());
+
             String[] header = records.get(0);
             Stream<String[]> readRecords = records.subList(1, records.size())
                     .stream()
