@@ -144,10 +144,10 @@ public class Mapper_OracleDB_Test extends DBTestCore {
     }
 
     private void importSQL(Connection conn, InputStream in) throws SQLException {
-        Scanner s = new Scanner(in);
-        s.useDelimiter("(;\n?)");
 
-        try (Statement st = conn.createStatement()) {
+        try (Scanner s = new Scanner(in);
+             Statement st = conn.createStatement()) {
+            s.useDelimiter("(;\n?)");
             while (s.hasNext()) {
                 String line = s.next();
                 if (line.startsWith("/*!") && line.endsWith("*/")) {
@@ -160,7 +160,6 @@ public class Mapper_OracleDB_Test extends DBTestCore {
                     st.execute(line);
                 }
             }
-            s.close();
         }
     }
 }

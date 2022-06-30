@@ -167,7 +167,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.26</version>
+            <version>8.0.28</version>
         </dependency>
         <dependency>
             <groupId>ch.vorburger.mariaDB4j</groupId>
@@ -196,17 +196,17 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.13.1</version>
+            <version>2.13.3</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.1</version>
+            <version>2.13.3</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.13.1</version>
+            <version>2.13.3</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -258,14 +258,24 @@
             <version>1.7</version>
         </dependency>
         <dependency>
-            <groupId>com.github.fnoio</groupId>
-            <artifactId>grel-functions-java</artifactId>
-            <version>v0.7.1</version>
+            <groupId>com.github.FnOio</groupId>
+            <artifactId>function-agent-java</artifactId>
+            <version>v0.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.jena</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion></exclusions>
         </dependency>
         <dependency>
-            <groupId>com.github.slugify</groupId>
-            <artifactId>slugify</artifactId>
-            <version>2.5</version>
+            <groupId>com.github.fnoio</groupId>
+            <artifactId>grel-functions-java</artifactId>
+            <version>v0.7.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.fnoio</groupId>
+            <artifactId>idlab-functions-java</artifactId>
+            <version>v0.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -290,6 +300,14 @@
             <version>0.9.0</version>
         </dependency>
         <!-- END spreadsheet dependencies-->
+
+        <dependency>
+            <groupId>com.github.stephenc.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <version>1.0-1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -354,6 +372,8 @@
                 <configuration>
                     <useSystemClassLoader>true</useSystemClassLoader>
                     <useManifestOnlyJar>false</useManifestOnlyJar>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
                     <!--&lt;!&ndash;<parallel>methods</parallel>&ndash;&gt;-->
                     <!--&lt;!&ndash;<threadCount>10</threadCount>&ndash;&gt;-->
                 </configuration>

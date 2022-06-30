@@ -1,6 +1,7 @@
 package be.ugent.rml;
 
-import be.ugent.rml.functions.FunctionLoader;
+import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
@@ -12,24 +13,25 @@ import java.util.List;
 public class Initializer {
 
     private final MappingFactory factory;
-    private QuadStore rmlStore;
-    private FunctionLoader functionLoader;
-    private List<Term> triplesMaps;
-    private HashMap<Term, Mapping> mappings;
+    private final QuadStore rmlStore;
+    private final List<Term> triplesMaps;
+    private final HashMap<Term, Mapping> mappings;
 
-    public Initializer(QuadStore rmlStore, FunctionLoader functionLoader) throws Exception {
+    public Initializer(QuadStore rmlStore, final Agent functionAgent) throws Exception {
         this.rmlStore = rmlStore;
         //we get all the TriplesMaps from the mapping
         this.triplesMaps = this.getAllTriplesMaps();
         this.mappings = new HashMap<Term, Mapping>();
 
-        if (functionLoader == null) {
-            this.functionLoader = new FunctionLoader();
-        } else {
-            this.functionLoader = functionLoader;
-        }
 
-        this.factory = new MappingFactory(this.functionLoader);
+        final Agent initialisedFunctionAgent = functionAgent == null ?
+                AgentFactory.createFromFnO("functions_idlab.ttl",
+                        "functions_idlab_classes_java_mapping.ttl",
+                        "functions_grel.ttl",
+                        "grel_java_mapping.ttl")
+                : functionAgent;
+
+        this.factory = new MappingFactory(initialisedFunctionAgent);
         extractMappings();
     }
 
@@ -68,7 +70,4 @@ public class Initializer {
         return this.triplesMaps;
     }
 
-    public FunctionLoader getFunctionLoader() {
-        return this.functionLoader;
-    }
 }

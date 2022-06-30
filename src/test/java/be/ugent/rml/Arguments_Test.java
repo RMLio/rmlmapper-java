@@ -10,10 +10,6 @@ import org.rdfhdt.hdt.triples.IteratorTripleID;
 import org.rdfhdt.hdt.triples.TripleID;
 import org.rdfhdt.hdt.triples.Triples;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,7 +18,8 @@ import java.nio.file.Paths;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class Arguments_Test extends TestCore {
     @Rule
@@ -121,47 +118,63 @@ public class Arguments_Test extends TestCore {
     @Test
     public void testVerboseWithCustomFunctionFile() {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setErr(new PrintStream(stdout));
-        Main.main("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
-        assertThat(stdout.toString(), containsString("Using custom path to functions.ttl file: "));
+        try (PrintStream ps = new PrintStream(stdout)) {
+            System.setErr(ps);
+            Main.main("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+            assertThat(stdout.toString(), containsString("Using custom path to functions.ttl file: "));
+        } finally {
+            System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
+        }
     }
 
     @Test
-    public void testStdOut() {
-        String cwd = (new File( "./src/test/resources/argument/quote-in-literal")).getAbsolutePath();
+    public void testStdOut() throws IOException {
+        String cwd = Utils.getFile( "argument/quote-in-literal").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
-        String functionsFilePath = (new File( "./src/test/resources/rml-fno-test-cases/functions_test.ttl")).getAbsolutePath();
+        String functionsFilePath = Utils.getFile( "rml-fno-test-cases/functions_test.ttl").getAbsolutePath();
 
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(stdout));
-        Main.main(("-v -f " + functionsFilePath + " -m " + mappingFilePath).split(" "), cwd);
+        try (PrintStream ps = new PrintStream(stdout)) {
+            System.setOut(ps);
+            Main.main(("-v -f " + functionsFilePath + " -m " + mappingFilePath).split(" "), cwd);
+        } finally {
+            System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
+        }
 
-        assertThat(stdout.toString(), containsString("<http://example.com/10> <http://xmlns.com/foaf/0.1/name> \"Venus\\\"\"."));
-        assertThat(stdout.toString(), containsString("<http://example.com/10> <http://example.com/id> \"10\"."));
-        assertThat(stdout.toString(), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>."));
+        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), containsString("<http://example.com/10> <http://xmlns.com/foaf/0.1/name> \"Venus\\\"\"."));
+        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), containsString("<http://example.com/10> <http://example.com/id> \"10\"."));
+        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>."));
     }
 
 
 
     @Test
-    public void testVerboseWithoutCustomFunctionFile() {
+    public void testVerboseWithoutCustomFunctionFile() throws UnsupportedEncodingException {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setErr(new PrintStream(stdout));
-        Main.main("-v -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
-        assertThat(stdout.toString(), not(containsString("Using custom path to functions.ttl file: ")));
+        try (PrintStream ps = new PrintStream(stdout)) {
+            System.setErr(ps);
+            Main.main("-v -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        } finally {
+            System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
+        }
+        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), not(containsString("Using custom path to functions.ttl file: ")));
     }
 
     @Test
-    public void testWithCustomFunctionFile() {
+    public void testWithCustomFunctionFile() throws UnsupportedEncodingException {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setErr(new PrintStream(stdout));
-        Main.main("-f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
-        assertThat(stdout.toString(), not(containsString("Using custom path to functions.ttl file: ")));
+        try (PrintStream ps = new PrintStream(stdout)) {
+            System.setErr(ps);
+            Main.main("-f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+        } finally {
+            System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
+        }
+        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), not(containsString("Using custom path to functions.ttl file: ")));
     }
 
     @Test
     public void testWithCustomFunctionFileInternalFunctionsStillWork() throws Exception {
-        String cwd = (new File("./src/test/resources/rml-fno-test-cases/RMLFNOTCA005")).getAbsolutePath();
+        String cwd = Utils.getFile("rml-fno-test-cases/RMLFNOTCA005").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
         String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
@@ -184,34 +197,37 @@ public class Arguments_Test extends TestCore {
     @Test
     public void testWithCustomFunctionFileVerboseFunctionLogging() throws Exception {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setErr(new PrintStream(stdout));
-        String cwd = (new File("./src/test/resources/rml-fno-test-cases/RMLFNOTCA005")).getAbsolutePath();
-        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
-        String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
-        String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
-        Main.main(("-v -f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath).split(" "), cwd);
-        compareFiles(
-                expectedOutPath,
-                actualOutPath,
-                false
-        );
-        assertThat(stdout.toString(), containsString("Loading function: "));
+        try (PrintStream ps = new PrintStream(stdout)) {
+            System.setErr(ps);
+            String cwd = Utils.getFile("rml-fno-test-cases/RMLFNOTCA005").getAbsolutePath();
+            String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+            String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
+            String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
+            Main.main(("-v -f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath).split(" "), cwd);
+            compareFiles(
+                    expectedOutPath,
+                    actualOutPath,
+                    false
+            );
+            assertThat(stdout.toString(StandardCharsets.UTF_8.name()), containsString("Loading function descriptions"));
 
-        File outputFile = null;
-        try {
-            outputFile = Utils.getFile(actualOutPath);
-            assertTrue(outputFile.delete());
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                File outputFile = Utils.getFile(actualOutPath);
+                assertTrue(outputFile.delete());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } finally {
+            System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
         }
     }
 
     @Test
     public void outputTurtle() throws Exception {
-        String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
+        String cwd = Utils.getFile( "argument").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
-        String expectedTrigPath = (new File( "./src/test/resources/argument/output-trig/target_output.trig")).getAbsolutePath();
+        String expectedTrigPath = Utils.getFile( "argument/output-trig/target_output.trig").getAbsolutePath();
 
         Main.main(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s turtle").split(" "), cwd);
         compareFiles(
@@ -241,10 +257,10 @@ public class Arguments_Test extends TestCore {
     }
     @Test
     public void outputJSON() throws Exception {
-        String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
+        String cwd = Utils.getFile( "argument").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualJSONPath = (new File("./generated_output.json")).getAbsolutePath();
-        String expectedJSONPath = (new File( "./src/test/resources/argument/output-json/target_output.json")).getAbsolutePath();
+        String expectedJSONPath = Utils.getFile( "argument/output-json/target_output.json").getAbsolutePath();
 
         Main.main(("-m " + mappingFilePath + " -o " + actualJSONPath + " -s jsonld").split(" "), cwd);
 
@@ -273,10 +289,10 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void outputTrig() throws Exception {
-        String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
+        String cwd = Utils.getFile( "argument").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
-        String expectedTrigPath = (new File( "./src/test/resources/argument/output-trig/target_output.trig")).getAbsolutePath();
+        String expectedTrigPath = Utils.getFile( "argument/output-trig/target_output.trig").getAbsolutePath();
 
         Main.main(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s trig").split(" "), cwd);
         compareFiles(
@@ -307,18 +323,16 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void outputHDT() throws IOException {
-        String cwd = (new File( "./src/test/resources/argument")).getAbsolutePath();
+        String cwd = Utils.getFile( "argument").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualHDTPath = (new File("./generated_output.hdt")).getAbsolutePath();
-        String expectedHDTPath = (new File( "./src/test/resources/argument/output-hdt/target_output.hdt")).getAbsolutePath();
+        String expectedHDTPath = Utils.getFile( "argument/output-hdt/target_output.hdt").getAbsolutePath();
 
-        Main.main(("-m " + mappingFilePath + " -o " + actualHDTPath + " -s hdt").split(" "), cwd);
+        Main.main(("-v -m " + mappingFilePath + " -o " + actualHDTPath + " -s hdt").split(" "), cwd);
 
         // Load HDT file.
-        HDT hdt1 = HDTManager.loadHDT(expectedHDTPath, null);
-        HDT hdt2 = HDTManager.loadHDT(actualHDTPath, null);
 
-        try {
+        try (HDT hdt1 = HDTManager.loadHDT(expectedHDTPath, null); HDT hdt2 = HDTManager.loadHDT(actualHDTPath, null)) {
             Triples triples1 = hdt1.getTriples();
             Triples triples2 = hdt2.getTriples();
 
@@ -334,8 +348,6 @@ public class Arguments_Test extends TestCore {
                 assertTrue(tripleID1.equals(tripleID2));
             }
         } finally {
-            hdt1.close();
-            hdt2.close();
             assertTrue((new File(actualHDTPath)).delete());
         }
     }
@@ -343,10 +355,10 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void quoteInLiteral() throws Exception {
-        String cwd = (new File( "./src/test/resources/argument/quote-in-literal")).getAbsolutePath();
+        String cwd = Utils.getFile( "argument/quote-in-literal").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualNQuadsPath = (new File("./generated_output.nq")).getAbsolutePath();
-        String expectedNQuadsPath = (new File( "./src/test/resources/argument/quote-in-literal/target_output.nq")).getAbsolutePath();
+        String expectedNQuadsPath = Utils.getFile( "argument/quote-in-literal/target_output.nq").getAbsolutePath();
 
         Main.main(("-m " + mappingFilePath + " -o " + actualNQuadsPath).split(" "), cwd);
         compareFiles(
@@ -366,64 +378,80 @@ public class Arguments_Test extends TestCore {
     @Test
     public void testMissingBaseIRIInStrictMode() {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setErr(new PrintStream(stdout));
-        Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq --strict".split(" "));
+        try (PrintStream ps = new PrintStream(stdout)) {
+            System.setErr(ps);
+            Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq --strict".split(" "));
+        } finally {
+            System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
+        }
         assertThat(stdout.toString(), containsString("When running in strict mode, a base IRI argument must be set."));
     }
 
     @Test
     public void testExplicitBaseIRI() throws Exception {
-        String cwd = (new File( "./src/test/resources/argument/base-iri")).getAbsolutePath();
+        String cwd = Utils.getFile( "argument/base-iri").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
 
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(stdout));
-        Main.main(("-v --strict -b http://example2.com/ -m " + mappingFilePath).split(" "), cwd);
+        try (PrintStream ps = new PrintStream(stdout)) {
+            System.setOut(ps);
+            Main.main(("-v --strict -b http://example2.com/ -m " + mappingFilePath).split(" "), cwd);
+        } finally {
+            System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
+        }
         assertThat(stdout.toString(), containsString("<http://example2.com/10/Venus>"));
 
     }
 
     @Test
     public void onlyPipe() throws Exception {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("argument-config-file-test-cases/mapping.ttl");
-        System.setIn(is);
+        String mappingFile = Utils.getFile("argument-config-file-test-cases/mapping.ttl").getAbsolutePath();
+        try (InputStream is = Files.newInputStream(Paths.get(mappingFile))) {
+            System.setIn(is);
 
-        String[] args = {"-o" , "./generated_output.nq"};
-        Main.main(args);
-        compareFiles(
-                "argument-config-file-test-cases/target_output.nq",
-                "./generated_output.nq",
-                false
-        );
+            String[] args = {"-o", "./generated_output.nq"};
+            Main.main(args);
+            compareFiles(
+                    "argument-config-file-test-cases/target_output.nq",
+                    "./generated_output.nq",
+                    false
+            );
 
-        File outputFile;
-        try {
-            outputFile = Utils.getFile("./generated_output.nq");
-            assertTrue(outputFile.delete());
-        } catch (Exception e) {
-            e.printStackTrace();
+            File outputFile;
+            try {
+                outputFile = Utils.getFile("./generated_output.nq");
+                assertTrue(outputFile.delete());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } finally {
+            System.setIn(new FileInputStream(FileDescriptor.in));   // rest System.in to original input stream
         }
     }
 
     @Test
     public void pipeAndMapping() throws Exception {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("argument-config-file-test-cases/mapping_part2.ttl");
-        System.setIn(is);
+        String mappingFile = Utils.getFile("argument-config-file-test-cases/mapping_part2.ttl").getAbsolutePath();
+        try (InputStream is = Files.newInputStream(Paths.get(mappingFile))) {
+            System.setIn(is);
 
-        String[] args = {"-m", "./argument-config-file-test-cases/mapping_part1.ttl", "-o" , "./generated_output.nq"};
-        Main.main(args);
-        compareFiles(
-                "argument-config-file-test-cases/target_output.nq",
-                "./generated_output.nq",
-                false
-        );
+            String[] args = {"-m", "./argument-config-file-test-cases/mapping_part1.ttl", "-o", "./generated_output.nq"};
+            Main.main(args);
+            compareFiles(
+                    "argument-config-file-test-cases/target_output.nq",
+                    "./generated_output.nq",
+                    false
+            );
 
-        File outputFile;
-        try {
-            outputFile = Utils.getFile("./generated_output.nq");
-            assertTrue(outputFile.delete());
-        } catch (Exception e) {
-            e.printStackTrace();
+            File outputFile;
+            try {
+                outputFile = Utils.getFile("./generated_output.nq");
+                assertTrue(outputFile.delete());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } finally {
+            System.setIn(new FileInputStream(FileDescriptor.in));   // rest System.in to original input stream
         }
     }
 

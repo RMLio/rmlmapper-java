@@ -15,7 +15,7 @@ public class Metadata_Test extends TestCore {
 
     @Test
     public void datasetLevelTest() throws Exception {
-        Main.main("-c ./metadata-test-cases/metadata-dataset-level/nquads/config_example.properties".split(" "));
+        Main.main("-c metadata-test-cases/metadata-dataset-level/nquads/config_example.properties".split(" "));
         compareFiles(
                 "metadata-test-cases/metadata-dataset-level/nquads/target_metadata.nq",
                 "./generated_metadata.nq",
@@ -27,7 +27,7 @@ public class Metadata_Test extends TestCore {
 
     @Test
     public void datasetLevelTestTurtle() throws Exception {
-        Main.main("-c ./metadata-test-cases/metadata-dataset-level/turtle/config_example.properties".split(" "));
+        Main.main("-c metadata-test-cases/metadata-dataset-level/turtle/config_example.properties".split(" "));
         compareFiles(
                 "metadata-test-cases/metadata-dataset-level/turtle/target_metadata.ttl",
                 "./generated_metadata.ttl",
@@ -39,7 +39,7 @@ public class Metadata_Test extends TestCore {
 
     @Test
     public void tripleLevelTest() throws Exception {
-        Main.main("-c ./metadata-test-cases/metadata-triple-level/config_example.properties".split(" "));
+        Main.main("-c metadata-test-cases/metadata-triple-level/config_example.properties".split(" "));
         compareFiles(
                 "metadata-test-cases/metadata-triple-level/target_metadata.nq",
                 "./generated_metadata.nq",
@@ -51,7 +51,7 @@ public class Metadata_Test extends TestCore {
 
     @Test
     public void termLevelTest() throws Exception {
-        Main.main("-c ./src/test/resources/metadata-test-cases/metadata-term-level/config_example.properties".split(" "));
+        Main.main("-c metadata-test-cases/metadata-term-level/config_example.properties".split(" "));
         compareFiles(
                 "metadata-test-cases/metadata-term-level/target_metadata.nq",
                 "./generated_metadata.nq",

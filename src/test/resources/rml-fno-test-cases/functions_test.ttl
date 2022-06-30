@@ -20,8 +20,8 @@ idlab-fn:generateNull
     dcterms:description "Always returns null" ;
     fno:expects         ( ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+    lib:providedBy      [ #lib:localLibrary "IDLabFunctions.jar" ;
+                          lib:class        "be.ugent.knows.idlabFunctions.IDLabTestFunctions" ;
                           lib:method       "getNull" ] .
 
 idlab-fn:generateA
@@ -31,8 +31,8 @@ idlab-fn:generateA
     dcterms:description "Always returns `A_by_function`" ;
     fno:expects         ( ) ;
     fno:returns         ( idlab-fn:_stringOut ) ;
-    lib:providedBy      [ lib:localLibrary "IDLabFunctions.jar" ;
-                          lib:class        "IDLabFunctions" ;
+    lib:providedBy      [ #lib:localLibrary "IDLabFunctions.jar" ;
+                          lib:class        "be.ugent.knows.idlabFunctions.IDLabTestFunctions" ;
                           lib:method       "generateA" ] .
 
 idlab-fn:_stringOut

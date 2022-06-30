@@ -230,7 +230,7 @@ grelm:javaString
     fnoi:class-name    "io.fno.grel.StringFunctions" .
 
 grelm:uppercaseMapping
-    a                    fnoi:Mapping ;
+    a                    fno:Mapping ;
     fno:function         grel:toUpperCase ;
     fno:implementation   grelm:javaString ;
     fno:methodMapping    [ a                fnom:StringMethodMapping ;
@@ -283,30 +283,32 @@ Make sure you have [Docker](https://www.docker.com) running.
 
 ## Dependencies
 
-| Dependency                              | License                                                            |
+|               Dependency                | License                                                            |
 |:---------------------------------------:|--------------------------------------------------------------------|
-| ch.qos.logback logback-classic          | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
-| commons-cli commons-lang                | Apache License 2.0                                                 |
-| com.opencsv opencsv                     | Apache License 2.0                                                 |
-| commons-cli commons-cli                 | Apache License 2.0                                                 |
-| org.eclipse.rdf4j rdf4j-runtime         | Eclipse Public License 1.0                                         |
-| junit junit                             | Eclipse Public License 1.0                                         |
-| com.jayway.jsonpath json-path           | Apache License 2.0                                                 |
-| javax.xml.parsers jaxp-api              | Apache License 2.0                                                 |
-| org.jsoup                               | MIT                                                                |
-| mysql mysql-connector-java              | GNU General Public License v2.0                                    |
-| ch.vorbuger.mariaDB4j mariaDB4j         | Apache License 2.0                                                 |
-| postgresql postgresql                   | BSD                                                                |
-| com.microsoft.sqlserver mssql-jdbc      | MIT                                                                |
-| com.spotify docker-client               | Apache License 2.0                                                 |
+|     ch.qos.logback logback-classic      | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
+|        commons-cli commons-lang         | Apache License 2.0                                                 |
+|           com.opencsv opencsv           | Apache License 2.0                                                 |
+|         commons-cli commons-cli         | Apache License 2.0                                                 |
+|     org.eclipse.rdf4j rdf4j-runtime     | Eclipse Public License 1.0                                         |
+|               junit junit               | Eclipse Public License 1.0                                         |
+|      com.jayway.jsonpath json-path      | Apache License 2.0                                                 |
+|       javax.xml.parsers jaxp-api        | Apache License 2.0                                                 |
+|                org.jsoup                | MIT                                                                |
+|       mysql mysql-connector-java        | GNU General Public License v2.0                                    |
+|     ch.vorbuger.mariaDB4j mariaDB4j     | Apache License 2.0                                                 |
+|          postgresql postgresql          | BSD                                                                |
+|   com.microsoft.sqlserver mssql-jdbc    | MIT                                                                |
+|        com.spotify docker-client        | Apache License 2.0                                                 |
 | com.fasterxml.jackson.core jackson-core | Apache License 2.0                                                 |
-| org.eclipse.jetty jetty-server          | Eclipse Public License 1.0 & Apache License 2.0                    |
-| org.eclipse.jetty jetty-security        | Eclipse Public License 1.0 & Apache License 2.0                    |
-| org.apache.jena apache-jena-libs        | Apache License 2.0                                                 |
-| org.apache.jena jena-fuseki-embedded    | Apache License 2.0                                                 |
-| com.github.bjdmeest hdt-java            | GNU Lesser General Public License v3.0                             |
-| commons-validator commons-validator     | Apache License 2.0                                                 |
-| com.github.fnoio grel-functions-java    | MIT                                                                |
+|     org.eclipse.jetty jetty-server      | Eclipse Public License 1.0 & Apache License 2.0                    |
+|    org.eclipse.jetty jetty-security     | Eclipse Public License 1.0 & Apache License 2.0                    |
+|    org.apache.jena apache-jena-libs     | Apache License 2.0                                                 |
+|  org.apache.jena jena-fuseki-embedded   | Apache License 2.0                                                 |
+|      com.github.bjdmeest hdt-java       | GNU Lesser General Public License v3.0                             |
+|   commons-validator commons-validator   | Apache License 2.0                                                 |
+|  com.github.fnoio grel-functions-java   | MIT                                                                |
+|  com.github.fnoio function-agent-java   | MIT                                                                |
+|  com.github.fnoio idlab-functions-java  | MIT                                                                |
 
 ## Commercial Support
 
