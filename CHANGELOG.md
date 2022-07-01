@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Properly close resources such as input streams
 - Github release notes are now properly extracted
 - Discard UTF Byte-Order-Marks (BOM) (see [issue 171](https://github.com/RMLio/rmlmapper-java/issues/171))
+- Dropped lib directory for functions as we now use a separate FnO Function Agent
 
 ### Added
 - Add support for WoT OAuth2 Security Scheme (see [issue 212](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/212))
