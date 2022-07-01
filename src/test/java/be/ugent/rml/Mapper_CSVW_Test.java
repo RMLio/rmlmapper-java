@@ -24,6 +24,7 @@ public class Mapper_CSVW_Test extends TestCore {
                 {"RMLTC1002a_null_ignore"},
                 {"RMLTC1002a_nulls"},
                 {"RMLTC1025_missing_column_names"},
+                {"RMLTC1035_bom"}
         });
 
     }

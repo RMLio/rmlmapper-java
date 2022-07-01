@@ -1,0 +1,38 @@
+@prefix csvw: <http://www.w3.org/ns/csvw#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix schema: <http://schema.org/>.
+@prefix wgs84_pos: <http://www.w3.org/2003/01/geo/wgs84_pos#lat>.
+@prefix gn: <http://www.geonames.org/ontology#>.
+@prefix carml: <http://carml.taxonic.com/carml/> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@base <http://example.com/ns#>.
+
+<#LogicalSourceGrant> a rml:BaseSource ;
+  rml:source <#CSVW_sourceGrant> ;
+  rml:referenceFormulation ql:CSV .
+
+<#CSVW_sourceGrant> a csvw:Table;
+   csvw:url "data.csv" ;
+   csvw:dialect [ a csvw:Dialect;
+       csvw:delimiter ";"
+   ] .
+
+<#ProjectMapping> a rr:TriplesMap;
+  rml:logicalSource <#LogicalSourceGrant> ;
+
+  rr:subjectMap [
+    rr:template "http://snf.ch/project/{GrantNumber}";
+    rr:class schema:ResearchProject
+  ] ;
+
+  rr:predicateObjectMap [
+    rr:predicate schema:description ;
+    rr:objectMap [
+      rml:reference "Abstract" # first column's name
+    ]
+  ] .

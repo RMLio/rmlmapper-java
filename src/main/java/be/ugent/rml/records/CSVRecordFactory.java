@@ -12,6 +12,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -141,7 +142,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
             // Check if we are dealing with CSVW.
             if (csvw == null) {
                 // RDBs fall under this
-                try (InputStream inputStream = access.getInputStream();
+                try (BOMInputStream inputStream = new BOMInputStream(access.getInputStream());
                      CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
                              .withSkipLines(0)
                              .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)

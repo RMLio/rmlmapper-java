@@ -10,6 +10,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
+import org.apache.commons.io.input.BOMInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,7 +56,7 @@ class CSVW {
      */
     List<Record> getRecords(Access access) throws IOException, CsvException, SQLException, ClassNotFoundException {
         int skipLines = this.skipHeader ? 1 : 0;
-        try (InputStream inputStream = access.getInputStream()) {
+        try (BOMInputStream inputStream = new BOMInputStream(access.getInputStream())) {
             List<String[]> records = new CSVReaderBuilder(new InputStreamReader(inputStream, csvCharset))
                     .withCSVParser(this.csvParser.build())
                     .withSkipLines(skipLines)
