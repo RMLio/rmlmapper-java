@@ -142,6 +142,8 @@ public class Utils {
     }
 
     public static File getFile(String path, File basePath) throws IOException {
+        // Windows paths 🤷‍♂️
+        path = path.replaceAll("\\\\", "/");
         // Absolute path?
         File f = new File(path);
         if (f.isAbsolute()) {
@@ -602,14 +604,13 @@ public class Utils {
         }
     }
 
-    public static boolean checkPath(String path, String base){
-
+    public static boolean checkPathParent(String path, String base) {
         File f;
         File basePath;
         if (base == null) {
             f = new File(path);
             if (f.isAbsolute()) {
-                return f.exists();
+                return f.getParentFile().exists();
             }
             base = System.getProperty("user.dir");
         }
@@ -619,55 +620,11 @@ public class Utils {
             return false;
         }
 
-        logger.info("Looking for file {} in basePath {}", path, basePath);
+        logger.info("Looking for parent of file {} in basePath {}", path, basePath);
 
         // Relative from user dir?
         f = new File(basePath, path);
-        if (f.exists()) {
-            return true;
-        }
-
-
-        logger.info("File {} not found in {}", path, basePath);
-        logger.info("Looking for file {} in {}/../", path, basePath);
-
-
-        // Relative from parent of user dir?
-        f = new File(basePath, "../" + path);
-        if (f.exists()) {
-            return true;
-        }
-
-        logger.info("File {} not found in {}", path, basePath);
-        logger.info("Looking for file {} in the resources directory", path);
-
-        // Resource path?
-        try {
-            logger.info("searching path: {} in resources", path );
-
-            File resourceFile = MyFileUtils.getResourceAsFile(path);
-            if (resourceFile.exists()){
-                logger.info("file found in resources");
-                return true;
-            } else {
-                logger.info("file not found in resources");
-            }
-        } catch (IOException e) {
-            // Too bad
-        }
-        try {
-            logger.info("searching base: {} path: {} in resources", base, path);
-            File resourceFile =  MyFileUtils.getResourceAsFile(base + "/" + path);
-            if (resourceFile.exists()){
-                logger.info("base + file found in resources");
-                return true;
-            } else {
-                logger.info("base + file not found in resources");
-            }
-        } catch (IOException e) {
-            // Too bad
-        }
-        return false;
+        return f.getParentFile().exists();
     }
 
     public static String getBaseDirectiveTurtle(File file) {

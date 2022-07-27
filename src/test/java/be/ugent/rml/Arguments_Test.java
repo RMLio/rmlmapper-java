@@ -61,6 +61,39 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
+    public void withoutConfigFileNoSlashes() throws Exception {
+        Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o generated_output.nq".split(" "));
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        try {
+            File outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void withoutConfigFileWindowSlashes() throws Exception {
+        Main.main("-m .\\argument-config-file-test-cases\\mapping.ttl -o .\\generated_output.nq".split(" "));
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false);
+
+        try {
+            File outputFile = Utils.getFile(".\\generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void nonexistingMappingFile() throws Exception {
         exit.expectSystemExitWithStatus(1); // Handle System.exit(1)
         Main.main("-m ./argument-config-file-test-cases/I_DONT_EXIST.ttl -o ./generated_output.nq".split(" "));
@@ -459,13 +492,11 @@ public class Arguments_Test extends TestCore {
     public void wrongOutPutFile() throws Exception{
         exit.expectSystemExitWithStatus(1); // Handle System.exit(1)
         Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./wrong/file/output/generated_output.nq".split(" "));
+    }
 
-        try {
-            File outputFile = Utils.getFile("./generated_output.nq");
-            assertTrue(outputFile.delete());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    @Test
+    public void wrongOutPutFileWindowsSlashes() throws Exception{
+        exit.expectSystemExitWithStatus(1); // Handle System.exit(1)
+        Main.main("-m .\\argument-config-file-test-cases\\mapping.ttl -o .\\wrong\\file\\output\\generated_output.nq".split(" "));
     }
 }

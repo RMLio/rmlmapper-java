@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - pom.xml: Added Testcontainers library dependencies for databases we test on
 - pom.xml: Added JUnit5 dependencies
 - Check for changelog changes in a separate lint stage during CI.
+- 
+### Fixed
+- Main: Output paths can again be fully relative
 
 ## [6.0.0] - 2022-07-04
 
@@ -38,9 +41,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Dropped lib directory for functions as we now use a separate FnO Function Agent
 
 ### Added
-- Add support for WoT OAuth2 Security Scheme (see [issue 212](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/212))
-- IDLabFunctions: added functions lookup and lookupWithDelimiter 
-- IDLabFunctionsTest: added unit tests for lookup functions 
+- IDLabFunctions: added functions lookup and lookupWithDelimiter
+- IDLabFunctionsTest: added unit tests for lookup functions
 - IDLabFunctionsTest: relocate csv files used by tests for lookup function
 - IDLabFunctions: silence stack trace
 - CSVW: filter out rows with a comment prefix

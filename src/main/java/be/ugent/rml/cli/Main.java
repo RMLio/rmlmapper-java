@@ -193,8 +193,8 @@ public class Main {
             }
 
             String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-            // check if the output path can exist, for this we check if the path before the last "/" is valid
-            if (outputFile != null && ! Utils.checkPath(outputFile.substring(0, outputFile.lastIndexOf("/")), null)){
+            // If output path exists and contains 'directory-like' characters
+            if (outputFile != null && !Utils.checkPathParent(outputFile, null)) {
                 logger.error(fatal, "The given output path does not exist.");
                 System.exit(1);
             }

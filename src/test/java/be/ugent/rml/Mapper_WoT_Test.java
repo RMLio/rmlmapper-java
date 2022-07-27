@@ -236,7 +236,6 @@ public class Mapper_WoT_Test extends TestCore {
 
     @Test
     public void test_oauth_authentication_with_refresh_mocked() throws IOException {
-        logger.setLevel(Level.DEBUG);
         String testcaseDirPath = "./web-of-things/oauth2-security-scheme-mocked/%s";
         // Mock server
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
