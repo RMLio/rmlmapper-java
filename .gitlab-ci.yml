@@ -1,4 +1,5 @@
 stages:
+  - lint
   - unittests
   - mirror
   - release
