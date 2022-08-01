@@ -251,7 +251,6 @@ public class AccessFactory {
         }
 
         String dsn = dsnObject.get(0).getValue();
-        dsn = dsn.substring(dsn.indexOf("//") + 2);
 
         // - SQL query
         String query;
@@ -291,13 +290,14 @@ public class AccessFactory {
         // - ContentType
         List<Term> contentType = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
 
-        return new RDBAccess(dsn, database, username, password, query, (contentType.isEmpty()? "text/csv" : contentType.get(0).getValue()));
+
+        return new RDBAccess(dsn, database, username, password, query, (contentType.isEmpty() ? "text/csv" : contentType.get(0).getValue()));
     }
 
     /**
      * This method returns a SPARQLResultFormat based on the result formats and reference formulations.
      * @param resultFormats the result formats used to determine the SPARQLResultFormat.
-     * @param referenceFormulations the reference formulations used to to determine the SPARQLResultFormat.
+     * @param referenceFormulations the reference formulations used to determine the SPARQLResultFormat.
      * @return a SPARQLResultFormat.
      */
     private SPARQLResultFormat getSPARQLResultFormat(List<Term> resultFormats, List<Term> referenceFormulations) {

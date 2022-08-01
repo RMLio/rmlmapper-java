@@ -1,51 +1,23 @@
 package be.ugent.rml;
 
-import ch.vorburger.exec.ManagedProcessException;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 import static be.ugent.rml.MyFileUtils.getParentPath;
 import static be.ugent.rml.TestStrictMode.*;
 
-@RunWith(Parameterized.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class Mapper_MySQL_Test extends MySQLTestCore {
-
-    private static String CONNECTIONSTRING;
-
     @BeforeClass
-    public static void before() throws Exception {
-        int portNumber = Utils.getFreePortNumber();
-        CONNECTIONSTRING = getConnectionString(portNumber);
-        mysqlDB = setUpMySQLDBInstance(portNumber);
-        mappingOptions = new HashMap<>();
+    public static void beforeClass() {
+        logger = LoggerFactory.getLogger(Mapper_MySQL_Test.class);
     }
 
-    @AfterClass
-    public static void after() throws ManagedProcessException {
-        stopDBs();
-    }
-
-    @Parameterized.Parameter(0)
-    public String testCaseName;
-
-    @Parameterized.Parameter(1)
-    public Class<? extends Exception> expectedException;
-
-    @Parameterized.Parameter(2)
-    public TestStrictMode testStrictMode;
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Parameterized.Parameters(name = "{index}: mySQL_{0}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 // scenarios:
@@ -125,8 +97,10 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
         });
     }
 
-    @Test
-    public void doMapping() throws Exception {
+    @ParameterizedTest(name = "{index}: mySQL_{0}")
+    @MethodSource("data")
+    public void doMapping(String testCaseName, Class expectedException, TestStrictMode testStrictMode) throws Exception {
+        prepareDatabase(String.format("src/test/resources/test-cases/%s-MySQL/resource.sql", testCaseName), USERNAME, PASSWORD);
         if (testStrictMode.equals(BOTH) || testStrictMode.equals(BEST_EFFORT_ONLY)) {
             // test the best-effort mode of the mapper
             mappingTest(testCaseName, expectedException, StrictMode.BEST_EFFORT);
@@ -137,16 +111,12 @@ public class Mapper_MySQL_Test extends MySQLTestCore {
         }
     }
 
-    private void mappingTest(String testCaseName, Class expectedException, StrictMode strictMode) throws Exception {
-        String resourcePath = "test-cases/" + testCaseName + "-MySQL/resource.sql";
+    private void mappingTest(String testCaseName, Class expectedException, StrictMode strictMode) {
         String mappingPath = "./test-cases/" + testCaseName + "-MySQL/mapping.ttl";
         String outputPath = "test-cases/" + testCaseName + "-MySQL/output.nq";
 
         // Create a temporary copy of the mapping file and replace source details
-        String tempMappingPath = CreateTempMappingFileAndReplaceDSN(mappingPath, CONNECTIONSTRING);
-
-        // Get SQL resource
-        mysqlDB.source(resourcePath);
+        String tempMappingPath = CreateTempMappingFileAndReplaceDSN(mappingPath, dbURL);
 
         // mapping
         String parentPath = getParentPath(getClass(), outputPath);

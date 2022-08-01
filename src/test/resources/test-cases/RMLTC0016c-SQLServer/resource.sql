@@ -1,4 +1,3 @@
-USE TestDB;
 DROP TABLE IF EXISTS Patient;
 
 CREATE TABLE Patient (

@@ -324,7 +324,7 @@ public abstract class TestCore {
             executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         } catch (Exception e) {
             // I expected you!
-            logger.warn(e.getMessage(), e);
+            logger.debug(e.getMessage(), e);
             return;
         }
 

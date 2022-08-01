@@ -1,33 +1,32 @@
 package be.ugent.rml;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.OracleContainer;
+import org.testcontainers.utility.DockerImageName;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.sql.*;
 import java.util.Arrays;
-import java.util.Scanner;
 
-@RunWith(Parameterized.class)
-public class Mapper_OracleDB_Test extends DBTestCore {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class Mapper_OracleDB_Test extends DBTestCore {
+    public Mapper_OracleDB_Test() {
 
-    protected static String CONNECTIONSTRING = "jdbc:oracle:thin:rmlmapper_test/test@//193.190.127.195:1521/XE";
+        super("rmlmapper_test",  "test", "gvenzl/oracle-xe:latest");
+        super.container = new OracleContainer(DockerImageName.parse(DOCKER_TAG))
+                .withUsername(USERNAME)
+                .withPassword(PASSWORD)
+                .withEnv("runID", Integer.toString(this.hashCode()))
+                .withEnv("NLS_LANG", "American_America.WE8ISO8859P1");
 
-    @Parameterized.Parameter(0)
-    public String testCaseName;
+        super.container.start();
+        super.dbURL = super.container.getJdbcUrl();
+    }
 
-    @Parameterized.Parameter(1)
-    public Class<? extends Exception> expectedException;
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Parameterized.Parameters(name = "{index}: OracleDB_{0}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 // scenarios:
@@ -96,42 +95,35 @@ public class Mapper_OracleDB_Test extends DBTestCore {
         });
     }
 
-    @Test
-    public void doMapping() throws Exception {
+    @BeforeClass
+    public static void beforeClass() {
+        logger = LoggerFactory.getLogger(Mapper_OracleDB_Test.class);
+    }
+
+    @After
+    public void afterTest() {
+        container.stop();  // for oracle, a fresh container is the easiest way of purging any previous data
+        container.start();
+    }
+
+    @AfterAll
+    public void afterAll() {
+        container.stop();
+    }
+
+    @ParameterizedTest(name = "{index}: OracleDB_{0}")
+    @MethodSource("data")
+    public void doMapping(String testCaseName, Class expectedException) throws Exception {
+        prepareDatabase(String.format("src/test/resources/test-cases/%s-OracleDB/resource.sql", testCaseName), USERNAME, PASSWORD);
         mappingTest(testCaseName, expectedException);
     }
 
-    private void mappingTest(String testCaseName, Class expectedException) throws Exception {
-        String resourcePath = "test-cases/" + testCaseName + "-OracleDB/resource.sql";
+    private void mappingTest(String testCaseName, Class expectedException) {
         String mappingPath = "./test-cases/" + testCaseName + "-OracleDB/mapping.ttl";
         String outputPath = "test-cases/" + testCaseName + "-OracleDB/output.nq";
 
         // Create a temporary copy of the mapping file and replace source details
-        String tempMappingPath = CreateTempMappingFileAndReplaceDSN(mappingPath, CONNECTIONSTRING);
-
-        File resourceFile = Utils.getFile(resourcePath, null);
-        InputStream resourceStream = new FileInputStream(resourceFile);
-        //String resourceStr = IOUtils.toString(resourceStream, StandardCharsets.UTF_8);
-
-        //System.out.println(resourceStr);
-
-        Connection connection = DriverManager.getConnection(CONNECTIONSTRING);
-
-        String dropTablesQuery = "select table_name from user_tables";
-        Statement selectTablesStmt = connection.createStatement();
-        ResultSet rs = selectTablesStmt.executeQuery(dropTablesQuery);
-
-        while (rs.next()) {
-            System.out.println(rs.getString("TABLE_NAME"));
-            Statement dropTableStmt = connection.createStatement();
-            dropTableStmt.executeQuery("drop table " + rs.getString("TABLE_NAME"));
-        }
-
-        //Statement stmt = connection.createStatement();
-        //stmt.executeQuery(resourceStr);
-
-        // Load data in database
-        importSQL(connection, resourceStream);
+        String tempMappingPath = CreateTempMappingFileAndReplaceDSN(mappingPath, dbURL);
 
         // mapping
         if (expectedException == null) {
@@ -141,25 +133,5 @@ public class Mapper_OracleDB_Test extends DBTestCore {
         }
 
         deleteTempMappingFile(tempMappingPath);
-    }
-
-    private void importSQL(Connection conn, InputStream in) throws SQLException {
-
-        try (Scanner s = new Scanner(in);
-             Statement st = conn.createStatement()) {
-            s.useDelimiter("(;\n?)");
-            while (s.hasNext()) {
-                String line = s.next();
-                if (line.startsWith("/*!") && line.endsWith("*/")) {
-                    int i = line.indexOf(' ');
-                    line = line.substring(i + 1, line.length() - " */".length());
-                }
-
-                if (line.trim().length() > 0) {
-                    System.out.println(line);
-                    st.execute(line);
-                }
-            }
-        }
     }
 }

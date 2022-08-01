@@ -56,29 +56,25 @@ default:
 General:
   stage: unittests
   image: maven:3.5.0-jdk-8
-  retry: 2
   services:
-    - postgres:10.4
-    - name: mcr.microsoft.com/mssql/server:latest
-      alias: sqlserver
+    - name: docker:19.03.12-dind
+      # explicitly disable tls to avoid docker startup interruption
+      command: ["--tls=false"]
+  variables:
+    # Instruct Testcontainers to use the daemon of DinD.
+    DOCKER_HOST: "tcp://docker:2375"
+    # Instruct Docker not to start over TLS.
+    DOCKER_TLS_CERTDIR: ""
+    # Improve performance with overlayfs.
+    DOCKER_DRIVER: overlay2
   script:
     - 'mvn $MAVEN_CLI_OPTS -Dtest=$TEST test'
   parallel:
     matrix:
-      - TEST: [Arguments_Test, Mapper_CSV_Test, Mapper_JSON_Test, Mapper_MySQL_Test, Mapper_Postgres_R2RML_Test, Mapper_WoT_Test, Arguments_Test_MySQL, Mapper_CSVW_Test, Mapper_LDES_Test, Mapper_ODS_Test, Mapper_Postgres_XML_Test, Mapper_XML_Test, Custom_RML_FnO_Mapper_CSV_Test, Mapper_EXCEL_Test, Mapper_MappingFile_URL_Test, Mapper_SPARQL_Test, Metadata_Test, Custom_RML_FnO_Mapper_JSON_Test, Mapper_HTML_Test, Mapper_MySQL_R2RML_Test, Mapper_Postgres_CSV_Test, Mapper_SQLServer_Test, Optimizations_Test, R2RMLConverterTest, Quad_Test, ReadmeTest, ReadmeFunctionTest]
+      - TEST: [Arguments_Test, Mapper_CSV_Test, Mapper_JSON_Test, Mapper_MySQL_Test, Mapper_Postgres_R2RML_Test, Mapper_WoT_Test, Arguments_Test_MySQL, Mapper_CSVW_Test, Mapper_LDES_Test, Mapper_ODS_Test, Mapper_OracleDB_Test, Mapper_Postgres_XML_Test, Mapper_XML_Test, Custom_RML_FnO_Mapper_CSV_Test, Mapper_EXCEL_Test, Mapper_MappingFile_URL_Test, Mapper_SPARQL_Test, Metadata_Test, Custom_RML_FnO_Mapper_JSON_Test, Mapper_HTML_Test, Mapper_MySQL_R2RML_Test, Mapper_Postgres_CSV_Test, Mapper_SQLServer_Test, Optimizations_Test, R2RMLConverterTest, Quad_Test, ReadmeTest, ReadmeFunctionTest]
   except:
     - master
     - development
-
-Oracle DB:
-  stage: unittests
-  image: gitlab.ilabt.imec.be:4567/rml/util/mvn-oracle-docker:latest
-  script:
-    - '/entrypoint.sh'
-  except:
-    - master
-    - development
-    - tags # Gitlab CI bot cannot access Docker images
 
 Docker Build:
   stage: unittests

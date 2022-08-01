@@ -1,4 +1,3 @@
-USE TestDB;
 DROP TABLE IF EXISTS persons;
 
 CREATE TABLE persons (

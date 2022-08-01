@@ -47,7 +47,7 @@ public class RDBAccess implements Access {
 
 
     /**
-     * This constructor takes as arguments the dsn, database, username, password, query, and content type.
+     * This constructor takes as arguments the dsn, database, username, password, query, content type
      *
      * @param dsn          the data source name.
      * @param databaseType the database type.
@@ -76,58 +76,43 @@ public class RDBAccess implements Access {
         // JDBC objects
         Connection connection = null;
         Statement statement = null;
-        String jdbcDriver = databaseType.getDriver();
-        String jdbcDSN = "jdbc:" + databaseType.getJDBCPrefix() + "//" + dsn;
-        InputStream inputStream = null;
+        InputStream inputStream;
 
         try {
-            // Register JDBC driver
-            Class.forName(jdbcDriver);
-
             // Open connection
-            String connectionString = jdbcDSN;
-            boolean alreadySomeQueryParametersPresent = false;
+            boolean alreadySomeQueryParametersPresent = dsn.contains("?");
 
-            if (username != null && !username.equals("") && password != null && !password.equals("")) {
-                if (databaseType == DatabaseType.ORACLE) {
-                    connectionString = connectionString.replace(":@", ":" + username + "/" + password + "@");
-                } else if (!connectionString.contains("user=")) {
-                    connectionString += "?user=" + username + "&password=" + password;
-                    alreadySomeQueryParametersPresent = true;
-                }
-            }
 
             if (databaseType == DatabaseType.MYSQL) {
+                StringBuilder parametersSB = new StringBuilder();
+
                 if (alreadySomeQueryParametersPresent) {
-                    connectionString += "&";
+                    parametersSB.append("&");
                 } else {
-                    connectionString += "?";
+                    parametersSB.append("?");
                 }
 
-                connectionString += "serverTimezone=UTC&useSSL=false";
+                parametersSB.append("serverTimezone=UTC&useSSL=false");
+
+                dsn += parametersSB;
             }
 
             if (databaseType == DatabaseType.SQL_SERVER) {
-                connectionString = connectionString.replaceAll("\\?|&", ";");
-
-                if (!connectionString.endsWith(";")) {
-                    connectionString += ";";
-                }
+                dsn = dsn.replaceAll("[?&]", ";");
             }
-            connection = DriverManager.getConnection(connectionString);
+
+            connection = DriverManager.getConnection(dsn, username, password);
 
             // Execute query
             statement = connection.createStatement();
+
             ResultSet rs = statement.executeQuery(query);
 
-            switch (contentType) {
-                case NAMESPACES.QL + "XPath" :
-                    inputStream = getXMLInputStream(rs);
-                    break;
-                default:
-                    inputStream = getCSVInputStream(rs);
+            if ((NAMESPACES.QL + "XPath").equals(contentType)) {
+                inputStream = getXMLInputStream(rs);
+            } else {
+                inputStream = getCSVInputStream(rs);
             }
-
 
             // Clean-up environment
             rs.close();

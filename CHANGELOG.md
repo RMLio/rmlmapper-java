@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ### Changed
+- Database tests are executed with a fresh instance of the required database in a Docker container
+- Database tests are now executed with JUnit5
+
+### Fixed
+- Dropped dependency on com.spotify.docker-client ([issue 231](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/231))
+- Running multiple pipelines should no longer interfere with each other ([issue 245](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/245))
+
+### Added
+- pom.xml: Added Testcontainers library dependencies for databases we test on
+- pom.xml: Added JUnit5 dependencies
 - Check for changelog changes in a separate lint stage during CI.
 
 ## [6.0.0] - 2022-07-04

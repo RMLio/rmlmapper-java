@@ -1,0 +1,5 @@
+[mysqld]
+sql-mode="ANSI_QUOTES"
+[user]
+user=root
+password=

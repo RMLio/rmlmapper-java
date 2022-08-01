@@ -1,56 +1,24 @@
 package be.ugent.rml;
 
-import ch.vorburger.exec.ManagedProcessException;
-import ch.vorburger.mariadb4j.DB;
-import ch.vorburger.mariadb4j.DBConfigurationBuilder;
-
-import java.io.File;
-import java.util.Iterator;
-
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 public abstract class MySQLTestCore extends DBTestCore {
+    protected MySQLTestCore(String tag) {
+        super("root", "", tag);
+        super.container = new MySQLContainer<>(DockerImageName.parse(tag))
+                .withUsername(USERNAME)
+                .withPassword(PASSWORD)
+                .withEnv("allowPublicKeyRetrieval", "true")
+                .withEnv("useSSL", "false")
+                .withEnv("runID", Integer.toString(this.hashCode()))
+                .withConfigurationOverride("mysql_override");
 
-    protected static String CONNECTIONSTRING_TEMPLATE = "jdbc:mysql://localhost:%d/test";
-
-    protected static DB mysqlDB;
-
-    protected static String getConnectionString(int portNumber) {
-        return String.format(CONNECTIONSTRING_TEMPLATE, portNumber);
+        super.container.start();
+        super.dbURL = super.container.getJdbcUrl();
     }
 
-    protected static DB setUpMySQLDBInstance(int portNumber) throws ManagedProcessException {
-        DBConfigurationBuilder configBuilder = DBConfigurationBuilder.newBuilder();
-        configBuilder.setPort(portNumber);
-        configBuilder.addArg("--user=root");
-        configBuilder.addArg("--sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI_QUOTES");
-        DB mysqlDB = DB.newEmbeddedDB(configBuilder.build());
-        mysqlDB.start();
-
-        return mysqlDB;
-    }
-
-    protected static void stopDBs() throws ManagedProcessException {
-        if (mysqlDB != null) {
-            mysqlDB.stop();
-        }
-
-        // Make sure all tempFiles are removed
-        int counter = 0;
-        while (!tempFiles.isEmpty()) {
-            for (Iterator<String> i = tempFiles.iterator(); i.hasNext(); ) {
-                try {
-                    if (new File(i.next()).delete()) {
-                        i.remove();
-                    }
-                } catch (Exception ex) {
-                    counter++;
-                    ex.printStackTrace();
-                    // Prevent infinity loops
-                    if (counter > 100) {
-                        throw new Error("Could not remove all temp mapping files.");
-                    }
-                }
-            }
-        }
+    protected MySQLTestCore() {
+        this("mysql:latest");
     }
 }

@@ -36,6 +36,6 @@ FROM "student"
 <#DB_source> a d2rq:Database;
   d2rq:jdbcDSN "CONNECTIONDSN"; # the "jbdc:mysql:// part is ignored
   d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver"; # this is ignored
-  d2rq:username "root";
+  d2rq:username "postgres";
   d2rq:password "" .
 

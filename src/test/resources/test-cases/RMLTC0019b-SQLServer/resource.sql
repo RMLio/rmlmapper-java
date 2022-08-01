@@ -1,4 +1,3 @@
-USE TestDB;
 DROP TABLE IF EXISTS Employee;
 
 CREATE TABLE Employee (

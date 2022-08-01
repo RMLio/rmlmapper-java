@@ -1,12 +1,10 @@
 package be.ugent.rml;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
@@ -15,22 +13,8 @@ import java.util.HashMap;
 import static be.ugent.rml.MyFileUtils.getParentPath;
 import static be.ugent.rml.TestStrictMode.*;
 
-@RunWith(Parameterized.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
-
-    @Parameterized.Parameter(0)
-    public String testCaseName;
-
-    @Parameterized.Parameter(1)
-    public Class<? extends Exception> expectedException;
-
-    @Parameterized.Parameter(2)
-    public TestStrictMode testStrictMode;
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Parameterized.Parameters(name = "{index}: PostgreSQL_{0}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {"R2RMLTC0000", null, BOTH},
@@ -105,25 +89,25 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
     }
 
     @BeforeClass
-    public static void before() {
+    public static void beforeClass() {
         logger = LoggerFactory.getLogger(Mapper_Postgres_R2RML_Test.class);
-        startDBs();
+    }
 
+    @BeforeAll
+    public void before() {
         // add RDB connection options
         mappingOptions = new HashMap<>();
-        mappingOptions.put("jdbcDSN", CONNECTIONSTRING);
         mappingOptions.put("jdbcDriver", "org.postgresql.Driver");
         mappingOptions.put("username", "postgres");
         mappingOptions.put("password", "");
+        mappingOptions.put("jdbcDSN", dbURL);
     }
 
-    @AfterClass
-    public static void after() {
-        stopDBs();
-    }
+    @ParameterizedTest(name = "{index}: PostgreSQL_{0}")
+    @MethodSource("data")
+    public void doMapping(String testCaseName, Class expectedException, TestStrictMode testStrictMode) throws Exception {
+        prepareDatabase(String.format("src/test/resources/test-cases-R2RML/%s-PostgreSQL/resource.sql", testCaseName), USERNAME, PASSWORD);
 
-    @Test
-    public void doMapping() throws Exception {
         if (testStrictMode.equals(BOTH) || testStrictMode.equals(BEST_EFFORT_ONLY)) {
             // test the best-effort mode of the mapper
             mappingTest(testCaseName, expectedException, StrictMode.BEST_EFFORT);
@@ -134,17 +118,12 @@ public class Mapper_Postgres_R2RML_Test extends PostgresTestCore {
         }
     }
 
-    private void mappingTest(String testCaseName, Class expectedException, StrictMode strictMode) throws Exception {
-
-        String resourcePath = "test-cases-R2RML/" + testCaseName + "-PostgreSQL/resource.sql";
-        String mappingPath = "./test-cases-R2RML/" + testCaseName + "-PostgreSQL/mapping.ttl";
-        String outputPath = "test-cases-R2RML/" + testCaseName + "-PostgreSQL/output.nq";
+    private void mappingTest(String testCaseName, Class expectedException, StrictMode strictMode) {
+        String mappingPath = String.format("./test-cases-R2RML/%s-PostgreSQL/mapping.ttl", testCaseName);
+        String outputPath = String.format("test-cases-R2RML/%s-PostgreSQL/output.nq", testCaseName);
 
         // Create a temporary copy of the mapping file
         String tempMappingPath = createTempMappingFile(mappingPath);
-
-        // Execute SQL
-        executeSQL(remoteDB.connectionString, resourcePath);
 
         // mapping
         String parentPath = getParentPath(getClass(), outputPath);

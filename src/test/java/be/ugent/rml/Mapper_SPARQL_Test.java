@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static be.ugent.rml.MySQLTestCore.deleteTempMappingFile;
+import static be.ugent.rml.DBTestCore.deleteTempMappingFile;
 
 @RunWith(Parameterized.class)
 public class Mapper_SPARQL_Test extends TestCore {

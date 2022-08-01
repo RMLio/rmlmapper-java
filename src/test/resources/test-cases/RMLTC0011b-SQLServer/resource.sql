@@ -1,4 +1,3 @@
-USE TestDB;
 DROP TABLE IF EXISTS student_sport;
 DROP TABLE IF EXISTS student;
 DROP TABLE IF EXISTS sport;

@@ -1,12 +1,9 @@
 package be.ugent.rml;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
@@ -14,34 +11,14 @@ import java.util.Arrays;
 import static be.ugent.rml.MyFileUtils.getParentPath;
 import static be.ugent.rml.TestStrictMode.*;
 
-
-@RunWith(Parameterized.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class Mapper_Postgres_CSV_Test extends PostgresTestCore {
 
     @BeforeClass
-    public static void before() {
+    public static void beforeClass() {
         logger = LoggerFactory.getLogger(Mapper_Postgres_CSV_Test.class);
-        startDBs();
     }
 
-    @AfterClass
-    public static void after() {
-        stopDBs();
-    }
-
-    @Parameterized.Parameter(0)
-    public String testCaseName;
-
-    @Parameterized.Parameter(1)
-    public Class<? extends Exception> expectedException;
-
-    @Parameterized.Parameter(2)
-    public TestStrictMode testStrictMode;
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Parameterized.Parameters(name = "{index}: Postgres_CSV_Test_{0}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 // scenarios:
@@ -58,7 +35,7 @@ public class Mapper_Postgres_CSV_Test extends PostgresTestCore {
                 {"RMLTC0002h", Error.class, BOTH},
                 {"RMLTC0002i", Error.class, BOTH},
                 {"RMLTC0002j", null, BOTH},
-                {"RMLTC0003a", Error.class, BOTH},
+                {"RMLTC0003a", null, BOTH},
                 {"RMLTC0003b", null, BOTH},
                 {"RMLTC0003c", null, BOTH},
                 {"RMLTC0004a", null, BOTH},
@@ -115,11 +92,12 @@ public class Mapper_Postgres_CSV_Test extends PostgresTestCore {
                 {"RMLTC0020b", null, BEST_EFFORT_ONLY},
                 {"RMLTC1027", null, BOTH},
         });
-
     }
 
-    @Test
-    public void doMapping() throws Exception {
+
+    @ParameterizedTest(name = "{index}: Postgres_CSV_Test_{0}")
+    @MethodSource("data")
+    public void doMapping(String testCaseName, Class expectedException, TestStrictMode testStrictMode) throws Exception {
         if (testStrictMode.equals(BOTH) || testStrictMode.equals(BEST_EFFORT_ONLY)) {
             // test the best-effort mode of the mapper
             mappingTest(testCaseName, expectedException, StrictMode.BEST_EFFORT);
@@ -130,17 +108,14 @@ public class Mapper_Postgres_CSV_Test extends PostgresTestCore {
         }
     }
 
-    private void mappingTest(String testCaseName, Class expectedException, StrictMode strictMode) throws Exception {
+    private void mappingTest(String testCaseName, Class expectedException, StrictMode strictMode) {
+        prepareDatabase(String.format("src/test/resources/test-cases/%s-PostgreSQL/resource.sql", testCaseName), USERNAME, PASSWORD);
 
-        String resourcePath = "test-cases/" + testCaseName + "-PostgreSQL/resource.sql";
         String mappingPath = "./test-cases/" + testCaseName + "-PostgreSQL/mapping.ttl";
         String outputPath = "test-cases/" + testCaseName + "-PostgreSQL/output.nq";
 
         // Create a temporary copy of the mapping file and replace source details
-        String tempMappingPath = CreateTempMappingFileAndReplaceDSN(mappingPath, CONNECTIONSTRING);
-
-        // Execute SQL
-        executeSQL(remoteDB.connectionString, resourcePath);
+        String tempMappingPath = CreateTempMappingFileAndReplaceDSN(mappingPath, dbURL);
 
         // mapping
         String parentPath = getParentPath(getClass(), outputPath);

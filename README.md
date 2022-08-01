@@ -2,7 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/be.ugent.rml/rmlmapper.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22be.ugent.rml%22%20AND%20a:%22rmlmapper%22)
 
-The RMLMapper execute RML rules to generate Linked Data.
+The RMLMapper executes RML rules to generate Linked Data.
 It is a Java library, which is available via the command line ([API docs online](https://javadoc.io/doc/be.ugent.rml/rmlmapper)).
 The RMLMapper loads all data in memory, so be aware when working with big datasets.
 
@@ -78,7 +78,7 @@ This is the recommended way to get started with RMLMapper.
 Do you want to build from source yourself? Check [Build](#build).
 
 ## Build
-The RMLMapper is build using Maven.
+The RMLMapper is built using Maven.
 As it is also tested against Oracle (check [here](#accessing-oracle-database) for details),
 it needs a specific set-up to run all tests.
 That's why we recommend to build without testing: `mvn install -DskipTests=true`.
@@ -269,13 +269,18 @@ and up to which level metadata should be stored (dataset, triple, or term level 
 
 ## Testing
 
-Run the tests via `test.sh`.
+### Command line
+Run the tests via `test.sh`. 
+
+### IntelliJ
+Right-click `src/test/java` directory and select "Run 'All tests'". 
 
 #### Derived tests
 Some tests (Excel, ODS) are derived from other tests (CSV) using a script (`./generate_spreadsheet_test_cases.sh`)
 
 ### RDBs
-Make sure you have [Docker](https://www.docker.com) running.
+Make sure you have [Docker](https://www.docker.com) running. On Unix, others read-write permission (006) is required on `/var/run/docker.sock` in order to run the tests.
+The tests will fail otherwise, as Testcontainers can't spin up the container. 
 
 #### Problems
 * A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests will always succeed locally.
@@ -290,7 +295,10 @@ Make sure you have [Docker](https://www.docker.com) running.
 |           com.opencsv opencsv           | Apache License 2.0                                                 |
 |         commons-cli commons-cli         | Apache License 2.0                                                 |
 |     org.eclipse.rdf4j rdf4j-runtime     | Eclipse Public License 1.0                                         |
-|               junit junit               | Eclipse Public License 1.0                                         |
+| org.junit.jupiter junit-jupiter-engine  | Eclipse Public License v2.0                                        |
+|   org.junit.jupiter junit-jupiter-api   | Eclipse Public License v2.0                                        |
+| org.junit.jupiter junit-jupiter-params  | Eclipse Public License v2.0                                        |
+| org.junit.vintage junit-vintage-engine  | Eclipse Public License v2.0                                        |
 |      com.jayway.jsonpath json-path      | Apache License 2.0                                                 |
 |       javax.xml.parsers jaxp-api        | Apache License 2.0                                                 |
 |                org.jsoup                | MIT                                                                |
@@ -298,7 +306,6 @@ Make sure you have [Docker](https://www.docker.com) running.
 |     ch.vorbuger.mariaDB4j mariaDB4j     | Apache License 2.0                                                 |
 |          postgresql postgresql          | BSD                                                                |
 |   com.microsoft.sqlserver mssql-jdbc    | MIT                                                                |
-|        com.spotify docker-client        | Apache License 2.0                                                 |
 | com.fasterxml.jackson.core jackson-core | Apache License 2.0                                                 |
 |     org.eclipse.jetty jetty-server      | Eclipse Public License 1.0 & Apache License 2.0                    |
 |    org.eclipse.jetty jetty-security     | Eclipse Public License 1.0 & Apache License 2.0                    |
@@ -310,6 +317,11 @@ Make sure you have [Docker](https://www.docker.com) running.
 |  com.github.fnoio function-agent-java   | MIT                                                                |
 |  com.github.fnoio idlab-functions-java  | MIT                                                                |
 |              net.sf.saxon               | Mozilla Public License version 2.0                                 |
+|           org.mybatis mybatis           | Apache License 2.0                                                 |
+|      org.testcontainers postgresql      | MIT                                                                |
+|        org.testcontainers mysql         | MIT                                                                |
+|     org.testcontainers mssqlserver      | MIT                                                                |
+|      org.testcontainers oracle-xe       | MIT                                                                |
 
 ## Commercial Support
 
