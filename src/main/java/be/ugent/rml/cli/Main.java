@@ -194,9 +194,13 @@ public class Main {
 
             String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
             // If output path exists and contains 'directory-like' characters
-            if (outputFile != null && !Utils.checkPathParent(outputFile, null)) {
-                logger.error(fatal, "The given output path does not exist.");
-                System.exit(1);
+            if (outputFile != null) {
+                // Windows paths 🤷‍♂️
+                outputFile = outputFile.replaceAll("\\\\", "/");
+                if (!Utils.checkPathParent(outputFile, null)) {
+                    logger.error(fatal, "The given output path does not exist.");
+                    System.exit(1);
+                }
             }
 
             if (mOptionValue != null) {
@@ -394,7 +398,6 @@ public class Main {
             // Get start timestamp for post mapping metadata
             String startTimestamp = Instant.now().toString();
             QuadStore result = null;
-            outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
 
             try {
                 HashMap<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),

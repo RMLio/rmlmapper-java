@@ -81,6 +81,7 @@ public class Utils {
 
     /**
      * Get an InputStream from a string. This string is either a path (local or remote) to an RDF file, or a raw RDF text.
+     * If it's a path,  conversion from Windows path separators to UNIX paht separators is performed
      * @param mOptionValue input, either RDF file path or raw RDF text
      * @return input stream
      */
@@ -88,6 +89,10 @@ public class Utils {
         InputStream out;
         logger.debug("{} mapping file", mOptionValue);
         String extension = FilenameUtils.getExtension(mOptionValue);
+        if (extension != null) {
+            // Windows paths 🤷‍♂️
+            mOptionValue = mOptionValue.replaceAll("\\\\", "/");
+        }
         try {
             switch (extension) {
                 case "n3":
@@ -141,9 +146,11 @@ public class Utils {
         return Utils.getFile(path, null);
     }
 
+    /**
+     * Get path based on basePath or (if not filled in) the user.dir
+     * This file assumes UNIX path separators.
+     */
     public static File getFile(String path, File basePath) throws IOException {
-        // Windows paths 🤷‍♂️
-        path = path.replaceAll("\\\\", "/");
         // Absolute path?
         File f = new File(path);
         if (f.isAbsolute()) {
