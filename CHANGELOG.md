@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Database tests are executed with a fresh instance of the required database in a Docker container
 - Database tests are now executed with JUnit5
+- Update of function libraries IDLab functions, GREL functions, Function Agent
 
 ### Fixed
 - Dropped dependency on com.spotify.docker-client ([issue 231](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/231))
