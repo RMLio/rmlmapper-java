@@ -35,8 +35,6 @@ public class Executor {
     private RecordsFactory recordsFactory;
     private static int blankNodeCounter;
     private HashMap<Term, Mapping> mappings;
-    private String baseIRI;
-    private final StrictMode strictMode;
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
         this(rmlStore, recordsFactory, null, baseIRI, strictMode, functionAgent);
@@ -51,12 +49,10 @@ public class Executor {
     }
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
-        this.initializer = new Initializer(rmlStore, functionAgent);
+        this.initializer = new Initializer(rmlStore, functionAgent, baseIRI, strictMode);
         this.mappings = this.initializer.getMappings();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
-        this.baseIRI = baseIRI;
-        this.strictMode = strictMode;
         this.recordsHolders = new HashMap<>();
         this.subjectCache = new HashMap<>();
         this.targetStores = new HashMap<>();
@@ -141,45 +137,6 @@ public class Executor {
             for (int j = 0; j < records.size(); j++) {
                 Record record = records.get(j);
                 ProvenancedTerm subject = getSubject(triplesMap, mapping, record, j);
-
-                // If we have subject and it's a named node,
-                // we validate it and make it an absolute IRI if needed.
-                if (subject != null && subject.getTerm() instanceof NamedNode) {
-                    String iri = subject.getTerm().getValue();
-
-                    // Is the IRI valid?
-                    if (!Utils.isValidIRI(iri)) {
-                        if (strictMode.equals(StrictMode.STRICT)) {
-                            throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
-                        } else {
-                            logger.error("The subject \"{}\" is not a valid IRI. Skipped.", iri);
-                            subject = null;
-                        }
-
-                    // Is the IRI relative?
-                    } else if (Utils.isRelativeIRI(iri)) {
-
-                        // Check the base IRI to see if we can use it to turn the IRI into an absolute one.
-                        if (this.baseIRI == null) {
-                            logger.error("The base IRI is null, so relative IRI of subject cannot be turned in to absolute IRI. Skipped.");
-                            subject = null;
-                        } else {
-                            logger.debug("The IRI of subject is made absolute via base IRI.");
-                            iri = this.baseIRI + iri;
-
-                            // Check if the new absolute IRI is valid.
-                            if (Utils.isValidIRI(iri)) {
-                                subject = new ProvenancedTerm(new NamedNode(iri), subject.getMetadata(), subject.getTargets());
-                            } else {
-                                if (strictMode.equals(StrictMode.STRICT)) {
-                                    throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
-                                } else {
-                                    logger.error("The subject \"{}\" is not a valid IRI. Skipped.", iri);
-                                }
-                            }
-                        }
-                    }
-                }
 
                 final ProvenancedTerm finalSubject = subject;
 

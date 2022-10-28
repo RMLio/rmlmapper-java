@@ -33,7 +33,10 @@
             rr:objectMap [ rr:constant grel:toUpperCase ] ] ;
         rr:predicateObjectMap [
             rr:predicate grel:valueParameter ;
-            rr:objectMap [ rr:template "Name: {Name}" ] ]
+            rr:objectMap [
+              rr:template "Name: {Name}";
+              rr:termType rr:Literal
+            ] ]
       ]
     ]
   ].

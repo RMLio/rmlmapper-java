@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Dropped dependency on com.spotify.docker-client ([issue 231](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/231))
 - Running multiple pipelines should no longer interfere with each other ([issue 245](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/245))
+- `NamedNodeGenerator` now checks if the given IRI is valid ([issue 249](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/249))
 
 ### Added
 - pom.xml: Added Testcontainers library dependencies for databases we test on

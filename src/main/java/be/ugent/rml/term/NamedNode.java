@@ -2,7 +2,7 @@ package be.ugent.rml.term;
 
 public class NamedNode extends AbstractTerm {
 
-    public NamedNode(String iri) {
+    public NamedNode(final String iri) {
         super(iri);
     }
 

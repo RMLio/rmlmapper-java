@@ -17,7 +17,7 @@ public class Initializer {
     private final List<Term> triplesMaps;
     private final HashMap<Term, Mapping> mappings;
 
-    public Initializer(QuadStore rmlStore, final Agent functionAgent) throws Exception {
+    public Initializer(final QuadStore rmlStore, final Agent functionAgent, final String baseIRI, final StrictMode strictMode) throws Exception {
         this.rmlStore = rmlStore;
         //we get all the TriplesMaps from the mapping
         this.triplesMaps = this.getAllTriplesMaps();
@@ -31,7 +31,7 @@ public class Initializer {
                         "grel_java_mapping.ttl")
                 : functionAgent;
 
-        this.factory = new MappingFactory(initialisedFunctionAgent);
+        this.factory = new MappingFactory(initialisedFunctionAgent, baseIRI, strictMode);
         extractMappings();
     }
 
