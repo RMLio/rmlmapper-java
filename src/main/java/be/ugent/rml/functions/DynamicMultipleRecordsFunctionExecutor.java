@@ -1,5 +1,7 @@
 package be.ugent.rml.functions;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.Arguments;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
@@ -7,24 +9,26 @@ import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicMultipleRecordsFunctionExecutor.class);
-    private List<ParameterValueOriginPair> parameterValuePairs;
-    private FunctionLoader functionLoader;
+    private final List<ParameterValueOriginPair> parameterValuePairs;
 
-    public DynamicMultipleRecordsFunctionExecutor(List<ParameterValueOriginPair> parameterValuePairs, FunctionLoader functionLoader) {
+    private final Agent functionAgent;
+
+    public DynamicMultipleRecordsFunctionExecutor(final List<ParameterValueOriginPair> parameterValuePairs, final Agent functionAgent) {
         this.parameterValuePairs = parameterValuePairs;
-        this.functionLoader = functionLoader;
+        this.functionAgent = functionAgent;
     }
 
     @Override
     public Object execute(Map<String, Record> records) throws Exception {
         final ArrayList<Term> fnTerms = new ArrayList<>();
-        final ArrayList<Argument> args = new ArrayList<>();
+        final Arguments arguments = new Arguments();
 
         parameterValuePairs.forEach(pv -> {
             ArrayList<Term> parameters = new ArrayList<>();
@@ -50,65 +54,24 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
 
             if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes")) || parameters.contains(new NamedNode(NAMESPACES.FNO_S + "executes"))) {
                 if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes"))) {
-                    logger.warn("http is used instead of https for " + NAMESPACES.FNO_S + ". " +
-                            "Still works for now, but will be deprecated in the future.");
+                    logger.warn("http is used instead of https for {}. Still works for now, but will be deprecated in the future.", NAMESPACES.FNO_S);
                 }
 
                 fnTerms.add(values.get(0));
             } else {
-                parameters.forEach(parameter -> {
-                    ArrayList<Object> temp = new ArrayList<>();
-
-                    values.forEach(value -> {
-                        temp.add(value.getValue());
-                    });
-
-                    args.add(new Argument(parameter.getValue(), temp));
-                });
+                for (Term parameter : parameters) {
+                    for (Term value : values) {
+                        arguments.add(parameter.getValue(), value.getValue());
+                    }
+                }
             }
         });
 
-        final Map<String, List<Object>> mergedArgs = new HashMap<>();
-        //TODO check if function is list?
-        args.forEach(arg -> {
-            if (!mergedArgs.containsKey(arg.getParameter())) {
-                mergedArgs.put(arg.getParameter(), arg.getArguments());
-            } else {
-                mergedArgs.get(arg.getParameter()).addAll(arg.getArguments());
-            }
-        });
         if (fnTerms.isEmpty()) {
-            throw new Exception("No function was defined for parameters: " + mergedArgs.keySet());
+            throw new Exception("No function was defined for parameters: " + arguments.getArgumentNames());
         } else {
-            FunctionModel function = functionLoader.getFunction(fnTerms.get(0));
-            return function.execute((Map) mergedArgs);
+            final String functionId = fnTerms.get(0).getValue();
+            return functionAgent.execute(functionId, arguments);
         }
-    }
-}
-
-/**
- * Helper class to combine a parameter and his arguments in one object
- */
-class Argument {
-    /**
-     * Function Parameter URI
-     */
-    private String parameter;
-    /**
-     * All the actual generated values for this parameter
-     */
-    private List<Object> arguments;
-
-    Argument(String parameter, List<Object> arguments) {
-        this.parameter = parameter;
-        this.arguments = arguments;
-    }
-
-    public String getParameter() {
-        return parameter;
-    }
-
-    public List<Object> getArguments() {
-        return arguments;
     }
 }

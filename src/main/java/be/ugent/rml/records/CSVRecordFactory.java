@@ -12,6 +12,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -30,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +73,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
 
             // Check if we are dealing with CSVW.
             if (sourceType.get(0).getValue().equals(NAMESPACES.CSVW + "Table")) {
-                CSVW csvw = new CSVW(access.getInputStream(), rmlStore, logicalSource);
+                CSVW csvw = new CSVW(rmlStore, logicalSource);
                 return getRecordsForCSV(access, csvw);
             } else {
                 // RDBs fall under this.
@@ -90,28 +90,28 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      */
     protected List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
         List<Record> output = new ArrayList<>();
-        Workbook workbook = new XSSFWorkbook(access.getInputStream());
+        try (InputStream is = access.getInputStream();
+             Workbook workbook = new XSSFWorkbook(is)) {
+            for (Sheet datatypeSheet : workbook) {
+                Row header = datatypeSheet.getRow(0);
 
-        for (Sheet datatypeSheet : workbook) {
-            Row header = datatypeSheet.getRow(0);
+                header.cellIterator().forEachRemaining(c -> {
+                    if (c.getCellType().equals(CellType.STRING)) {
+                        c.setCellValue(c.toString().toUpperCase());
+                    }
+                });
 
-            header.cellIterator().forEachRemaining(c -> {
-                if(c.getCellType().equals(CellType.STRING)) {
-                    c.setCellValue(c.toString().toUpperCase());
-                }
-            });
-
-            boolean first = true;
-            for (Row currentRow : datatypeSheet) {
-                // remove the header
-                if (first) {
-                    first = false;
-                } else {
-                    output.add(new ExcelRecord(header, currentRow));
+                boolean first = true;
+                for (Row currentRow : datatypeSheet) {
+                    // remove the header
+                    if (first) {
+                        first = false;
+                    } else {
+                        output.add(new ExcelRecord(header, currentRow));
+                    }
                 }
             }
         }
-        workbook.close();
         return output;
     }
 
@@ -123,29 +123,29 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      */
     protected List<Record> getRecordsForODT(Access access) throws Exception {
         List<Record> output = new ArrayList<>();
-        InputStream is = access.getInputStream();
-        Document document = SpreadsheetDocument.loadDocument(is);
-        for (org.odftoolkit.simple.table.Table table : document.getTableList()) {
-            org.odftoolkit.simple.table.Row header = table.getRowByIndex(0);
+        try (InputStream is = access.getInputStream()) {
+            Document document = SpreadsheetDocument.loadDocument(is);
+            for (org.odftoolkit.simple.table.Table table : document.getTableList()) {
+                org.odftoolkit.simple.table.Row header = table.getRowByIndex(0);
 
-            int cellCount = header.getCellCount();
-            for(int i = 0; i < cellCount; i++) {
-                Cell cell = header.getCellByIndex(i);
-                if(cell.getValueType().equals("string")) {
-                    cell.setStringValue(cell.getStringValue().toUpperCase());
+                int cellCount = header.getCellCount();
+                for(int i = 0; i < cellCount; i++) {
+                    Cell cell = header.getCellByIndex(i);
+                    if(cell.getValueType().equals("string")) {
+                        cell.setStringValue(cell.getStringValue().toUpperCase());
+                    }
                 }
-            }
 
-            boolean first = true;
-            for (org.odftoolkit.simple.table.Row currentRow : table.getRowList()) {
-                if (first) {
-                    first = false;
-                } else {
-                    output.add(new ODSRecord(header, currentRow));
+                boolean first = true;
+                for (org.odftoolkit.simple.table.Row currentRow : table.getRowList()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        output.add(new ODSRecord(header, currentRow));
+                    }
                 }
             }
         }
-
         return output;
     }
 
@@ -161,18 +161,20 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
             // Check if we are dealing with CSVW.
             if (csvw == null) {
                 // RDBs fall under this
-                InputStream inputStream = access.getInputStream();
-                CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-                        .withSkipLines(0)
-                        .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
-                        .build();
-                List<String[]> records = reader.readAll();
-                final String[] header = Arrays.stream(records.get(0)).map(String::toUpperCase).toArray(String[]::new);
-                return records.subList(1, records.size()).stream()
-                        // throw away empty records
-                        .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
-                        .map(record -> new CSVRecord(header, record, access.getDataTypes()))
-                        .collect(Collectors.toList());
+                try (BOMInputStream inputStream = new BOMInputStream(access.getInputStream());
+                     CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                             .withSkipLines(0)
+                             .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
+                             .build();
+                ) {
+                    List<String[]> records = reader.readAll();
+                    final String[] header = Arrays.stream(records.get(0)).map(String::toUpperCase).toArray(String[]::new);
+                    return records.subList(1, records.size()).stream()
+                            // throw away empty records
+                            .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
+                            .map(record -> new CSVRecord(header, record, access.getDataTypes()))
+                            .collect(Collectors.toList());
+                }
             } else {
                 return csvw.getRecords(access);
             }

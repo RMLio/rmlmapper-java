@@ -19,7 +19,6 @@ import java.io.StringWriter;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static be.ugent.rml.Utils.getHashOfString;
 
@@ -29,7 +28,6 @@ import static be.ugent.rml.Utils.getHashOfString;
 public class RDBAccess implements Access {
 
     private String dsn;
-    private String connectionParameters;
     private DatabaseType databaseType;
     private String username;
     private String password;
@@ -58,9 +56,8 @@ public class RDBAccess implements Access {
      * @param query        the SQL query to use.
      * @param contentType  the content type of the results.
      */
-    public RDBAccess(String dsn, String connectionParameters, DatabaseType databaseType, String username, String password, String query, String contentType) {
+    public RDBAccess(String dsn, DatabaseType databaseType, String username, String password, String query, String contentType) {
         this.dsn = dsn;
-        this.connectionParameters = connectionParameters;
         this.databaseType = databaseType;
         this.username = username;
         this.password = password;
@@ -107,7 +104,7 @@ public class RDBAccess implements Access {
                     connectionString += "?";
                 }
 
-                connectionString += connectionParameters;
+                connectionString += "serverTimezone=UTC&useSSL=false";
             }
 
             if (databaseType == DatabaseType.SQL_SERVER) {
@@ -118,13 +115,10 @@ public class RDBAccess implements Access {
                 }
             }
             connection = DriverManager.getConnection(connectionString);
-            connection.setAutoCommit(false);
+
             // Execute query
-            statement = connection.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
-                    java.sql.ResultSet.CONCUR_READ_ONLY);
-            statement.setFetchSize(1000);
+            statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
-            int f = rs.getFetchSize();
 
             switch (contentType) {
                 case NAMESPACES.QL + "XPath" :

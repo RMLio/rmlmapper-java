@@ -10,12 +10,14 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
+import org.apache.commons.io.input.BOMInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +32,6 @@ class CSVW {
 
     private com.opencsv.CSVParserBuilder csvParser = new CSVParserBuilder().withIgnoreLeadingWhiteSpace(true);
     private Charset csvCharset = StandardCharsets.UTF_8;
-    private InputStream inputStream;
 
     private QuadStore rmlStore;
     private Term dialect;
@@ -39,9 +40,8 @@ class CSVW {
     private boolean skipHeader = false;
     private String commentPrefix = "#";
 
-    CSVW(InputStream inputStream, QuadStore rmlStore, Term logicalSource) {
+    CSVW(QuadStore rmlStore, Term logicalSource) {
         this.rmlStore = rmlStore;
-        this.inputStream = inputStream;
         this.logicalSource = logicalSource;
         this.nulls = new ArrayList<>();
         setOptions();
@@ -54,26 +54,33 @@ class CSVW {
      * @param access The access containing the records
      * @return The list of records in the Access
      */
-    List<Record> getRecords(Access access) throws IOException, CsvException {
+    List<Record> getRecords(Access access) throws IOException, CsvException, SQLException, ClassNotFoundException {
         int skipLines = this.skipHeader ? 1 : 0;
-        List<String[]> records =  new CSVReaderBuilder(new InputStreamReader(inputStream, csvCharset))
-                .withCSVParser(this.csvParser.build())
-                .withSkipLines(skipLines)
-                .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
-                .build()
-                .readAll();
-        String[] header = Arrays.stream(records.get(0)).map(String::toUpperCase).toArray(String[]::new);
-        Stream<String[]> readRecords = records.subList(1, records.size())
-                .stream()
-                // throw away empty records
-                .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null));
-        if(this.getTrim()){ // trim each record value
-            readRecords = readRecords.map(r -> Arrays.stream(r).map(String::trim).toArray(String[]::new));
+        try (BOMInputStream inputStream = new BOMInputStream(access.getInputStream())) {
+            List<String[]> records = new CSVReaderBuilder(new InputStreamReader(inputStream, csvCharset))
+                    .withCSVParser(this.csvParser.build())
+                    .withSkipLines(skipLines)
+                    .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
+                    .build()
+                    .readAll();
+
+            records = records.stream()
+                    .filter(row -> ! row[0].startsWith(getCommentPrefix()))
+                    .collect(Collectors.toList());
+
+            String[] header = Arrays.stream(records.get(0)).map(String::toUpperCase).toArray(String[]::new);
+            Stream<String[]> readRecords = records.subList(1, records.size())
+                    .stream()
+                    // throw away empty records
+                    .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null));
+            if (this.getTrim()) { // trim each record value
+                readRecords = readRecords.map(r -> Arrays.stream(r).map(String::trim).toArray(String[]::new));
+            }
+            return readRecords
+                    .map(record -> new CSVRecord(header, record, access.getDataTypes()))
+                    .map(this::replaceNulls)
+                    .collect(Collectors.toList());
         }
-        return readRecords
-                .map(record -> new CSVRecord(header, record, access.getDataTypes()))
-                .map(this::replaceNulls)
-                .collect(Collectors.toList());
     }
 
     /**

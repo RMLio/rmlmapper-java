@@ -1,14 +1,14 @@
 package be.ugent.rml.cli;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.AgentFactory;
+import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.Executor;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.Utils;
 import be.ugent.rml.conformer.MappingConformer;
-import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
@@ -18,7 +18,6 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
@@ -34,7 +33,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static be.ugent.rml.StrictMode.*;
+import static be.ugent.rml.StrictMode.BEST_EFFORT;
+import static be.ugent.rml.StrictMode.STRICT;
 
 public class Main {
 
@@ -168,7 +168,9 @@ public class Main {
             Properties configFile = null;
             if (lineArgs.hasOption("c")) {
                 configFile = new Properties();
-                configFile.load(Utils.getReaderFromLocation(lineArgs.getOptionValue("c")));
+                try (Reader reader = Utils.getReaderFromLocation(lineArgs.getOptionValue("c"))) {
+                    configFile.load(reader);
+                }
             }
 
             if (checkOptionPresence(helpOption, lineArgs, configFile)) {
@@ -190,6 +192,13 @@ public class Main {
                 System.exit(1);
             }
 
+            String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
+            // check if the output path can exist, for this we check if the path before the last "/" is valid
+            if (outputFile != null && ! Utils.checkPath(outputFile.substring(0, outputFile.lastIndexOf("/")), null)){
+                logger.error(fatal, "The given output path does not exist.");
+                System.exit(1);
+            }
+
             if (mOptionValue != null) {
                 // Concatenate all mapping files
                 lis = Arrays.stream(mOptionValue)
@@ -200,10 +209,30 @@ public class Main {
             try {
                 BufferedInputStream bis = new BufferedInputStream(System.in);
                 int available = bis.available();
-                if (bis.available() != 0) {
-                    lis.add(bis);
+                if (available > 0) {
+                    // This little hack solves Maven tests: if the console is detached
+                    // the normal System.in could send EOT bytes to indicate that there is no
+                    // input.
+                    // So we check if there are other bytes than the <End of Transmission> (EOT) / End of File (EOF) bytes: 04
+                    byte[] firstBytes = new byte[32];
+                    bis.mark(32);
+                    int bytesRead = bis.read(firstBytes);
+                    bis.reset();
+                    if (bytesRead > 0) {
+                        boolean addStream = false;
+                        for (byte aByte : firstBytes) {
+                            if (aByte != 0 && aByte != 4) {     // 4 is the EOF / EOT byte
+                                addStream = true;
+                                break;
+                            }
+                        }
+                        if (addStream) {
+                            lis.add(bis);
+                        }
+                    }
                 }
             } catch (IOException ex) {
+                logger.warn("Error trying to check System.in: {}", ex.getMessage());
                 // The inputstream is closed when read. Leads to IOExceptions for tests that don't provide their own inputstream
             }
 
@@ -233,8 +262,8 @@ public class Main {
                 List<InputStream> lisPrivateSecurityData = Arrays.stream(mOptionValuePrivateSecurityData)
                         .map(Utils::getInputStreamFromFileOrContentString)
                         .collect(Collectors.toList());
-                InputStream isPrivateSecurityData = new SequenceInputStream(Collections.enumeration(lisPrivateSecurityData));
-                try {
+
+                try (InputStream isPrivateSecurityData = new SequenceInputStream(Collections.enumeration(lisPrivateSecurityData))) {
                     rmlStore.read(isPrivateSecurityData, null, RDFFormat.TURTLE);
                 } catch (RDFParseException e) {
                     logger.debug(e.getMessage());
@@ -301,36 +330,23 @@ public class Main {
             }
 
             String[] fOptionValue = getOptionValues(functionfileOption, lineArgs, configFile);
-            FunctionLoader functionLoader;
+            final Agent functionAgent;
 
             // Read function description files.
             if (fOptionValue == null) {
-                functionLoader = new FunctionLoader();
+                // default initialisation with IDLab functions and GREL functions...
+                functionAgent = AgentFactory.createFromFnO(
+                        "fno/functions_idlab.ttl", "fno/functions_idlab_classes_java_mapping.ttl",
+                        "functions_grel.ttl",
+                        "grel_java_mapping.ttl");
             } else {
-                logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
-                RDF4JStore functionDescriptionTriples = new RDF4JStore();
-                functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
-                Map<String, Class> libraryMap = new HashMap<>();
-                libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-                List<InputStream> lisF = Arrays.stream(fOptionValue)
-                        .map(Utils::getInputStreamFromFileOrContentString)
-                        .collect(Collectors.toList());
-                for (int i = 0; i < lisF.size(); i++) {
-                    functionDescriptionTriples.read(lisF.get(i), null, RDFFormat.TURTLE);
-                }
-                functionLoader = new FunctionLoader(functionDescriptionTriples, libraryMap);
+                logger.debug("Using custom path to functions.ttl file: {}", Arrays.toString(fOptionValue));
+                String[] optionWithIDLabFunctionArgs = new String[fOptionValue.length + 2];
+                optionWithIDLabFunctionArgs[0] = "fno/functions_idlab.ttl" ;
+                optionWithIDLabFunctionArgs[1] = "fno/functions_idlab_classes_java_mapping.ttl" ;
+                System.arraycopy(fOptionValue, 0, optionWithIDLabFunctionArgs, 2, fOptionValue.length);
+                functionAgent = AgentFactory.createFromFnO(optionWithIDLabFunctionArgs);
             }
-
-            if (mOptionValue != null) {
-                /*
-                 * We have to get the InputStreams of the RML documents again,
-                 * because we can only use an InputStream once
-                 */
-                lis = Arrays.stream(mOptionValue)
-                        .map(Utils::getInputStreamFromFileOrContentString)
-                        .collect(Collectors.toList());
-            }
-            is = new SequenceInputStream(Collections.enumeration(lis));
 
             boolean strict = checkOptionPresence(strictModeOption, lineArgs, configFile);
             StrictMode strictMode = strict ? STRICT : BEST_EFFORT;
@@ -342,12 +358,23 @@ public class Main {
                 if (strictMode.equals(STRICT)) {
                     throw new Exception("When running in strict mode, a base IRI argument must be set.");
                 } else {
+                    if (mOptionValue != null) {
+                        /*
+                         * We have to get the InputStreams of the RML documents again,
+                         * because we can only use an InputStream once
+                         */
+                        lis = Arrays.stream(mOptionValue)
+                                .map(Utils::getInputStreamFromFileOrContentString)
+                                .collect(Collectors.toList());
+                    }
                     // Best-effort mode, use the @base directive as a fallback
-                    baseIRI = Utils.getBaseDirectiveTurtle(is);
+                    try (InputStream is2 = new SequenceInputStream(Collections.enumeration(lis))) {
+                        baseIRI = Utils.getBaseDirectiveTurtle(is2);
+                    }
                 }
             }
 
-            executor = new Executor(rmlStore, factory, functionLoader, outputStore, baseIRI, strictMode);
+            executor = new Executor(rmlStore, factory, outputStore, baseIRI, strictMode, functionAgent);
 
             List<Term> triplesMaps = new ArrayList<>();
 
@@ -366,36 +393,44 @@ public class Main {
 
             // Get start timestamp for post mapping metadata
             String startTimestamp = Instant.now().toString();
+            QuadStore result = null;
+            outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
 
             try {
-                HashMap<Term, QuadStore> targets = executor.executeV5(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                HashMap<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                         metadataGenerator);
-                QuadStore result = targets.get(new NamedNode("rmlmapper://default.store"));
 
-                // Get stop timestamp for post mapping metadata
-                String stopTimestamp = Instant.now().toString();
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
 
-                // Generate post mapping metadata and output all metadata
-                if (metadataGenerator != null) {
-                    metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
-                            result);
-
-                    writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
+            HashMap<Term, QuadStore> targets = executor.getTargets();
+            if(targets != null){
+                result = targets.get(new NamedNode("rmlmapper://default.store"));
+                if(result != null) {
+                    result.copyNameSpaces(rmlStore);
                 }
 
-                String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
                 result.copyNameSpaces(rmlStore);
 
                 IDLabFunctions.saveState();
 
                 writeOutputTargets(targets, rmlStore, basePath, outputFile, outputFormat);
-            } catch (Exception e) {
-                logger.error(e.getMessage());
+            }
+            // Get stop timestamp for post mapping metadata
+            String stopTimestamp = Instant.now().toString();
+
+            // Generate post mapping metadata and output all metadata
+            if (metadataGenerator != null && targets != null) {
+                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
+                        result);
+
+                writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
             }
 
         } catch (ParseException exp) {
             // oops, something went wrong
-            logger.error("Parsing failed. Reason: " + exp.getMessage());
+            logger.error("Parsing failed. Reason: {}", exp.getMessage());
             printHelp(options);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -405,7 +440,7 @@ public class Main {
     private static void writeOutputTargets(HashMap<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault) throws Exception {
         boolean hasNoResults = true;
 
-        logger.debug("Writing to Targets: " + targets.keySet());
+        logger.debug("Writing to Targets: {}", targets.keySet());
         TargetFactory targetFactory = new TargetFactory(basePath);
 
         // Go over each term and export to the Target if needed
@@ -415,7 +450,7 @@ public class Main {
 
             if (store.size() > 0) {
                 hasNoResults = false;
-                logger.info("Target: " + term + " has " + store.size() + " results");
+                logger.info("Target: {} has {} results", term, store.size());
             }
 
             // Default target is exported separately for backwards compatibility reasons
@@ -424,11 +459,11 @@ public class Main {
                 writeOutput(store, outputFileDefault, outputFormatDefault);
             }
             else {
-                logger.debug("Exporting to Target: " + term);
+                logger.debug("Exporting to Target: {}", term);
                 if (store.size() > 1) {
-                    logger.info(store.size() + " quads were generated for " + term + " Target");
+                    logger.info("{} quads were generated for {} Target", store.size(), term);
                 } else {
-                    logger.info(store.size() + " quad was generated " + term + " Target");
+                    logger.info("{} quad was generated {} Target", store.size(), term);
                 }
 
                 Target target = targetFactory.getTarget(term, rmlStore, store);
@@ -437,13 +472,11 @@ public class Main {
                 store.addQuads(target.getMetadata());
 
                 // Set character encoding
-                Writer out = new BufferedWriter(new OutputStreamWriter(output, Charset.defaultCharset()));
-
-                // Write store to target
-                store.write(out, serializationFormat);
-
+                try (Writer out = new BufferedWriter(new OutputStreamWriter(output, Charset.defaultCharset()))) {
+                    // Write store to target
+                    store.write(out, serializationFormat);
+                }
                 // Close OS resources
-                out.close();
                 target.close();
             }
         }
@@ -523,19 +556,20 @@ public class Main {
         File targetFile = null;
 
         if (store.size() > 1) {
-            logger.info(store.size() + " quads were generated for default Target");
+            logger.info("{} quads were generated for default Target", store.size());
         } else {
-            logger.info(store.size() + " quad was generated for default Target");
+            logger.info("{} quad was generated for default Target", store.size());
         }
 
+        Writer out = null;
         try {
-            Writer out;
+
             String doneMessage = null;
 
             //if output file provided, write to triples output file
             if (outputFile != null) {
                 targetFile = new File(outputFile);
-                logger.info("Writing quads to " + targetFile.getPath() + "...");
+                logger.info("Writing quads to {}...", targetFile.getPath());
 
                 if (!targetFile.isAbsolute()) {
                     targetFile = new File(System.getProperty("user.dir") + "/" + outputFile);
@@ -556,7 +590,16 @@ public class Main {
                 logger.info(doneMessage);
             }
         } catch (Exception e) {
-            System.err.println("Writing output failed. Reason: " + e.getMessage());
+            logger.error("Writing output failed. Reason: " + e.getMessage());
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    logger.error("Could not close writer. ", e);
+                }
+            }
+
         }
 
         return targetFile;

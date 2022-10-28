@@ -1,0 +1,6 @@
+<http://example.com/base/Alice> <http://www.w3.org/2000/01/rdf-schema#label> "alice".
+<http://example.com/base/Alice> <http://example.com/city> "NEW YORK".
+<http://example.com/base/Alice> <http://example.com/fullAddress> " 12th Avenue 254, New York".
+<http://example.com/base/Bob> <http://www.w3.org/2000/01/rdf-schema#label> "bob".
+<http://example.com/base/Bob> <http://example.com/city> "ATLANTA".
+<http://example.com/base/Bob> <http://example.com/fullAddress> " 15th Avenue 291, Atlanta".

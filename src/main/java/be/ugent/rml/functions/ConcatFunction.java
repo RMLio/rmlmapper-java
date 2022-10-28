@@ -22,10 +22,6 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
         this.encodeURI = encodeURI;
     }
 
-    public ConcatFunction(List<Extractor> extractors) {
-        this(extractors, false);
-    }
-
     @Override
     public List<?> execute(Record record) {
        return concat(record);
@@ -44,8 +40,7 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
         for (int i = 0; allValuesFound && i < extractors.size(); i++) {
             Extractor extractor = extractors.get(i);
 
-            List<String> extractedValues = new ArrayList<>();
-            FunctionUtils.functionObjectToList(extractor.extract(record), extractedValues);
+            List<String> extractedValues = FunctionUtils.functionObjectToList(extractor.extract(record));
 
             if (!extractedValues.isEmpty()) {
                 ArrayList<String> temp = new ArrayList<>();
@@ -78,7 +73,7 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
             }
 
             if (extractedValues.isEmpty()) {
-                logger.warn("Not all values for a template where found. More specific, the variable " + extractor + " did not provide any results.");
+                logger.warn("Not all values for a template where found. More specific, the variable {} did not provide any results.", extractor);
                 allValuesFound = false;
             }
         }

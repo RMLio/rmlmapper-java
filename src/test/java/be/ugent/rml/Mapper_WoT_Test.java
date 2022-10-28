@@ -2,6 +2,8 @@ package be.ugent.rml;
 
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import ch.qos.logback.classic.Level;
+import com.jayway.jsonpath.Configuration;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -9,6 +11,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -174,6 +177,137 @@ public class Mapper_WoT_Test extends TestCore {
                 String authorizationHeader = authorizationHeaders.get(0);
                 // Assert that the bearer value is correct
                 assert authorizationHeader.equals("Bearer s3cr3tb34r3r");
+            }
+        });
+
+        server.setExecutor(null); // creates a default executor
+        server.start();
+        // TODO: create expected output: output.nq
+        doMapping(String.format(testcaseDirPath, "mapping.ttl"), String.format(testcaseDirPath, "out-default.nq"));
+        server.stop(0);
+    }
+
+    @Test
+    public void test_oauth_authentication_without_refresh_mocked() throws IOException {
+        String testcaseDirPath = "./web-of-things/oauth2-security-scheme-mocked/%s";
+        // Mock server
+        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+
+        server.createContext("/api", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange exchange) throws IOException {
+                this.validateRequestHeaders(exchange.getRequestHeaders());
+                String response = "Couldn't load JSON file";
+                try {
+                    String filePath = String.format(testcaseDirPath, "input.json");
+                    response = Utils.fileToString(Utils.getFile(filePath));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                List<String> contentType = new ArrayList<>();
+                contentType.add("application/json");
+
+                // Return response if not redirected
+                exchange.getResponseHeaders().put("Content-Type", contentType);
+                exchange.sendResponseHeaders(200, response.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
+            }
+
+            private void validateRequestHeaders(Headers requestHeaders) {
+                // Assert that request header is not empty
+                assert !requestHeaders.isEmpty();
+                List<String> authorizationHeaders = requestHeaders.get("Authorization");
+                // Assert the Authorization-header is present in the request
+                assert !authorizationHeaders.isEmpty();
+                String authorizationHeader = authorizationHeaders.get(0);
+                // Assert that the bearer value is correct
+                assert authorizationHeader.equals("Bearer s3cr3tb34r3r");
+            }
+        });
+
+        server.setExecutor(null); // creates a default executor
+        server.start();
+        // TODO: create expected output: output.nq
+        doMapping(String.format(testcaseDirPath, "mapping.ttl"), String.format(testcaseDirPath, "out-default.nq"));
+        server.stop(0);
+    }
+
+    @Test
+    public void test_oauth_authentication_with_refresh_mocked() throws IOException {
+        logger.setLevel(Level.DEBUG);
+        String testcaseDirPath = "./web-of-things/oauth2-security-scheme-mocked/%s";
+        // Mock server
+        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+
+        server.createContext("/api", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange exchange) throws IOException {
+                String response = "Couldn't load JSON file";
+                if (this.validateRequestHeaders(exchange.getRequestHeaders())){
+                    try {
+                        String filePath = String.format(testcaseDirPath, "input.json");
+                        response = Utils.fileToString(Utils.getFile(filePath));
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    List<String> contentType = new ArrayList<>();
+                    contentType.add("application/json");
+
+                    // Return response if not redirected
+                    exchange.getResponseHeaders().put("Content-Type", contentType);
+                    exchange.sendResponseHeaders(200, response.length());
+
+                } else {
+                    exchange.sendResponseHeaders(401, response.length());
+                }
+                OutputStream os = exchange.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
+            }
+
+            private boolean validateRequestHeaders(Headers requestHeaders) {
+                // Assert that request header is not empty
+                if (requestHeaders.isEmpty()) return false;
+                List<String> authorizationHeaders = requestHeaders.get("Authorization");
+                // Assert the Authorization-header is present in the request
+                if (authorizationHeaders.isEmpty()) return false;
+                String authorizationHeader = authorizationHeaders.get(0);
+                // Assert that the bearer value is correct
+                return authorizationHeader.equals("Bearer newToken");
+            }
+        });
+
+        server.createContext("/auth", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange exchange) throws IOException {
+                this.validateBody(exchange.getRequestBody());
+                String response = "{\"access_token\": \"newToken\"}";
+                List<String> contentType = new ArrayList<>();
+                contentType.add("application/json");
+
+                // Return response if not redirected
+                exchange.getResponseHeaders().put("Content-Type", contentType);
+                exchange.sendResponseHeaders(200, response.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
+            }
+
+            private void validateBody(InputStream body) {
+                logger.debug("trying to validate refresh request");
+                HashMap<String, String> jsonResponse = (HashMap<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(body, "utf-8");
+                assert jsonResponse.containsKey("refresh");
+                assert jsonResponse.get("refresh").equals("xur2saef4s");
+
+                assert jsonResponse.containsKey("client_id");
+                assert jsonResponse.get("client_id").equals("testID");
+
+                assert jsonResponse.containsKey("client_secret");
+                assert jsonResponse.get("client_secret").equals("testSecret");
+                logger.debug("successfully validated refresh request");
             }
         });
 

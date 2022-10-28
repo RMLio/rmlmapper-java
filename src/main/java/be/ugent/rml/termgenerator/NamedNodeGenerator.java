@@ -17,8 +17,7 @@ public class NamedNodeGenerator extends TermGenerator {
 
     @Override
     public List<Term> generate(Record record) throws Exception {
-        List<String> objectStrings = new ArrayList<>();
-        FunctionUtils.functionObjectToList(functionExecutor.execute(record), objectStrings);
+        List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(record));
         ArrayList<Term> objects = new ArrayList<>();
 
         if (objectStrings.size() > 0) {

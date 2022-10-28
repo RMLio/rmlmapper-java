@@ -107,7 +107,7 @@ public class TargetFactory {
                 default:
                     throw new NotImplementedException("Compression " + comp + " is not implemented!");
             }
-            logger.debug("Compression: " + compression);
+            logger.debug("Compression: {}", compression);
         }
         catch (IndexOutOfBoundsException e) {
             logger.debug("Compression disabled");
@@ -135,7 +135,7 @@ public class TargetFactory {
                             new NamedNode(NAMESPACES.LDES + "baseIRI"), null)).get(0);
                     retention_iri = new NamedNode(iri.getValue() + "#retention");
                     eventstream_iri = new NamedNode(iri.getValue() + "#eventstream");
-                    logger.debug("LDES base IRI: " + iri.getValue());
+                    logger.debug("LDES base IRI: {}", iri.getValue());
                 }
                 catch (IndexOutOfBoundsException e) {
                     throw new IllegalArgumentException("No base IRI specified for LDES!");
@@ -145,7 +145,7 @@ public class TargetFactory {
                 try {
                     Term shape = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
                             new NamedNode(NAMESPACES.TREE + "shape"), null)).get(0);
-                    logger.debug("SHACL shape: " + shape.getValue());
+                    logger.debug("SHACL shape: {}", shape.getValue());
 
                     // TODO: Handle embedded SHACL shapes in RML mapping rules as well.
                     metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.TREE + "shape"), shape));
@@ -211,12 +211,12 @@ public class TargetFactory {
         // Build target
         if (!targets.isEmpty()) {
             Term t = targets.get(0);
-            logger.debug("getTarget() for " + t.toString());
+            logger.debug("getTarget() for {}", t.toString());
 
             // If not a literal, then we are dealing with a more complex description.
             String targetType = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
                     new NamedNode(NAMESPACES.RDF + "type"), null)).get(0).getValue();
-            logger.debug("Target is IRI, target type: " + targetType);
+            logger.debug("Target is IRI, target type: {}", targetType);
 
             switch(targetType) {
                 case NAMESPACES.VOID + "Dataset": { // VoID Dataset
@@ -224,7 +224,7 @@ public class TargetFactory {
                     String location = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
                             new NamedNode(NAMESPACES.VOID + "dataDump"), null)).get(0).getValue();
                     location = location.replace("file://", ""); // Local file starts with file://
-                    logger.debug("VoID datadump location: " + location);
+                    logger.debug("VoID datadump location: {}", location);
                     target = new LocalFileTarget(location, this.basePath, serializationFormat, compression, metadata);
                     break;
                 }
@@ -233,7 +233,7 @@ public class TargetFactory {
                     String location = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
                             new NamedNode(NAMESPACES.DCAT + "dataDump"), null)).get(0).getValue();
                     location = location.replace("file://", ""); // Local file starts with file://
-                    logger.debug("DCAT datadump location: " + location);
+                    logger.debug("DCAT datadump location: {}", location);
                     target = new LocalFileTarget(location, this.basePath, serializationFormat, compression, metadata);
                     break;
                 }
@@ -243,8 +243,8 @@ public class TargetFactory {
                             new NamedNode(NAMESPACES.SD + "endpoint"), null)).get(0).getValue();
                     String supportedLanguage = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
                             new NamedNode(NAMESPACES.SD + "supportedLanguage"), null)).get(0).getValue();
-                    logger.debug("SPARQL Service endpoint: " + endpoint);
-                    logger.debug("SPARQL Service supported language: " + supportedLanguage);
+                    logger.debug("SPARQL Service endpoint: {}", endpoint);
+                    logger.debug("SPARQL Service supported language: {}", supportedLanguage);
 
                     // Check SPARQL UPDATE compatibility
                     if (!supportedLanguage.equals(NAMESPACES.SD + "SPARQL11Update")) {
@@ -259,7 +259,7 @@ public class TargetFactory {
                     throw new NotImplementedException("Not implemented");
                 }
             }
-            logger.debug("Target created: " + target);
+            logger.debug("Target created: {}", target);
             return target;
         }
         else {

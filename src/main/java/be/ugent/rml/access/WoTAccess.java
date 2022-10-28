@@ -1,20 +1,23 @@
 package be.ugent.rml.access;
 
+import com.jayway.jsonpath.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static be.ugent.rml.Utils.getHashOfString;
-import static be.ugent.rml.Utils.getInputStreamFromURL;
+import static be.ugent.rml.Utils.*;
+
 
 public class WoTAccess implements Access {
 
     private static final Logger logger = LoggerFactory.getLogger(WoTAccess.class);
+    private final HashMap<String, HashMap<String, String>> auth;
     private String location;
     private String contentType;
     private HashMap<String, String> headers;
@@ -24,20 +27,38 @@ public class WoTAccess implements Access {
      * @param location the location of the WoT Thing.
      * @param contentType the content type of the WoT Thing.
      */
-    public WoTAccess (String location, String contentType, HashMap<String, String> headers) {
+    public WoTAccess (String location, String contentType, HashMap<String, String> headers, HashMap<String, HashMap<String, String>> auth) {
         this.location = location;
         this.contentType = contentType;
         this.headers = headers;
-        logger.debug("Created WoTAccess:\n\tlocation:" + this.location + "\n\tcontent-type:" + this.contentType);
+        this.auth = auth;
+
+        logger.debug("Created WoTAccess:\n\tlocation: {}\n\tcontent-type: {}", this.location, this.contentType);
         logger.debug(headers.toString());
         headers.forEach((name, value) -> {
-            logger.debug("Header: " + name + ": " + value);
+            logger.debug("Header: {} : {}", name, value);
         });
     }
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return getInputStreamFromURL(new URL(location), contentType, headers);
+        logger.debug("get inputstream");
+        InputStream response ;
+
+        if(auth.get("data").containsKey("refresh")){
+            try{
+                response = getInputStreamFromAuthURL(new URL(location), contentType, headers);
+            } catch (Exception e){
+                logger.debug("Refresh token");
+                refreshToken();
+                logger.debug("try again with new token");
+                logger.debug("new token = {}", this.headers.get(this.auth.get("info").get("name")));
+                return getInputStreamFromURL(new URL(location), contentType, headers);
+            }
+        } else {
+            response = getInputStreamFromURL(new URL(location), contentType, headers);
+        }
+        return response;
     }
 
     /**
@@ -79,5 +100,19 @@ public class WoTAccess implements Access {
      */
     public String getContentType() {
         return contentType;
+    }
+
+    public void refreshToken() throws MalformedURLException {
+
+        StringBuilder data = new StringBuilder();
+        data.append("{\"grant_type\": \"refresh_token\"");
+        for(String name: auth.get("data").keySet()) {
+            data.append(" ,\"").append(name).append("\":\"").append(auth.get("data").get(name)).append("\"");
+        }
+        data.append("}");
+        logger.debug(data.toString());
+        InputStream response = getPostRequestResponse(new URL(auth.get("info").get("authorization")), contentType, data.toString().getBytes());
+        HashMap<String, String> jsonResponse = (HashMap<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(response, "utf-8");
+        this.headers.put(auth.get("info").get("name"), "Bearer " + jsonResponse.get("access_token"));
     }
 }

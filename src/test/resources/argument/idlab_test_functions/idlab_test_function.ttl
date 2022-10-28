@@ -1,0 +1,38 @@
+@prefix fno: <http://semweb.datasciencelab.be/ns/function#> .
+@prefix lib: <http://example.com/library#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+@prefix : <http://example.com/idlab/functions/string/> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+
+########################
+### String functions ###
+########################
+
+idlab-fn:toUpperCase a fno:Function ;
+  fno:name "throw error if Mars" ;
+  rdfs:label "throw error if Mars" ;
+  dcterms:description "If the given input is Mars, throw an exception" ;
+  fno:expects ( idlab-fn:_str ) ;
+  fno:returns ( idlab-fn:_result ) ;
+  lib:providedBy [
+    lib:localLibrary "./src/main/functions/lib/IDLabTestFunctions.java";
+    lib:class "IDLabTestFunctions";
+    lib:method "throwErrorIfMars"
+  ].
+
+idlab-fn:_str
+    a             fno:Parameter ;
+    fno:name      "input string" ;
+    rdfs:label    "input string" ;
+    fno:type      xsd:string ;
+    fno:predicate idlab-fn:str .
+
+idlab-fn:_result
+    a             fno:Parameter ;
+    fno:name      "result string" ;
+    rdfs:label    "result string" ;
+    fno:type      xsd:string ;
+    fno:predicate idlab-fn:result .

@@ -1,7 +1,6 @@
 package be.ugent.rml.termgenerator;
 
 import be.ugent.rml.Utils;
-import be.ugent.rml.extractor.ConstantExtractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
@@ -18,20 +17,16 @@ import static be.ugent.rml.Utils.isValidrrLanguage;
 public class LiteralGenerator extends TermGenerator {
 
     // The executor used to get the language for the literal.
-    private SingleRecordFunctionExecutor languageExecutor;
+    private final SingleRecordFunctionExecutor languageExecutor;
     // The URL of the datatype used for the literal.
-    private Term datatype;
-    private int maxNumberOfTerms;
+    private final Term datatype;
+    private final int maxNumberOfTerms;
 
     private LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, SingleRecordFunctionExecutor languageExecutor, Term datatype, int maxNumberOfTerms) {
         super(functionExecutor);
         this.languageExecutor = languageExecutor;
         this.datatype = datatype;
         this.maxNumberOfTerms = maxNumberOfTerms;
-    }
-
-    public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, String language) {
-        this(functionExecutor, new ConstantExtractor(language));
     }
 
     public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, SingleRecordFunctionExecutor languageExecutor) {
@@ -48,9 +43,8 @@ public class LiteralGenerator extends TermGenerator {
 
     @Override
     public List<Term> generate(Record record) throws Exception {
-        ArrayList<Term> objects = new ArrayList<>();
-        ArrayList<String> objectStrings = new ArrayList<>();
-        FunctionUtils.functionObjectToList(this.functionExecutor.execute(record), objectStrings);
+        List<Term> objects = new ArrayList<>();
+        List<String> objectStrings = FunctionUtils.functionObjectToList(this.functionExecutor.execute(record));
 
         String dataTypeSource = null;
         if (this.functionExecutor instanceof ReferenceExtractor) {
@@ -63,8 +57,7 @@ public class LiteralGenerator extends TermGenerator {
             objectStrings.forEach(objectString -> {
                 if (languageExecutor != null) {
                     try {
-                        ArrayList<String> languages = new ArrayList<>();
-                        FunctionUtils.functionObjectToList(this.languageExecutor.execute(record), languages);
+                        List<String> languages = FunctionUtils.functionObjectToList(this.languageExecutor.execute(record));
 
                         if (!languages.isEmpty()) {
                             String language = languages.get(0);

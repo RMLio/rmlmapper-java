@@ -14,6 +14,7 @@ public class Mapper_CSVW_Test extends TestCore {
     @Parameterized.Parameters(name = "{index}: CSVW_{0}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
+                {"RMLTC0002a_comment_prefix"},
                 {"RMLTC0002a_delimiter"},
                 {"RMLTC0002a_encoding"},
                 {"RMLTC0002a_tabs"},
@@ -23,6 +24,7 @@ public class Mapper_CSVW_Test extends TestCore {
                 {"RMLTC1002a_null_ignore"},
                 {"RMLTC1002a_nulls"},
                 {"RMLTC1025_missing_column_names"},
+                {"RMLTC1035_bom"}
         });
 
     }

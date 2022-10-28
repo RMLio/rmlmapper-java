@@ -67,10 +67,6 @@ public class Utils {
         }
     }
 
-    public static InputStream getInputStreamFromLocation(String location) throws IOException {
-        return getInputStreamFromLocation(location, null, "");
-    }
-
     public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
         return getInputStreamFromLocation(location, basePath, contentType, new HashMap<String, String>());
     }
@@ -133,11 +129,12 @@ public class Utils {
     }
 
     private static InputStream getTurtleInputStreamForFormat(String mOptionValue, RDFFormat format) throws IOException {
-        InputStream out = getInputStreamFromLocation(mOptionValue, null, format.getDefaultMIMEType());
-        Model model = Rio.parse(out, "", format);
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Rio.write(model, output, RDFFormat.TURTLE);
-        return new ByteArrayInputStream(output.toByteArray());
+        try (InputStream out = getInputStreamFromLocation(mOptionValue, null, format.getDefaultMIMEType())) {
+            Model model = Rio.parse(out, "", format);
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            Rio.write(model, output, RDFFormat.TURTLE);
+            return new ByteArrayInputStream(output.toByteArray());
+        }
     }
 
     public static File getFile(String path) throws IOException {
@@ -163,7 +160,7 @@ public class Utils {
             }
         }
 
-        logger.debug("Looking for file " + path + " in basePath " + basePath);
+        logger.debug("Looking for file {} in basePath {}", path, basePath);
 
         // Relative from user dir?
         f = new File(basePath, path);
@@ -171,8 +168,8 @@ public class Utils {
             return f;
         }
 
-        logger.debug("File " + path + " not found in " + basePath);
-        logger.debug("Looking for file " + path + " in " + basePath + "/../");
+        logger.debug("File {} not found in {}", path, basePath);
+        logger.debug("Looking for file {} in {} /../", path, basePath);
 
 
         // Relative from parent of user dir?
@@ -181,8 +178,9 @@ public class Utils {
             return f;
         }
 
-        logger.debug("File " + path + " not found in " + basePath);
-        logger.debug("Looking for file " + path + " in the resources directory");
+        logger.debug("File {} not found in {}", path, basePath);
+
+        logger.debug("Looking for file {} in the resources directory", path);
 
         // Resource path?
         try {
@@ -191,7 +189,7 @@ public class Utils {
             // Too bad
         }
 
-        logger.debug("File " + path + " not found in the resources directory");
+        logger.debug("File {} not found in the resources directory", path);
 
         throw new FileNotFoundException(path);
     }
@@ -243,11 +241,43 @@ public class Utils {
             }
             // Apply all headers
             headers.forEach((name, value) -> {
-                logger.debug(name + ": " + value);
+                logger.debug("{}: {}", name, value);
                 connection.setRequestProperty(name, value);
             });
+            logger.debug("trying to connect");
             connection.connect();
+            logger.debug("getting inputstream");
             inputStream = connection.getInputStream();
+            logger.debug("got inputstream");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return inputStream;
+    }
+
+    public static InputStream getInputStreamFromAuthURL(URL url, String contentType, HashMap<String, String> headers) throws Exception {
+        InputStream inputStream = null;
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", contentType);
+            // Set encoding if not set before
+            if(!headers.containsKey("charset")) {
+                headers.put("charset", "utf-8");
+            }
+            // Apply all headers
+            headers.forEach((name, value) -> {
+                logger.debug("{}: {}", name, value);
+                connection.setRequestProperty(name, value);
+            });
+            logger.debug("trying to connect");
+            connection.connect();
+            if(connection.getResponseCode() == 401) throw new Exception("not authenticated");
+            logger.debug("getting inputstream");
+            inputStream = connection.getInputStream();
+            logger.debug("got inputstream");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -256,6 +286,27 @@ public class Utils {
 
     public static InputStream getInputStreamFromFile(File file) throws FileNotFoundException {
         return new FileInputStream(file);
+    }
+
+    public static InputStream getPostRequestResponse(URL url, String contentType, byte[] auth ){
+        InputStream inputStream = null;
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("charset", "utf-8");
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Accept", contentType);
+            connection.connect();
+            OutputStream outputStream = connection.getOutputStream();
+            outputStream.write(auth);
+            inputStream = connection.getInputStream();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return inputStream;
     }
 
     public static boolean isRemoteFile(String location) {
@@ -549,6 +600,74 @@ public class Utils {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static boolean checkPath(String path, String base){
+
+        File f;
+        File basePath;
+        if (base == null) {
+            f = new File(path);
+            if (f.isAbsolute()) {
+                return f.exists();
+            }
+            base = System.getProperty("user.dir");
+        }
+        try {
+            basePath = new File(base);
+        } catch (Exception e) {
+            return false;
+        }
+
+        logger.info("Looking for file {} in basePath {}", path, basePath);
+
+        // Relative from user dir?
+        f = new File(basePath, path);
+        if (f.exists()) {
+            return true;
+        }
+
+
+        logger.info("File {} not found in {}", path, basePath);
+        logger.info("Looking for file {} in {}/../", path, basePath);
+
+
+        // Relative from parent of user dir?
+        f = new File(basePath, "../" + path);
+        if (f.exists()) {
+            return true;
+        }
+
+        logger.info("File {} not found in {}", path, basePath);
+        logger.info("Looking for file {} in the resources directory", path);
+
+        // Resource path?
+        try {
+            logger.info("searching path: {} in resources", path );
+
+            File resourceFile = MyFileUtils.getResourceAsFile(path);
+            if (resourceFile.exists()){
+                logger.info("file found in resources");
+                return true;
+            } else {
+                logger.info("file not found in resources");
+            }
+        } catch (IOException e) {
+            // Too bad
+        }
+        try {
+            logger.info("searching base: {} path: {} in resources", base, path);
+            File resourceFile =  MyFileUtils.getResourceAsFile(base + "/" + path);
+            if (resourceFile.exists()){
+                logger.info("base + file found in resources");
+                return true;
+            } else {
+                logger.info("base + file not found in resources");
+            }
+        } catch (IOException e) {
+            // Too bad
+        }
+        return false;
     }
 
     public static String getBaseDirectiveTurtle(File file) {

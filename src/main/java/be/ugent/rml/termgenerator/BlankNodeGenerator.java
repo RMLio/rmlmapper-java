@@ -25,8 +25,7 @@ public class BlankNodeGenerator extends TermGenerator {
         ArrayList<Term> nodes = new ArrayList<>();
 
         if (this.functionExecutor != null) {
-            List<String> objectStrings = new ArrayList<>();
-            FunctionUtils.functionObjectToList(functionExecutor.execute(record), objectStrings);
+            List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(record));
 
             objectStrings.forEach(object -> {
                 nodes.add(new BlankNode(object));

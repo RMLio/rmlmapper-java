@@ -1,15 +1,17 @@
 package be.ugent.rml;
 
-import be.ugent.rml.functions.lib.IDLabFunctions;
+import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class MockedURLTests {
 

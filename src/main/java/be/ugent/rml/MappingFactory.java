@@ -1,5 +1,6 @@
 package be.ugent.rml;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.rml.extractor.ConstantExtractor;
 import be.ugent.rml.extractor.HashExtractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
@@ -25,7 +26,7 @@ import java.util.function.BiConsumer;
 import static be.ugent.rml.Utils.isValidrrLanguage;
 
 public class MappingFactory {
-    private final FunctionLoader functionLoader;
+    private final Agent functionAgent;
     private MappingInfo subjectMappingInfo;
     private List<MappingInfo> graphMappingInfos;
     private Term triplesMap;
@@ -36,8 +37,8 @@ public class MappingFactory {
     private boolean ignoreDoubleQuotes;
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public MappingFactory(FunctionLoader functionLoader) {
-        this.functionLoader = functionLoader;
+    public MappingFactory(Agent functionAgent) {
+        this.functionAgent = functionAgent;
     }
 
     public Mapping createMapping(Term triplesMap, QuadStore store) throws Exception {
@@ -243,7 +244,7 @@ public class MappingFactory {
                 objectMapCallback.accept(new MappingInfo(objectmap, oGen, oTargets), "child");
             } else if (!parentTriplesMaps.isEmpty()) {
                 if (parentTriplesMaps.size() > 1) {
-                    logger.warn(triplesMap + " has " + parentTriplesMaps.size() + " Parent Triples Maps. You can only have one. A random one is taken.");
+                    logger.warn("{} has {} Parent Triples Maps. You can only have one. A random one is taken.", triplesMap, parentTriplesMaps.size());
                 }
 
                 Term parentTriplesMap = parentTriplesMaps.get(0);
@@ -262,7 +263,6 @@ public class MappingFactory {
                     } else if (childs.isEmpty()) {
                         throw new Error("One of the join conditions of " + triplesMap + " is missing rr:child.");
                     } else {
-                        FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
                         Map<String, Object[]> parameters = new HashMap<>();
 
                         boolean ignoreDoubleQuotesInParent = this.areDoubleQuotesIgnored(store, parentTriplesMap);
@@ -274,7 +274,7 @@ public class MappingFactory {
                         Object[] detailsChild = {"child", child};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
-                        joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(equal, parameters));
+                        joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "http://example.com/idlab/function/equal"));
                     }
                 }
 
@@ -451,7 +451,7 @@ public class MappingFactory {
             params.add(new ParameterValuePair(pGenerators, oGenerators));
         }
 
-        return new DynamicSingleRecordFunctionExecutor(params, functionLoader);
+        return new DynamicSingleRecordFunctionExecutor(params, functionAgent);
     }
 
     private MultipleRecordsFunctionExecutor parseJoinConditionFunctionTermMap(Term functionValue) throws IOException {
@@ -474,7 +474,7 @@ public class MappingFactory {
             params.add(new ParameterValueOriginPair(pGenerators, objectGeneratorOriginPairs));
         }
 
-        return new DynamicMultipleRecordsFunctionExecutor(params, functionLoader);
+        return new DynamicMultipleRecordsFunctionExecutor(params, functionAgent);
     }
 
     /**
@@ -483,7 +483,6 @@ public class MappingFactory {
      * @throws IOException
      */
     private MultipleRecordsFunctionExecutor generateSameLogicalSourceJoinConditionFunctionTermMap() throws IOException {
-        FunctionModel equal = functionLoader.getFunction(new NamedNode("http://example.com/idlab/function/equal"));
         Map<String, Object[]> parameters = new HashMap<>();
 
         SingleRecordFunctionExecutor parent = new HashExtractor();
@@ -494,7 +493,7 @@ public class MappingFactory {
         Object[] detailsChild = {"child", child};
         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
-        return new StaticMultipleRecordsFunctionExecutor(equal, parameters);
+        return new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "http://example.com/idlab/function/equal");
     }
 
     private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {

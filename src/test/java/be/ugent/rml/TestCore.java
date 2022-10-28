@@ -1,8 +1,9 @@
 package be.ugent.rml;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.cli.Main;
 import be.ugent.rml.conformer.MappingConformer;
-import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
@@ -26,10 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static be.ugent.rml.StrictMode.*;
-
+import static be.ugent.rml.StrictMode.BEST_EFFORT;
 import static org.junit.Assert.*;
 
+@net.jcip.annotations.NotThreadSafe
 public abstract class TestCore {
 
     final String DEFAULT_BASE_IRI = "http://example.com/base/";
@@ -91,7 +92,7 @@ public abstract class TestCore {
            method to avoid different behavior between test code and the CLI interface! */
         convertToRml(rmlStore);
 
-        return new Executor(rmlStore, new RecordsFactory(parentPath),
+        return createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(parentPath),
                 DEFAULT_BASE_IRI, strictMode);
     }
 
@@ -118,7 +119,7 @@ public abstract class TestCore {
         rmlStore.read(new FileInputStream(privateSecurityDataFile), null, RDFFormat.TURTLE);
         String parentPath = mappingFile.getParent();
 
-        return new Executor(rmlStore,
+        return createExecutorWithIDLabFunctions(rmlStore,
                 new RecordsFactory(parentPath), DEFAULT_BASE_IRI, BEST_EFFORT);
     }
 
@@ -129,14 +130,13 @@ public abstract class TestCore {
     /**
      *  Note: the created Executor will run in best effort mode
      */
-    Executor createExecutor(String mapPath, FunctionLoader functionLoader) throws Exception {
+    Executor createExecutor(String mapPath, final Agent functionAgent) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
         File mappingFile = new File(classLoader.getResource(mapPath).getFile());
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
-        return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()),
-                functionLoader, DEFAULT_BASE_IRI, BEST_EFFORT);
+        return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, BEST_EFFORT, functionAgent);
     }
 
     /**
@@ -249,7 +249,7 @@ public abstract class TestCore {
      * @param outPath The path of the file with the expected output.
      */
     void doMapping(Executor executor, String outPath) throws Exception {
-        QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+        QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         result.removeDuplicates();
         compareStores(filePathToStore(outPath), result);
     }
@@ -262,14 +262,14 @@ public abstract class TestCore {
     void doMapping(Executor executor, HashMap<Term, String> outPaths) throws Exception {
         logger.debug("Comparing target outputs");
         TargetFactory targetFactory = new TargetFactory("http://example.org/rules/");
-        HashMap<Term, QuadStore> results = executor.executeV5(null);
+        HashMap<Term, QuadStore> results = executor.execute(null);
 
         for (Map.Entry<Term, String> entry: outPaths.entrySet()) {
             Term target = entry.getKey();
             String outPath = entry.getValue();
-            logger.debug("Target:" + target.getValue());
-            logger.debug("\tOutput path:" + outPath);
-            logger.debug("\tSize:" + results.get(target).size());
+            logger.debug("Target: {}", target.getValue());
+            logger.debug("\tOutput path: {}", outPath);
+            logger.debug("\tSize: {}", results.get(target).size());
             results.get(target).removeDuplicates();
 
             // Targets may have additional metadata that needs to be included such as LDES encapsulation
@@ -320,8 +320,8 @@ public abstract class TestCore {
 
         // Pass the test if an error occurs during mapping execution.
         try {
-            Executor executor = new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
-            executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+            Executor executor = createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
+            executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         } catch (Exception e) {
             // I expected you!
             logger.warn(e.getMessage(), e);
@@ -402,5 +402,14 @@ public abstract class TestCore {
         }
 
         return store;
+    }
+
+    private Executor createExecutorWithIDLabFunctions(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
+        Agent functionAgent = AgentFactory.createFromFnO(
+                "fno/functions_idlab.ttl",
+                "fno/functions_idlab_classes_java_mapping.ttl",
+                "grel_java_mapping.ttl",
+                "functions_grel.ttl");
+        return new Executor(rmlStore, recordsFactory, null, baseIRI, strictMode, functionAgent);
     }
 }

@@ -1,32 +1,29 @@
 package be.ugent.rml;
 
+import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.rml.extractor.Extractor;
-import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.functions.StaticMultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.RDF4JStore;
-import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.ProvenancedQuad;
 import be.ugent.rml.term.ProvenancedTerm;
 import be.ugent.rml.term.Term;
-import com.github.jsonldjava.utils.Obj;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.AbstractMultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.rdf4j.query.algebra.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -58,33 +55,28 @@ public class Executor {
         public static final String CHILD_PARAMETER = "child";
     }
 
-    
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode) throws Exception {
-        this(rmlStore, recordsFactory, null, null, baseIRI, strictMode);
-    }
-
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, String baseIRI, StrictMode strictMode) throws Exception {
-        this(rmlStore, recordsFactory, functionLoader, null, baseIRI, strictMode);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
+        this(rmlStore, recordsFactory, null, baseIRI, strictMode, functionAgent);
     }
 
     /**
      * Defaults to best effort operation. For strict mode,
-     * use {@link Executor#Executor(QuadStore, RecordsFactory, FunctionLoader, QuadStore, String, StrictMode)}
+     * use {@link Executor#Executor(QuadStore, RecordsFactory, QuadStore, String, StrictMode, Agent)}
      */
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI) throws Exception {
-        this(rmlStore, recordsFactory, functionLoader, resultingQuads, baseIRI, StrictMode.BEST_EFFORT);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, final Agent functionAgent) throws Exception {
+        this(rmlStore, recordsFactory, resultingQuads, baseIRI, StrictMode.BEST_EFFORT, functionAgent);
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, FunctionLoader functionLoader, QuadStore resultingQuads, String baseIRI, StrictMode strictMode) throws Exception {
-        this.initializer = new Initializer(rmlStore, functionLoader);
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
+        this.initializer = new Initializer(rmlStore, functionAgent);
         this.mappings = this.initializer.getMappings();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
         this.baseIRI = baseIRI;
         this.strictMode = strictMode;
-        this.recordsHolders = new HashMap<Term, List<Record>>();
-        this.subjectCache = new HashMap<Term, HashMap<Integer, ProvenancedTerm>>();
-        this.targetStores = new HashMap<Term, QuadStore>();
+        this.recordsHolders = new HashMap<>();
+        this.subjectCache = new HashMap<>();
+        this.targetStores = new HashMap<>();
         Executor.blankNodeCounter = 0;
 
         // Default store if no Targets are available for a triple
@@ -120,42 +112,20 @@ public class Executor {
 
             // Create stores
             for (Term t: targets) {
-                logger.debug("Adding target for " + t);
+                logger.debug("Adding target for {}", t);
                 this.targetStores.put(t, new RDF4JStore());
             }
         }
     }
 
-    public Executor(RDF4JStore rmlStore, RecordsFactory factory, FunctionLoader functionLoader, QuadStore outputStore) throws Exception {
-        this(rmlStore, factory, functionLoader, outputStore, rmlStore.getBase());
-    }
-
-    /*
-     * Backwards compatibility for the V4.X.X releases.
-     * This API will be deprecated in the first V5.X.X release in which this API will change to the new one.
-     */
-    @Deprecated
-    public QuadStore execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
-        HashMap<Term, QuadStore> result = this.executeV5(triplesMaps, removeDuplicates, metadataGenerator);
-        return result.get(new NamedNode("rmlmapper://legacy.store"));
-    }
-
-    @Deprecated
-    public QuadStore executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
-        HashMap<Term, QuadStore> result = this.executeWithFunctionV5(triplesMaps, removeDuplicates, pogFunction);
-        return result.get(new NamedNode("rmlmapper://legacy.store"));
-    }
-
-    @Deprecated
-    public QuadStore execute(List<Term> triplesMaps) throws Exception {
-        HashMap<Term, QuadStore> result = this.executeV5(triplesMaps, false, null);
-        return result.get(new NamedNode("rmlmapper://legacy.store"));
+    public Executor(RDF4JStore rmlStore, RecordsFactory factory, QuadStore outputStore, final Agent functionAgent) throws Exception {
+        this(rmlStore, factory, outputStore, rmlStore.getBase(), functionAgent);
     }
 
     /*
      * New public API for the V5.X.X. releases
      */
-    public HashMap<Term, QuadStore> executeV5(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
+    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
 
         BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
 
@@ -170,10 +140,10 @@ public class Executor {
             };
         }
 
-        return executeWithFunctionV5(triplesMaps, removeDuplicates, pogFunction);
+        return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
     }
 
-    public HashMap<Term, QuadStore> executeWithFunctionV5(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
+    public HashMap<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
@@ -199,11 +169,11 @@ public class Executor {
                         if (strictMode.equals(StrictMode.STRICT)) {
                             throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
                         } else {
-                            logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
+                            logger.error("The subject \"{}\" is not a valid IRI. Skipped.", iri);
                             subject = null;
                         }
 
-                    // Is the IRI relative?
+                        // Is the IRI relative?
                     } else if (Utils.isRelativeIRI(iri)) {
 
                         // Check the base IRI to see if we can use it to turn the IRI into an absolute one.
@@ -221,7 +191,7 @@ public class Executor {
                                 if (strictMode.equals(StrictMode.STRICT)) {
                                     throw new Exception("The subject \"" + iri + "\" is not a valid IRI.");
                                 } else {
-                                    logger.error("The subject \"" + iri + "\" is not a valid IRI. Skipped.");
+                                    logger.error("The subject \"{}\" is not a valid IRI. Skipped.", iri);
                                 }
                             }
                         }
@@ -267,8 +237,8 @@ public class Executor {
         return this.targetStores;
     }
 
-    public HashMap<Term, QuadStore> executeV5(List<Term> triplesMaps) throws Exception {
-        return this.executeV5(triplesMaps, false, null);
+    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps) throws Exception {
+        return this.execute(triplesMaps, false, null);
     }
 
 
@@ -314,11 +284,10 @@ public class Executor {
                 //check if need to apply a join condition
                 if (!pogMapping.getJoinConditions().isEmpty()) {
                     Map<String, Object[]> parameters = ((StaticMultipleRecordsFunctionExecutor) pogMapping.getJoinConditions().iterator().next()).getParameters();
-                    if(isSimpleJoin(pogMapping, parameters)) {
+                    if (isSimpleJoin(pogMapping, parameters)) {
                         objects = this.getIRIsWithSimpleJoin(record, pogMapping.getParentTriplesMap(), parameters);
                     } else {
                         objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
-                        //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
                     }
                 } else {
                     objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
@@ -380,12 +349,8 @@ public class Executor {
             return false;
         }
         StaticMultipleRecordsFunctionExecutor staticMultipleRecordsFunctionExecutor = (StaticMultipleRecordsFunctionExecutor) join;
-        Term uri = staticMultipleRecordsFunctionExecutor.getFunctionModel().getURI();
-        if(!(uri instanceof NamedNode)) {
-            return false;
-        }
-        NamedNode newURI = (NamedNode) uri;
-        if(!Executor.Vocabulary.EQUAL_URI.equals(newURI.getValue()) || parameters.size() != 2) {
+        String uri = staticMultipleRecordsFunctionExecutor.getFunctionId();
+        if(!Executor.Vocabulary.EQUAL_URI.equals(uri) || parameters.size() != 2) {
             return false;
         }
         Supplier<Stream<Object[]>> streamSupplier = () -> parameters.values().stream();
@@ -462,6 +427,7 @@ public class Executor {
             recordsMap.put("parent", parent);
 
             Object expectedBoolean = condition.execute(recordsMap);
+
             if (Boolean.TRUE.equals(expectedBoolean)) {
                 ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
                 iris.add(subject);
@@ -514,10 +480,6 @@ public class Executor {
         return this.recordsHolders.get(triplesMap);
     }
 
-    public FunctionLoader getFunctionLoader() {
-        return this.initializer.getFunctionLoader();
-    }
-
     private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, Collection<ProvenancedTerm> objects, Collection<ProvenancedTerm> graphs) {
         ArrayList<PredicateObjectGraph> results = new ArrayList<>();
 
@@ -549,5 +511,12 @@ public class Executor {
 
     public QuadStore getRMLStore() {
         return this.rmlStore;
+    }
+
+    public HashMap<Term, QuadStore> getTargets(){
+        if (this.targetStores.isEmpty()){
+            return null;
+        }
+        return this.targetStores;
     }
 }
