@@ -173,7 +173,7 @@ public class Executor {
                             subject = null;
                         }
 
-                        // Is the IRI relative?
+                    // Is the IRI relative?
                     } else if (Utils.isRelativeIRI(iri)) {
 
                         // Check the base IRI to see if we can use it to turn the IRI into an absolute one.

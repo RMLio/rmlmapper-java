@@ -56,26 +56,6 @@ public class CSVRecord extends Record {
      */
     @Override
     public List<Object> get(String value) {
-//        String toDatabaseCase;
-//        if (this.data.containsKey(value.toUpperCase())) {
-//            toDatabaseCase = value.toUpperCase();
-//        } else if (this.data.containsKey(value.toLowerCase())) {
-//            toDatabaseCase = value.toLowerCase();
-//        } else {
-//            toDatabaseCase = value;
-//        }
-//        if(!this.data.containsKey(toDatabaseCase)){
-//            throw new IllegalArgumentException(String.format("Mapping for %s not found, expected one of %s", toDatabaseCase, data.keySet()));
-//        }
-//
-//        List<Object> result = new ArrayList<>();
-//        Object obj = this.data.get(toDatabaseCase);
-//
-//        // needed for finding NULL in CSV serialization
-//        if (obj != null) {
-//            result.add(obj);
-//        }
-
         Object obj = this.data.get(value);
         if(obj == null) {
             throw new IllegalArgumentException(String.format("Mapping for %s not found, expected one of %s", value, data.keySet()));
