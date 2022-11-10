@@ -55,7 +55,7 @@ default:
 
 General:
   stage: unittests
-  image: maven:3.5.0-jdk-8
+  image: maven:3.8-openjdk-18
   services:
     - name: docker:19.03.12-dind
       # explicitly disable tls to avoid docker startup interruption
