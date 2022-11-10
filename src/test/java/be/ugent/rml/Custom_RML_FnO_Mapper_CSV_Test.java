@@ -5,7 +5,8 @@ import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     @Test

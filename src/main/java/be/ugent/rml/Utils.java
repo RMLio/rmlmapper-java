@@ -8,8 +8,6 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import com.google.common.escape.Escaper;
-import com.google.common.net.UrlEscapers;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.common.net.ParsedIRI;
@@ -377,29 +375,9 @@ public class Utils {
     }
 
     public static String encodeURI(String url) {
-        Escaper escaper = UrlEscapers.urlFragmentEscaper();
-        String result = escaper.escape(url);
-
-        result = result.replaceAll("!", "%21");
-        result = result.replaceAll("#", "%23");
-        result = result.replaceAll("\\$", "%24");
-        result = result.replaceAll("&", "%26");
-        result = result.replaceAll("'", "%27");
-        result = result.replaceAll("\\(", "%28");
-        result = result.replaceAll("\\)", "%29");
-        result = result.replaceAll("\\*", "%2A");
-        result = result.replaceAll("\\+", "%2B");
-        result = result.replaceAll(",", "%2C");
-        result = result.replaceAll("/", "%2F");
-        result = result.replaceAll(":", "%3A");
-        result = result.replaceAll(";", "%3B");
-        result = result.replaceAll("=", "%3D");
-        result = result.replaceAll("\\?", "%3F");
-        result = result.replaceAll("@", "%40");
-        result = result.replaceAll("\\[", "%5B");
-        result = result.replaceAll("]", "%5D");
-
-        return result;
+        return URLEncoder.encode(url, StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20")
+                .replaceAll("\\*", "%2A");
     }
 
     public static String fileToString(File file) throws IOException {

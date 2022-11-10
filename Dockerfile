@@ -1,4 +1,4 @@
-FROM openjdk:8-alpine
+FROM openjdk:17-alpine
 
 RUN apk add --no-cache git maven
 ADD . /rmlmapper-java

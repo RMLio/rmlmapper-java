@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ### Changed
+- Require Java 10+
+
+### Fixed
+- Dropped dependency on Guava
+
+### Changed
 - Database tests are executed with a fresh instance of the required database in a Docker container
 - Database tests are now executed with JUnit5
 - Update of function libraries IDLab functions, GREL functions, Function Agent
