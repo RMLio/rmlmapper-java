@@ -188,13 +188,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.vorburger.mariaDB4j</groupId>
-            <artifactId>mariaDB4j</artifactId>
-            <version>2.5.3</version>
-            <scope>test</scope>
+            <version>8.0.31</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
