@@ -115,13 +115,7 @@ public class Utils {
             }
         } catch (IOException e) {
             logger.info("Trying to read mapping as raw input string.");
-            try {
-                // raw mapping input string
-                out = IOUtils.toInputStream(mOptionValue, "UTF-8");
-            } catch (IOException e2) {
-                logger.error("Cannot read mapping option {}", mOptionValue);
-                out = new ByteArrayInputStream(new byte[0]);
-            }
+            out = IOUtils.toInputStream(mOptionValue, StandardCharsets.UTF_8);
         }
         return out;
     }

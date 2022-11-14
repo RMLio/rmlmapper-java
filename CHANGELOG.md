@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Dropped dependency on Guava
+- Dropped explicit dependency on Jetty
+- `RDF4JStore` had wrong regex to check for Literals when they have a language tag or data type.
+- Updated RDF4J to 4.2.1
 
 ### Changed
 - Database tests are executed with a fresh instance of the required database in a Docker container
