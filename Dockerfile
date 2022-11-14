@@ -1,4 +1,4 @@
-FROM openjdk:11-slim
+FROM openjdk:11-jdk
 
 RUN apk add --no-cache git maven
 ADD . /rmlmapper-java
