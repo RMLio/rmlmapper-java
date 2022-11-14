@@ -313,7 +313,18 @@
                     <groupId>org.apache.jena</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- This dependency is added to be used by simple-odf instead of its dependency to an older xerces library -->
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.2</version>
         </dependency>
         <!-- END spreadsheet dependencies-->
 
