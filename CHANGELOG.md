@@ -11,8 +11,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Database tests are executed with a fresh instance of the required database in a Docker container
 - Database tests are now executed with JUnit5
 - Update of function libraries IDLab functions, GREL functions, Function Agent
+- Update jena and hdt dependencies
+- Removed need for (deprecated) SecurityManager
 
 ### Fixed
+- Main: Output paths can again be fully relative
 - Dropped dependency on com.spotify.docker-client ([issue 231](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/231))
 - Running multiple pipelines should no longer interfere with each other ([issue 245](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/245))
 - `NamedNodeGenerator` now checks if the given IRI is valid ([issue 249](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/249))
@@ -20,10 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - pom.xml: Added Testcontainers library dependencies for databases we test on
 - pom.xml: Added JUnit5 dependencies
-- Check for changelog changes in a separate lint stage during CI.
-- 
-### Fixed
-- Main: Output paths can again be fully relative
+- Check for changelog changes in a separate lint stage during CI. 
 
 ## [6.0.0] - 2022-07-04
 

@@ -3,8 +3,9 @@ package be.ugent.rml;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.sun.net.httpserver.HttpServer;
-import org.apache.jena.fuseki.embedded.FusekiServer;
-import org.apache.jena.sparql.core.DatasetGraphFactory;
+
+import org.apache.jena.fuseki.main.FusekiServer;
+import org.apache.jena.query.DatasetFactory;
 import org.junit.*;
 import static org.junit.Assert.assertTrue;
 
@@ -223,8 +224,8 @@ public class Mapper_Target extends TestCore {
     public void intialize() throws IOException {
         // Create Fuseki SPARQL endpoint /ds1
         builder = FusekiServer.create();
-        builder.setPort(PORTNUMBER_SPARQL);
-        builder.add("/ds1", DatasetGraphFactory.createTxnMem(), true);
+        builder.port(PORTNUMBER_SPARQL);
+        builder.add("/ds1", DatasetFactory.createTxnMem(), true);
         this.server = builder.build();
         this.server.start();
     }

@@ -1,7 +1,6 @@
 package be.ugent.rml.access;
 
 import be.ugent.rml.Utils;
-import org.apache.jena.base.Sys;
 
 import java.io.*;
 import java.net.HttpURLConnection;

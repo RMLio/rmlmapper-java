@@ -11,14 +11,14 @@ import static org.junit.Assert.assertEquals;
 public class Optimizations_Test extends TestCore {
 
     @Test
-    public void xmlFileOnlyReadOnce() throws IOException {
+    public void xmlFileOnlyReadOnce() throws Exception {
         String cwd = Utils.getFile( "test-cases/RMLTC1011-XML").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
 
         ByteArrayOutputStream stderr = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stderr)) {
             System.setErr(ps);
-            Main.main(("-v -m " + mappingFilePath).split(" "), cwd);
+            Main.run(("-v -m " + mappingFilePath).split(" "), cwd);
         } finally {
             System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
         }

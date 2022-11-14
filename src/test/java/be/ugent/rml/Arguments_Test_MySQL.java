@@ -26,7 +26,7 @@ public class Arguments_Test_MySQL extends MySQLTestCore {
 
         prepareDatabase(resourcePath, "root", "");
 
-        Main.main(("-m " + mappingFilePath + " -o " + actualPath + " --r2rml-jdbcDSN " + dbURL + " --r2rml-username root -v").split(" "), cwd);
+        Main.run(("-m " + mappingFilePath + " -o " + actualPath + " --r2rml-jdbcDSN " + dbURL + " --r2rml-username root -v").split(" "), cwd);
         compareFiles(
                 expectedPath,
                 actualPath,

@@ -5,9 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +14,10 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public class Mapper_MappingFile_URL_Test extends TestCore {
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
-
 
     private void mappingHandlerTest(RDFFormat format) throws Exception {
         HttpServer server = null;
@@ -33,7 +29,7 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
             server.createContext("/inputFile", new ValidInputFileHandler());
             server.setExecutor(null); // creates a default executor
             server.start();
-            Main.main(String.format("-m http://localhost:8080/mappingFile.%s -o ./generated_output.nq", format.getDefaultFileExtension()).split(" "));
+            Main.run(String.format("-m http://localhost:8080/mappingFile.%s -o ./generated_output.nq", format.getDefaultFileExtension()).split(" "));
             compareFiles(
                     "./generated_output.nq",
                     "MAPPINGFILE_URL_TEST_valid/target_output.nq",
@@ -86,8 +82,9 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
             server.createContext("/inputFile", new ValidInputFileHandler());
             server.setExecutor(null); // creates a default executor
             server.start();
-            exit.expectSystemExitWithStatus(1); // Handle System.exit(1)
-            Main.main("-m http://localhost:8081/mappingFile -o MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq".split(" "));
+            assertThrows(IllegalArgumentException.class, () -> {
+                Main.run("-m http://localhost:8081/mappingFile -o MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq".split(" "));
+            });
             //Utils.getFile("MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq");
         } catch (Throwable e) {
             logger.debug("Test throwed an exception.", e);

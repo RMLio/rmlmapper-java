@@ -1,6 +1,6 @@
 package be.ugent.rml;
 
-import org.apache.jena.fuseki.embedded.FusekiServer;
+import org.apache.jena.fuseki.main.FusekiServer;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -99,7 +99,7 @@ public class Mapper_SPARQL_Test extends TestCore {
     @Before
     public void intialize() {
         builder = FusekiServer.create();
-        builder.setPort(PORTNUMBER_SPARQL);
+        builder.port(PORTNUMBER_SPARQL);
     }
 
     @BeforeClass
@@ -122,7 +122,7 @@ public class Mapper_SPARQL_Test extends TestCore {
         String outputPath = "test-cases/" + testCaseName + "-SPARQL/output.nq";
         String tempMappingPath = replacePortInMappingFile(mappingPath, "" + PORTNUMBER_SPARQL);
 
-        builder.add("/ds"+(1), RDFDataMgr.loadDataset(resourcePath), true);
+        builder.add("/ds"+(1), RDFDataMgr.loadDataset(resourcePath));
         this.server = builder.build();
         this.server.start();
 
