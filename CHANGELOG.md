@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Replaced dependency on System Rules with one on its successor System Lamda
 - `RDF4JStore` had wrong regex to check for Literals when they have a language tag or data type.
 - Updated RDF4J to 4.2.1
+- Updated Jena to 4.6.1
 
 ### Changed
 - Database tests are executed with a fresh instance of the required database in a Docker container
