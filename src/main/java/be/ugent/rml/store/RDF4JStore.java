@@ -300,9 +300,9 @@ public class RDF4JStore extends QuadStore {
             boolean hasLanguage = str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"");
             boolean hasDatatype = str.contains("^^");
             if (hasLanguage) {
-                pattern = Pattern.compile("^\"([^\"]*)\"@([^@]*)");
+                pattern = Pattern.compile("^\"(.*)\"@([^@]*)", Pattern.DOTALL);
             } else if (hasDatatype) {
-                pattern = Pattern.compile("^\"([^\"]*)\"\\^\\^<([^>]*)>");
+                pattern = Pattern.compile("^\"(.*)\"\\^\\^<([^>]*)>", Pattern.DOTALL);
             } else {
                 pattern = Pattern.compile("^\"(.*)\"$", Pattern.DOTALL);
             }
