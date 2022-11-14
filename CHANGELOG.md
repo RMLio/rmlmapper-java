@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ### Changed
-- Require Java 10+
+- Require Java 11+
 
 ### Fixed
 - Dropped dependency on Guava
@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated postgresql to 42.5.0
 - Updated mssql-jdbc to 11.2.1.jre11
 - Updated com.fasterxml.jackson.core.* dependencies to 2.14.0
+- Force Wiremock to use commons-fileupload 1.4
 
 ### Changed
 - Database tests are executed with a fresh instance of the required database in a Docker container
