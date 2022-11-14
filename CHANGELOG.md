@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Dropped dependency on Guava
 - Dropped explicit dependency on Jetty
-- Dropped dependency on System Rules due to deprecated and not used.
+- Replaced dependency on System Rules with one on its successor System Lamda
 - `RDF4JStore` had wrong regex to check for Literals when they have a language tag or data type.
 - Updated RDF4J to 4.2.1
 

@@ -5,9 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +14,11 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class Mapper_MappingFile_URL_Test extends TestCore {
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
-
 
     private void mappingHandlerTest(RDFFormat format) throws Exception {
         HttpServer server = null;
@@ -78,24 +75,16 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
 
     //@Test(expected = FileNotFoundException.class)
     @Test
-    public void testInvalidMappingURL() /*throws Exception*/ {
-        HttpServer server = null;
-        try {
-            server = HttpServer.create(new InetSocketAddress(8081), 0);
+    public void testInvalidMappingURL() throws Exception {
+        int statusCode = catchSystemExit(() -> {
+            final HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
             server.createContext("/mappingFile", new InvalidMappingFileHandler());
             server.createContext("/inputFile", new ValidInputFileHandler());
             server.setExecutor(null); // creates a default executor
             server.start();
-            exit.expectSystemExitWithStatus(1); // Handle System.exit(1)
             Main.main("-m http://localhost:8081/mappingFile -o MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq".split(" "));
-            //Utils.getFile("MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq");
-        } catch (Throwable e) {
-            logger.debug("Test throwed an exception.", e);
-        } finally {
-            if (server != null) {
-                server.stop(0);
-            }
-        }
+        });
+        assertEquals(1, statusCode);
     }
 
     static class ValidMappingFileHandler implements HttpHandler {

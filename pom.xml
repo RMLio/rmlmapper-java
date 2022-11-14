@@ -313,6 +313,12 @@
             <version>1.0-1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-lambda</artifactId>
+            <version>1.2.1</version>
+            <scope>test</scope>
+        </dependency>
         <!--< testcontainer dependencies > -->
         <dependency>
             <groupId>org.testcontainers</groupId>  <!-- for running tests with dockerized databases -->

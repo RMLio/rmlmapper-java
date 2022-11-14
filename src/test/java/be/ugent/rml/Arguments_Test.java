@@ -1,9 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.rdfhdt.hdt.hdt.HDT;
 import org.rdfhdt.hdt.hdt.HDTManager;
 import org.rdfhdt.hdt.triples.IteratorTripleID;
@@ -15,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,8 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class Arguments_Test extends TestCore {
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @Test
     public void withConfigFile() throws Exception {
@@ -62,8 +59,10 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void nonexistingMappingFile() throws Exception {
-        exit.expectSystemExitWithStatus(1); // Handle System.exit(1)
-        Main.main("-m ./argument-config-file-test-cases/I_DONT_EXIST.ttl -o ./generated_output.nq".split(" "));
+        int statusCode = catchSystemExit(() -> {
+            Main.main("-m ./argument-config-file-test-cases/I_DONT_EXIST.ttl -o ./generated_output.nq".split(" "));
+        });
+        assertEquals(1, statusCode);
     }
 
     @Test
@@ -457,8 +456,10 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void wrongOutPutFile() throws Exception{
-        exit.expectSystemExitWithStatus(1); // Handle System.exit(1)
-        Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./wrong/file/output/generated_output.nq".split(" "));
+        int statusCode = catchSystemExit(() -> {
+            Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./wrong/file/output/generated_output.nq".split(" "));
+        });
+        assertEquals(1, statusCode);
 
         try {
             File outputFile = Utils.getFile("./generated_output.nq");
