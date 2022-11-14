@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated indirect dependencies to Xerces 2.12.2
 - Updated mysql-connector-java to 8.0.31
 - Updated postgresql to 42.5.0
+- Updated mssql-jdbc to 11.2.1.jre11
 
 ### Changed
 - Database tests are executed with a fresh instance of the required database in a Docker container
