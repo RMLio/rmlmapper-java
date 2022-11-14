@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated mysql-connector-java to 8.0.31
 - Updated postgresql to 42.5.0
 - Updated mssql-jdbc to 11.2.1.jre11
+- Updated com.fasterxml.jackson.core.* dependencies to 2.14.0
 
 ### Changed
 - Database tests are executed with a fresh instance of the required database in a Docker container
