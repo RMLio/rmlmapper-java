@@ -7,9 +7,7 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import ch.qos.logback.classic.Level;
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.jena.tdb.store.Hash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

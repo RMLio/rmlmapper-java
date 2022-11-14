@@ -55,7 +55,7 @@ default:
 
 General:
   stage: unittests
-  image: maven:3.8-eclipse-temurin-17
+  image: maven:3.8.6-openjdk-11
   services:
     - name: docker:19.03.12-dind
       # explicitly disable tls to avoid docker startup interruption

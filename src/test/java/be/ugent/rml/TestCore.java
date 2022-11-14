@@ -41,6 +41,7 @@ public abstract class TestCore {
     TestCore(){
         if(System.getenv("VERBOSE") != null){
             logger.setLevel(Level.DEBUG);
+            logger.debug("Set logger level to DEBUG because of system env VERBOSE value " + System.getenv("VERBOSE"));
         };
     }
 
@@ -142,8 +143,8 @@ public abstract class TestCore {
     /**
      * Test function to compare output with expected files, using CLI interface
      */
-    public void doMapping(Path cwd, String mappingFiles, String output, String expected) {
-        Main.main(("-m " + mappingFiles + " -o " + output).split(" "), cwd.toString());
+    public void doMapping(Path cwd, String mappingFiles, String output, String expected) throws Exception {
+        Main.run(("-m " + mappingFiles + " -o " + output).split(" "), cwd.toString());
         try {
             try {
                 compareFiles(

@@ -42,16 +42,25 @@ public class Main {
     private static final Marker fatal = MarkerFactory.getMarker("FATAL");
 
     public static void main(String[] args) {
-        main(args, System.getProperty("user.dir"));
+        try {
+            run(args, System.getProperty("user.dir"));
+        } catch (Exception e) {
+            System.exit(1);
+        }
+    }
+
+    public static void run(String[] args) throws Exception {
+        run(args, System.getProperty("user.dir"));
     }
 
     /**
-     * Main method use for the CLI. Allows to also set the current working directory via the argument basePath.
+     * Main method use for the CLI. Allows to also set the current working directory
+     * via the argument basePath.
      *
      * @param args     the CLI arguments
      * @param basePath the basePath used during the execution.
      */
-    public static void main(String[] args, String basePath) {
+    public static void run(String[] args, String basePath) throws Exception {
         Options options = new Options();
         Option mappingdocOption = Option.builder("m")
                 .longOpt("mappingfile")
@@ -189,14 +198,18 @@ public class Main {
 
             if (mOptionValue == null && System.console() != null) {
                 printHelp(options);
-                System.exit(1);
+                throw new IllegalArgumentException("No mapping file nor via stdin found!");
             }
 
             String outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
-            // check if the output path can exist, for this we check if the path before the last "/" is valid
-            if (outputFile != null && ! Utils.checkPath(outputFile.substring(0, outputFile.lastIndexOf("/")), null)){
-                logger.error(fatal, "The given output path does not exist.");
-                System.exit(1);
+            // If output path exists and contains 'directory-like' characters
+            if (outputFile != null) {
+                // Windows paths 🤷‍♂️
+                outputFile = outputFile.replaceAll("\\\\", "/");
+                if (!Utils.checkPathParent(outputFile, null)) {
+                    logger.error(fatal, "The given output path does not exist.");
+                    throw new IllegalArgumentException("The given output path does not exist.");
+                }
             }
 
             if (mOptionValue != null) {
@@ -252,7 +265,7 @@ public class Main {
             }
             catch (RDFParseException e) {
                 logger.error(fatal, "Unable to parse mapping rules as Turtle. Does the file exist and is it valid Turtle?", e);
-                System.exit(1);
+                throw new IllegalArgumentException("Unable to parse mapping rules as Turtle. Does the file exist and is it valid Turtle?");
             }
 
             // Private security data is optionally
@@ -268,7 +281,7 @@ public class Main {
                 } catch (RDFParseException e) {
                     logger.debug(e.getMessage());
                     logger.error(fatal, "Unable to parse private security data as Turtle. Does the file exist and is it valid Turtle?");
-                    System.exit(1);
+                    throw new IllegalArgumentException("Unable to parse private security data as Turtle. Does the file exist and is it valid Turtle?");
                 }
             }
 
@@ -394,7 +407,6 @@ public class Main {
             // Get start timestamp for post mapping metadata
             String startTimestamp = Instant.now().toString();
             QuadStore result = null;
-            outputFile = getPriorityOptionValue(outputfileOption, lineArgs, configFile);
 
             try {
                 HashMap<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
@@ -432,6 +444,8 @@ public class Main {
             // oops, something went wrong
             logger.error("Parsing failed. Reason: {}", exp.getMessage());
             printHelp(options);
+        } catch (IllegalArgumentException exp) {
+            throw exp;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

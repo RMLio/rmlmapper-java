@@ -13,18 +13,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public class Arguments_Test extends TestCore {
 
     @Test
     public void withConfigFile() throws Exception {
-        Main.main("-c ./argument-config-file-test-cases/config_example.properties".split(" "));
+        Main.run("-c ./argument-config-file-test-cases/config_example.properties".split(" "));
         compareFiles(
                 "argument-config-file-test-cases/target_output.nq",
                 "./generated_output.nq",
@@ -42,7 +42,7 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void withoutConfigFile() throws Exception {
-        Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq".split(" "));
+        Main.run("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq".split(" "));
         compareFiles(
                 "argument-config-file-test-cases/target_output.nq",
                 "./generated_output.nq",
@@ -58,11 +58,43 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
+    public void withoutConfigFileNoSlashes() throws Exception {
+        Main.run("-m ./argument-config-file-test-cases/mapping.ttl -o generated_output.nq".split(" "));
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false
+        );
+
+        try {
+            File outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void withoutConfigFileWindowsSlashes() throws Exception {
+        Main.run("-m .\\argument-config-file-test-cases\\mapping.ttl -o .\\generated_output.nq".split(" "));
+        compareFiles(
+                "argument-config-file-test-cases/target_output.nq",
+                "./generated_output.nq",
+                false);
+
+        try {
+            File outputFile = Utils.getFile("./generated_output.nq");
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void nonexistingMappingFile() throws Exception {
-        int statusCode = catchSystemExit(() -> {
-            Main.main("-m ./argument-config-file-test-cases/I_DONT_EXIST.ttl -o ./generated_output.nq".split(" "));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Main.run("-m ./argument-config-file-test-cases/I_DONT_EXIST.ttl -o ./generated_output.nq".split(" "));
         });
-        assertEquals(1, statusCode);
     }
 
     @Test
@@ -80,7 +112,7 @@ public class Arguments_Test extends TestCore {
                 "    rml:referenceFormulation ql:JSONPath;\n" +
                 "    rml:iterator \"$.sports[*]\".";
         String[] args = {"-m", arg1, arg2, "-o" , "./generated_output.nq"};
-        Main.main(args);
+        Main.run(args);
         compareFiles(
                 "argument-config-file-test-cases/target_output.nq",
                 "./generated_output.nq",
@@ -98,7 +130,9 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void multipleMappingFiles() throws Exception {
-        Main.main("-m ./argument-config-file-test-cases/mapping_base.ttl ./argument-config-file-test-cases/mapping1.ttl -o ./generated_output.nq".split(" "));
+        Main.run(
+                "-m ./argument-config-file-test-cases/mapping_base.ttl ./argument-config-file-test-cases/mapping1.ttl -o ./generated_output.nq"
+                        .split(" "));
         compareFiles(
                 "argument-config-file-test-cases/target_output.nq",
                 "./generated_output.nq",
@@ -115,11 +149,11 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void testVerboseWithCustomFunctionFile() {
+    public void testVerboseWithCustomFunctionFile() throws Exception {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setErr(ps);
-            Main.main("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+            Main.run("-v -f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
             assertThat(stdout.toString(), containsString("Using custom path to functions.ttl file: "));
         } finally {
             System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
@@ -127,7 +161,7 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void testStdOut() throws IOException {
+    public void testStdOut() throws Exception {
         String cwd = Utils.getFile( "argument/quote-in-literal").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String functionsFilePath = Utils.getFile( "rml-fno-test-cases/functions_test.ttl").getAbsolutePath();
@@ -135,7 +169,7 @@ public class Arguments_Test extends TestCore {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setOut(ps);
-            Main.main(("-v -f " + functionsFilePath + " -m " + mappingFilePath).split(" "), cwd);
+            Main.run(("-v -f " + functionsFilePath + " -m " + mappingFilePath).split(" "), cwd);
         } finally {
             System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
         }
@@ -148,11 +182,11 @@ public class Arguments_Test extends TestCore {
 
 
     @Test
-    public void testVerboseWithoutCustomFunctionFile() throws UnsupportedEncodingException {
+    public void testVerboseWithoutCustomFunctionFile() throws Exception {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setErr(ps);
-            Main.main("-v -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+            Main.run("-v -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
         } finally {
             System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
         }
@@ -160,11 +194,11 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void testWithCustomFunctionFile() throws UnsupportedEncodingException {
+    public void testWithCustomFunctionFile()  throws Exception {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setErr(ps);
-            Main.main("-f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
+            Main.run("-f ./rml-fno-test-cases/functions_test.ttl -m ./argument/quote-in-literal/mapping.ttl -o ./generated_output.nq".split(" "));
         } finally {
             System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
         }
@@ -177,7 +211,8 @@ public class Arguments_Test extends TestCore {
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
         String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
-        Main.main(("-f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath).split(" "), cwd);
+        Main.run(("-f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath)
+                .split(" "), cwd);
         compareFiles(
                 expectedOutPath,
                 actualOutPath,
@@ -202,7 +237,8 @@ public class Arguments_Test extends TestCore {
             String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
             String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
             String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
-            Main.main(("-v -f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath).split(" "), cwd);
+            Main.run(("-v -f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath)
+                    .split(" "), cwd);
             compareFiles(
                     expectedOutPath,
                     actualOutPath,
@@ -228,7 +264,7 @@ public class Arguments_Test extends TestCore {
         String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
         String expectedTrigPath = Utils.getFile( "argument/output-trig/target_output.trig").getAbsolutePath();
 
-        Main.main(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s turtle").split(" "), cwd);
+        Main.run(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s turtle").split(" "), cwd);
         compareFiles(
                 expectedTrigPath,
                 actualTrigPath,
@@ -261,7 +297,7 @@ public class Arguments_Test extends TestCore {
         String actualJSONPath = (new File("./generated_output.json")).getAbsolutePath();
         String expectedJSONPath = Utils.getFile( "argument/output-json/target_output.json").getAbsolutePath();
 
-        Main.main(("-m " + mappingFilePath + " -o " + actualJSONPath + " -s jsonld").split(" "), cwd);
+        Main.run(("-m " + mappingFilePath + " -o " + actualJSONPath + " -s jsonld").split(" "), cwd);
 
         compareFiles(
                 expectedJSONPath,
@@ -293,7 +329,7 @@ public class Arguments_Test extends TestCore {
         String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
         String expectedTrigPath = Utils.getFile( "argument/output-trig/target_output.trig").getAbsolutePath();
 
-        Main.main(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s trig").split(" "), cwd);
+        Main.run(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s trig").split(" "), cwd);
         compareFiles(
                 expectedTrigPath,
                 actualTrigPath,
@@ -321,13 +357,13 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void outputHDT() throws IOException {
+    public void outputHDT() throws Exception {
         String cwd = Utils.getFile( "argument").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualHDTPath = (new File("./generated_output.hdt")).getAbsolutePath();
         String expectedHDTPath = Utils.getFile( "argument/output-hdt/target_output.hdt").getAbsolutePath();
 
-        Main.main(("-v -m " + mappingFilePath + " -o " + actualHDTPath + " -s hdt").split(" "), cwd);
+        Main.run(("-v -m " + mappingFilePath + " -o " + actualHDTPath + " -s hdt").split(" "), cwd);
 
         // Load HDT file.
 
@@ -359,7 +395,7 @@ public class Arguments_Test extends TestCore {
         String actualNQuadsPath = (new File("./generated_output.nq")).getAbsolutePath();
         String expectedNQuadsPath = Utils.getFile( "argument/quote-in-literal/target_output.nq").getAbsolutePath();
 
-        Main.main(("-m " + mappingFilePath + " -o " + actualNQuadsPath).split(" "), cwd);
+        Main.run(("-m " + mappingFilePath + " -o " + actualNQuadsPath).split(" "), cwd);
         compareFiles(
                 expectedNQuadsPath,
                 actualNQuadsPath,
@@ -375,11 +411,11 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void testMissingBaseIRIInStrictMode() {
+    public void testMissingBaseIRIInStrictMode() throws Exception {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setErr(ps);
-            Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq --strict".split(" "));
+            Main.run("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq --strict".split(" "));
         } finally {
             System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
         }
@@ -394,7 +430,7 @@ public class Arguments_Test extends TestCore {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setOut(ps);
-            Main.main(("-v --strict -b http://example2.com/ -m " + mappingFilePath).split(" "), cwd);
+            Main.run(("-v --strict -b http://example2.com/ -m " + mappingFilePath).split(" "), cwd);
         } finally {
             System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
         }
@@ -409,7 +445,7 @@ public class Arguments_Test extends TestCore {
             System.setIn(is);
 
             String[] args = {"-o", "./generated_output.nq"};
-            Main.main(args);
+            Main.run(args);
             compareFiles(
                     "argument-config-file-test-cases/target_output.nq",
                     "./generated_output.nq",
@@ -435,7 +471,7 @@ public class Arguments_Test extends TestCore {
             System.setIn(is);
 
             String[] args = {"-m", "./argument-config-file-test-cases/mapping_part1.ttl", "-o", "./generated_output.nq"};
-            Main.main(args);
+            Main.run(args);
             compareFiles(
                     "argument-config-file-test-cases/target_output.nq",
                     "./generated_output.nq",
@@ -456,17 +492,8 @@ public class Arguments_Test extends TestCore {
 
     @Test
     public void wrongOutPutFile() throws Exception{
-        int statusCode = catchSystemExit(() -> {
-            Main.main("-m ./argument-config-file-test-cases/mapping.ttl -o ./wrong/file/output/generated_output.nq".split(" "));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Main.run("-m ./argument-config-file-test-cases/mapping.ttl -o ./wrong/file/output/generated_output.nq".split(" "));
         });
-        assertEquals(1, statusCode);
-
-        try {
-            File outputFile = Utils.getFile("./generated_output.nq");
-            assertTrue(outputFile.delete());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 }
