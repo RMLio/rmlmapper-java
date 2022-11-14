@@ -19,7 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated RDF4J to 4.2.1
 - Updated Jena to 4.6.1
 - Updated indirect dependencies to Xerces 2.12.2
-- Updated dependency on mysql-connector-java to 8.0.31
+- Updated mysql-connector-java to 8.0.31
+- Updated postgresql to 42.5.0
 
 ### Changed
 - Database tests are executed with a fresh instance of the required database in a Docker container
