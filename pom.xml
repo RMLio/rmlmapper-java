@@ -206,8 +206,8 @@
         </dependency>
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc8</artifactId>
-            <version>21.6.0.0.1</version>
+            <artifactId>ojdbc11</artifactId>
+            <version>21.7.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Dropped dependency on Guava
 - Dropped explicit dependency on Jetty
 - Dropped dependency on mariaDB4j
-- Replaced dependency on System Rules with one on its successor System Lamda
 - `RDF4JStore` had wrong regex to check for Literals when they have a language tag or data type.
 - Updated RDF4J to 4.2.1
 - Updated Jena to 4.6.1
@@ -29,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated testcontainers to 1.17.5
 - Updated mybatis to 3.5.11
 - Force Wiremock to use commons-fileupload 1.4
+- Updated ojdbc8 21.6.0.0.1 to ojdbc11 21.7.0.0
 
 ### Changed
 - Database tests are executed with a fresh instance of the required database in a Docker container
