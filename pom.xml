@@ -274,11 +274,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-            <version>1.7</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.FnOio</groupId>
             <artifactId>function-agent-java</artifactId>
             <version>v0.2.1</version>
@@ -302,7 +297,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.14.3</version>
+            <version>1.15.3</version>
         </dependency>
         <!--        START spreadsheet dependencies -->
         <dependency>
