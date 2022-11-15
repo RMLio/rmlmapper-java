@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated opencsv to 5.7.1
 - Updated poi-ooxml to 5.2.3
 - Updated testcontainers to 1.17.5
+- Updated mybatis to 3.5.11
 - Force Wiremock to use commons-fileupload 1.4
 
 ### Changed
