@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated mssql-jdbc to 11.2.1.jre11
 - Updated com.fasterxml.jackson.core.* dependencies to 2.14.0
 - Updated jsoup to 1.15.3
+- Updated opencsv to 5.7.1
+- Updated poi-ooxml to 5.2.3
 - Force Wiremock to use commons-fileupload 1.4
 
 ### Changed
