@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Require Java 11+
 - Port all tests to Junit 5
+- Database tests are executed with a fresh instance of the required database in a Docker container
+- Update of function libraries IDLab functions, GREL functions, Function Agent
+- Removed need for (deprecated) SecurityManager
 
 ### Fixed
 - Dropped dependency on Guava
@@ -28,17 +31,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated poi-ooxml to 5.2.3
 - Updated testcontainers to 1.17.5
 - Updated mybatis to 3.5.11
-- Force Wiremock to use commons-fileupload 1.4
 - Updated ojdbc8 21.6.0.0.1 to ojdbc11 21.7.0.0
-
-### Changed
-- Database tests are executed with a fresh instance of the required database in a Docker container
-- Database tests are now executed with JUnit5
-- Update of function libraries IDLab functions, GREL functions, Function Agent
-- Update jena and hdt dependencies
-- Removed need for (deprecated) SecurityManager
-
-### Fixed
+- Force Wiremock to use commons-fileupload 1.4
 - Main: Output paths can again be fully relative
 - Dropped dependency on com.spotify.docker-client ([issue 231](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/231))
 - Running multiple pipelines should no longer interfere with each other ([issue 245](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/245))
