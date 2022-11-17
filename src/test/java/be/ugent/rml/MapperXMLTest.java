@@ -3,7 +3,7 @@ package be.ugent.rml;
 
 import org.junit.jupiter.api.Test;
 
-public class Mapper_XML_Test extends TestCore {
+public class MapperXMLTest extends TestCore {
     @Test
     public void evaluate_0000_XML() {
         doMapping("./test-cases/RMLTC0000-XML/mapping.ttl", "./test-cases/RMLTC0000-XML/output.nq");

@@ -71,7 +71,7 @@ General:
     - 'mvn $MAVEN_CLI_OPTS -Dtest=$TEST test'
   parallel:
     matrix:
-      - TEST: [ArgumentsTest, MapperCSVTest, MapperJSONTest, MapperMySQLTest, MapperPostgresR2RMLTest, MapperWoTTest, ArgumentsTestMySQL, MapperCSVWTest, MapperLDESTest, MapperODSTest, MapperOracleDBTest, MapperPostgresXMLTest, MapperXMLTest, CustomRMLFnOMapperCSVTest, MapperEXCELTest, MapperMappingFileURLTest, MapperSPARQLTest, MetadataTest, CustomRMLFnOMapperJSONTest, MapperHTMLTest, MapperMySQLR2RMLTest, MapperPostgresCSVTest, MapperSQLServerTest, OptimizationsTest, R2RMLConverterTest, QuadTest, ReadmeTest, ReadmeFunctionTest]
+      - TEST: [ArgumentsTest, MapperCSVTest, MapperJSONTest, MapperMySQLTest, MapperPostgresR2RMLTest, MapperWoTTest, ArgumentsTestMySQLTest, MapperCSVWTest, MapperLDESTest, MapperODSTest, MapperOracleDBTest, MapperPostgresXMLTest, MapperXMLTest, CustomRMLFnOMapperCSVTest, MapperEXCELTest, MapperMappingFileURLTest, MapperSPARQLTest, MetadataTest, CustomRMLFnOMapperJSONTest, MapperHTMLTest, MapperMySQLR2RMLTest, MapperPostgresCSVTest, MapperSQLServerTest, OptimizationsTest, R2RMLConverterTest, QuadTest, ReadmeTest, ReadmeFunctionTest]
   except:
     - master
     - development
