@@ -239,7 +239,7 @@ at [./src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java](https://github.
 This is most interesting if you use RMLMapper as a library in your own project.
 Just add the dependency to the function library you want to use in your project.
 
-You can also add a function library as a Maven dependency in `pom.xml` or RMLMapper.
+You can also add a function library as a Maven dependency in `pom.xml` of RMLMapper.
 You'll have to rebuild RMLMapper to use it.
 
 ### Generating metadata
