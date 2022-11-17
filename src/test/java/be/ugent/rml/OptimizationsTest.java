@@ -2,13 +2,13 @@ package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Optimizations_Test extends TestCore {
+public class OptimizationsTest extends TestCore {
 
     @Test
     public void xmlFileOnlyReadOnce() throws Exception {

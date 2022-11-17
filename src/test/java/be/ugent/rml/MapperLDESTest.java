@@ -4,30 +4,28 @@ import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.NamedNode;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Mapper_LDES_Test extends TestCore {
+public class MapperLDESTest extends TestCore {
     private static Agent functionAgent;
 
-    @After
+    @AfterEach
     public void cleanUp() throws IOException {
         IDLabFunctions.resetState();
         FileUtils.deleteDirectory(new File("/tmp/ldes-test"));
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setups() throws Exception {
-        QuadStore functionDescriptionTriples = new RDF4JStore();
         functionAgent = AgentFactory.createFromFnO("fno/functions_idlab.ttl", "fno/functions_idlab_test_classes_java_mapping.ttl");
     }
 

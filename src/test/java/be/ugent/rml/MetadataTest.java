@@ -1,17 +1,18 @@
 package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 /**
  * Metadata files are compared as strings, without loading them in a QuadStore first.
  * So when making tests, make sure to use the exact same format as the mapper output.
  */
-public class Metadata_Test extends TestCore {
+public class MetadataTest extends TestCore {
 
     @Test
     public void datasetLevelTest() throws Exception {
@@ -67,17 +68,17 @@ public class Metadata_Test extends TestCore {
 
     private void cleanup(String format) {
         try {
+            File outputFile;
             if (format.equals("nquads")) {
-                File outputFile = Utils.getFile("./generated_output.nq");
+                outputFile = Utils.getFile("./generated_output.nq");
                 assertTrue(outputFile.delete());
                 outputFile = Utils.getFile("./generated_metadata.nq");
-                assertTrue(outputFile.delete());
             } else {
-                File outputFile = Utils.getFile("./generated_output.ttl");
+                outputFile = Utils.getFile("./generated_output.ttl");
                 assertTrue(outputFile.delete());
                 outputFile = Utils.getFile("./generated_metadata.ttl");
-                assertTrue(outputFile.delete());
             }
+            assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
         }

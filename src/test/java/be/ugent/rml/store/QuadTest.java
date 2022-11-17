@@ -1,11 +1,11 @@
 package be.ugent.rml.store;
 
 import be.ugent.rml.term.NamedNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Quad_Test {
+public class QuadTest {
     @Test
     public void compareQuadsStrict() {
         String s = "http://example.com/s";

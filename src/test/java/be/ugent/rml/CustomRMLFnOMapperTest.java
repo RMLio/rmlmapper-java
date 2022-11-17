@@ -2,8 +2,10 @@ package be.ugent.rml;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CustomRMLFnOMapperTest extends TestFunctionCore {
 
@@ -19,15 +21,14 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
 
     /**
      * Check if error is thrown if parameters are missing
-     * @throws Exception
      */
-    @Test(expected = Exception.class)
+    @Test
     public void evaluate_A001_missing_params() throws Exception {
+
         Agent functionAgent = AgentFactory.createFromFnO(
                 "rml-fno-test-cases/functions_dynamic_missing_params.ttl");
         Executor executor = this.createExecutor("./rml-fno-test-cases/RMLFNOTC0001-CSV/mapping.ttl", functionAgent);
-        doMapping(executor, "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl");
-        //assertTrue(functionLoader.getLibraryPath("GrelFunctions").endsWith("GrelFunctions_dynamic.jar"));
+        assertThrows(Exception.class, () -> doMapping(executor, "./rml-fno-test-cases/RMLFNOTC0001-CSV/output.ttl"));
     }
 
     @Test
@@ -95,7 +96,8 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
     /**
      * Tests whether the function idlab-fn:dbpediaSpotlight is supported correctly by the mapper
      */
-    //@Test TODO: fix spotlight service or mock it
+    @Test
+    @Disabled //TODO: fix spotlight service or mock it
     public void Evaluate_idlab_F003() {
         doMapping("./rml-fno-test-cases/RMLFNOTCF003/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF003/output.ttl");
     }

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Require Java 11+
+- Port all tests to Junit 5
 
 ### Fixed
 - Dropped dependency on Guava

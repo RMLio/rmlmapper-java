@@ -1,7 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.rdfhdt.hdt.hdt.HDT;
 import org.rdfhdt.hdt.hdt.HDTManager;
 import org.rdfhdt.hdt.triples.IteratorTripleID;
@@ -16,11 +16,9 @@ import java.nio.file.Paths;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class Arguments_Test extends TestCore {
+public class ArgumentsTest extends TestCore {
 
     @Test
     public void withConfigFile() throws Exception {
@@ -31,9 +29,8 @@ public class Arguments_Test extends TestCore {
                 false
         );
 
-        File outputFile = null;
         try {
-            outputFile = Utils.getFile("./generated_output.nq");
+            File outputFile = Utils.getFile("./generated_output.nq");
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,10 +88,8 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void nonexistingMappingFile() throws Exception {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Main.run("-m ./argument-config-file-test-cases/I_DONT_EXIST.ttl -o ./generated_output.nq".split(" "));
-        });
+    public void nonexistingMappingFile() {
+        assertThrows(IllegalArgumentException.class, () -> Main.run("-m ./argument-config-file-test-cases/I_DONT_EXIST.ttl -o ./generated_output.nq".split(" ")));
     }
 
     @Test
@@ -119,9 +114,8 @@ public class Arguments_Test extends TestCore {
                 false
         );
 
-        File outputFile = null;
         try {
-            outputFile = Utils.getFile("./generated_output.nq");
+            File outputFile = Utils.getFile("./generated_output.nq");
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,9 +133,8 @@ public class Arguments_Test extends TestCore {
                 false
         );
 
-        File outputFile = null;
         try {
-            outputFile = Utils.getFile("./generated_output.nq");
+            File outputFile = Utils.getFile("./generated_output.nq");
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
@@ -174,9 +167,9 @@ public class Arguments_Test extends TestCore {
             System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
         }
 
-        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), containsString("<http://example.com/10> <http://xmlns.com/foaf/0.1/name> \"Venus\\\"\"."));
-        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), containsString("<http://example.com/10> <http://example.com/id> \"10\"."));
-        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>."));
+        assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("<http://example.com/10> <http://xmlns.com/foaf/0.1/name> \"Venus\\\"\"."));
+        assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("<http://example.com/10> <http://example.com/id> \"10\"."));
+        assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>."));
     }
 
 
@@ -190,7 +183,7 @@ public class Arguments_Test extends TestCore {
         } finally {
             System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
         }
-        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), not(containsString("Using custom path to functions.ttl file: ")));
+        assertThat(stdout.toString(StandardCharsets.UTF_8), not(containsString("Using custom path to functions.ttl file: ")));
     }
 
     @Test
@@ -202,7 +195,7 @@ public class Arguments_Test extends TestCore {
         } finally {
             System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
         }
-        assertThat(stdout.toString(StandardCharsets.UTF_8.name()), not(containsString("Using custom path to functions.ttl file: ")));
+        assertThat(stdout.toString(StandardCharsets.UTF_8), not(containsString("Using custom path to functions.ttl file: ")));
     }
 
     @Test
@@ -219,9 +212,8 @@ public class Arguments_Test extends TestCore {
                 false
         );
 
-        File outputFile = null;
         try {
-            outputFile = Utils.getFile(actualOutPath);
+            File outputFile = Utils.getFile(actualOutPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
             e.printStackTrace();
@@ -244,7 +236,7 @@ public class Arguments_Test extends TestCore {
                     actualOutPath,
                     false
             );
-            assertThat(stdout.toString(StandardCharsets.UTF_8.name()), containsString("Loading function descriptions"));
+            assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("Loading function descriptions"));
 
             try {
                 File outputFile = Utils.getFile(actualOutPath);
@@ -275,7 +267,7 @@ public class Arguments_Test extends TestCore {
 
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(actualTrigPath));
-            String content = new String(encoded, "utf-8");
+            String content = new String(encoded, StandardCharsets.UTF_8);
 
             assertTrue(content.contains("@prefix foaf: <http://xmlns.com/foaf/0.1/> ."));
         } catch (IOException e) {
@@ -380,7 +372,7 @@ public class Arguments_Test extends TestCore {
                 TripleID tripleID1 = iteratorTripleID1.next();
                 TripleID tripleID2 = iteratorTripleID2.next();
 
-                assertTrue(tripleID1.equals(tripleID2));
+                assertEquals(tripleID1, tripleID2);
             }
         } finally {
             assertTrue((new File(actualHDTPath)).delete());
@@ -491,9 +483,8 @@ public class Arguments_Test extends TestCore {
     }
 
     @Test
-    public void wrongOutPutFile() throws Exception{
-        assertThrows(IllegalArgumentException.class, () -> {
-            Main.run("-m ./argument-config-file-test-cases/mapping.ttl -o ./wrong/file/output/generated_output.nq".split(" "));
-        });
+    public void wrongOutPutFile() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Main.run("-m ./argument-config-file-test-cases/mapping.ttl -o ./wrong/file/output/generated_output.nq".split(" ")));
     }
 }

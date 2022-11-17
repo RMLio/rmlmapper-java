@@ -155,26 +155,6 @@ which contain the necessary credentials to access the Web API.
 An example can be found in the test cases 
 [src/test/resources/web-of-things](src/test/resources/web-of-things).
 
-#### Accessing Oracle Database
-
-You need to add the Oracle JDBC driver manually to the class path
-if you want to access an Oracle Database.
-The required driver is `ojdbc8`.
-
-- Download `ojdbc8.jar` from [Oracle](https://www.oracle.com/database/technologies/jdbc-ucp-122-downloads.html).
-- Execute the RMLMapper via 
-
-```
-java -cp 'rmlmapper.jar:ojdbc8-12.2.0.1.jar' be.ugent.rml.cli.Main -m rules.rml.ttl
-```
-
-The options do the following:
-
-- `-cp 'rmlmapper.jar:ojdbc8-12.2.0.1.jar'`: Put the jar of the RMLMapper and JDBC driver in the classpath.
-- `be.ugent.rml.cli.Main`: `be.ugent.rml.cli.Main` is the entry point of the RMLMapper.
-- `-m rules.rml.ttl`: Use the RML rules in the file `rules.rml`.ttl.
-The exact same options as the ones mentioned earlier are supported.
-
 ### Library
 
 An example of how you can use the RMLMapper as an external library can be found
@@ -199,9 +179,10 @@ The RMLMapper is executed in the `/data` folder in the Docker container.
 
 ### Including functions
 
-There are two ways to include (new) functions within the RML Mapper
+There are three ways to include (new) functions within the RML Mapper
   * dynamic loading: you add links to java files or jar files, and those files are loaded dynamically at runtime
   * preloading: you register functionality via code, and you need to rebuild the mapper to use that functionality
+  * add as dependency
 
 Registration of functions is done using a Turtle file, which you can find in `src/main/resources/functions.ttl`
 
@@ -252,6 +233,14 @@ You can change the functions.ttl path (or use multiple functions.ttl paths) usin
 This overrides the dynamic loading.
 An example of how you can use Preload a custom function can be found
 at [./src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java](https://github.com/RMLio/rmlmapper-java/blob/master/src/test/java/be/ugent/rml/readme/ReadmeFunctionTest.java)
+
+#### Adding as dependency
+
+This is most interesting if you use RMLMapper as a library in your own project.
+Just add the dependency to the function library you want to use in your project.
+
+You can also add a function library as a Maven dependency in `pom.xml` or RMLMapper.
+You'll have to rebuild RMLMapper to use it.
 
 ### Generating metadata
 

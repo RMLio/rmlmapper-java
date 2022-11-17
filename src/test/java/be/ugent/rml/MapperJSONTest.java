@@ -3,14 +3,14 @@ package be.ugent.rml;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.util.ArrayList;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class Mapper_JSON_Test extends TestCore {
+public class MapperJSONTest extends TestCore {
     @Test
     public void evaluate_0000_JSON() {
         doMapping("./test-cases/RMLTC0000-JSON/mapping.ttl", "./test-cases/RMLTC0000-JSON/output.nq");

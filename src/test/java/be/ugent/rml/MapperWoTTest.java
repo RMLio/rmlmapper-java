@@ -2,31 +2,32 @@ package be.ugent.rml;
 
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import ch.qos.logback.classic.Level;
 import com.jayway.jsonpath.Configuration;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Mapper_WoT_Test extends TestCore {
+public class MapperWoTTest extends TestCore {
     @Test
     public void evaluate_essence_wot_support() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
-        server.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
+        server.createContext("/trashcans", new MapperWoTTest.TrashCansFileHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
 
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/essence/out-local-file.nt");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/essence/out-default.nq");
         doMapping("./web-of-things/essence/mapping.ttl", outPaths, "./web-of-things/essence/private-security-data.ttl");
@@ -37,12 +38,12 @@ public class Mapper_WoT_Test extends TestCore {
     @Test
     public void evaluate_irail_stations_wot_support() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
-        server.createContext("/redirect", new Mapper_WoT_Test.IRailStationHandler1());
-        server.createContext("/stations", new Mapper_WoT_Test.IRailStationHandler2());
+        server.createContext("/redirect", new MapperWoTTest.IRailStationHandler1());
+        server.createContext("/stations", new MapperWoTTest.IRailStationHandler2());
         server.setExecutor(null); // creates a default executor
         server.start();
 
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/irail-stations/out-default.nq");
         doMapping("./web-of-things/irail-stations/mapping.ttl", outPaths);
 
@@ -297,7 +298,7 @@ public class Mapper_WoT_Test extends TestCore {
 
             private void validateBody(InputStream body) {
                 logger.debug("trying to validate refresh request");
-                HashMap<String, String> jsonResponse = (HashMap<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(body, "utf-8");
+                Map<String, String> jsonResponse = (HashMap<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(body, StandardCharsets.UTF_8.name());
                 assert jsonResponse.containsKey("refresh");
                 assert jsonResponse.get("refresh").equals("xur2saef4s");
 

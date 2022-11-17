@@ -1,8 +1,8 @@
 package be.ugent.rml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class Mapper_EXCEL_Test extends TestCore {
+public class MapperEXCELTest extends TestCore {
     @Test
     public void evaluate_0000_EXCEL() {
         doMapping("./test-cases/RMLTC0000-EXCEL/mapping.ttl", "./test-cases/RMLTC0000-EXCEL/output.nq");

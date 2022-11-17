@@ -3,16 +3,16 @@ package be.ugent.rml;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.sun.net.httpserver.HttpServer;
-
 import org.apache.jena.fuseki.main.FusekiServer;
 import org.apache.jena.query.DatasetFactory;
-import org.junit.*;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,24 +20,25 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Mapper_Target extends TestCore {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class MapperTargetTest extends TestCore {
     private static int PORTNUMBER_SPARQL;
     private static int PORTNUMBER_API;
-    private FusekiServer.Builder builder;
     private FusekiServer server;
 
     @Test
     public void evaluate_sparql_target() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(PORTNUMBER_API), 0);
-        webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
+        webApi.createContext("/trashcans", new MapperWoTTest.TrashCansFileHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
         // Replace PORT number in mapping file
         String firstTempMappingPath = replaceKeyInMappingFile("./web-of-things/logical-target/sparql/mapping.ttl", "%PORT%", "" + PORTNUMBER_SPARQL);
         String tempMappingPath = replaceKeyInMappingFile(firstTempMappingPath, "%APIPORT%", "" + PORTNUMBER_API);
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetSPARQL"), "./web-of-things/logical-target/sparql/out-sparql.nq");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/logical-target/sparql/out-default.nq");
         doMapping(tempMappingPath, outPaths, "./web-of-things/logical-target/private-security-data.ttl");
@@ -59,11 +60,11 @@ public class Mapper_Target extends TestCore {
     public void evaluate_local_file_target_void() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
-        webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
+        webApi.createContext("/trashcans", new MapperWoTTest.TrashCansFileHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/logical-target/local-file/void/out-local-file.nq");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/logical-target/local-file/void/out-default.nq");
         doMapping("web-of-things/logical-target/local-file/void/mapping.ttl", outPaths, "./web-of-things/logical-target/private-security-data.ttl");
@@ -75,11 +76,11 @@ public class Mapper_Target extends TestCore {
     public void evaluate_local_file_target_dcat() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
-        webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
+        webApi.createContext("/trashcans", new MapperWoTTest.TrashCansFileHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/logical-target/local-file/dcat/out-local-file.nq");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/logical-target/local-file/dcat/out-default.nq");
         doMapping("web-of-things/logical-target/local-file/dcat/mapping.ttl", outPaths, "./web-of-things/logical-target/private-security-data.ttl");
@@ -91,11 +92,11 @@ public class Mapper_Target extends TestCore {
     public void evaluate_ldes_default_target_dcat() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
-        webApi.createContext("/bluebike", new Mapper_WoT_Test.BlueBikeStationHandler());
+        webApi.createContext("/bluebike", new MapperWoTTest.BlueBikeStationHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/ldes/defaults/out-local-file.nq");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/ldes/defaults/out-default.nq");
         doMapping("web-of-things/ldes/defaults/mapping.ttl", outPaths, "./web-of-things/ldes/private-security-data.ttl");
@@ -107,11 +108,11 @@ public class Mapper_Target extends TestCore {
     public void evaluate_ldes_paths_target_dcat() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
-        webApi.createContext("/bluebike", new Mapper_WoT_Test.BlueBikeStationHandler());
+        webApi.createContext("/bluebike", new MapperWoTTest.BlueBikeStationHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/ldes/paths/out-local-file.nq");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/ldes/paths/out-default.nq");
         doMapping("web-of-things/ldes/paths/mapping.ttl", outPaths, "./web-of-things/ldes/private-security-data.ttl");
@@ -123,12 +124,12 @@ public class Mapper_Target extends TestCore {
     public void evaluate_nquads_serialization() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
-        webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
+        webApi.createContext("/trashcans", new MapperWoTTest.TrashCansFileHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
         String tempMappingPath = replaceSerializationFormatInMappingFile("./web-of-things/serialization/mapping.ttl", "N-Quads");
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.nq");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.nq");
         doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
@@ -148,12 +149,12 @@ public class Mapper_Target extends TestCore {
     public void evaluate_turtle_serialization() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
-        webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
+        webApi.createContext("/trashcans", new MapperWoTTest.TrashCansFileHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
         String tempMappingPath = replaceSerializationFormatInMappingFile("./web-of-things/serialization/mapping.ttl", "Turtle");
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.ttl");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.ttl");
         doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
@@ -173,12 +174,12 @@ public class Mapper_Target extends TestCore {
     public void evaluate_ntriples_serialization() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
-        webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
+        webApi.createContext("/trashcans", new MapperWoTTest.TrashCansFileHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
         String tempMappingPath = replaceSerializationFormatInMappingFile("./web-of-things/serialization/mapping.ttl", "N-Triples");
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.nt");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.nt");
         doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
@@ -199,12 +200,12 @@ public class Mapper_Target extends TestCore {
     public void evaluate_jsonld_serialization() throws Exception {
         // Create Web API
         HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
-        webApi.createContext("/trashcans", new Mapper_WoT_Test.TrashCansFileHandler());
+        webApi.createContext("/trashcans", new MapperWoTTest.TrashCansFileHandler());
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
         String tempMappingPath = replaceSerializationFormatInMappingFile("./web-of-things/serialization/mapping.ttl", "JSON-LD");
-        HashMap<Term, String> outPaths = new HashMap<Term, String>();
+        HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.jsonld");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.jsonld");
         doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
@@ -220,17 +221,17 @@ public class Mapper_Target extends TestCore {
         }
     }
 
-    @Before
-    public void intialize() throws IOException {
+    @BeforeEach
+    public void intialize() {
         // Create Fuseki SPARQL endpoint /ds1
-        builder = FusekiServer.create();
+        FusekiServer.Builder builder = FusekiServer.create();
         builder.port(PORTNUMBER_SPARQL);
         builder.add("/ds1", DatasetFactory.createTxnMem(), true);
         this.server = builder.build();
         this.server.start();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception {
         try {
             PORTNUMBER_SPARQL = Utils.getFreePortNumber();
@@ -240,7 +241,7 @@ public class Mapper_Target extends TestCore {
         }
     }
 
-    @After
+    @AfterEach
     public void stopServer() {
         if (server != null) {
             server.stop();
@@ -248,14 +249,6 @@ public class Mapper_Target extends TestCore {
 
         System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
         System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
-    }
-
-    private ServerSocket findRandomOpenPortOnAllLocalInterfaces() {
-        try ( ServerSocket socket = new ServerSocket(0) ) {
-            return socket;
-        } catch (IOException ex) {
-            throw new Error("Couldn't find an available port for the SPARQL tests.");
-        }
     }
 
     /*
@@ -275,9 +268,7 @@ public class Mapper_Target extends TestCore {
             Path file = Paths.get(fileName);
             Files.write(file, Arrays.asList(mapping.split("\n")));
 
-            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
-
-            return absolutePath;
+            return Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
         } catch (IOException ex) {
             throw new Error(ex.getMessage());
         }
@@ -299,9 +290,7 @@ public class Mapper_Target extends TestCore {
             Path file = Paths.get(fileName);
             Files.write(file, Arrays.asList(mapping.split("\n")));
 
-            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
-
-            return absolutePath;
+            return Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
         } catch (IOException ex) {
             throw new Error(ex.getMessage());
         }

@@ -1,8 +1,8 @@
 package be.ugent.rml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class Mapper_ODS_Test extends TestCore {
+public class MapperODSTest extends TestCore {
     @Test
     public void evaluate_0000_ODS() {
         doMapping("./test-cases/RMLTC0000-ODS/mapping.ttl", "./test-cases/RMLTC0000-ODS/output.nq");

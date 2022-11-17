@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import static be.ugent.rml.StrictMode.BEST_EFFORT;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @net.jcip.annotations.NotThreadSafe
 public abstract class TestCore {
@@ -42,7 +42,7 @@ public abstract class TestCore {
         if(System.getenv("VERBOSE") != null){
             logger.setLevel(Level.DEBUG);
             logger.debug("Set logger level to DEBUG because of system env VERBOSE value " + System.getenv("VERBOSE"));
-        };
+        }
     }
 
 
@@ -68,7 +68,7 @@ public abstract class TestCore {
      * @param extraQuads A list of extra quads that need to be added to the mapping file.
      * @param strictMode Flag to indicate whether the Executor should operate in strict mode.
      * @return An executor.
-     * @throws Exception
+     * @throws Exception When something goes wrong
      */
     Executor createExecutor(String mapPath, List<Quad> extraQuads, String parentPath, StrictMode strictMode) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -358,8 +358,8 @@ public abstract class TestCore {
     }
 
     void compareFiles(String expectedPath, String resultPath, boolean removeTimestamps) throws Exception {
-        QuadStore expectedStore = null;
-        QuadStore resultStore = null;
+        QuadStore expectedStore;
+        QuadStore resultStore;
 
         expectedStore = filePathToStore(expectedPath);
         resultStore = filePathToStore(resultPath);

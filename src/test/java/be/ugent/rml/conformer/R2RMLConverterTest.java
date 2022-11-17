@@ -3,11 +3,12 @@ package be.ugent.rml.conformer;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Simple test cases for r2rml to rml conversion
@@ -38,7 +39,7 @@ public class R2RMLConverterTest {
         expectedStore.read(classLoader.getResourceAsStream(output), baseIRI, RDFFormat.TURTLE);
 
         boolean isEqual = actualStore.isIsomorphic(expectedStore);
-        Assert.assertTrue(isEqual);
+        assertTrue(isEqual);
     }
 
     /**

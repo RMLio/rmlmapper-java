@@ -1,19 +1,22 @@
 package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class Arguments_Test_MySQL extends MySQLTestCore {
 
-    @BeforeClass
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class ArgumentsTestMySQLTest extends MySQLTestCore {
+
+    @BeforeAll
     public static void beforeClass() {
-        logger = LoggerFactory.getLogger(Arguments_Test_MySQL.class);
+        logger = LoggerFactory.getLogger(ArgumentsTestMySQLTest.class);
     }
 
     @Test
@@ -26,7 +29,7 @@ public class Arguments_Test_MySQL extends MySQLTestCore {
 
         prepareDatabase(resourcePath, "root", "");
 
-        Main.run(("-m " + mappingFilePath + " -o " + actualPath + " --r2rml-jdbcDSN " + dbURL + " --r2rml-username root -v").split(" "), cwd);
+        Main.run(("-m " + mappingFilePath + " -o " + actualPath + " --r2rml-jdbcDSN " + getDbURL() + " --r2rml-username root -v").split(" "), cwd);
         compareFiles(
                 expectedPath,
                 actualPath,

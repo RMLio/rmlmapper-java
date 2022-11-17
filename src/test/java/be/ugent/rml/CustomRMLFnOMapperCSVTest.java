@@ -1,14 +1,14 @@
 package be.ugent.rml;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
+public class CustomRMLFnOMapperCSVTest extends TestFunctionCore {
     @Test
     public void evaluate_0000_CSV() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0000-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0000-CSV/output.ttl");
@@ -50,8 +50,8 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     }
 
     @Test
-    public void evaluate_0007_CSV() throws Exception {
-        assertThrows(InvocationTargetException.class, () -> {doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0007-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0007-CSV/output.ttl");});
+    public void evaluate_0007_CSV() {
+        assertThrows(InvocationTargetException.class, () -> doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0007-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0007-CSV/output.ttl"));
     }
 
     @Test
@@ -60,19 +60,19 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void evaluate_0009_CSV() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0009-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0009-CSV/output.ttl");
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void evaluate_0010_CSV() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0010-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0010-CSV/output.ttl");
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void evaluate_0011_CSV() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0011-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0011-CSV/output.ttl");
     }
@@ -88,25 +88,25 @@ public class Custom_RML_FnO_Mapper_CSV_Test extends TestFunctionCore {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void evaluate_0014_CSV() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0014-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0014-CSV/output.ttl");
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void evaluate_0015_CSV() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0015-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0015-CSV/output.ttl");
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void evaluate_0016_CSV() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0016-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0016-CSV/output.nq");
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void evaluate_0017_CSV() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTC0017-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTC0017-CSV/output.ttl");
     }

@@ -35,7 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.8.2</junit.version>
+        <junit.version>5.8.2</junit.version> <!-- testcontainers can't handle > 5.8 yet -->
         <maven.compiler.source>10</maven.compiler.source>
         <maven.compiler.target>10</maven.compiler.target>
         <jackson.version>2.14.0</jackson.version>
@@ -272,6 +272,10 @@
                     <groupId>org.apache.jena</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -342,13 +346,8 @@
             <version>1.0-1</version>
             <scope>test</scope>
         </dependency>
+
         <!--< testcontainer dependencies > -->
-        <dependency>
-            <groupId>org.testcontainers</groupId>  <!-- for running tests with dockerized databases -->
-            <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
@@ -373,7 +372,20 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>jdbc</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- < testcontainer dependencies /> -->
+
         <!-- For easy parsing and execution of SQL files -->
         <dependency>
             <groupId>org.mybatis</groupId>

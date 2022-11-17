@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,10 +14,10 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class Mapper_MappingFile_URL_Test extends TestCore {
+public class MapperMappingFileURLTest extends TestCore {
 
     private void mappingHandlerTest(RDFFormat format) throws Exception {
         HttpServer server = null;
@@ -82,9 +82,7 @@ public class Mapper_MappingFile_URL_Test extends TestCore {
             server.createContext("/inputFile", new ValidInputFileHandler());
             server.setExecutor(null); // creates a default executor
             server.start();
-            assertThrows(IllegalArgumentException.class, () -> {
-                Main.run("-m http://localhost:8081/mappingFile -o MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq".split(" "));
-            });
+            assertThrows(IllegalArgumentException.class, () -> Main.run("-m http://localhost:8081/mappingFile -o MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq".split(" ")));
             //Utils.getFile("MAPPINGFILE_URL_TEST_valid/generated_output_invalid.nq");
         } catch (Throwable e) {
             logger.debug("Test throwed an exception.", e);

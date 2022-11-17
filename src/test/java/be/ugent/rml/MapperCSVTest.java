@@ -2,10 +2,11 @@ package be.ugent.rml;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-public class Mapper_CSV_Test extends TestCore {
+public class MapperCSVTest extends TestCore {
     @Test
     public void evaluate_0000_CSV() {
         doMapping("./test-cases/RMLTC0000-CSV/mapping.ttl", "./test-cases/RMLTC0000-CSV/output.nq");
