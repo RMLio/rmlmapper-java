@@ -277,40 +277,46 @@ The tests will fail otherwise, as Testcontainers can't spin up the container.
 
 ## Dependencies
 
-|               Dependency                | License                                                            |
-|:---------------------------------------:|--------------------------------------------------------------------|
-|     ch.qos.logback logback-classic      | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
-|        commons-cli commons-lang         | Apache License 2.0                                                 |
-|           com.opencsv opencsv           | Apache License 2.0                                                 |
-|         commons-cli commons-cli         | Apache License 2.0                                                 |
-|     org.eclipse.rdf4j rdf4j-runtime     | Eclipse Public License 1.0                                         |
-| org.junit.jupiter junit-jupiter-engine  | Eclipse Public License v2.0                                        |
-|   org.junit.jupiter junit-jupiter-api   | Eclipse Public License v2.0                                        |
-| org.junit.jupiter junit-jupiter-params  | Eclipse Public License v2.0                                        |
-| org.junit.vintage junit-vintage-engine  | Eclipse Public License v2.0                                        |
-|      com.jayway.jsonpath json-path      | Apache License 2.0                                                 |
-|       javax.xml.parsers jaxp-api        | Apache License 2.0                                                 |
-|                org.jsoup                | MIT                                                                |
-|       mysql mysql-connector-java        | GNU General Public License v2.0                                    |
-|     ch.vorbuger.mariaDB4j mariaDB4j     | Apache License 2.0                                                 |
-|          postgresql postgresql          | BSD                                                                |
-|   com.microsoft.sqlserver mssql-jdbc    | MIT                                                                |
-| com.fasterxml.jackson.core jackson-core | Apache License 2.0                                                 |
-|     org.eclipse.jetty jetty-server      | Eclipse Public License 1.0 & Apache License 2.0                    |
-|    org.eclipse.jetty jetty-security     | Eclipse Public License 1.0 & Apache License 2.0                    |
-|    org.apache.jena apache-jena-libs     | Apache License 2.0                                                 |
-|  org.apache.jena jena-fuseki-embedded   | Apache License 2.0                                                 |
-|      com.github.bjdmeest hdt-java       | GNU Lesser General Public License v3.0                             |
-|   commons-validator commons-validator   | Apache License 2.0                                                 |
-|  com.github.fnoio grel-functions-java   | MIT                                                                |
-|  com.github.fnoio function-agent-java   | MIT                                                                |
-|  com.github.fnoio idlab-functions-java  | MIT                                                                |
-|              net.sf.saxon               | Mozilla Public License version 2.0                                 |
-|           org.mybatis mybatis           | Apache License 2.0                                                 |
-|      org.testcontainers postgresql      | MIT                                                                |
-|        org.testcontainers mysql         | MIT                                                                |
-|     org.testcontainers mssqlserver      | MIT                                                                |
-|      org.testcontainers oracle-xe       | MIT                                                                |
+|                   Dependency                   | License                                                            |
+|:----------------------------------------------:|--------------------------------------------------------------------|
+|         ch.qos.logback logback-classic         | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
+| com.fasterxml.jackson.core jackson-annotations | Apache License 2.0                                                 |
+|    com.fasterxml.jackson.core jackson-core     | Apache License 2.0                                                 |
+|  com.fasterxml.jackson.core jackson-databind   | Apache License 2.0                                                 |
+|      com.github.fnoio function-agent-java      | MIT                                                                |
+|      com.github.fnoio grel-functions-java      | MIT                                                                |
+|     com.github.fnoio idlab-functions-java      | MIT                                                                |
+|           com.github.rdfhdt hdt-java           | GNU Lesser General Public License v3.0                             |
+|   com.github.stephenc.jcip:jcip-annotations    | Apache License 2.0                                                 |
+|      com.github.tomakehurst:wiremock-jre8      | Apache License 2.0                                                 |
+|         com.jayway.jsonpath json-path          | Apache License 2.0                                                 |
+|       com.microsoft.sqlserver mssql-jdbc       | MIT                                                                |
+|     commons-fileupload commons-fileupload      | Apache License 2.0                                                 |
+|         com.mysql mysql-connector-java         | GNU General Public License v2.0                                    |
+|              com.opencsv opencsv               | Apache License 2.0                                                 |
+|        com.oracle.database.jdbc:ojdbc11        | Oracle Free Use Terms and Conditions                               |                                                           |
+|           javax.xml.parsers jaxp-api           | Apache License 2.0                                                 |
+|             net.sf.saxon Saxon-HE              | Mozilla Public License version 2.0                                 |
+|           org.apache.jena apache-arq           | Apache License 2.0                                                 |
+|          org.apache.jena apache-core           | Apache License 2.0                                                 |
+|          org.apache.jena fuseki-main           | Apache License 2.0                                                 |
+|            org.apache.poi poi-ooxml            | Apache License 2.0                                                 |
+|         org.eclipse.rdf4j rdf4j-client         | Eclipse Distribution License v1.0                                  |
+|                org.jsoup jsoup                 | MIT                                                                |
+|      org.junit.jupiter junit-jupiter-api       | Eclipse Public License v2.0                                        |
+|     org.junit.jupiter junit-jupiter-engine     | Eclipse Public License v2.0                                        |
+|     org.junit.jupiter junit-jupiter-params     | Eclipse Public License v2.0                                        |
+|     org.junit.vintage junit-vintage-engine     | Eclipse Public License v2.0                                        |
+|              org.mybatis mybatis               | Apache License 2.0                                                 |
+|           org.odftoolkit simple-odf            | Apache License 2.0                                                 |
+|           org.postgresql postgresql            | BSD                                                                |
+|            org.testcontainers jdbc             | MIT                                                                |
+|        org.testcontainers junit-jupiter        | MIT                                                                |
+|         org.testcontainers mssqlserver         | MIT                                                                |
+|            org.testcontainers mysql            | MIT                                                                |
+|          org.testcontainers oracle-xe          | MIT                                                                |
+|         org.testcontainers postgresql          | MIT                                                                |
+|               xerces xercesImpl                | Apache License 2.0                                                 |
 
 ## Commercial Support
 
