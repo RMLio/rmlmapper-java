@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [6.1.1] - 2022-11-21
+
 ## [6.1.0] - 2022-11-21
 
 ### Changed
@@ -578,6 +580,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[6.1.1]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.0...v6.1.1
 [6.1.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.0.0...v6.1.0
 [6.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v5.0.0...v6.0.0
 [5.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v4.15.0...v5.0.0
