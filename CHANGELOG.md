@@ -9,8 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Updated function-agent-java to v1.0.0
-- Updated grel-functions-java to v0.9.0
-- Updated idlab-functions-java to v0.1.3
+- Updated grel-functions-java to v0.9.1
+- Updated idlab-functions-java to v0.1.6
+- Updated junit to 5.9.1
+- Updated testcintainers to 1.17.6
+- Updated logback to 1.4.5
+- Updated Saxon-HE to 11.4
+- Updated postgresql to 42.5.1
 
 ## [6.1.2] - 2022-11-22
 

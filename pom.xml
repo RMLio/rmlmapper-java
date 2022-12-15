@@ -35,12 +35,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.8.2</junit.version> <!-- testcontainers can't handle > 5.8 yet -->
+        <junit.version>5.9.1</junit.version> <!-- testcontainers can't handle > 5.8 yet -->
         <maven.compiler.source>10</maven.compiler.source>
         <maven.compiler.target>10</maven.compiler.target>
         <jackson.version>2.14.0</jackson.version>
         <jena.version>4.6.1</jena.version>
-        <testcontainers.version>1.17.5</testcontainers.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
 
     <scm>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.10</version>
+            <version>1.4.5</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
@@ -180,7 +180,7 @@
         <dependency>
             <groupId>net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
-            <version>11.3</version>
+            <version>11.4</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -190,7 +190,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.5.0</version>
+            <version>42.5.1</version>
         </dependency>
         <!-- jre version must be the same as the gitlab runner -->
         <dependency>
