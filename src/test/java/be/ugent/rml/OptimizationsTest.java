@@ -1,7 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;

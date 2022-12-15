@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Updated function-agent-java to v1.0.0
+- Updated grel-functions-java to v0.9.0
+- Updated idlab-functions-java to v0.1.3
+
 ## [6.1.2] - 2022-11-22
 
 ## [6.1.1] - 2022-11-21
