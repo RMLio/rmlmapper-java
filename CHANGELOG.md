@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Reraise execeptions from executor, so that CLI exits with non-zero exit code in the event of errors in execution ([issue 194](https://github.com/RMLio/rmlmapper-java/issues/194))
+
 ## [6.1.2] - 2022-11-22
 
 ## [6.1.1] - 2022-11-21
