@@ -414,6 +414,7 @@ public class Main {
 
             } catch (Exception e) {
                 logger.error(e.getMessage());
+                throw e;
             }
 
             HashMap<Term, QuadStore> targets = executor.getTargets();
