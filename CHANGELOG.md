@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated Saxon-HE to 11.4
 - Updated postgresql to 42.5.1
 
+## [6.1.3] - 2022-12-20
+
+### Fixed
+- Reraise execeptions from executor, so that CLI exits with non-zero exit code in the event of errors in execution ([issue 194](https://github.com/RMLio/rmlmapper-java/issues/194))
+
 ## [6.1.2] - 2022-11-22
 
 ## [6.1.1] - 2022-11-21
@@ -592,6 +597,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[6.1.3]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.2...v6.1.3
 [6.1.2]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.1...v6.1.2
 [6.1.1]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.0...v6.1.1
 [6.1.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.0.0...v6.1.0
