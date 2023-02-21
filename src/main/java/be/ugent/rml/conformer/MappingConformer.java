@@ -1,14 +1,16 @@
 package be.ugent.rml.conformer;
 
 import be.ugent.rml.Utils;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
-import java.io.*;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static be.ugent.rml.NAMESPACES.*;
 
@@ -29,6 +31,7 @@ public class MappingConformer {
 
     /**
      * Create MappingConformer from InputStream of mapping file in RDF.
+     *
      * @param store A QuadStore with the mapping rules.
      * @throws FileNotFoundException
      */
@@ -38,6 +41,7 @@ public class MappingConformer {
 
     /**
      * Create MappingConformer from InputStream of mapping file in RDF.
+     *
      * @param store A QuadStore with the mapping rules.
      * @throws FileNotFoundException
      */
@@ -48,6 +52,7 @@ public class MappingConformer {
 
     /**
      * This method makes the QuadStore conformant to the RML spec.
+     *
      * @return True if the store had to be updated, else false.
      * @throws Exception if something goes wrong during detection or conversion.
      */
@@ -63,6 +68,7 @@ public class MappingConformer {
 
     /**
      * Detect if mapping file is valid RML.
+     *
      * @return true if valid RML, false if conversion is needed
      * @throws Exception if invalid or unconvertable
      */
@@ -70,11 +76,18 @@ public class MappingConformer {
         // TODO generalise for multiple converters
         Converter converter = new R2RMLConverter(store);
 
-        List<Term> triplesMaps = Utils.getSubjectsFromQuads(store
-                .getQuads(
-                        null,
-                        new NamedNode(RDF + "type"),
-                        new NamedNode(RR + "TriplesMap")));
+        // grab all terms that contain a subject map
+        List<Term> triplesMaps = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RR + "subjectMap"), null));
+
+        // grab all terms that contain a logical source
+        List<Term> logicalSources = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RML + "logicalSource"), null));
+
+        // grab all terms that contain a logical table
+        List<Term> logicalTables = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RR + "logicalTable"), null));
+
+        triplesMaps = triplesMaps.stream()
+                .filter(term -> logicalSources.contains(term) || logicalTables.contains(term))
+                .collect(Collectors.toList());
 
         if (triplesMaps.isEmpty()) {
             throw new Exception("Mapping requires at least one TriplesMap");
@@ -89,11 +102,12 @@ public class MappingConformer {
             }
         }
 
-        return ! unconvertedTriplesMaps.isEmpty();
+        return !unconvertedTriplesMaps.isEmpty();
     }
 
     /**
      * Tries to convert to RML. Model should still be valid on failure
+     *
      * @throws Exception conversion failed
      */
     private void convert() throws Exception {
@@ -107,6 +121,7 @@ public class MappingConformer {
 
     /**
      * Debugging helper function to check difference of models
+     *
      * @param store QuadStore which subtracts
      * @return boolean this.store isSubset of  given store
      */
@@ -116,6 +131,7 @@ public class MappingConformer {
 
     /**
      * Debugging helper function to check difference of models
+     *
      * @param store QuadStore which subtracts
      * @return boolean given store isSubset of store
      */
@@ -125,6 +141,7 @@ public class MappingConformer {
 
     /**
      * Get a valid QuadStore
+     *
      * @return a valid QuadStore
      */
     public QuadStore getStore() {

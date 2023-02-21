@@ -38,7 +38,7 @@ public abstract class TestCore {
     // Mapping options to be applied by the MappingConformer
     protected static Map<String, String> mappingOptions = new HashMap<>();
 
-    TestCore(){
+    protected TestCore(){
         if(System.getenv("VERBOSE") != null){
             logger.setLevel(Level.DEBUG);
             logger.debug("Set logger level to DEBUG because of system env VERBOSE value " + System.getenv("VERBOSE"));
@@ -50,7 +50,7 @@ public abstract class TestCore {
      *  Note: the created Executor will run in best effort mode
      */
 
-    Executor createExecutor(String mapPath) throws Exception {
+    protected Executor createExecutor(String mapPath) throws Exception {
         return createExecutor(mapPath, new ArrayList<>(), null, BEST_EFFORT);
     }
 
@@ -313,7 +313,6 @@ public abstract class TestCore {
                Ideally, this should code should be shared between the tests and the Main
                method to avoid different behavior between test code and the CLI interface! */
             rmlStore = QuadStoreFactory.read(mappingFile);
-            convertToRml(rmlStore);
         } catch (Exception e) {
             e.printStackTrace();
             fail();
@@ -321,6 +320,7 @@ public abstract class TestCore {
 
         // Pass the test if an error occurs during mapping execution.
         try {
+            convertToRml(rmlStore);
             Executor executor = createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
             executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
         } catch (Exception e) {
@@ -347,6 +347,7 @@ public abstract class TestCore {
             }
         } catch (Exception e) {
             logger.error("Failed to make mapping file conformant to RML spec.", e);
+            throw e; // rethrow the exception to be caught by the test
         }
     }
 

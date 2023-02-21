@@ -45,7 +45,7 @@ cache:
 
 # Cancel pipeline if a newer pipeline is running
 default:
-    interruptible: true
+  interruptible: true
 
 ###############################
 #                             #
@@ -57,7 +57,7 @@ General:
   stage: unittests
   image: maven:3.8.6-openjdk-11
   services:
-    - name: docker:19.03.12-dind
+    - name: docker:23.0.1-dind
       # explicitly disable tls to avoid docker startup interruption
       command: ["--tls=false"]
   variables:
@@ -71,7 +71,7 @@ General:
     - 'mvn $MAVEN_CLI_OPTS -Dtest=$TEST test'
   parallel:
     matrix:
-      - TEST: [ArgumentsTest, MapperCSVTest, MapperJSONTest, MapperMySQLTest, MapperPostgresR2RMLTest, MapperWoTTest, ArgumentsTestMySQLTest, MapperCSVWTest, MapperLDESTest, MapperODSTest, MapperOracleDBTest, MapperPostgresXMLTest, MapperXMLTest, CustomRMLFnOMapperCSVTest, MapperEXCELTest, MapperMappingFileURLTest, MapperSPARQLTest, MetadataTest, CustomRMLFnOMapperJSONTest, MapperHTMLTest, MapperMySQLR2RMLTest, MapperPostgresCSVTest, MapperSQLServerTest, OptimizationsTest, R2RMLConverterTest, QuadTest, ReadmeTest, ReadmeFunctionTest]
+      - TEST: [ArgumentsTest, MapperCSVTest, MapperJSONTest, MapperMySQLTest, MapperPostgresR2RMLTest, MapperWoTTest, ArgumentsTestMySQLTest, MapperCSVWTest, MapperLDESTest, MapperODSTest, MapperOracleDBTest, MapperPostgresXMLTest, MapperXMLTest, CustomRMLFnOMapperCSVTest, MapperEXCELTest, MapperMappingFileURLTest, MapperSPARQLTest, MetadataTest, CustomRMLFnOMapperJSONTest, MapperHTMLTest, MapperMySQLR2RMLTest, MapperPostgresCSVTest, MapperSQLServerTest, OptimizationsTest, R2RMLConverterTest, QuadTest, ReadmeTest, ReadmeFunctionTest, ConformerDetectionTest]
   except:
     - master
     - development
@@ -80,7 +80,7 @@ Docker Build:
   stage: unittests
   image: docker:latest
   services:
-    - docker:19.03.12-dind
+    - docker:23.0.1-dind
   before_script:
     - docker info
   script:
@@ -151,8 +151,8 @@ Create Release:
 
     # Update pom.xml
     - head -n6 pom.xml | sed "/<version>/s/>.*</>$RELEASE_TAG_NAME</" > pom_updated.xml
-    - tail -n +7 pom.xml >> pom_updated.xml 
-    - mv pom_updated.xml pom.xml  
+    - tail -n +7 pom.xml >> pom_updated.xml
+    - mv pom_updated.xml pom.xml
     # Update changelog. Changefrog does not like vX.X.X so drop 'v'
     - changefrog -n "$RELEASE_TAG_NAME"
     # Build a Jar
@@ -201,7 +201,7 @@ R2RML Test Report:
   stage: deploy
   image: docker:latest
   services:
-    - docker:19.03.12-dind
+    - docker:23.0.1-dind
   before_script:
     # Dependencies
     - apk add git python3 python3-dev py3-pip postgresql-dev postgresql libpq gcc musl-dev docker docker-compose java-jre-headless maven java-jdk
@@ -277,3 +277,4 @@ R2RML Test Report:
       fi
   only:
     - tags
+
