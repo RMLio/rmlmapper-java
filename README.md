@@ -192,8 +192,18 @@ There are three ways to include (new) functions within the RML Mapper
 
 Registration of functions is done using a Turtle file, which you can find in `src/main/resources/functions.ttl`
 
-The snippet below for example links an fno:function to a library, provided by a jar-file (`GrelFunctions.jar`).
 
+
+#### Dynamic loading
+
+Create a Turtle file that describe the functions that need to be included and add the jar which contains those functions.
+
+> Note: the java or jar-files are found relative to the cwd.
+You can change the functions.ttl path (or use multiple functions.ttl paths) using a commandline-option (`-f`).
+
+For example the snippets below dynamically link an fno:Function to a library, provided by a jar-file (`CustomFunctions.jar`). The example links a function that parses the latitude (`50.2`) out of the following string `"POINT (50.2 5.3)"`.
+
+ `functions.ttl` contains the description of the function in Turtle:
 ```turtle
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix doap:    <http://usefulinc.com/ns/doap#> .
@@ -204,35 +214,38 @@ The snippet below for example links an fno:function to a library, provided by a 
 @prefix grelm:   <http://fno.io/grel/rmlmapping#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 
-grel:toUpperCase a fno:Function ;
-  fno:name "to Uppercase" ;
-  rdfs:label "to Uppercase" ;
-  dcterms:description "Returns the input with all letters in upper case." ;
+grel:parsePointLat a fno:Function ;
+  fno:name "parsePointLat" ;
+  rdfs:label "parsePointLat" ;
+  dcterms:description "Parse the latitude from a point." ;
   fno:expects ( grel:valueParam ) ;
   fno:returns ( grel:stringOut ) .
 
 grelm:javaString
     a                  fnoi:JavaClass ;
-    doap:download-page "GrelFunctions.jar" ;
-    fnoi:class-name    "io.fno.grel.StringFunctions" .
+    doap:download-page "CustomFunctions.jar" ;
+    fnoi:class-name    "CustomFunctions" .
 
-grelm:uppercaseMapping
+grelm:parsePointLat
     a                    fno:Mapping ;
-    fno:function         grel:toUpperCase ;
+    fno:function         grel:parsePointLat ;
     fno:implementation   grelm:javaString ;
-    fno:methodMapping    [ a                fnom:StringMethodMapping ;
-                           fnom:method-name "toUppercase" ] .
+    fno:methodMapping    [ a                fnom:Function ;
+                           fnom:method-name "parsePointLat" ] .
 ```
-
-#### Dynamic loading
-
-Just put the java or jar-file in the resources folder,
-at the root folder of the jar-location,
-or the parent folder of the jar-location,
-it will be found dynamically.
-
-> Note: the java or jar-files are found relative to the cwd.
-You can change the functions.ttl path (or use multiple functions.ttl paths) using a commandline-option (`-f`).
+The accompanying java file `CustomFunctions.java`:
+```java
+public class CustomFunctions {
+  public static String parsePointLat(String s) {
+    return s.replace("POINT ", "").replace('(', ' ').replace(')', ' ').trim().split("\\s+")[0];
+  }
+}
+```
+To dynamically include the custom function, compile the java-file and include `functions.ttl` with the `-f` option:
+```bash
+javac CustomFunctions.java && jar cvf CustomFunctions.jar CustomFunctions.class
+java -jar mapper.jar -f functions.ttl <other options>
+```
 
 #### Preloading
 
@@ -397,3 +410,5 @@ mvn javadoc:javadoc
 
 [1]: A. Dimou, T. De Nies, R. Verborgh, E. Mannens, P. Mechant, and R. Van de Walle, “Automated metadata generation for linked data generation and publishing workflows,” in Proceedings of the 9th Workshop on Linked Data on the Web, Montreal, Canada, 2016, pp. 1–10.
 [PDF](http://events.linkeddata.org/ldow2016/papers/LDOW2016_paper_04.pdf)
+
+
