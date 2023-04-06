@@ -2,8 +2,13 @@ package be.ugent.rml;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
+import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -97,9 +102,23 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
      * Tests whether the function idlab-fn:dbpediaSpotlight is supported correctly by the mapper
      */
     @Test
-    @Disabled //TODO: fix spotlight service or mock it
-    public void Evaluate_idlab_F003() {
+    public void Evaluate_idlab_F003() throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+        server.createContext("/annotate", exchange -> {
+            // response generated using
+            // curl -X GET "https://api.dbpedia-spotlight.org/en/annotate?text=Barrack%20Obama" -H "accept: application/json"
+            String response = "{\"@text\":\"Barrack Obama\",\"@confidence\":\"0.5\",\"@support\":\"0\",\"@types\":\"\",\"@sparql\":\"\",\"@policy\":\"whitelist\",\"Resources\":[{\"@URI\":\"http://dbpedia.org/resource/Barack_Obama\",\"@support\":\"27440\",\"@types\":\"Http://xmlns.com/foaf/0.1/Person,Wikidata:Q82955,Wikidata:Q5,Wikidata:Q24229398,Wikidata:Q215627,DUL:NaturalPerson,DUL:Agent,Schema:Person,DBpedia:Person,DBpedia:Agent,DBpedia:Politician\",\"@surfaceForm\":\"Barrack Obama\",\"@offset\":\"0\",\"@similarityScore\":\"0.9999999999951719\",\"@percentageOfSecondRank\":\"0.0\"}]}";
+            byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, bytes.length);
+            exchange.getResponseBody().write(bytes);
+            exchange.close();
+        });
+
+        server.start();
+
         doMapping("./rml-fno-test-cases/RMLFNOTCF003/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCF003/output.ttl");
+
+        server.stop(0);
     }
 
     /**
@@ -207,6 +226,7 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
 
     /**
      * Tests whether grel:controls_if works for when the condition is true
+     *
      * @throws Exception
      */
     @Test
@@ -216,14 +236,17 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
 
     /**
      * Tests whether grel:controls_if works for when the condition is false
+     *
      * @throws Exception
-     */@Test
+     */
+    @Test
     public void evaluate_B0004() throws Exception {
         doPreloadMapping("./rml-fno-test-cases/RMLFNOTCAB0004-CSV/mapping.ttl", "./rml-fno-test-cases/RMLFNOTCAB0004-CSV/output.ttl");
     }
 
     /**
      * Tests whether grel:controls_if works for when the condition is true and no value for the "else case" is given
+     *
      * @throws Exception
      */
     @Test
@@ -233,6 +256,7 @@ public class CustomRMLFnOMapperTest extends TestFunctionCore {
 
     /**
      * Tests whether grel:controls_if works for when the condition is false and no value for the "else case" is given
+     *
      * @throws Exception
      */
     @Test

@@ -41,7 +41,7 @@
 
         rr:predicateObjectMap [
           rr:predicate idlab-fn:endpoint ;
-          rr:objectMap [ rr:constant "http://193.190.127.195/dbpedia-spotlight/rest" ]
+          rr:objectMap [ rr:constant "http://localhost:8000" ]
         ] ;
       ] ;
 

@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - A new Maven profile `no-buildnumber` disables using and updating `buildNumber.properties`.
+- Mocked DBpedia Spotlight service ([issue #250](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/250))
 
 ## [6.1.3] - 2022-12-20
 
