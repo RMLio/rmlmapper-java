@@ -1,6 +1,8 @@
 package be.ugent.rml;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.rml.access.LocalFileAccess;
+import be.ugent.rml.access.RemoteFileAccess;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
@@ -8,13 +10,11 @@ import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
-import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.term.ProvenancedQuad;
-import be.ugent.rml.term.ProvenancedTerm;
-import be.ugent.rml.term.Term;
+import be.ugent.rml.term.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -131,9 +131,7 @@ public class Executor {
         //we execute every mapping
         for (Term triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
-
             List<Record> records = this.getRecords(triplesMap);
-
             for (int j = 0; j < records.size(); j++) {
                 Record record = records.get(j);
                 ProvenancedTerm subject = getSubject(triplesMap, mapping, record, j);
@@ -160,7 +158,6 @@ public class Executor {
                             }
                         });
                     });
-
                     List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
                     pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
@@ -267,7 +264,6 @@ public class Executor {
     private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws Exception {
         ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<ProvenancedTerm>();
         ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
-
         for (MultipleRecordsFunctionExecutor condition : conditions) {
             allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
         }
@@ -359,7 +355,6 @@ public class Executor {
         if (!this.recordsHolders.containsKey(triplesMap)) {
             this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
         }
-
         return this.recordsHolders.get(triplesMap);
     }
 
@@ -401,5 +396,24 @@ public class Executor {
             return null;
         }
         return this.targetStores;
+    }
+
+    
+    public void verifySources(String basepath) throws IOException {
+        for (Term triplesMap : this.getTriplesMaps()) {
+            List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
+            Term logicalSource = logicalSources.get(0);
+            List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+            for (Term source : sources) {
+                String value = source.getValue();
+                if (source instanceof Literal) {
+                    if (Utils.isRemoteFile(value)) {
+                        new RemoteFileAccess(value).getInputStream();
+                    } else {
+                        new LocalFileAccess(value, basepath).getInputStream();
+                    }
+                }
+            }
+        }
     }
 }

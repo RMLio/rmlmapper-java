@@ -397,7 +397,7 @@ public class Main {
                 functionAgent = AgentFactory.createFromFnO(optionWithIDLabFunctionArgs);
             }
             executor = new Executor(rmlStore, factory, outputStore, baseIRI, strictMode, functionAgent);
-
+            executor.verifySources(basePath);
             if (metadataGenerator != null) {
                 metadataGenerator.preMappingGeneration(triplesMaps.isEmpty() ?
                         executor.getTriplesMaps() : triplesMaps, rmlStore);
