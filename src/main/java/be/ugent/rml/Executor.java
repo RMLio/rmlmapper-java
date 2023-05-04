@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -407,11 +408,13 @@ public class Executor {
             for (Term source : sources) {
                 String value = source.getValue();
                 if (source instanceof Literal) {
+                    InputStream input;
                     if (Utils.isRemoteFile(value)) {
-                        new RemoteFileAccess(value).getInputStream();
+                        input = new RemoteFileAccess(value).getInputStream();
                     } else {
-                        new LocalFileAccess(value, basepath).getInputStream();
+                        input = new LocalFileAccess(value, basepath).getInputStream();
                     }
+                    input.close();
                 }
             }
         }
