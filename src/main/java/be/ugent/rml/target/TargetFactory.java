@@ -19,7 +19,7 @@ import java.util.List;
 public class TargetFactory {
 
     // The path used when local paths are not absolute.
-    private String basePath;
+    private final String basePath;
     private static final Logger logger = LoggerFactory.getLogger(TargetFactory.class);
 
     /**
@@ -39,7 +39,6 @@ public class TargetFactory {
         Target target = null;
         String serializationFormat = "nquads";
         String compression = null;
-        boolean isLDES = false;
         List<Quad> metadata = new ArrayList<>();
 
         // Old Logical Source reference is supported for Logical Targets as well for backwards compatibility
@@ -119,20 +118,15 @@ public class TargetFactory {
             // Target has LDES features, read them
             if (type.getValue().equals(NAMESPACES.LDES + "EventStreamTarget")) {
                 logger.debug("Found LDES EventStreamTarget");
-                isLDES = true;
                 Term iri;
-                Term retention_iri;
                 Term eventstream_iri;
                 Term versionOfPathObj = null;
                 Term timestampPathObj = null;
-                Term retentionPolicyType;
-                Term retentionPolicyAmount;
 
                 // Required LDES IRI
                 try {
                     iri = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
                             new NamedNode(NAMESPACES.LDES + "baseIRI"), null)).get(0);
-                    retention_iri = new NamedNode(iri.getValue() + "#retention");
                     eventstream_iri = new NamedNode(iri.getValue());
                     logger.debug("LDES base IRI: {}", iri.getValue());
                 }
@@ -140,7 +134,7 @@ public class TargetFactory {
                     throw new IllegalArgumentException("No base IRI specified for LDES!");
                 }
 
-                // Required SHACL shape
+                // Optional SHACL shape
                 try {
                     Term shape = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
                             new NamedNode(NAMESPACES.TREE + "shape"), null)).get(0);
@@ -150,22 +144,21 @@ public class TargetFactory {
                     metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.TREE + "shape"), shape));
                 }
                 catch (IndexOutOfBoundsException e) {
-                    logger.error("No SHACL shape specified for LDES!");
+                    logger.debug("No SHACL shape specified for LDES.");
                 }
 
-                // LDES tree:view
                 metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.RDF + "type"),
                         new NamedNode(NAMESPACES.LDES + "EventStream")));
-                List<Term> subjects = new ArrayList<Term>(new HashSet<Term>(Utils.getSubjectsFromQuads(outputStore.getQuads(null, null, null))));
+                List<Term> subjects = new ArrayList<>(new HashSet<>(Utils.getSubjectsFromQuads(outputStore.getQuads(null, null, null))));
                 for (Term s: subjects) {
                     metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.TREE + "member"), s));
                 }
-                metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.TREE + "view"), iri));
 
                 // Optional versionOf path
                 try {
                     versionOfPathObj = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
                             new NamedNode(NAMESPACES.LDES + "versionOfPath"), null)).get(0);
+                    metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.LDES + "versionOfPath"), versionOfPathObj));
                 }
                 catch (IndexOutOfBoundsException e) {
                     logger.debug("No versionOfPath found");
@@ -175,32 +168,10 @@ public class TargetFactory {
                 try {
                     timestampPathObj = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
                             new NamedNode(NAMESPACES.LDES + "timestampPath"), null)).get(0);
+                    metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.LDES + "timestampPath"), timestampPathObj));
                 }
                 catch (IndexOutOfBoundsException e) {
                     logger.debug("No timestampPath found");
-                }
-
-                // Optional retention policy
-                try {
-                    Term retentionPolicy = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                            new NamedNode(NAMESPACES.LDES + "retentionPolicy"), null)).get(0);
-                    // TODO parse retention policies
-                    throw new NotImplementedException("Parsing LDES retention policies not implemented yet!");
-                }
-                catch (IndexOutOfBoundsException e) {
-                    logger.debug("No retention policy specified, default to latest only");
-                    retentionPolicyType = new NamedNode(NAMESPACES.LDES + "LatestVersionSubject");
-                    retentionPolicyAmount = new Literal("1");
-                }
-
-                metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.LDES + "retentionPolicy"), retention_iri));
-                metadata.add(new Quad(retention_iri, new NamedNode(NAMESPACES.RDF + "type"), retentionPolicyType));
-                metadata.add(new Quad(retention_iri, new NamedNode(NAMESPACES.LDES + "amount"), retentionPolicyAmount));
-                if (versionOfPathObj != null) {
-                    metadata.add(new Quad(retention_iri, new NamedNode(NAMESPACES.LDES + "versionOfPath"), versionOfPathObj));
-                }
-                if (timestampPathObj != null) {
-                    metadata.add(new Quad(retention_iri, new NamedNode(NAMESPACES.LDES + "timestampPath"), timestampPathObj));
                 }
 
                 break;
