@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated postgresql to 42.5.1
 - Subject of LDES event stream has wrong IRI (internal GitLab issue [#253](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/253))
 
+### Changed
+- `tree:view` and `ldes:retentionPolicy` are omitted when generating LDES metadata.
+
 ## [6.1.3] - 2022-12-20
 
 ### Fixed
