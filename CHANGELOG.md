@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated logback to 1.4.5
 - Updated Saxon-HE to 11.4
 - Updated postgresql to 42.5.1
+- Subject of LDES event stream has wrong IRI (internal GitLab issue [#253](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/253))
 
 ## [6.1.3] - 2022-12-20
 

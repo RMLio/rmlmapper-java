@@ -8,7 +8,6 @@ import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.poi.ss.formula.functions.Na;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +133,7 @@ public class TargetFactory {
                     iri = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
                             new NamedNode(NAMESPACES.LDES + "baseIRI"), null)).get(0);
                     retention_iri = new NamedNode(iri.getValue() + "#retention");
-                    eventstream_iri = new NamedNode(iri.getValue() + "#eventstream");
+                    eventstream_iri = new NamedNode(iri.getValue());
                     logger.debug("LDES base IRI: {}", iri.getValue());
                 }
                 catch (IndexOutOfBoundsException e) {
@@ -194,7 +193,7 @@ public class TargetFactory {
                     retentionPolicyAmount = new Literal("1");
                 }
 
-                metadata.add(new Quad(iri, new NamedNode(NAMESPACES.LDES + "retentionPolicy"), retention_iri));
+                metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.LDES + "retentionPolicy"), retention_iri));
                 metadata.add(new Quad(retention_iri, new NamedNode(NAMESPACES.RDF + "type"), retentionPolicyType));
                 metadata.add(new Quad(retention_iri, new NamedNode(NAMESPACES.LDES + "amount"), retentionPolicyAmount));
                 if (versionOfPathObj != null) {
