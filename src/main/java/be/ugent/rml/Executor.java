@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -131,9 +132,11 @@ public class Executor {
         //we execute every mapping
         for (Term triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
+
             List<Record> records = this.getRecords(triplesMap);
             for (int j = 0; j < records.size(); j++) {
                 Record record = records.get(j);
+
                 ProvenancedTerm subject = getSubject(triplesMap, mapping, record, j);
 
                 final ProvenancedTerm finalSubject = subject;
@@ -266,6 +269,7 @@ public class Executor {
         ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
         for (MultipleRecordsFunctionExecutor condition : conditions) {
             allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
+
         }
 
         if (!allIRIs.isEmpty()) {
@@ -355,6 +359,7 @@ public class Executor {
         if (!this.recordsHolders.containsKey(triplesMap)) {
             this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
         }
+
         return this.recordsHolders.get(triplesMap);
     }
 
@@ -407,11 +412,13 @@ public class Executor {
             for (Term source : sources) {
                 String value = source.getValue();
                 if (source instanceof Literal) {
+                    InputStream is;
                     if (Utils.isRemoteFile(value)) {
-                        new RemoteFileAccess(value).getInputStream();
+                        is = new RemoteFileAccess(value).getInputStream();
                     } else {
-                        new LocalFileAccess(value, basepath).getInputStream();
+                        is = new LocalFileAccess(value, basepath).getInputStream();
                     }
+                    is.close(); // close resources.
                 }
             }
         }
