@@ -10,13 +10,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Updated function-agent-java to v1.1.0
 - Updated grel-functions-java to v0.9.1
-- Updated idlab-functions-java to v0.2.0
+- Updated idlab-functions-java to v0.3.1
 - Updated junit to 5.9.1
-- Updated testcintainers to 1.17.6
+- Updated testcontainers to 1.17.6
 - Updated logback to 1.4.5
 - Updated Saxon-HE to 11.4
 - Updated postgresql to 42.5.1
 - Detect non existing files early ([issue 223](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/233))
+- Subject of LDES event stream has wrong IRI (internal GitLab issue [#253](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/253))
+
+### Changed
+- `tree:view` and `ldes:retentionPolicy` are omitted when generating LDES metadata.
 
 ## [6.1.3] - 2022-12-20
 
