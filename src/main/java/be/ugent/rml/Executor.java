@@ -134,9 +134,9 @@ public class Executor {
             Mapping mapping = this.mappings.get(triplesMap);
 
             List<Record> records = this.getRecords(triplesMap);
+
             for (int j = 0; j < records.size(); j++) {
                 Record record = records.get(j);
-
                 ProvenancedTerm subject = getSubject(triplesMap, mapping, record, j);
 
                 final ProvenancedTerm finalSubject = subject;
@@ -161,6 +161,7 @@ public class Executor {
                             }
                         });
                     });
+
                     List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
                     pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
@@ -267,9 +268,9 @@ public class Executor {
     private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws Exception {
         ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<ProvenancedTerm>();
         ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
+
         for (MultipleRecordsFunctionExecutor condition : conditions) {
             allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
-
         }
 
         if (!allIRIs.isEmpty()) {
