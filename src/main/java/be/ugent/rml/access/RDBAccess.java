@@ -348,7 +348,7 @@ public class RDBAccess implements Access {
      * @return Normalized string representation of the data parameter, given the datatype.
      */
     private static String normalizeData(String data, String dataType) {
-        if (DOUBLE.equals(dataType)) {
+        if (DOUBLE.equals(dataType) && data.endsWith(".0")) {
             // remove trailing decimal points (Quirk from MySQL, see issue 203)
             return data.replace(".0", "");
         }

@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Detect non existing files early ([issue 223](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/233))
 - Subject of LDES event stream has wrong IRI (internal GitLab issue [#253](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/253))
 - MS SQLServer JDBC driver was only for tests on classpath (internal GitLab issue [#255](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/255))
+- Normalising Double numbers from RDBs went wrong (internal GitLab issue [#256](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/256), GitHub issue [#206](https://github.com/RMLio/rmlmapper-java/issues/206))
 
 ### Changed
 - `tree:view` and `ldes:retentionPolicy` are omitted when generating LDES metadata.
