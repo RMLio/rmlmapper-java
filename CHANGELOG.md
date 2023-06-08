@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - `tree:view` and `ldes:retentionPolicy` are omitted when generating LDES metadata.
 
+### Added
+- A new Maven profile `no-buildnumber` disables using and updating `buildNumber.properties`.
+
 ## [6.1.3] - 2022-12-20
 
 ### Fixed

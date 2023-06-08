@@ -68,6 +68,27 @@
 
     <profiles>
         <profile>
+            <id>no-buildnumber</id>
+            <properties>
+                <buildNumber>0</buildNumber>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>buildnumber-maven-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                            <execution>
+                                <id>buildnumber-generation</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>release</id>
             <build>
                 <plugins>
@@ -463,6 +484,7 @@
                 <version>1.4</version>
                 <executions>
                     <execution>
+                        <id>buildnumber-generation</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>create</goal>

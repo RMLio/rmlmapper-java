@@ -88,6 +88,12 @@ A standalone jar can be found in `/target`.
 
 Two jars are found in `/target`: a slim jar without bundled dependencies, and a standalone jar (suffixed with `-all.jar`) with all dependencies bundled.
 
+Building with profile `no-buildnumber` disables using and updating `buildNumber.properties` (and uses `0` as build number), e.g.:
+```
+mvn clean package -P no-buildnumber
+```
+outputs for example `target/rmlmapper-<version>-r0.jar`
+
 ## Usage
 
 ### CLI
