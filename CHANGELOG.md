@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [6.2.0] - 2023-06-22
+
 ### Fixed
 - Updated function-agent-java to v1.1.0
 - Updated grel-functions-java to v0.9.1
@@ -610,6 +612,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[6.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.3...v6.2.0
 [6.1.3]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.2...v6.1.3
 [6.1.2]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.1...v6.1.2
 [6.1.1]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.0...v6.1.1
