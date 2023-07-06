@@ -312,7 +312,7 @@
         <dependency>
             <groupId>com.github.fnoio</groupId>
             <artifactId>idlab-functions-java</artifactId>
-            <version>v0.3.1</version>
+            <version>v1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
