@@ -277,11 +277,11 @@ public class MappingFactory {
                         Map<String, Object[]> parameters = new HashMap<>();
 
                         boolean ignoreDoubleQuotesInParent = this.areDoubleQuotesIgnored(store, parentTriplesMap);
-                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0), ignoreDoubleQuotesInParent);
+                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0).toUpperCase(), ignoreDoubleQuotesInParent);
                         Object[] detailsParent = {"parent", parent};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
 
-                        SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0), ignoreDoubleQuotes);
+                        SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0).toUpperCase(), ignoreDoubleQuotes);
                         Object[] detailsChild = {"child", child};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 

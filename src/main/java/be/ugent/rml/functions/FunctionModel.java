@@ -57,8 +57,9 @@ public class FunctionModel {
         Type[] paramTypes = this.method.getGenericParameterTypes();
 
         for (int i = 0; i < this.parameters.size(); i++) {
-            if (parameters.get(this.parameters.get(i).getValue()) != null) {
-                args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i].getTypeName());
+            Object obj = parameters.get(this.parameters.get(i).getValue());
+            if (obj != null) {
+                args[i] = parseParameter(obj, paramTypes[i].getTypeName());
             } else {
                 logger.debug("No argument was found for following parameter: {}", this.parameters.get(i).getValue());
                 args[i] = null;

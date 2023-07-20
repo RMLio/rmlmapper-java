@@ -35,4 +35,12 @@ public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFun
 
         return functionAgent.execute(functionId, functionArguments);
     }
+
+    public Map<String, Object[]> getParameters() {
+        return parameters;
+    }
+
+    public String getFunctionId() {
+        return functionId;
+    }
 }

@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class is a record factory that creates JSON records.
@@ -33,6 +34,7 @@ public class JSONRecordFactory extends IteratorFormat<Object> {
 
         try {
             List<String> pathList = JsonPath.using(conf).parse(document).read(escapedIterator);
+            pathList = pathList.stream().map(String::toUpperCase).collect(Collectors.toList());
 
             for(String p :pathList) {
                 records.add(new JSONRecord(document, p));

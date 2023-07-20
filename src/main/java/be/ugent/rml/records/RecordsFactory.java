@@ -86,7 +86,7 @@ public class RecordsFactory {
      * @param hash the hash used for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
      * @return
      */
-    private List<Record> getRecordsFromCache(Access access, String referenceFormulation, String hash) {
+    protected List<Record> getRecordsFromCache(Access access, String referenceFormulation, String hash) {
         if (recordCache.containsKey(access)
                 && recordCache.get(access).containsKey(referenceFormulation)
                 && recordCache.get(access).get(referenceFormulation).containsKey(hash)
@@ -104,7 +104,7 @@ public class RecordsFactory {
      * @param hash the used hash for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
      * @param records the records that needs to be put into the cache.
      */
-    private void putRecordsIntoCache(Access access, String referenceFormulation, String hash, List<Record> records) {
+    protected void putRecordsIntoCache(Access access, String referenceFormulation, String hash, List<Record> records) {
         if (!recordCache.containsKey(access)) {
             recordCache.put(access, new HashMap<>());
         }
@@ -126,7 +126,7 @@ public class RecordsFactory {
      * @return a list of records.
      * @throws IOException
      */
-    private List<Record> getRecords(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
+    protected List<Record> getRecords(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
         String logicalSourceHash = hashLogicalSource(logicalSource, rmlStore);
 
         // Try to get the records from the cache.
@@ -161,7 +161,7 @@ public class RecordsFactory {
      * @param rmlStore the QuadStore of the RML rules.
      * @return a hash for the Logical Source.
      */
-    private String hashLogicalSource(Term logicalSource, QuadStore rmlStore) {
+    protected String hashLogicalSource(Term logicalSource, QuadStore rmlStore) {
         List<Quad> quads = rmlStore.getQuads(logicalSource, null, null);
         final String[] hash = {""};
 

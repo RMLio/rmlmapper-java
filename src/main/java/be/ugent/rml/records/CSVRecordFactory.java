@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,7 +86,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return
      * @throws IOException
      */
-    private List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
+    protected List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
         List<Record> output = new ArrayList<>();
         try (InputStream is = access.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
@@ -111,7 +112,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return
      * @throws IOException
      */
-    private List<Record> getRecordsForODT(Access access) throws Exception {
+    protected List<Record> getRecordsForODT(Access access) throws Exception {
         List<Record> output = new ArrayList<>();
         try (InputStream is = access.getInputStream()) {
             Document document = SpreadsheetDocument.loadDocument(is);
@@ -137,7 +138,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return a CSVParser.
      * @throws IOException
      */
-    private List<Record> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException, ClassNotFoundException {
+    protected List<Record> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException, ClassNotFoundException {
         try {
             // Check if we are dealing with CSVW.
             if (csvw == null) {
@@ -149,7 +150,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
                              .build();
                 ) {
                     List<String[]> records = reader.readAll();
-                    final String[] header = records.get(0);
+                    final String[] header = Arrays.stream(records.get(0)).map(String::toUpperCase).toArray(String[]::new);
                     return records.subList(1, records.size()).stream()
                             // throw away empty records
                             .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
