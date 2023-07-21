@@ -255,8 +255,8 @@ public class Executor {
     private Collection<ProvenancedTerm> getIRIsWithSimpleJoin(Record record, Term parentTriplesMap, Map<String, Object[]> parameters) throws Exception {
         Mapping mapping = this.mappings.get(parentTriplesMap);
 
-        Extractor parentExtractor = extract(parameters, IDLABFN.PARENT_PARAMETER);
-        Extractor childExtractor = extract(parameters, IDLABFN.CHILD_PARAMETER);
+        Extractor parentExtractor = extract(parameters, RML.PARENT_PARAMETER);
+        Extractor childExtractor = extract(parameters, RML.CHILD_PARAMETER);
 
         //put in cache
         //real index instead of 0
@@ -316,7 +316,7 @@ public class Executor {
             return false;
         }
         Supplier<Stream<Object[]>> streamSupplier = () -> parameters.values().stream();
-        return streamSupplier.get().anyMatch(p -> p[0].equals(IDLABFN.PARENT_PARAMETER)) && streamSupplier.get().anyMatch(p -> p[0].equals(IDLABFN.CHILD_PARAMETER));
+        return streamSupplier.get().anyMatch(p -> p[0].equals(RML.PARENT_PARAMETER)) && streamSupplier.get().anyMatch(p -> p[0].equals(RML.CHILD_PARAMETER));
     }
 
     private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
