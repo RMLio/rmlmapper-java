@@ -34,12 +34,6 @@ public class Executor {
 
     private Map<Pair<Term, Extractor>, MultiValuedMap<List<Object>, ProvenancedTerm>> cachedRecordMap = new HashMap<>();
 
-    public static class Vocabulary {
-        public static final String EQUAL_URI = "http://example.com/idlab/function/equal";
-        public static final String PARENT_PARAMETER = "parent";
-        public static final String CHILD_PARAMETER = "child";
-    }
-
     private Initializer initializer;
     private HashMap<Term, List<Record>> recordsHolders;
     /*
@@ -261,8 +255,8 @@ public class Executor {
     private Collection<ProvenancedTerm> getIRIsWithSimpleJoin(Record record, Term parentTriplesMap, Map<String, Object[]> parameters) throws Exception {
         Mapping mapping = this.mappings.get(parentTriplesMap);
 
-        Extractor parentExtractor = extract(parameters, Vocabulary.PARENT_PARAMETER);
-        Extractor childExtractor = extract(parameters, Vocabulary.CHILD_PARAMETER);
+        Extractor parentExtractor = extract(parameters, RML.PARENT_PARAMETER);
+        Extractor childExtractor = extract(parameters, RML.CHILD_PARAMETER);
 
         //put in cache
         //real index instead of 0
@@ -312,11 +306,11 @@ public class Executor {
         }
         StaticMultipleRecordsFunctionExecutor staticMultipleRecordsFunctionExecutor = (StaticMultipleRecordsFunctionExecutor) join;
         String uri = staticMultipleRecordsFunctionExecutor.getFunctionId();
-        if(!Executor.Vocabulary.EQUAL_URI.equals(uri) || parameters.size() != 2) {
+        if(!RML.EQUAL_URI.equals(uri) || parameters.size() != 2) {
             return false;
         }
         Supplier<Stream<Object[]>> streamSupplier = () -> parameters.values().stream();
-        return streamSupplier.get().anyMatch(p -> p[0].equals(Vocabulary.PARENT_PARAMETER)) && streamSupplier.get().anyMatch(p -> p[0].equals(Vocabulary.CHILD_PARAMETER));
+        return streamSupplier.get().anyMatch(p -> p[0].equals(RML.PARENT_PARAMETER)) && streamSupplier.get().anyMatch(p -> p[0].equals(RML.CHILD_PARAMETER));
     }
 
     private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
