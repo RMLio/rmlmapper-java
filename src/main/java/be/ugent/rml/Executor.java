@@ -246,7 +246,6 @@ public class Executor {
                         objects = this.getIRIsWithSimpleJoin(record, pogMapping.getParentTriplesMap(), parameters);
                     } else {
                         objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
-                        //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
                     }
                 } else {
                     objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
