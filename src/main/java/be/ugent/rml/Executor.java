@@ -295,7 +295,13 @@ public class Executor {
                 .orElse(null);
     }
 
-    // Check if the 2 parameters exist
+    // This methods checks if a simple join can be performed.
+    // A simple join exist if:
+    //  there is only 1 joinCondition,
+    //  it uses an EQUAL function id with exactly 2 parameters
+    // A simple join tells us that we are looking for a foreign key (parent and child)
+    // A normal join wil not lookup for a foreign key, making joins more expensive
+    // So, if a normal join can be performed, it will save a lot of time as there is no need to handle complex join conditions
     private boolean isSimpleJoin(PredicateObjectGraphMapping pogMapping, Map<String, Object[]> parameters) {
         if(pogMapping.getJoinConditions().size() != 1) {
             return false;
