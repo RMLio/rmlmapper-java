@@ -1,16 +1,23 @@
 package be.ugent.rml;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.access.LocalFileAccess;
 import be.ugent.rml.access.RemoteFileAccess;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
+import be.ugent.rml.records.MarkerRecord;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.*;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.AbstractListValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.iri.IRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +36,7 @@ public class Executor {
      * this map stores for every Triples Map, which is a Term,
      * a map with the record index and the record's corresponding subject, which is a ProvenancedTerm.
      */
-    private HashMap<Term, HashMap<Integer, ProvenancedTerm>> subjectCache;
+    private HashMap<Term, HashMap<Integer, List<ProvenancedTerm>>> subjectCache;
     private QuadStore resultingQuads;
     private QuadStore rmlStore;
     private HashMap<Term, QuadStore> targetStores;
@@ -137,14 +144,59 @@ public class Executor {
 
             for (int j = 0; j < records.size(); j++) {
                 Record record = records.get(j);
-                ProvenancedTerm subject = getSubject(triplesMap, mapping, record, j);
+                List<ProvenancedTerm> subjects = getSubject(triplesMap, mapping, record, j);
 
+                if (subjects == null)
+                    continue;
+
+                for (ProvenancedTerm subject: subjects) {
+                    final ProvenancedTerm finalSubject = subject;
+
+                    //TODO validate subject or check if blank node
+                    if (subject != null) {
+                        List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
+
+                        mapping.getGraphMappingInfos().forEach(mappingInfo -> {
+                            List<Term> terms = null;
+
+                            try {
+                                terms = mappingInfo.getTermGenerator().generate(record);
+                            } catch (Exception e) {
+                                //todo be more nice and gentle
+                                e.printStackTrace();
+                            }
+
+                            terms.forEach(term -> {
+                                if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                                    subjectGraphs.add(new ProvenancedTerm(term));
+                                }
+                            });
+                        });
+
+                        List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
+
+                        pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
+                    }
+                }
+            }
+        }
+
+        /* Magic Marker */
+        for (Term triplesMap : triplesMaps) {
+            Record record = new MarkerRecord();
+            Mapping mapping = this.mappings.get(triplesMap);
+
+            List<ProvenancedTerm> subjects = getSubject(triplesMap, mapping, record, 0);
+            if (subjects == null)
+                continue;
+
+            for (int i=0; i < subjects.size(); i++) {
+                ProvenancedTerm subject = subjects.get(i);
                 final ProvenancedTerm finalSubject = subject;
 
                 //TODO validate subject or check if blank node
                 if (subject != null) {
                     List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
-
                     mapping.getGraphMappingInfos().forEach(mappingInfo -> {
                         List<Term> terms = null;
 
@@ -161,7 +213,6 @@ public class Executor {
                             }
                         });
                     });
-
                     List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
                     pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
@@ -237,6 +288,21 @@ public class Executor {
         return results;
     }
 
+    private MultiValuedMap<List<Object>, ProvenancedTerm> getCachedRecordMap(Pair<Term, Extractor> key) {
+        return this.cachedRecordMap.get(key);
+    }
+
+    private Extractor extract(Map<String, Object[]> parameters, String parameterName) {
+        return parameters.values().stream()
+                .filter(a -> a.length == 2)
+                .filter(a -> parameterName.equals(a[0]))
+                .map(a -> a[1])
+                .filter(Extractor.class::isInstance)
+                .map(Extractor.class::cast)
+                .findAny()
+                .orElse(null);
+    }
+
     private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
         Term g = null;
         Set<Term> targets = new HashSet<Term>();
@@ -308,11 +374,9 @@ public class Executor {
 
             Object expectedBoolean = condition.execute(recordsMap);
 
-            if (expectedBoolean instanceof Boolean) {
-                if ((boolean) expectedBoolean) {
-                    ProvenancedTerm subject = this.getSubject(triplesMap, mapping, parent, i);
-                    iris.add(subject);
-                }
+            if (Boolean.TRUE.equals(expectedBoolean)) {
+                List<ProvenancedTerm> subjects = this.getSubject(triplesMap, mapping, parent, i);
+                iris.addAll(subjects);
             } else {
                 logger.warn("The used condition with the Parent Triples Map does not return a boolean.");
             }
@@ -321,19 +385,22 @@ public class Executor {
         return iris;
     }
 
-    private ProvenancedTerm getSubject(Term triplesMap, Mapping mapping, Record record, int i) throws Exception {
+    private List<ProvenancedTerm> getSubject(Term triplesMap, Mapping mapping, Record record, int i) throws Exception {
         if (!this.subjectCache.containsKey(triplesMap)) {
-            this.subjectCache.put(triplesMap, new HashMap<Integer, ProvenancedTerm>());
+            this.subjectCache.put(triplesMap, new HashMap<Integer, List<ProvenancedTerm>>());
         }
 
         if (!this.subjectCache.get(triplesMap).containsKey(i)) {
             List<Term> nodes = mapping.getSubjectMappingInfo().getTermGenerator().generate(record);
-
             if (!nodes.isEmpty()) {
                 //todo: only create metadata when it's required
                 Metadata meta = new Metadata(triplesMap, mapping.getSubjectMappingInfo().getTerm());
                 List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
-                this.subjectCache.get(triplesMap).put(i, new ProvenancedTerm(nodes.get(0), meta, targets));
+                List<ProvenancedTerm> terms = new ArrayList<>();
+                for (int j=0; j < nodes.size(); j++) {
+                    terms.add(new ProvenancedTerm(nodes.get(j), meta, targets));
+                }
+                this.subjectCache.get(triplesMap).put(i, terms);
             }
         }
 
@@ -348,9 +415,9 @@ public class Executor {
 
         for (int i = 0; i < records.size(); i++) {
             Record record = records.get(i);
-            ProvenancedTerm subject = getSubject(triplesMap, mapping, record, i);
-
-            iris.add(subject);
+            List<ProvenancedTerm> subjects = getSubject(triplesMap, mapping, record, i);
+            if (subjects != null)
+                iris.addAll(subjects);
         }
 
         return iris;
