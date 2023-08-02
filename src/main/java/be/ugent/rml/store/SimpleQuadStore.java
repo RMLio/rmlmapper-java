@@ -104,7 +104,8 @@ public class SimpleQuadStore extends QuadStore {
 
     @Override
     public void removeQuads(Term subject, Term predicate, Term object, Term graph) {
-        throw new UnsupportedOperationException("Method not implemented.");
+        List<Quad> matches = this.getQuads(subject, predicate, object, graph);
+        matches.forEach(m -> quads.remove(m));
     }
 
     @Override
