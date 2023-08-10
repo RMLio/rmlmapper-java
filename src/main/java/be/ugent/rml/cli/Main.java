@@ -48,6 +48,7 @@ public class Main {
         try {
             run(args, System.getProperty("user.dir"));
         } catch (Exception e) {
+            System.out.println(e);
             System.exit(1);
         }
     }
