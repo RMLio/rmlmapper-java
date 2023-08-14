@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.2.2] - 
+
+### FIXED
+- add url decoders to file paths so special characters and spaces work
+- don't close output streams
+- test cases: add array initializers to avoid bugs
+
+
 ## [6.2.1] - 2023-07-06
 
 ### Fixed
