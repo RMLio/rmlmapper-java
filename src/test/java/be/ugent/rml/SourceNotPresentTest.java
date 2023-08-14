@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -27,7 +29,7 @@ public class SourceNotPresentTest extends TestFunctionCore{
         // execute mapping file
         URL url = classLoader.getResource("./test-cases/RMLTC1036-CSV");
         assert url != null;
-        executor.verifySources( url.getPath());
+        executor.verifySources(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
     }
 
 
