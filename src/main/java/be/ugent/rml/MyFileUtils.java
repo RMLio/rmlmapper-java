@@ -56,6 +56,7 @@ class MyFileUtils {
 
         if (url != null) {
             path = url.getFile();
+            path = URLDecoder.decode(path, StandardCharsets.UTF_8);
         }
 
         File outputFile = new File(path);
