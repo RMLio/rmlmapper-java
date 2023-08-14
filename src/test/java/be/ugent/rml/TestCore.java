@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,6 +79,7 @@ public abstract class TestCore {
 
         if (url != null) {
             mapPath = url.getFile();
+            mapPath = URLDecoder.decode(mapPath, StandardCharsets.UTF_8); // path with spaces
         }
 
         File mappingFile = new File(mapPath);
@@ -134,7 +137,9 @@ public abstract class TestCore {
     Executor createExecutor(String mapPath, final Agent functionAgent) throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         // execute mapping file
-        File mappingFile = new File(classLoader.getResource(mapPath).getFile());
+        String filename = classLoader.getResource(mapPath).getFile();
+        filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
+        File mappingFile = new File(filename);
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
         return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, BEST_EFFORT, functionAgent);
@@ -302,7 +307,9 @@ public abstract class TestCore {
         File mappingFile = new File(mapPath);
 
         if (!mappingFile.isAbsolute()) {
-            mappingFile = new File(classLoader.getResource(mapPath).getFile());
+            String filename = classLoader.getResource(mapPath).getFile();
+            filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
+            mappingFile = new File(filename);
         }
 
         QuadStore rmlStore = null;
