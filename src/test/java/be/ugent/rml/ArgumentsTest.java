@@ -423,6 +423,7 @@ public class ArgumentsTest extends TestCore {
             System.setOut(ps);
             Main.run(new String[]{"-v", "--strict", "-b", "http://example2.com/", "-m", mappingFilePath}, cwd);
         } finally {
+            stdout.close();
             System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
         }
         assertThat(stdout.toString(), containsString("<http://example2.com/10/Venus>"));
