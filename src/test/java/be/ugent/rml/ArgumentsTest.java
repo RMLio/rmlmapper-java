@@ -107,7 +107,7 @@ public class ArgumentsTest extends TestCore {
                 "    rml:source \"src/test/resources/argument-config-file-test-cases/sport.json\";\n" +
                 "    rml:referenceFormulation ql:JSONPath;\n" +
                 "    rml:iterator \"$.sports[*]\".";
-        String[] args = {"-m", arg1, arg2, "-o" , "./generated_output.nq"};
+        String[] args = {"-m", arg1, arg2, "-o", "./generated_output.nq"};
         Main.run(args);
         compareFiles(
                 "argument-config-file-test-cases/target_output.nq",
@@ -163,7 +163,7 @@ public class ArgumentsTest extends TestCore {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setOut(ps);
-            Main.run(("-v -f " + functionsFilePath + " -m " + mappingFilePath).split(" "), cwd);
+            Main.run(new String[]{"-v", "-f" , functionsFilePath , "-m" , mappingFilePath}, cwd);
         } finally {
             System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
         }
@@ -205,8 +205,7 @@ public class ArgumentsTest extends TestCore {
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
         String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
         String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
-        Main.run(("-f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath)
-                .split(" "), cwd);
+        Main.run(new String[]{"-f", "./rml-fno-test-cases/functions_dynamic.ttl", "-m" , mappingFilePath , "-o" , actualOutPath}, cwd);
         compareFiles(
                 expectedOutPath,
                 actualOutPath,
@@ -230,8 +229,7 @@ public class ArgumentsTest extends TestCore {
             String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
             String actualOutPath = (new File("./generated_output.nq")).getAbsolutePath();
             String expectedOutPath = (new File(cwd, "output.ttl")).getAbsolutePath();
-            Main.run(("-v -f ./rml-fno-test-cases/functions_dynamic.ttl -m " + mappingFilePath + " -o " + actualOutPath)
-                    .split(" "), cwd);
+            Main.run(new String[]{"-v", "-f" ,"./rml-fno-test-cases/functions_dynamic.ttl", "-m" , mappingFilePath , "-o" , actualOutPath}, cwd);
             compareFiles(
                     expectedOutPath,
                     actualOutPath,
@@ -257,7 +255,7 @@ public class ArgumentsTest extends TestCore {
         String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
         String expectedTrigPath = Utils.getFile( "argument/output-trig/target_output.trig").getAbsolutePath();
 
-        Main.run(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s turtle").split(" "), cwd);
+        Main.run(new String[]{"-m" , mappingFilePath , "-o" , actualTrigPath , "-s", "turtle"}, cwd);
         compareFiles(
                 expectedTrigPath,
                 actualTrigPath,
@@ -290,7 +288,7 @@ public class ArgumentsTest extends TestCore {
         String actualJSONPath = (new File("./generated_output.json")).getAbsolutePath();
         String expectedJSONPath = Utils.getFile( "argument/output-json/target_output.json").getAbsolutePath();
 
-        Main.run(("-m " + mappingFilePath + " -o " + actualJSONPath + " -s jsonld").split(" "), cwd);
+        Main.run(new String[]{"-m", mappingFilePath, "-o" , actualJSONPath , "-s", "jsonld"}, cwd);
 
         compareFiles(
                 expectedJSONPath,
@@ -322,7 +320,7 @@ public class ArgumentsTest extends TestCore {
         String actualTrigPath = (new File("./generated_output.trig")).getAbsolutePath();
         String expectedTrigPath = Utils.getFile( "argument/output-trig/target_output.trig").getAbsolutePath();
 
-        Main.run(("-m " + mappingFilePath + " -o " + actualTrigPath + " -s trig").split(" "), cwd);
+        Main.run(new String[]{"-m" , mappingFilePath , "-o" , actualTrigPath , "-s", "trig"}, cwd);
         compareFiles(
                 expectedTrigPath,
                 actualTrigPath,
@@ -356,11 +354,6 @@ public class ArgumentsTest extends TestCore {
         String actualHDTPath = (new File(cwd, "generated_output.hdt")).getAbsolutePath();
         String expectedHDTPath = Utils.getFile("argument/output-hdt/target_output.hdt").getAbsolutePath();
 
-        cwd = URLDecoder.decode(cwd, StandardCharsets.UTF_8);
-        mappingFilePath = URLDecoder.decode(mappingFilePath, StandardCharsets.UTF_8);
-        actualHDTPath = URLDecoder.decode(actualHDTPath, StandardCharsets.UTF_8);
-        expectedHDTPath = URLDecoder.decode(expectedHDTPath, StandardCharsets.UTF_8);
-
         Main.run((new String[]{"-v", "-m", mappingFilePath, "-o", actualHDTPath, "-s", "hdt"}), cwd);
 
         // Load HDT file.
@@ -393,7 +386,7 @@ public class ArgumentsTest extends TestCore {
         String actualNQuadsPath = (new File("./generated_output.nq")).getAbsolutePath();
         String expectedNQuadsPath = Utils.getFile( "argument/quote-in-literal/target_output.nq").getAbsolutePath();
 
-        Main.run(("-m " + mappingFilePath + " -o " + actualNQuadsPath).split(" "), cwd);
+        Main.run(new String[]{"-m" , mappingFilePath , "-o" , actualNQuadsPath}, cwd);
         compareFiles(
                 expectedNQuadsPath,
                 actualNQuadsPath,
@@ -428,7 +421,7 @@ public class ArgumentsTest extends TestCore {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setOut(ps);
-            Main.run(("-v --strict -b http://example2.com/ -m " + mappingFilePath).split(" "), cwd);
+            Main.run(new String[]{"-v", "--strict", "-b", "http://example2.com/", "-m", mappingFilePath}, cwd);
         } finally {
             System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
         }
