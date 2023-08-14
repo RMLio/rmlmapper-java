@@ -111,10 +111,12 @@ public abstract class TestCore {
 
         if (url1 != null) {
             mapPath = url1.getFile();
+            mapPath = URLDecoder.decode(mapPath, StandardCharsets.UTF_8);
         }
 
         if (url2 != null) {
             privateSecurityDataPath = url2.getFile();
+            privateSecurityDataPath = URLDecoder.decode(privateSecurityDataPath, StandardCharsets.UTF_8);
         }
 
         File mappingFile = new File(mapPath);
