@@ -29,7 +29,7 @@ public class ArgumentsTestMySQLTest extends MySQLTestCore {
 
         prepareDatabase(resourcePath, "root", "");
 
-        Main.run(("-m " + mappingFilePath + " -o " + actualPath + " --r2rml-jdbcDSN " + getDbURL() + " --r2rml-username root -v").split(" "), cwd);
+        Main.run(new String[]{"-m" , mappingFilePath , "-o" , actualPath , "--r2rml-jdbcDSN" , getDbURL() , "--r2rml-username", "root","-v"}, cwd);
         compareFiles(
                 expectedPath,
                 actualPath,
