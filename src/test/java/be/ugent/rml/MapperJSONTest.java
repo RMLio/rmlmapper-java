@@ -6,6 +6,8 @@ import be.ugent.rml.term.NamedNode;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -221,16 +223,17 @@ public class MapperJSONTest extends TestCore {
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             URL url = classLoader.getResource("./test-cases/RMLTC1016-JSON/data.json");
-
             ArrayList<Quad> extraQuads = new ArrayList<>();
             extraQuads.add(new Quad(
                     new NamedNode("http://mapping.example.com/source_0"),
                     new NamedNode("http://semweb.mmlab.be/ns/rml#source"),
-                    new Literal(url.getFile())));
+                    new Literal(URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8))));
 
             Executor executor = createExecutor("./test-cases/RMLTC1016-JSON/mapping.ttl", extraQuads);
             doMapping(executor, "./test-cases/RMLTC1016-JSON/output.nq");
         } catch (Exception e) {
+            logger.debug("exception occurred:" + e);
+            e.printStackTrace();
             fail();
         }
     }
