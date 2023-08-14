@@ -9,6 +9,7 @@ import org.rdfhdt.hdt.triples.TripleID;
 import org.rdfhdt.hdt.triples.Triples;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -350,12 +351,17 @@ public class ArgumentsTest extends TestCore {
 
     @Test
     public void outputHDT() throws Exception {
-        String cwd = Utils.getFile( "argument").getAbsolutePath();
+        String cwd = Utils.getFile("argument").getAbsolutePath();
         String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
-        String actualHDTPath = (new File("./generated_output.hdt")).getAbsolutePath();
-        String expectedHDTPath = Utils.getFile( "argument/output-hdt/target_output.hdt").getAbsolutePath();
+        String actualHDTPath = (new File(cwd, "generated_output.hdt")).getAbsolutePath();
+        String expectedHDTPath = Utils.getFile("argument/output-hdt/target_output.hdt").getAbsolutePath();
 
-        Main.run(("-v -m " + mappingFilePath + " -o " + actualHDTPath + " -s hdt").split(" "), cwd);
+        cwd = URLDecoder.decode(cwd, StandardCharsets.UTF_8);
+        mappingFilePath = URLDecoder.decode(mappingFilePath, StandardCharsets.UTF_8);
+        actualHDTPath = URLDecoder.decode(actualHDTPath, StandardCharsets.UTF_8);
+        expectedHDTPath = URLDecoder.decode(expectedHDTPath, StandardCharsets.UTF_8);
+
+        Main.run((new String[]{"-v", "-m", mappingFilePath, "-o", actualHDTPath, "-s", "hdt"}), cwd);
 
         // Load HDT file.
 
@@ -368,7 +374,7 @@ public class ArgumentsTest extends TestCore {
             IteratorTripleID iteratorTripleID1 = triples1.searchAll();
             IteratorTripleID iteratorTripleID2 = triples2.searchAll();
 
-            while(iteratorTripleID1.hasNext()) {
+            while (iteratorTripleID1.hasNext()) {
                 TripleID tripleID1 = iteratorTripleID1.next();
                 TripleID tripleID2 = iteratorTripleID2.next();
 
@@ -432,7 +438,8 @@ public class ArgumentsTest extends TestCore {
 
     @Test
     public void onlyPipe() throws Exception {
-        String mappingFile = Utils.getFile("argument-config-file-test-cases/mapping.ttl").getAbsolutePath();
+        String mappingFile = URLDecoder.decode(Utils.getFile("argument-config-file-test-cases/mapping.ttl").getAbsolutePath(), StandardCharsets.UTF_8);
+        mappingFile = URLDecoder.decode(mappingFile, StandardCharsets.UTF_8);
         try (InputStream is = Files.newInputStream(Paths.get(mappingFile))) {
             System.setIn(is);
 
