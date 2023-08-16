@@ -315,6 +315,11 @@
             <version>v1.0.0</version>
         </dependency>
         <dependency>
+            <groupId>com.github.rmlio</groupId>
+            <artifactId>dataio</artifactId>
+            <version>v0.1.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.15.3</version>
