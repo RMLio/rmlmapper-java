@@ -2,7 +2,6 @@ package be.ugent.rml.records;
 
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
-import be.ugent.rml.access.Access;
 import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
@@ -11,6 +10,8 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import be.ugent.idlab.knows.dataio.access.*;
 
 import java.io.IOException;
 import java.util.ArrayList;

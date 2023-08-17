@@ -1,8 +1,8 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
-import be.ugent.rml.access.Access;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
@@ -47,7 +47,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @throws IOException
      */
     @Override
-    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
+    public List<Record> getRecords(be.ugent.idlab.knows.dataio.access.Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
 
@@ -85,7 +85,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return
      * @throws IOException
      */
-    private List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
+    private List<Record> getRecordsForExcel(be.ugent.idlab.knows.dataio.access.Access access) throws IOException, SQLException, ClassNotFoundException {
         List<Record> output = new ArrayList<>();
         try (InputStream is = access.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
@@ -111,7 +111,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return
      * @throws IOException
      */
-    private List<Record> getRecordsForODT(Access access) throws Exception {
+    private List<Record> getRecordsForODT(be.ugent.idlab.knows.dataio.access.Access access) throws Exception {
         List<Record> output = new ArrayList<>();
         try (InputStream is = access.getInputStream()) {
             Document document = SpreadsheetDocument.loadDocument(is);

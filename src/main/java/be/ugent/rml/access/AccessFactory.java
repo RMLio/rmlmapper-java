@@ -1,5 +1,12 @@
 package be.ugent.rml.access;
 
+import be.ugent.idlab.knows.dataio.access.DatabaseType;
+import be.ugent.idlab.knows.dataio.access.Access;
+import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
+import be.ugent.idlab.knows.dataio.access.RDBAccess;
+import be.ugent.idlab.knows.dataio.access.RemoteFileAccess;
+import be.ugent.idlab.knows.dataio.access.SPARQLEndpointAccess;
+import be.ugent.idlab.knows.dataio.access.WoTAccess;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.SPARQLResultFormat;
@@ -13,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static be.ugent.rml.Utils.isRemoteFile;
 
@@ -51,11 +59,12 @@ public class AccessFactory {
             // then it's either a local or remote file.
             if (sources.get(0) instanceof Literal) {
                 String value = sources.get(0).getValue();
-
                 if (isRemoteFile(value)) {
                     access = new RemoteFileAccess(value);
                 } else {
-                    access = new LocalFileAccess(value, this.basePath);
+                    String datatype = ((Literal) sources.get(0)).getDatatype()  == null ? null :((Literal) sources.get(0)).getDatatype().getValue();
+                    access = new LocalFileAccess(value, this.basePath, datatype);
+
                 }
             } else {
                 // if not a literal, then we are dealing with a more complex description.
@@ -87,7 +96,7 @@ public class AccessFactory {
                         List<Term> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "resultFormat"), null));
                         SPARQLResultFormat resultFormat = getSPARQLResultFormat(resultFormatObject, referenceFormulations);
 
-                        access = new SPARQLEndpointAccess(resultFormat.getContentType(), endpoint.get(0).getValue(), query.get(0).getValue());;
+                        access = new SPARQLEndpointAccess(resultFormat.getContentType(), endpoint.get(0).getValue(), query.get(0).getValue());
 
                         break;
                     case NAMESPACES.CSVW + "Table": // CSVW
@@ -102,13 +111,13 @@ public class AccessFactory {
                         if (isRemoteFile(value)) {
                             access = new RemoteFileAccess(value);
                         } else {
-                            access = new LocalFileAccess(value, this.basePath);
+                            access = new LocalFileAccess(value, this.basePath, "CSVW");
                         }
 
                         break;
                     case NAMESPACES.TD + "PropertyAffordance":
                         HashMap<String, String> headers = new HashMap<String, String>();
-                        HashMap<String, HashMap<String, String>> auth = new HashMap<>();
+                        HashMap<String, Map<String, String>> auth = new HashMap<>();
                         auth.put("data", new HashMap<String, String>());
                         auth.put("info", new HashMap<String, String>());
 
@@ -287,7 +296,6 @@ public class AccessFactory {
 
         // - ContentType
         List<Term> contentType = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
-
 
         return new RDBAccess(dsn, database, username, password, query, (contentType.isEmpty() ? "text/csv" : contentType.get(0).getValue()));
     }

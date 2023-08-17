@@ -1,6 +1,6 @@
 package be.ugent.rml.target;
 
-import be.ugent.rml.access.COMPRESSION;
+import be.ugent.idlab.knows.dataio.access.COMPRESSION;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.term.Term;
 import org.slf4j.Logger;

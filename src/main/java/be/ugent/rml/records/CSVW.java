@@ -1,8 +1,8 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
-import be.ugent.rml.access.Access;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;

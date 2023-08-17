@@ -1,7 +1,7 @@
 package be.ugent.rml.conformer;
 
+import be.ugent.idlab.knows.dataio.access.DatabaseType;
 import be.ugent.rml.NAMESPACES;
-import be.ugent.rml.access.DatabaseType;
 import be.ugent.rml.store.QuadStore;
 
 import be.ugent.rml.term.Literal;

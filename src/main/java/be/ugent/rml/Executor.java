@@ -1,8 +1,8 @@
 package be.ugent.rml;
 
+import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
+import be.ugent.idlab.knows.dataio.access.RemoteFileAccess;
 import be.ugent.idlab.knows.functions.agent.Agent;
-import be.ugent.rml.access.LocalFileAccess;
-import be.ugent.rml.access.RemoteFileAccess;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
@@ -417,7 +417,7 @@ public class Executor {
                     if (Utils.isRemoteFile(value)) {
                         is = new RemoteFileAccess(value).getInputStream();
                     } else {
-                        is = new LocalFileAccess(value, basepath).getInputStream();
+                        is = new LocalFileAccess(value, basepath, ((Literal) source).getDatatype().getValue()).getInputStream();
                     }
                     is.close(); // close resources.
                 }
