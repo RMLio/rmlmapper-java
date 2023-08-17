@@ -317,7 +317,7 @@
         <dependency>
             <groupId>com.github.rmlio</groupId>
             <artifactId>dataio</artifactId>
-            <version>v0.1.1</version>
+            <version>ffc2268</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
