@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [6.2.2] - 
 
-### FIXED
-- add url decoders to file paths so special characters and spaces work
-- don't close output streams
-- test cases: add array initializers to avoid bugs
+### Changed
+
+- Use the DataIO library to handle access to files.
+
+### Fixed
+- Add url decoders to file paths so special characters and spaces work.
+- Don't close output streams.
+- Test cases: add array initializers to avoid bugs.
 
 
 ## [6.2.1] - 2023-07-06
