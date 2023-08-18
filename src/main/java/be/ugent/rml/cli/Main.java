@@ -602,10 +602,7 @@ public class Main {
             }
 
             store.write(out, format);
-            if (! isSystemOut){
-                out.close();
-            }
-            else{
+            if (isSystemOut) {
                 out.flush(); // flush System.out stream
                 out = null; // replace with null, so it won't be closed later;
             }
