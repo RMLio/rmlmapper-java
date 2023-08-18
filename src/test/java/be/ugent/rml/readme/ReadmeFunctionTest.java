@@ -51,7 +51,6 @@ public class ReadmeFunctionTest {
             // Output the result
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
             result.write(out, "turtle");
-//            out.close();
         } catch (Exception e) {
             fail("No exception was expected.");
         }

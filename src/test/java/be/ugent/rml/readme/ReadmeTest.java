@@ -46,7 +46,6 @@ public class ReadmeTest {
             // Output the result
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
             result.write(out, "turtle");
-//            out.close(); // don't close the output stream?
         } catch (Exception e) {
             fail("No exception was expected.");
         }
