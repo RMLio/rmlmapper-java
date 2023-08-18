@@ -116,8 +116,8 @@ public class AccessFactory {
 
                         break;
                     case NAMESPACES.TD + "PropertyAffordance":
-                        HashMap<String, String> headers = new HashMap<String, String>();
-                        HashMap<String, Map<String, String>> auth = new HashMap<>();
+                        Map<String, String> headers = new HashMap<String, String>();
+                        Map<String, Map<String, String>> auth = new HashMap<>();
                         auth.put("data", new HashMap<String, String>());
                         auth.put("info", new HashMap<String, String>());
 
