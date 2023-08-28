@@ -8,9 +8,9 @@
 @prefix csvw: <http://www.w3.org/ns/csvw#>.
 
 <TriplesMap> a rr:TriplesMap;
-    rml:logicalSource [ a rml:LogicalSource;
-        rml:source "missing-column-names.csv";
-        rml:referenceFormulation ql:CSV;
+    rml:logicalSource [
+      rml:source <#CSVW_source>;
+      rml:referenceFormulation ql:CSV
     ];
     rr:subjectMap [ a rr:SubjectMap;
         rr:template "http://example.com/{ColumnA}";

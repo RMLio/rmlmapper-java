@@ -7,6 +7,7 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
@@ -57,13 +58,15 @@ class CSVW {
     List<Record> getRecords(Access access) throws IOException, CsvException, SQLException, ClassNotFoundException {
         int skipLines = this.skipHeader ? 1 : 0;
         try (BOMInputStream inputStream = new BOMInputStream(access.getInputStream())) {
-            List<String[]> records = new CSVReaderBuilder(new InputStreamReader(inputStream, csvCharset))
+             CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, csvCharset))
                     .withCSVParser(this.csvParser.build())
                     .withSkipLines(skipLines)
                     .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
-                    .build()
-                    .readAll();
+                    .build();
+            List<String[]> records = reader.readAll();
+            reader.close();
 
+            // filter away comments
             records = records.stream()
                     .filter(row -> ! row[0].startsWith(getCommentPrefix()))
                     .collect(Collectors.toList());
@@ -72,7 +75,9 @@ class CSVW {
             Stream<String[]> readRecords = records.subList(1, records.size())
                     .stream()
                     // throw away empty records
-                    .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null));
+                    .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
+                    // throw away records that don't contain enough information -> not all columns hold a value
+                    .filter(r -> r.length >= header.length);
             if (this.getTrim()) { // trim each record value
                 readRecords = readRecords.map(r -> Arrays.stream(r).map(String::trim).toArray(String[]::new));
             }
