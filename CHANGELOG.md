@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Updated idlab-functions-java to v1.0.0
+- CSVW 1025 testcase now reads correct logical source
 
 ## [6.2.0] - 2023-06-22
 
