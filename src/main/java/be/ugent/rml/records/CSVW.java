@@ -14,7 +14,6 @@ import com.opencsv.exceptions.CsvException;
 import org.apache.commons.io.input.BOMInputStream;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -49,26 +48,25 @@ class CSVW {
     }
 
 
-
     /**
      * Read the records from the given Access
+     *
      * @param access The access containing the records
      * @return The list of records in the Access
      */
     List<Record> getRecords(Access access) throws IOException, CsvException, SQLException, ClassNotFoundException {
         int skipLines = this.skipHeader ? 1 : 0;
-        try (BOMInputStream inputStream = new BOMInputStream(access.getInputStream())) {
+        try (BOMInputStream inputStream = new BOMInputStream(access.getInputStream());
              CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, csvCharset))
-                    .withCSVParser(this.csvParser.build())
-                    .withSkipLines(skipLines)
-                    .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
-                    .build();
+                     .withCSVParser(this.csvParser.build())
+                     .withSkipLines(skipLines)
+                     .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
+                     .build()
+        ) {
             List<String[]> records = reader.readAll();
-            reader.close();
-
             // filter away comments
             records = records.stream()
-                    .filter(row -> ! row[0].startsWith(getCommentPrefix()))
+                    .filter(row -> !row[0].startsWith(getCommentPrefix()))
                     .collect(Collectors.toList());
 
             String[] header = records.get(0);
@@ -96,7 +94,7 @@ class CSVW {
         Term source = sources.get(0);
 
         List<Term> nullTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "null"), null));
-        if(!nullTerms.isEmpty()){
+        if (!nullTerms.isEmpty()) {
             this.nulls.addAll(nullTerms.stream().map(Term::getValue).collect(Collectors.toList()));
         }
 
@@ -110,7 +108,7 @@ class CSVW {
             // TODO implement CSVW Schema class to add header types
             this.csvParser = this.csvParser
                     // commentPrefix TODO
-                   // .withComment(getCommentPrefix())
+                    // .withComment(getCommentPrefix())
                     // delimiter
                     .withSeparator(getDelimiter())
                     // doubleQuote
@@ -144,6 +142,7 @@ class CSVW {
 
     /**
      * This method returns a single value (or null) for a CSVW term.
+     *
      * @param term the CSVW term, without CSVW namespace.
      * @return the value of the term, if one is found, else null.
      */
@@ -151,7 +150,7 @@ class CSVW {
         List<Term> terms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.dialect, new NamedNode(NAMESPACES.CSVW + term), null));
 
         if (!terms.isEmpty()) {
-            return  terms.get(0).getValue();
+            return terms.get(0).getValue();
         }
 
         return null;
@@ -159,6 +158,7 @@ class CSVW {
 
     /**
      * This method determines the comment prefix.
+     *
      * @return the comment prefix.
      */
     private String getCommentPrefix() {
@@ -173,6 +173,7 @@ class CSVW {
 
     /**
      * This method returns whether to skip the header record.
+     *
      * @return true or false.
      */
     private boolean getSkipHeaderRecord() {
@@ -187,6 +188,7 @@ class CSVW {
 
     /**
      * This method returns whether to trim leading and trailing blanks.
+     *
      * @return true or false.
      */
     private boolean getTrim() {
@@ -201,6 +203,7 @@ class CSVW {
 
     /**
      * This method returns the character delimiting the values (typically ';', ',' or '\t').
+     *
      * @return the delimiter.
      */
     private Character getDelimiter() {
@@ -215,6 +218,7 @@ class CSVW {
 
     /**
      * This method returns the escape character.
+     *
      * @return the escape character.
      */
     private Character getEscapeCharacter() {
@@ -229,6 +233,7 @@ class CSVW {
 
     /**
      * This method returns the character used to encapsulate values containing special characters.
+     *
      * @return the quote character.
      */
     private Character getQuoteCharacter() {
@@ -241,7 +246,7 @@ class CSVW {
         }
     }
 
-    public CSVRecord replaceNulls(CSVRecord record){
+    public CSVRecord replaceNulls(CSVRecord record) {
         Map<String, String> data = record.getData();
         data.forEach((key, value) -> {
             if (this.nulls.contains(value)) {
