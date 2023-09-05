@@ -288,21 +288,6 @@ public class Executor {
         return results;
     }
 
-    private MultiValuedMap<List<Object>, ProvenancedTerm> getCachedRecordMap(Pair<Term, Extractor> key) {
-        return this.cachedRecordMap.get(key);
-    }
-
-    private Extractor extract(Map<String, Object[]> parameters, String parameterName) {
-        return parameters.values().stream()
-                .filter(a -> a.length == 2)
-                .filter(a -> parameterName.equals(a[0]))
-                .map(a -> a[1])
-                .filter(Extractor.class::isInstance)
-                .map(Extractor.class::cast)
-                .findAny()
-                .orElse(null);
-    }
-
     private void generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
         Term g = null;
         Set<Term> targets = new HashSet<Term>();
