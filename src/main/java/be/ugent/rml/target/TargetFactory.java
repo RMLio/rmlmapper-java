@@ -46,6 +46,7 @@ public class TargetFactory {
                 Term ldes = null;
                 Term versionOfPathObj = null;
                 Term timestampPathObj = null;
+                Term memberTargetClass = null;
                 boolean ldesGenerateImmutableIRI = false;
 
                 // Required LDES IRI
@@ -115,10 +116,22 @@ public class TargetFactory {
                 }
 
                 /*
-                 * If a member path is provided, use the objects returned from the path as LDES members.
+                 * If a member path is provided, use the subjects with a specific target class like SHACL targetClass.
                  * Otherwise, use the subjects of all generated triples as LDES members.
                  */
-                List<Term> ldesMembers = Utils.getSubjectsFromQuads(outputStore.getQuads(null, null, null));
+                try {
+                    memberTargetClass = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                            new NamedNode(NAMESPACES.RMLT + "ldesMemberTargetClass"), null)).get(0);
+                    logger.debug("LDES member target class: {}", memberTargetClass);
+                } catch (IndexOutOfBoundsException e) {
+                    logger.debug("No LDES member target class found");
+                }
+
+                List<Term> ldesMembers;
+                if (memberTargetClass != null)
+                    ldesMembers = Utils.getSubjectsFromQuads(outputStore.getQuads(null, new NamedNode(NAMESPACES.RDF + "type"), memberTargetClass));
+                else
+                    ldesMembers = Utils.getSubjectsFromQuads(outputStore.getQuads(null, null, null));
 
                 /*
                  * Add LDES member IRIs to the output. If needed, the member IRIs are made immutable if they aren't yet
