@@ -1,5 +1,6 @@
 package be.ugent.rml.extractor;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 
@@ -16,7 +17,7 @@ public class ConstantExtractor implements Extractor, SingleRecordFunctionExecuto
     }
 
     @Override
-    public List<Object> extract(Record record) {
+    public List<Object> extract(Source source) {
         ArrayList<Object> result = new ArrayList<>();
         result.add(constant);
 
@@ -24,8 +25,8 @@ public class ConstantExtractor implements Extractor, SingleRecordFunctionExecuto
     }
 
     @Override
-    public Object execute(Record record) throws IOException {
-        return extract(record);
+    public Object execute(Source source) throws IOException {
+        return extract(source);
     }
 
     /**

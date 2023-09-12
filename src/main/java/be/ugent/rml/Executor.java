@@ -2,6 +2,7 @@ package be.ugent.rml;
 
 import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
 import be.ugent.idlab.knows.dataio.access.RemoteFileAccess;
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
@@ -24,7 +25,7 @@ public class Executor {
     private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
     private Initializer initializer;
-    private HashMap<Term, List<Record>> recordsHolders;
+    private HashMap<Term, List<Source>> recordsHolders;
     /*
      * this map stores for every Triples Map, which is a Term,
      * a map with the record index and the record's corresponding subject, which is a ProvenancedTerm.
@@ -133,10 +134,10 @@ public class Executor {
         for (Term triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
 
-            List<Record> records = this.getRecords(triplesMap);
+            List<Source> records = this.getRecords(triplesMap);
 
             for (int j = 0; j < records.size(); j++) {
-                Record record = records.get(j);
+                Source record = records.get(j);
                 ProvenancedTerm subject = getSubject(triplesMap, mapping, record, j);
 
                 final ProvenancedTerm finalSubject = subject;
@@ -183,37 +184,36 @@ public class Executor {
     }
 
 
-    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record, List<ProvenancedTerm> alreadyNeededGraphs) throws Exception {
+    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Source source, List<ProvenancedTerm> alreadyNeededGraphs) throws Exception {
         ArrayList<PredicateObjectGraph> results = new ArrayList<>();
 
         List<PredicateObjectGraphMapping> predicateObjectGraphMappings = mapping.getPredicateObjectGraphMappings();
 
         for (PredicateObjectGraphMapping pogMapping : predicateObjectGraphMappings) {
             ArrayList<ProvenancedTerm> predicates = new ArrayList<>();
-            ArrayList<ProvenancedTerm> poGraphs = new ArrayList<>();
-            poGraphs.addAll(alreadyNeededGraphs);
+            ArrayList<ProvenancedTerm> poGraphs = new ArrayList<>(alreadyNeededGraphs);
 
             if (pogMapping.getGraphMappingInfo() != null && pogMapping.getGraphMappingInfo().getTermGenerator() != null) {
-                pogMapping.getGraphMappingInfo().getTermGenerator().generate(record).forEach(term -> {
+                pogMapping.getGraphMappingInfo().getTermGenerator().generate(source).forEach(term -> {
                     if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
                         poGraphs.add(new ProvenancedTerm(term));
                     }
                 });
             }
 
-            pogMapping.getPredicateMappingInfo().getTermGenerator().generate(record).forEach(p -> {
+            pogMapping.getPredicateMappingInfo().getTermGenerator().generate(source).forEach(p -> {
                 predicates.add(new ProvenancedTerm(p, pogMapping.getPredicateMappingInfo()));
             });
 
             if (pogMapping.getObjectMappingInfo() != null && pogMapping.getObjectMappingInfo().getTermGenerator() != null) {
-                List<Term> objects = pogMapping.getObjectMappingInfo().getTermGenerator().generate(record);
+                List<Term> objects = pogMapping.getObjectMappingInfo().getTermGenerator().generate(source);
                 ArrayList<ProvenancedTerm> provenancedObjects = new ArrayList<>();
 
                 objects.forEach(object -> {
                     provenancedObjects.add(new ProvenancedTerm(object, pogMapping.getObjectMappingInfo()));
                 });
 
-                if (objects.size() > 0) {
+                if (!objects.isEmpty()) {
                     //add pogs
                     results.addAll(combineMultiplePOGs(predicates, provenancedObjects, poGraphs));
                 }
@@ -224,8 +224,8 @@ public class Executor {
 
                 //check if need to apply a join condition
                 if (!pogMapping.getJoinConditions().isEmpty()) {
-                    objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
-                    //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
+                    objects = this.getIRIsWithConditions(source, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
+                    //this.generateTriples(subject, po.getPredicateGenerator(), objects, source, combinedGraphs);
                 } else {
                     objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
                 }
@@ -265,12 +265,12 @@ public class Executor {
         }
     }
 
-    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws Exception {
+    private List<ProvenancedTerm> getIRIsWithConditions(Source source, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws Exception {
         ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<ProvenancedTerm>();
         ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
 
         for (MultipleRecordsFunctionExecutor condition : conditions) {
-            allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
+            allIRIs.add(this.getIRIsWithTrueCondition(source, triplesMap, condition));
         }
 
         if (!allIRIs.isEmpty()) {
@@ -291,18 +291,18 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Term triplesMap, MultipleRecordsFunctionExecutor condition) throws Exception {
+    private List<ProvenancedTerm> getIRIsWithTrueCondition(Source child, Term triplesMap, MultipleRecordsFunctionExecutor condition) throws Exception {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
-        List<Record> records = this.getRecords(triplesMap);
+        List<Source> records = this.getRecords(triplesMap);
         //this array contains all the IRIs that are valid regarding @path and @values
         ArrayList<ProvenancedTerm> iris = new ArrayList<ProvenancedTerm>();
 
         for (int i = 0; i < records.size(); i++) {
-            Record parent = records.get(i);
+            Source parent = records.get(i);
 
-            HashMap<String, Record> recordsMap = new HashMap<>();
+            HashMap<String, Source> recordsMap = new HashMap<>();
             recordsMap.put("child", child);
             recordsMap.put("parent", parent);
 
@@ -321,13 +321,13 @@ public class Executor {
         return iris;
     }
 
-    private ProvenancedTerm getSubject(Term triplesMap, Mapping mapping, Record record, int i) throws Exception {
+    private ProvenancedTerm getSubject(Term triplesMap, Mapping mapping, Source source, int i) throws Exception {
         if (!this.subjectCache.containsKey(triplesMap)) {
             this.subjectCache.put(triplesMap, new HashMap<Integer, ProvenancedTerm>());
         }
 
         if (!this.subjectCache.get(triplesMap).containsKey(i)) {
-            List<Term> nodes = mapping.getSubjectMappingInfo().getTermGenerator().generate(record);
+            List<Term> nodes = mapping.getSubjectMappingInfo().getTermGenerator().generate(source);
 
             if (!nodes.isEmpty()) {
                 //todo: only create metadata when it's required
@@ -343,11 +343,11 @@ public class Executor {
     private List<ProvenancedTerm> getAllIRIs(Term triplesMap) throws Exception {
         Mapping mapping = this.mappings.get(triplesMap);
 
-        List<Record> records = getRecords(triplesMap);
+        List<Source> records = getRecords(triplesMap);
         ArrayList<ProvenancedTerm> iris = new ArrayList<ProvenancedTerm>();
 
         for (int i = 0; i < records.size(); i++) {
-            Record record = records.get(i);
+            Source record = records.get(i);
             ProvenancedTerm subject = getSubject(triplesMap, mapping, record, i);
 
             iris.add(subject);
@@ -356,7 +356,7 @@ public class Executor {
         return iris;
     }
 
-    private List<Record> getRecords(Term triplesMap) throws Exception {
+    private List<Source> getRecords(Term triplesMap) throws Exception {
         if (!this.recordsHolders.containsKey(triplesMap)) {
             this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
         }

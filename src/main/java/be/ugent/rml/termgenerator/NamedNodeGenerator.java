@@ -1,5 +1,6 @@
 package be.ugent.rml.termgenerator;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
@@ -32,11 +33,11 @@ public class NamedNodeGenerator extends TermGenerator {
     }
 
     @Override
-    public List<Term> generate(Record record) throws Exception {
-        List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(record));
+    public List<Term> generate(Source source) throws Exception {
+        List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(source));
         ArrayList<Term> objects = new ArrayList<>();
 
-        if (objectStrings.size() > 0) {
+        if (!objectStrings.isEmpty()) {
             for (String object : objectStrings) {
                 try {
                     // check if IRI is valid

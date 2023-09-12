@@ -5,6 +5,7 @@ import be.ugent.idlab.knows.dataio.iterators.CSVWSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.csvw.CSVWConfiguration;
 import be.ugent.idlab.knows.dataio.iterators.csvw.CSVWConfigurationBuilder;
 import be.ugent.idlab.knows.dataio.source.CSVSource;
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.access.AccessFactory;
@@ -48,12 +49,12 @@ public class CSVW {
      * @param access The access containing the records
      * @return The list of records in the Access
      */
-    List<Record> getRecords(Access access) throws IOException, CsvException, SQLException {
+    List<Source> getRecords(Access access) throws IOException, CsvException, SQLException {
         List<Term> sources = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
 
         CSVWConfiguration config = getConfiguration(source);
-        List<Record> records = new ArrayList<>();
+        List<Source> records = new ArrayList<>();
         try (CSVWSourceIterator iterator = new CSVWSourceIterator(access, config)) {
             iterator.forEachRemaining(s -> {
                 CSVSource s1 = (CSVSource) s;

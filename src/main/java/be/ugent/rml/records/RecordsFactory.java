@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.access.AccessFactory;
@@ -24,7 +25,7 @@ import java.util.Map;
  */
 public class RecordsFactory {
 
-    private Map<Access, Map<String, Map<String, List<Record>>>> recordCache;
+    private Map<Access, Map<String, Map<String, List<Source>>>> recordCache;
     private AccessFactory accessFactory;
     private Map<String, ReferenceFormulationRecordFactory> referenceFormulationRecordFactoryMap;
     private static final Logger logger = LoggerFactory.getLogger(RecordsFactory.class);
@@ -48,7 +49,7 @@ public class RecordsFactory {
      * @return a list of records.
      * @throws IOException
      */
-    public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws Exception {
+    public List<Source> createRecords(Term triplesMap, QuadStore rmlStore) throws Exception {
         // Get Logical Sources.
         List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
@@ -87,7 +88,7 @@ public class RecordsFactory {
      * @param hash the hash used for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
      * @return
      */
-    private List<Record> getRecordsFromCache(Access access, String referenceFormulation, String hash) {
+    private List<Source> getRecordsFromCache(Access access, String referenceFormulation, String hash) {
         if (recordCache.containsKey(access)
                 && recordCache.get(access).containsKey(referenceFormulation)
                 && recordCache.get(access).get(referenceFormulation).containsKey(hash)
@@ -105,7 +106,7 @@ public class RecordsFactory {
      * @param hash the used hash for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
      * @param records the records that needs to be put into the cache.
      */
-    private void putRecordsIntoCache(Access access, String referenceFormulation, String hash, List<Record> records) {
+    private void putRecordsIntoCache(Access access, String referenceFormulation, String hash, List<Source> records) {
         if (!recordCache.containsKey(access)) {
             recordCache.put(access, new HashMap<>());
         }
@@ -127,11 +128,11 @@ public class RecordsFactory {
      * @return a list of records.
      * @throws IOException
      */
-    private List<Record> getRecords(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
+    private List<Source> getRecords(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
         String logicalSourceHash = hashLogicalSource(logicalSource, rmlStore);
 
         // Try to get the records from the cache.
-        List<Record> records = getRecordsFromCache(access, referenceFormulation, logicalSourceHash);
+        List<Source> records = getRecordsFromCache(access, referenceFormulation, logicalSourceHash);
 
         // If there are no records in the cache.
         // fetch from the data source.

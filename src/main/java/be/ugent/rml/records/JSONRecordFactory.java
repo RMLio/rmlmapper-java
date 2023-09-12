@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 
@@ -22,8 +23,8 @@ public class JSONRecordFactory extends IteratorFormat<Object> {
      * @return a list of records.
      */
     @Override
-    List<Record> getRecordsFromDocument(Object document, String iterator) {
-        List<Record> records = new ArrayList<>();
+    List<Source> getRecordsFromDocument(Object document, String iterator) {
+        List<Source> records = new ArrayList<>();
 
         Configuration conf = Configuration.builder()
                 .options(Option.AS_PATH_LIST).build();
@@ -48,16 +49,15 @@ public class JSONRecordFactory extends IteratorFormat<Object> {
      * This method returns a JSON document from an InputStream.
      * @param stream the used InputStream.
      * @return a JSON document.
-     * @throws IOException
      */
     @Override
-    Object getDocumentFromStream(InputStream stream) throws IOException {
+    Object getDocumentFromStream(InputStream stream) {
         return Configuration.defaultConfiguration().jsonProvider().parse(stream, "utf-8");
     }
 
     @Override
     Object getDocumentFromStream(InputStream stream, String contentType) throws IOException {
-        if(contentType.toLowerCase().equals("jsonl")){
+        if(contentType.equalsIgnoreCase("jsonl")){
             JsonProvider provider = Configuration.defaultConfiguration().jsonProvider();
             BufferedReader lineReader = new BufferedReader(new InputStreamReader(stream));
             Object items = provider.createArray();

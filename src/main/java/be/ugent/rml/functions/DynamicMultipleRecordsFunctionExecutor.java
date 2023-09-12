@@ -1,5 +1,6 @@
 package be.ugent.rml.functions;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.Arguments;
 import be.ugent.rml.NAMESPACES;
@@ -26,7 +27,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     }
 
     @Override
-    public Object execute(Map<String, Record> records) throws Exception {
+    public Object execute(Map<String, Source> sources) throws Exception {
         final ArrayList<Term> fnTerms = new ArrayList<>();
         final Arguments arguments = new Arguments();
 
@@ -36,7 +37,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
 
             pv.getParameterGenerators().forEach(parameterGen -> {
                 try {
-                    parameters.addAll(parameterGen.generate(records.get("child")));
+                    parameters.addAll(parameterGen.generate(sources.get("child")));
                 } catch (Exception e) {
                     //todo be more nice and gentle
                     e.printStackTrace();
@@ -45,7 +46,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
 
             pv.getValueGeneratorPairs().forEach(pair -> {
                 try {
-                    values.addAll(pair.getTermGenerator().generate(records.get(pair.getOrigin())));
+                    values.addAll(pair.getTermGenerator().generate(sources.get(pair.getOrigin())));
                 } catch (Exception e) {
                     //todo be more nice and gentle
                     e.printStackTrace();

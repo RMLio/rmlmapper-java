@@ -1,6 +1,7 @@
 package be.ugent.rml.records;
 
 import be.ugent.idlab.knows.dataio.access.Access;
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
@@ -33,7 +34,7 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
      * @throws IOException
      */
     @Override
-    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException, SQLException, ClassNotFoundException {
+    public List<Source> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException, SQLException, ClassNotFoundException {
         // Check if the needed document is already in the cache.
         // If not, a new one is created, based on the InputStream from the access.
         if (! documentMap.containsKey(access)) {
@@ -65,7 +66,7 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
      * @return a list of records.
      * @throws IOException
      */
-    abstract List<Record> getRecordsFromDocument(DocumentClass document, String iterator) throws IOException;
+    abstract List<Source> getRecordsFromDocument(DocumentClass document, String iterator) throws IOException;
 
     /**
      * This method returns a document from an InputStream.

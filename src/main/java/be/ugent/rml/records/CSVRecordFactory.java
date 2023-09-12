@@ -1,6 +1,7 @@
 package be.ugent.rml.records;
 
 import be.ugent.idlab.knows.dataio.access.Access;
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
@@ -47,7 +48,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @throws IOException
      */
     @Override
-    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
+    public List<Source> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
 
@@ -80,13 +81,12 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
     }
 
     /**
-     * Get Records for Excel file format.
-     * @param access
-     * @return
-     * @throws IOException
+     * Get Sources for Excel file format.
+     * @param access Access to consume sources from
+     * @return a list of sources
      */
-    private List<Record> getRecordsForExcel(Access access) throws IOException, SQLException, ClassNotFoundException {
-        List<Record> output = new ArrayList<>();
+    private List<Source> getRecordsForExcel(Access access) throws IOException, SQLException {
+        List<Source> output = new ArrayList<>();
         try (InputStream is = access.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
             for (Sheet datatypeSheet : workbook) {
@@ -106,13 +106,12 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
     }
 
     /**
-     * Get Records for ODT file format.
-     * @param access
-     * @return
-     * @throws IOException
+     * Get Sources for ODT file format.
+     * @param access Access to consume sources from
+     * @return a list of ODT sources
      */
-    private List<Record> getRecordsForODT(be.ugent.idlab.knows.dataio.access.Access access) throws Exception {
-        List<Record> output = new ArrayList<>();
+    private List<Source> getRecordsForODT(be.ugent.idlab.knows.dataio.access.Access access) throws Exception {
+        List<Source> output = new ArrayList<>();
         try (InputStream is = access.getInputStream()) {
             Document document = SpreadsheetDocument.loadDocument(is);
             for (org.odftoolkit.simple.table.Table table : document.getTableList()) {
@@ -137,7 +136,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return a CSVParser.
      * @throws IOException
      */
-    private List<Record> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException, ClassNotFoundException {
+    private List<Source> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException {
         try {
             // Check if we are dealing with CSVW.
             if (csvw == null) {

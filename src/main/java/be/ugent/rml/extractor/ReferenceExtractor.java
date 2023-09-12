@@ -1,5 +1,6 @@
 package be.ugent.rml.extractor;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 
@@ -21,14 +22,14 @@ public class ReferenceExtractor implements Extractor, SingleRecordFunctionExecut
     }
 
     @Override
-    public List<Object> extract(Record record) {
+    public List<Object> extract(Source source) {
         String temp = this.reference;
 
         if (ignoreDoubleQuotes && temp.startsWith("\"") && temp.endsWith("\"")) {
             temp = temp.substring(1, temp.length() - 1);
         }
 
-        return record.get(temp);
+        return source.get(temp);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class ReferenceExtractor implements Extractor, SingleRecordFunctionExecut
     }
 
     @Override
-    public Object execute(Record record) throws IOException {
-        return extract(record);
+    public Object execute(Source source) throws IOException {
+        return extract(source);
     }
 }

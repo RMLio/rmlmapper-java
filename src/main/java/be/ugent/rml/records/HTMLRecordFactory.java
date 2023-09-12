@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,7 +23,7 @@ public class HTMLRecordFactory extends IteratorFormat<Document> {
      * @return a list of records.
      */
     @Override
-    List<Record> getRecordsFromDocument(Document document, String iterator) {
+    List<Source> getRecordsFromDocument(Document document, String iterator) {
         Elements data = document.select(iterator);
         // Get the headers
         List<String> headers = data.get(0).select("th").stream().map(Element::text).collect(Collectors.toList());

@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -31,11 +32,10 @@ public class XMLRecordFactory extends IteratorFormat<XdmNode> {
      * @param document the document from which records need to get.
      * @param iterator the used iterator.
      * @return a list of records.
-     * @throws IOException
      */
     @Override
-    List<Record> getRecordsFromDocument(XdmNode document, String iterator) throws IOException {
-        List<Record> records = new ArrayList<>();
+    List<Source> getRecordsFromDocument(XdmNode document, String iterator) {
+        List<Source> records = new ArrayList<>();
 
         try {
             XPathCompiler compiler = saxProcessor.newXPathCompiler();
@@ -61,10 +61,9 @@ public class XMLRecordFactory extends IteratorFormat<XdmNode> {
      *
      * @param stream the used InputStream.
      * @return an XML document.
-     * @throws IOException
      */
     @Override
-    XdmNode getDocumentFromStream(InputStream stream) throws IOException {
+    XdmNode getDocumentFromStream(InputStream stream) {
         try {
             DocumentBuilder docBuilder = saxProcessor.newDocumentBuilder();
             return docBuilder.build(new StreamSource(stream));

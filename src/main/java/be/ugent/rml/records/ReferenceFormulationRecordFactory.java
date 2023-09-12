@@ -1,6 +1,7 @@
 package be.ugent.rml.records;
 
 import be.ugent.idlab.knows.dataio.access.Access;
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Term;
 
@@ -20,5 +21,5 @@ public interface ReferenceFormulationRecordFactory {
      * @return a list of records.
      * @throws IOException
      */
-    List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception;
+    List<Source> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception;
 }

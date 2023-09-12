@@ -1,8 +1,8 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.records.Record;
+import be.ugent.idlab.knows.dataio.source.Source;
 
 public interface SingleRecordFunctionExecutor {
 
-    Object execute(Record record) throws Exception;
+    Object execute(Source source) throws Exception;
 }

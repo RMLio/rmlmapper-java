@@ -1,11 +1,13 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.source.Source;
+
 import java.util.List;
 
 /**
  * This class represents a generic record in a data source.
  */
-public abstract class Record {
+public abstract class Record extends Source {
 
     /**
      * This method returns the objects for a reference in the record.

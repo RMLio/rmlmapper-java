@@ -1,5 +1,6 @@
 package be.ugent.rml.extractor;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.records.Record;
 
@@ -13,15 +14,15 @@ public class HashExtractor implements Extractor, SingleRecordFunctionExecutor {
     }
 
     @Override
-    public List<Object> extract(Record record) {
+    public List<Object> extract(Source source) {
         ArrayList<Object> result = new ArrayList<>();
-        result.add("" + record.hashCode());
+        result.add("" + source.hashCode());
         return result;
     }
 
     @Override
-    public Object execute(Record record) throws IOException {
-        return extract(record);
+    public Object execute(Source source) throws IOException {
+        return extract(source);
     }
 
     /**

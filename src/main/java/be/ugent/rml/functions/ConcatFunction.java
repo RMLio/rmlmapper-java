@@ -1,5 +1,6 @@
 package be.ugent.rml.functions;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.Utils;
 import be.ugent.rml.extractor.ConstantExtractor;
 import be.ugent.rml.extractor.Extractor;
@@ -23,11 +24,11 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
     }
 
     @Override
-    public List<?> execute(Record record) {
-       return concat(record);
+    public List<?> execute(Source source) {
+       return concat(source);
     }
 
-    private List<String> concat(Record record) {
+    private List<String> concat(Source source) {
         ArrayList<String> results = new ArrayList<>();
         results.add("");
 
@@ -40,7 +41,7 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
         for (int i = 0; allValuesFound && i < extractors.size(); i++) {
             Extractor extractor = extractors.get(i);
 
-            List<String> extractedValues = FunctionUtils.functionObjectToList(extractor.extract(record));
+            List<String> extractedValues = FunctionUtils.functionObjectToList(extractor.extract(source));
 
             if (!extractedValues.isEmpty()) {
                 ArrayList<String> temp = new ArrayList<>();

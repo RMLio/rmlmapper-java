@@ -1,5 +1,6 @@
 package be.ugent.rml.functions;
 
+import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.Arguments;
 import be.ugent.rml.records.Record;
@@ -20,14 +21,14 @@ public class StaticMultipleRecordsFunctionExecutor implements MultipleRecordsFun
     }
 
     @Override
-    public Object execute(Map<String, Record> records) throws Exception {
+    public Object execute(Map<String, Source> sources) throws Exception {
         final Arguments functionArguments = new Arguments();
 
         for (Map.Entry<String, Object[]> entry : this.parameters.entrySet()) {
             SingleRecordFunctionExecutor executor = (SingleRecordFunctionExecutor) entry.getValue()[1];
             String recordType = (String) entry.getValue()[0];
 
-            Object o = executor.execute(records.get(recordType));
+            Object o = executor.execute(sources.get(recordType));
 
             // TODO check whether key is actually optional!
             functionArguments.add(entry.getKey(), o);
