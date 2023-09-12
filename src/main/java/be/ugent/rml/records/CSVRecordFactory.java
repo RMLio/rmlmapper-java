@@ -2,6 +2,7 @@ package be.ugent.rml.records;
 
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
+import be.ugent.idlab.knows.dataio.iterators.ExcelSourceIterator;
 import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
@@ -88,21 +89,10 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      */
     private List<Source> getRecordsForExcel(Access access) throws IOException, SQLException {
         List<Source> output = new ArrayList<>();
-        try (InputStream is = access.getInputStream();
-             Workbook workbook = new XSSFWorkbook(is)) {
-            for (Sheet datatypeSheet : workbook) {
-                Row header = datatypeSheet.getRow(0);
-                boolean first = true;
-                for (Row currentRow : datatypeSheet) {
-                    // remove the header
-                    if (first) {
-                        first = false;
-                    } else {
-                        output.add(new ExcelRecord(header, currentRow));
-                    }
-                }
-            }
+        try (ExcelSourceIterator iterator = new ExcelSourceIterator(access)) {
+            iterator.forEachRemaining(output::add);
         }
+
         return output;
     }
 
