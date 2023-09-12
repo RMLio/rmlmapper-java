@@ -1,6 +1,7 @@
 package be.ugent.rml.records;
 
 import be.ugent.idlab.knows.dataio.access.Access;
+import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
@@ -141,19 +142,12 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
             // Check if we are dealing with CSVW.
             if (csvw == null) {
                 // RDBs fall under this
-                try (BOMInputStream inputStream = new BOMInputStream(access.getInputStream());
-                     CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-                             .withSkipLines(0)
-                             .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
-                             .build();
-                ) {
-                    List<String[]> records = reader.readAll();
-                    final String[] header = records.get(0);
-                    return records.subList(1, records.size()).stream()
-                            // throw away empty records
-                            .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
-                            .map(record -> new CSVRecord(header, record, access.getDataTypes()))
-                            .collect(Collectors.toList());
+                try (CSVSourceIterator iterator = new CSVSourceIterator(access)) {
+                    List<Source> results = new ArrayList<>();
+
+                    iterator.forEachRemaining(results::add);
+
+                    return results;
                 }
             } else {
                 return csvw.getRecords(access);

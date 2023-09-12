@@ -56,11 +56,7 @@ public class CSVW {
         CSVWConfiguration config = getConfiguration(source);
         List<Source> records = new ArrayList<>();
         try (CSVWSourceIterator iterator = new CSVWSourceIterator(access, config)) {
-            iterator.forEachRemaining(s -> {
-                CSVSource s1 = (CSVSource) s;
-                CSVRecord record = new CSVRecord(s1.getData().keySet().toArray(new String[0]), s1.getData().values().toArray(new String[0]), s1.getDataTypes());
-                records.add(record);
-            });
+            iterator.forEachRemaining(records::add);
         }
 
         return records;
