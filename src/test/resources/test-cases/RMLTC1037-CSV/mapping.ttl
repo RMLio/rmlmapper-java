@@ -1,0 +1,31 @@
+# example from gtfs, join on same logical source, with join conditions
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix void: <http://rdfs.org/ns/void#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix : <http://mapping.example.com/>.
+@prefix gtfs: <http://vocab.gtfs.org/terms#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+:rules_000 a void:Dataset;
+    void:exampleResource :map_stops_000.
+:map_stops_000 rml:logicalSource :source_000.
+:source_000 a rml:LogicalSource;
+            rml:source "stops.csv";
+            rml:referenceFormulation ql:CSV.
+:map_stops_000 a rr:TriplesMap;
+    rdfs:label "stops".
+:s_000 a rr:SubjectMap.
+:map_stops_000 rr:subjectMap :s_000.
+:s_000 rr:template "http://transport.linkeddata.es/madrid/metro/stops/{stop_id}".
+:pom_001 a rr:PredicateObjectMap.
+:map_stops_000 rr:predicateObjectMap :pom_001.
+:pm_001 a rr:PredicateMap.
+:pom_001 rr:predicateMap :pm_001.
+:pm_001 rr:constant gtfs:parentStation.
+:pom_001 rr:objectMap :om_001.
+:om_001 a rr:ObjectMap;
+    rr:parentTriplesMap :map_stops_000;
+    rr:joinCondition :jc_000.
+:jc_000 rr:child "parent_station";
+    rr:parent "stop_id".

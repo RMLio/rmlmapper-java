@@ -1,0 +1,2 @@
+<http://transport.linkeddata.es/madrid/metro/stops/1> <http://vocab.gtfs.org/terms#parentStation> <http://transport.linkeddata.es/madrid/metro/stops/1> .
+<http://transport.linkeddata.es/madrid/metro/stops/2> <http://vocab.gtfs.org/terms#parentStation> <http://transport.linkeddata.es/madrid/metro/stops/1> .
