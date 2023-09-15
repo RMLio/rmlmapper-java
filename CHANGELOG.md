@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Fixed self-joins with join conditions ([internal issue #199](https://github.com/RMLio/rmlmapper-java/issues/199))
 - Upgrade to rdfhdt to 3.0.10 ([issue #215](https://github.com/RMLio/rmlmapper-java/issues/215))
+- Improve docs on deduplication ([issue #214](https://github.com/RMLio/rmlmapper-java/issues/214))
 
 ## [6.2.1] - 2023-07-06
 

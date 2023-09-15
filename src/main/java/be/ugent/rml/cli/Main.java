@@ -95,7 +95,7 @@ public class Main {
                 .build();
         Option removeduplicatesOption = Option.builder("d")
                 .longOpt("duplicates")
-                .desc("remove duplicates in the output")
+                .desc("remove duplicates in the HDT, N-Triples, or N-Quads output")
                 .build();
         Option configfileOption = Option.builder("c")
                 .longOpt("configfile")
