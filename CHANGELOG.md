@@ -5,8 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
 ### Fixed
-- Fixed self-joins with join conditions ([issue 199](https://github.com/RMLio/rmlmapper-java/issues/199))
+- Fixed self-joins with join conditions ([internal issue #199](https://github.com/RMLio/rmlmapper-java/issues/199))
+- Upgrade to rdfhdt to 3.0.10 ([issue #215](https://github.com/RMLio/rmlmapper-java/issues/215))
 
 ## [6.2.1] - 2023-07-06
 

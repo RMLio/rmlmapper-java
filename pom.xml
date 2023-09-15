@@ -279,9 +279,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.github.rdfhdt</groupId>
-            <artifactId>hdt-java</artifactId>
-            <version>v3.0.5</version>
+            <groupId>org.rdfhdt</groupId>
+            <artifactId>hdt-java-core</artifactId>
+            <version>3.0.10</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.jena</groupId>
