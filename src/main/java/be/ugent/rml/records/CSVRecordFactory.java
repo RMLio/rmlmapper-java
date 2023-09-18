@@ -3,6 +3,7 @@ package be.ugent.rml.records;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.ExcelSourceIterator;
+import be.ugent.idlab.knows.dataio.iterators.ODSSourceIterator;
 import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
@@ -10,16 +11,8 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.input.BOMInputStream;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.odftoolkit.simple.Document;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.slf4j.Logger;
@@ -27,12 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This class is a record factory that creates CSV records.
@@ -101,21 +91,10 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @param access Access to consume sources from
      * @return a list of ODT sources
      */
-    private List<Source> getRecordsForODT(be.ugent.idlab.knows.dataio.access.Access access) throws Exception {
+    private List<Source> getRecordsForODT(Access access) throws Exception {
         List<Source> output = new ArrayList<>();
-        try (InputStream is = access.getInputStream()) {
-            Document document = SpreadsheetDocument.loadDocument(is);
-            for (org.odftoolkit.simple.table.Table table : document.getTableList()) {
-                org.odftoolkit.simple.table.Row header = table.getRowByIndex(0);
-                boolean first = true;
-                for (org.odftoolkit.simple.table.Row currentRow : table.getRowList()) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        output.add(new ODSRecord(header, currentRow));
-                    }
-                }
-            }
+        try (ODSSourceIterator iterator = new ODSSourceIterator(access)) {
+            iterator.forEachRemaining(output::add);
         }
         return output;
     }

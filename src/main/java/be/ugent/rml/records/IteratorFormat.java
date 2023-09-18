@@ -34,7 +34,7 @@ public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulat
      * @throws IOException
      */
     @Override
-    public List<Source> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException, SQLException, ClassNotFoundException {
+    public List<Source> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException, SQLException {
         // Check if the needed document is already in the cache.
         // If not, a new one is created, based on the InputStream from the access.
         if (! documentMap.containsKey(access)) {
