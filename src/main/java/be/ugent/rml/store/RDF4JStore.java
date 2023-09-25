@@ -33,6 +33,11 @@ public class RDF4JStore extends QuadStore {
     private Model model;
     private int triplesWithGraphCounter;
 
+    // pre-compile used regex patterns to save time
+    private final static Pattern languagePattern = Pattern.compile("^\"(.*)\"@([^@]*)", Pattern.DOTALL);
+    private final static Pattern dataTypePattern = Pattern.compile("^\"(.*)\"\\^\\^<([^>]*)>", Pattern.DOTALL);
+    private final static Pattern literalPattern = Pattern.compile("^\"(.*)\"$", Pattern.DOTALL);
+
     public RDF4JStore() {
         model = new TreeModel();
         triplesWithGraphCounter = 0;
@@ -306,11 +311,11 @@ public class RDF4JStore extends QuadStore {
             boolean hasLanguage = str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"");
             boolean hasDatatype = str.contains("^^");
             if (hasLanguage) {
-                pattern = Pattern.compile("^\"(.*)\"@([^@]*)", Pattern.DOTALL);
+                pattern = languagePattern;
             } else if (hasDatatype) {
-                pattern = Pattern.compile("^\"(.*)\"\\^\\^<([^>]*)>", Pattern.DOTALL);
+                pattern = dataTypePattern;
             } else {
-                pattern = Pattern.compile("^\"(.*)\"$", Pattern.DOTALL);
+                pattern = literalPattern;
             }
 
             Matcher matcher = pattern.matcher(str);

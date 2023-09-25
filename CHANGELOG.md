@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Update dependency on `idlab-functions-java` to 1.3.1. This implies three things:
-  - The namespace for IDLab functions FnO descriptions changed, so RMLMapper loads the old and the new one to remain compatible;
-  - All tests in RMLMapper use the new namespace;
-  - Stateful functions use a more compact and efficient state.
-  - Update dependency on `function-agent-java` to 1.2.0, the first version released on Maven Central.
-  - Upgraded rdf4j-client dependency to version 4.3.8
+- The namespace for IDLab functions FnO descriptions changed, so RMLMapper loads the old and the new one to remain compatible;
+- All tests in RMLMapper use the new namespace;
+- Stateful functions use a more compact and efficient state.
+- Update dependency on `function-agent-java` to 1.2.0, the first version released on Maven Central.
+- Upgraded rdf4j-client dependency to version 4.3.8
+- Compile regex patterns for RDF4J store only once for performance.
+
 ### Fixed
 - Setting option `disable-automatic-eof-marker` in a configuration file has no effect (see GitLab [issue #269](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/269)).
 - Start adhering to [Keep a Changelog](http://keepachangelog.com/en/1.1.0/) from now on (`Improvements` -> `Changed`).
@@ -73,6 +75,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update dependency to `idlab-functions-java`, fixing [issue #218](https://github.com/RMLio/rmlmapper-java/issues/218) 
 
 ### Changed
+<<<<<<< HEAD
 - Dockefile: switched to Eclipse OpenJDK Docker base image because OpenJDK is deprecated
 - CI: dropped GitHub release automation
 - CI: verify if token is valid
