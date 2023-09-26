@@ -20,6 +20,10 @@ public class FunctionUtils {
                 ((Iterable<?>) o).forEach(item -> {
                     result.addAll(functionObjectToList(item));
                 });
+            // Some functions return a regular Array, not an Iterable, handle those as well.
+            } else if (o instanceof Object[]) {
+                for (Object item: (Object[])o)
+                    result.addAll(functionObjectToList(item));
             }
             // if o has no children, call toString() to serialize it into a string
             else {
