@@ -2,14 +2,19 @@ package be.ugent.rml.records;
 
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.access.VirtualAccess;
+import be.ugent.idlab.knows.dataio.iterators.SourceIterator;
 import be.ugent.idlab.knows.dataio.source.Source;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import net.sf.saxon.s9api.SaxonApiException;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +46,13 @@ public abstract class IteratorFormat2 implements ReferenceFormulationRecordFacto
             iterator = iterators.get(0).getValue();
         }
 
-        return getSourcesFromAccess(cache.get(access), iterator);
+        List<Source> sources = new ArrayList<>();
+        try (SourceIterator it = getIterator(cache.get(access), iterator)) {
+            it.forEachRemaining(sources::add);
+        }
+
+        return sources;
     }
 
-    protected abstract List<Source> getSourcesFromAccess(VirtualAccess access, String iterator);
+    protected abstract SourceIterator getIterator(Access access, String iterator) throws SQLException, IOException, SaxonApiException;
 }

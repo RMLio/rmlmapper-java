@@ -4,7 +4,7 @@ import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.Executor;
 import be.ugent.rml.Utils;
-import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.records.SourcesFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.store.RDF4JStore;
@@ -34,7 +34,7 @@ public class ReadmeFunctionTest {
             QuadStore rmlStore = QuadStoreFactory.read(mappingStream);
 
             // Set up the basepath for the records factory, i.e., the basepath for the (local file) data sources
-            RecordsFactory factory = new RecordsFactory(mappingFile.getParent());
+            SourcesFactory factory = new SourcesFactory(mappingFile.getParent());
 
             // Set up the functions used during the mapping
             Agent functionAgent = AgentFactory.createFromFnO(functionPath);

@@ -7,8 +7,7 @@ import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
-import be.ugent.rml.records.Record;
-import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.records.SourcesFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.*;
@@ -25,7 +24,7 @@ public class Executor {
     private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
     private Initializer initializer;
-    private HashMap<Term, List<Source>> recordsHolders;
+    private HashMap<Term, List<Source>> SourcesHolders;
     /*
      * this map stores for every Triples Map, which is a Term,
      * a map with the record index and the record's corresponding subject, which is a ProvenancedTerm.
@@ -34,28 +33,28 @@ public class Executor {
     private QuadStore resultingQuads;
     private QuadStore rmlStore;
     private HashMap<Term, QuadStore> targetStores;
-    private RecordsFactory recordsFactory;
+    private SourcesFactory sourcesFactory;
     private static int blankNodeCounter;
     private HashMap<Term, Mapping> mappings;
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
-        this(rmlStore, recordsFactory, null, baseIRI, strictMode, functionAgent);
+    public Executor(QuadStore rmlStore, SourcesFactory sourcesFactory, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
+        this(rmlStore, sourcesFactory, null, baseIRI, strictMode, functionAgent);
     }
 
     /**
      * Defaults to best effort operation. For strict mode,
-     * use {@link Executor#Executor(QuadStore, RecordsFactory, QuadStore, String, StrictMode, Agent)}
+     * use {@link Executor#Executor(QuadStore, SourcesFactory, QuadStore, String, StrictMode, Agent)}
      */
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, final Agent functionAgent) throws Exception {
-        this(rmlStore, recordsFactory, resultingQuads, baseIRI, StrictMode.BEST_EFFORT, functionAgent);
+    public Executor(QuadStore rmlStore, SourcesFactory sourcesFactory, QuadStore resultingQuads, String baseIRI, final Agent functionAgent) throws Exception {
+        this(rmlStore, sourcesFactory, resultingQuads, baseIRI, StrictMode.BEST_EFFORT, functionAgent);
     }
 
-    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
+    public Executor(QuadStore rmlStore, SourcesFactory sourcesFactory, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
         this.initializer = new Initializer(rmlStore, functionAgent, baseIRI, strictMode);
         this.mappings = this.initializer.getMappings();
         this.rmlStore = rmlStore;
-        this.recordsFactory = recordsFactory;
-        this.recordsHolders = new HashMap<>();
+        this.sourcesFactory = sourcesFactory;
+        this.SourcesHolders = new HashMap<>();
         this.subjectCache = new HashMap<>();
         this.targetStores = new HashMap<>();
         Executor.blankNodeCounter = 0;
@@ -99,7 +98,7 @@ public class Executor {
         }
     }
 
-    public Executor(RDF4JStore rmlStore, RecordsFactory factory, QuadStore outputStore, final Agent functionAgent) throws Exception {
+    public Executor(RDF4JStore rmlStore, SourcesFactory factory, QuadStore outputStore, final Agent functionAgent) throws Exception {
         this(rmlStore, factory, outputStore, rmlStore.getBase(), functionAgent);
     }
 
@@ -357,11 +356,11 @@ public class Executor {
     }
 
     private List<Source> getRecords(Term triplesMap) throws Exception {
-        if (!this.recordsHolders.containsKey(triplesMap)) {
-            this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
+        if (!this.SourcesHolders.containsKey(triplesMap)) {
+            this.SourcesHolders.put(triplesMap, this.sourcesFactory.createSources(triplesMap, this.rmlStore));
         }
 
-        return this.recordsHolders.get(triplesMap);
+        return this.SourcesHolders.get(triplesMap);
     }
 
     private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, List<ProvenancedTerm> objects, List<ProvenancedTerm> graphs) {
