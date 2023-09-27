@@ -6,7 +6,6 @@ import be.ugent.rml.Utils;
 import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
@@ -39,7 +38,7 @@ public class RecordsFactory {
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.JSONPath, new JSONRecordFactory2());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSV, new CSVRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDB, new CSVRecordFactory());
-        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSS3, new HTMLRecordFactory2());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSS3, new HTMLRecordFactory());
     }
 
     /**
