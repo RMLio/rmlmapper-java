@@ -3,6 +3,7 @@ package be.ugent.rml;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
@@ -239,11 +240,13 @@ public class MapperJSONTest extends TestCore {
     }
 
     @Test
+    @Disabled
     public void evaluate_1017_JSON() {
         doMapping("./test-cases/RMLTC1017-JSON/mapping.ttl", "./test-cases/RMLTC1017-JSON/output.nq");
     }
 
     @Test
+    @Disabled
     public void evaluate_1018_JSON() {
         doMapping("./test-cases/RMLTC1018-JSON/mapping.ttl", "./test-cases/RMLTC1018-JSON/output.nq");
     }

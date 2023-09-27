@@ -36,7 +36,7 @@ public class RecordsFactory {
 
         referenceFormulationRecordFactoryMap = new HashMap<>();
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.XPath, new XMLRecordFactory());
-        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.JSONPath, new JSONRecordFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.JSONPath, new JSONRecordFactory2());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSV, new CSVRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDB, new CSVRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSS3, new HTMLRecordFactory());
@@ -74,7 +74,8 @@ public class RecordsFactory {
             } else {
                 String referenceFormulation = referenceFormulations.get(0).getValue();
 
-                return getRecords(access, logicalSource, referenceFormulation, rmlStore);
+                List<Source> records = getRecords(access, logicalSource, referenceFormulation, rmlStore);
+                return records;
             }
         } else {
             throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");

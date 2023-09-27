@@ -13,13 +13,10 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.opencsv.exceptions.CsvException;
 import org.apache.commons.io.FilenameUtils;
-import org.odftoolkit.simple.Document;
-import org.odftoolkit.simple.SpreadsheetDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +71,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
 
     /**
      * Get Sources for Excel file format.
+     *
      * @param access Access to consume sources from
      * @return a list of sources
      */
@@ -88,6 +86,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
 
     /**
      * Get Sources for ODT file format.
+     *
      * @param access Access to consume sources from
      * @return a list of ODT sources
      */
