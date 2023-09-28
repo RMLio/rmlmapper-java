@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ConcatFunction implements SingleRecordFunctionExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcatFunction.class);
@@ -39,33 +40,26 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
         //we iterate over all elements of the template, unless one is not found
         for (int i = 0; allValuesFound && i < extractors.size(); i++) {
             Extractor extractor = extractors.get(i);
-
+            final boolean isReferenceExtractor = extractor instanceof ReferenceExtractor;
+            final boolean isConstantExtractor = extractor instanceof ConstantExtractor;
             List<String> extractedValues = FunctionUtils.functionObjectToList(extractor.extract(record));
 
             if (!extractedValues.isEmpty()) {
                 ArrayList<String> temp = new ArrayList<>();
 
-                for (int k = 0; k < results.size(); k ++) {
+                for (String result : results) {
+                    for (String value : extractedValues) {
+                        if (isReferenceExtractor) {
+                            if (encodeURI)
+                                value = Utils.encodeURI(value);
 
-                    for (int j = 0; j < extractedValues.size(); j ++) {
-                        String result = results.get(k);
-                        String value = extractedValues.get(j);
-
-                        if (encodeURI && extractor instanceof ReferenceExtractor) {
-                            value = Utils.encodeURI(value);
-                        }
-
-                        result += value;
-
-                        if (extractor instanceof ConstantExtractor) {
+                            referenceCount ++;
+                        } else if (isConstantExtractor) {
                             onlyConstants += value;
                         }
 
+                        result += value;
                         temp.add(result);
-                    }
-
-                    if (extractor instanceof ReferenceExtractor) {
-                        referenceCount ++;
                     }
                 }
 
@@ -78,9 +72,8 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
             }
         }
 
-        if ((allValuesFound && referenceCount > 0 && results.contains(onlyConstants)) || !allValuesFound) {
-            results = new ArrayList<>();
-        }
+        if (!allValuesFound || (referenceCount > 0 && results.contains(onlyConstants)))
+            return new ArrayList<>();
 
         return results;
     }
