@@ -9,23 +9,24 @@ import java.util.List;
 
 public class ConstantExtractor implements Extractor, SingleRecordFunctionExecutor {
 
-    private final String constant;
+    private final Object constant;
+    private final List<Object> constantList;
 
     public ConstantExtractor(String constant) {
-        this.constant = constant;
+        List<Object> c = new ArrayList<>();
+        c.add(constant);
+        this.constantList = c;
+        this.constant = c;
     }
 
     @Override
     public List<Object> extract(Record record) {
-        ArrayList<Object> result = new ArrayList<>();
-        result.add(constant);
-
-        return result;
+        return this.constantList;
     }
 
     @Override
     public Object execute(Record record) throws IOException {
-        return extract(record);
+        return this.constant;
     }
 
     /**
