@@ -9,14 +9,13 @@ import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicMultipleRecordsFunctionExecutor.class);
     private final List<ParameterValueOriginPair> parameterValuePairs;
+    private final Map<String, List<Term>> parametersCache = new HashMap<>();
 
     private final Agent functionAgent;
 
@@ -29,6 +28,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     public Object execute(Map<String, Record> records) throws Exception {
         final ArrayList<Term> fnTerms = new ArrayList<>();
         final Arguments arguments = new Arguments();
+        final Record child = records.get("child");
 
         parameterValuePairs.forEach(pv -> {
             ArrayList<Term> parameters = new ArrayList<>();
@@ -36,7 +36,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
 
             pv.getParameterGenerators().forEach(parameterGen -> {
                 try {
-                    parameters.addAll(parameterGen.generate(records.get("child")));
+                    parameters.addAll(parameterGen.generate(child));
                 } catch (Exception e) {
                     //todo be more nice and gentle
                     e.printStackTrace();
@@ -56,7 +56,6 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
                 if (parameters.contains(new NamedNode(NAMESPACES.FNO + "executes"))) {
                     logger.warn("http is used instead of https for {}. Still works for now, but will be deprecated in the future.", NAMESPACES.FNO_S);
                 }
-
                 fnTerms.add(values.get(0));
             } else {
                 for (Term parameter : parameters) {
