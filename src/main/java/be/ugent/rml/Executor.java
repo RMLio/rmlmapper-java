@@ -10,6 +10,7 @@ import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.MarkerRecord;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.*;
@@ -61,7 +62,6 @@ public class Executor {
         this.mappings = this.initializer.getMappings();
         this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
-        this.recordsHolders = new HashMap<>();
         this.subjectCache = new HashMap<>();
         this.targetStores = new HashMap<>();
         Executor.blankNodeCounter = 0;
@@ -224,6 +224,19 @@ public class Executor {
             this.resultingQuads.removeDuplicates();
         }
 
+        /* Remove magic marker from output */
+        List<Quad> quads = this.resultingQuads.getQuads(null, null, null, null);
+        for (Quad q: quads) {
+            String subject = q.getSubject().toString();
+            String object = q.getObject().toString();
+            if (subject.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || subject.contains(IDLabFunctions.MAGIC_MARKER)
+                    || object.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || object.contains(IDLabFunctions.MAGIC_MARKER) ) {
+                this.resultingQuads.removeQuads(q.getSubject(), q.getPredicate(), q.getObject(), q.getGraph());
+            }
+        }
+
         // Add the legacy store to the list of targets as well
         this.targetStores.put(new NamedNode("rmlmapper://default.store"), this.resultingQuads);
         return this.targetStores;
@@ -305,7 +318,7 @@ public class Executor {
 
             // If we have targets, write to them
             if (!targets.isEmpty()) {
-                for(Term t: targets) {
+                for (Term t: targets) {
                     this.targetStores.get(t).addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
                 }
             }
@@ -386,6 +399,7 @@ public class Executor {
                     terms.add(new ProvenancedTerm(nodes.get(j), meta, targets));
                 }
                 this.subjectCache.get(triplesMap).put(i, terms);
+                return terms;
             }
         }
 
@@ -409,11 +423,8 @@ public class Executor {
     }
 
     private List<Record> getRecords(Term triplesMap) throws Exception {
-        if (!this.recordsHolders.containsKey(triplesMap)) {
-            this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
-        }
-
-        return this.recordsHolders.get(triplesMap);
+        /* RecordsFactory caches records internally */
+        return this.recordsFactory.createRecords(triplesMap, this.rmlStore);
     }
 
     private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, List<ProvenancedTerm> objects, List<ProvenancedTerm> graphs) {
