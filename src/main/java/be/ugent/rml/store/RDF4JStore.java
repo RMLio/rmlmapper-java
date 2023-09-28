@@ -5,8 +5,7 @@ import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.model.*;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.model.impl.TreeModel;
+import org.eclipse.rdf4j.model.impl.*;
 import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
@@ -60,6 +59,15 @@ public class RDF4JStore extends QuadStore {
         if (g != null) {
             triplesWithGraphCounter++;
         }
+    }
+
+    @Override
+    public List<Term> getSubjects() {
+        List<Term> terms = new ArrayList<>();
+        for (Resource subject : model.subjects()) {
+            terms.add(convertStringToTerm(subject.toString()));
+        }
+        return terms;
     }
 
     @Override

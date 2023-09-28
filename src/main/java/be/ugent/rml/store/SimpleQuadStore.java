@@ -45,6 +45,17 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
+    public List<Term> getSubjects() {
+        List<Term> terms = new ArrayList<>();
+
+        for (Quad q : quads) {
+            terms.add(q.getSubject());
+        }
+
+        return terms;
+    }
+
+    @Override
     public void addQuad(Term subject, Term predicate, Term object, Term graph) {
         if (subject != null && predicate != null && object != null) {
             quads.add(new Quad(subject, predicate, object, graph));

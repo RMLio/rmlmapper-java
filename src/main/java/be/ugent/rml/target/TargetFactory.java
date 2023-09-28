@@ -131,7 +131,7 @@ public class TargetFactory {
                 if (memberTargetClass != null)
                     ldesMembers = Utils.getSubjectsFromQuads(outputStore.getQuads(null, new NamedNode(NAMESPACES.RDF + "type"), memberTargetClass));
                 else
-                    ldesMembers = Utils.getSubjectsFromQuads(outputStore.getQuads(null, null, null));
+                    ldesMembers = outputStore.getSubjects();
 
                 /*
                  * Add LDES member IRIs to the output. If needed, the member IRIs are made immutable if they aren't yet
@@ -167,13 +167,12 @@ public class TargetFactory {
                                     outputStore.addQuad(new Quad(memberIRI, versionOfPathObj, v));
                                 }
                             }
-                            outputStore.removeQuads(m, versionOfPathObj, null);
                         }
 
                         /* Add all other member properties as well */
                         List<Quad> memberProperties = outputStore.getQuads(m, null, null);
                         for (Quad property: memberProperties) {
-                            outputStore.addQuad(new Quad(memberIRI, property.getPredicate(), property.getObject(), property.getGraph()));
+                               outputStore.addQuad(memberIRI, property.getPredicate(), property.getObject(), property.getGraph());
                             outputStore.removeQuads(property);
                         }
                     }

@@ -187,6 +187,8 @@ public abstract class QuadStore {
         return getQuads(subject, predicate, object, null);
     }
 
+    public abstract List<Term> getSubjects();
+
     /**
      * Helper function
      * @param subject
