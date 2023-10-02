@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Build Docker image in two stages, reducing the final image size.
+- LDES EventStreamTarget properties are now all optional.
 
 ## [6.2.2] - 2023-10-05
 
