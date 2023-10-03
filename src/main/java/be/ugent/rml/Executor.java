@@ -24,7 +24,7 @@ public class Executor {
     private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
     private Initializer initializer;
-    private HashMap<Term, List<Source>> SourcesHolders;
+    private HashMap<Term, List<Source>> sourcesHolders;
     /*
      * this map stores for every Triples Map, which is a Term,
      * a map with the record index and the record's corresponding subject, which is a ProvenancedTerm.
@@ -54,7 +54,7 @@ public class Executor {
         this.mappings = this.initializer.getMappings();
         this.rmlStore = rmlStore;
         this.sourcesFactory = sourcesFactory;
-        this.SourcesHolders = new HashMap<>();
+        this.sourcesHolders = new HashMap<>();
         this.subjectCache = new HashMap<>();
         this.targetStores = new HashMap<>();
         Executor.blankNodeCounter = 0;
@@ -356,11 +356,11 @@ public class Executor {
     }
 
     private List<Source> getRecords(Term triplesMap) throws Exception {
-        if (!this.SourcesHolders.containsKey(triplesMap)) {
-            this.SourcesHolders.put(triplesMap, this.sourcesFactory.createSources(triplesMap, this.rmlStore));
+        if (!this.sourcesHolders.containsKey(triplesMap)) {
+            this.sourcesHolders.put(triplesMap, this.sourcesFactory.createSources(triplesMap, this.rmlStore));
         }
 
-        return this.SourcesHolders.get(triplesMap);
+        return this.sourcesHolders.get(triplesMap);
     }
 
     private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, List<ProvenancedTerm> objects, List<ProvenancedTerm> graphs) {
