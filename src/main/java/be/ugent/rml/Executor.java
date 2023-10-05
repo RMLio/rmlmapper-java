@@ -224,31 +224,6 @@ public class Executor {
             this.resultingQuads.removeDuplicates();
         }
 
-        /* Remove magic marker from output */
-        List<Quad> quads = this.resultingQuads.getQuads(null, null, null, null);
-        for (Quad q: quads) {
-            String subject = q.getSubject().toString();
-            String predicate = q.getPredicate().toString();
-            String object = q.getObject().toString();
-            String graph = null;
-
-            if (q.getGraph() != null)
-                graph = q.getGraph().toString();
-
-            if (subject.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
-                    || subject.contains(IDLabFunctions.MAGIC_MARKER)
-                    || predicate.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
-                    || predicate.contains(IDLabFunctions.MAGIC_MARKER)
-                    || object.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
-                    || object.contains(IDLabFunctions.MAGIC_MARKER)) {
-                this.resultingQuads.removeQuads(q.getSubject(), q.getPredicate(), q.getObject(), q.getGraph());
-            } else if (graph != null && (graph.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
-                    || graph.contains(IDLabFunctions.MAGIC_MARKER)))
-            {
-                this.resultingQuads.removeQuads(q.getSubject(), q.getPredicate(), q.getObject(), q.getGraph());
-            }
-        }
-
         // Add the legacy store to the list of targets as well
         this.targetStores.put(new NamedNode("rmlmapper://default.store"), this.resultingQuads);
         return this.targetStores;
@@ -317,12 +292,30 @@ public class Executor {
         Term g = null;
         Set<Term> targets = new HashSet<Term>();
 
-        if (graph != null) {
-            g = graph.getTerm();
-            targets.addAll(graph.getTargets());
-        }
-
         if (subject != null && predicate != null && object != null) {
+            /* Remove magic marker from output */
+            String s = subject.getTerm().getValue();
+            String p = predicate.getTerm().getValue();
+            String o = object.getTerm().getValue();
+
+            if (s.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || s.contains(IDLabFunctions.MAGIC_MARKER)
+                    || p.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || p.contains(IDLabFunctions.MAGIC_MARKER)
+                    || o.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || o.contains(IDLabFunctions.MAGIC_MARKER)) {
+                return;
+            } else if (graph != null && (graph.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || graph.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)))
+            {
+                return;
+            }
+
+            if (graph != null) {
+                g = graph.getTerm();
+                targets.addAll(graph.getTargets());
+            }
+
             // Get all possible targets for triple, the Set guarantees that we don't have duplicates
             targets.addAll(subject.getTargets());
             targets.addAll(predicate.getTargets());
