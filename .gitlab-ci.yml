@@ -68,7 +68,10 @@ General:
     # Improve performance with overlayfs.
     DOCKER_DRIVER: overlay2
   script:
-    - 'mvn $MAVEN_CLI_OPTS -Dtest=$TEST test'
+    - 'mvn $MAVEN_CLI_OPTS -Dtest=$TEST test | tee $TEST.log'
+  artifacts:
+    paths:
+      - '$TEST.log'
   parallel:
     matrix:
       - TEST: [ArgumentsTest, MapperCSVTest, MapperJSONTest, MapperMySQLTest, MapperPostgresR2RMLTest, MapperWoTTest, ArgumentsTestMySQLTest, MapperCSVWTest, MapperLDESTest, MapperODSTest, MapperOracleDBTest, MapperPostgresXMLTest, MapperXMLTest, CustomRMLFnOMapperCSVTest, MapperEXCELTest, MapperMappingFileURLTest, MapperSPARQLTest, MetadataTest, CustomRMLFnOMapperJSONTest, CustomRMLFnOMapperTest, MapperHTMLTest, MapperMySQLR2RMLTest, MapperPostgresCSVTest, MapperSQLServerTest, OptimizationsTest, R2RMLConverterTest, QuadTest, ReadmeTest, ReadmeFunctionTest, ConformerDetectionTest]
