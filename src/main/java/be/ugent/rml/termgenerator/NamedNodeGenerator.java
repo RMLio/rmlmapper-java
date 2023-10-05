@@ -59,6 +59,11 @@ public class NamedNodeGenerator extends TermGenerator {
                         logger.error("'" + iri + "' is not a valid IRI");
                         throw new Exception("'" + iri + "' is not a valid IRI");
                     }
+                } else {
+                    /* Basic IRI validation */
+                    if (iri.contains(" ")) {
+                        continue;
+                    }
                 }
 
                 objects.add(new NamedNode(iri));
