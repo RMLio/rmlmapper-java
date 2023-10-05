@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+- Build Docker image in two stages, reducing the final image size.
+
 ## [6.2.2] - 2023-10-05
 
 ### Fixed
