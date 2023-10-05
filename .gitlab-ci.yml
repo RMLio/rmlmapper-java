@@ -70,6 +70,7 @@ General:
   script:
     - 'mvn $MAVEN_CLI_OPTS -Dtest=$TEST test | tee $TEST.log'
   artifacts:
+    when: always
     paths:
       - '$TEST.log'
   parallel:
