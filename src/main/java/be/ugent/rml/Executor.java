@@ -228,6 +228,7 @@ public class Executor {
         List<Quad> quads = this.resultingQuads.getQuads(null, null, null, null);
         for (Quad q: quads) {
             String subject = q.getSubject().toString();
+            String predicate = q.getPredicate().toString();
             String object = q.getObject().toString();
             String graph = null;
 
@@ -236,6 +237,8 @@ public class Executor {
 
             if (subject.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
                     || subject.contains(IDLabFunctions.MAGIC_MARKER)
+                    || predicate.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || predicate.contains(IDLabFunctions.MAGIC_MARKER)
                     || object.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
                     || object.contains(IDLabFunctions.MAGIC_MARKER)) {
                 this.resultingQuads.removeQuads(q.getSubject(), q.getPredicate(), q.getObject(), q.getGraph());
