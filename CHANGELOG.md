@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Handle plain old Java Arrays as well for FnO return values
 - Update dependency to `idlab-functions-java`, fixing [issue #218](https://github.com/RMLio/rmlmapper-java/issues/218) 
 
+### Changed
+- Dockefile: switched to Eclipse OpenJDK Docker base image because OpenJDK is deprecated
+
 ## [6.2.1] - 2023-07-06
 
 ### Fixed
