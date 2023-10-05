@@ -190,6 +190,8 @@ Create Release:
         git push origin master
       fi
   when: manual
+  only:
+    - development
 
 # Generate R2RML test report and send MR to rml.io website
 # Push options: https://docs.gitlab.com/ee/user/project/push_options.html
