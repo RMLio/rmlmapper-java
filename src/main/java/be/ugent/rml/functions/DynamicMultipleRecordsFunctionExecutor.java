@@ -2,6 +2,7 @@ package be.ugent.rml.functions;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.Arguments;
+import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
@@ -70,7 +71,16 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             throw new Exception("No function was defined for parameters: " + arguments.getArgumentNames());
         } else {
             final String functionId = fnTerms.get(0).getValue();
-            return functionAgent.execute(functionId, arguments);
+            try {
+                Object result = functionAgent.execute(functionId, arguments);
+                if (!result.equals(IDLabFunctions.MAGIC_MARKER) && !result.equals(IDLabFunctions.MAGIC_MARKER_ENCODED))
+                    return result;
+
+                return null;
+            } catch (Exception e) {
+                logger.debug("FnO function execution failed: {}", e.getMessage())
+;                return null;
+            }
         }
     }
 }
