@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CI: dropped GitHub release automation
 - CI: verify if token is valid
 
+### Improvements
+- Heavily increased performance of RMLMapper through several optimizations
+
 ## [6.2.1] - 2023-07-06
 
 ### Fixed
