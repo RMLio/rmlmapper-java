@@ -229,10 +229,19 @@ public class Executor {
         for (Quad q: quads) {
             String subject = q.getSubject().toString();
             String object = q.getObject().toString();
+            String graph = null;
+
+            if (q.getGraph() != null)
+                graph = q.getGraph().toString();
+
             if (subject.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
                     || subject.contains(IDLabFunctions.MAGIC_MARKER)
                     || object.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
-                    || object.contains(IDLabFunctions.MAGIC_MARKER) ) {
+                    || object.contains(IDLabFunctions.MAGIC_MARKER)) {
+                this.resultingQuads.removeQuads(q.getSubject(), q.getPredicate(), q.getObject(), q.getGraph());
+            } else if (graph != null && (graph.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || graph.contains(IDLabFunctions.MAGIC_MARKER)))
+            {
                 this.resultingQuads.removeQuads(q.getSubject(), q.getPredicate(), q.getObject(), q.getGraph());
             }
         }
