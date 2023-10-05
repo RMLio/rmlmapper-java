@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Dockefile: switched to Eclipse OpenJDK Docker base image because OpenJDK is deprecated
+- CI: dropped GitHub release automation
 
 ## [6.2.1] - 2023-07-06
 
