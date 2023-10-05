@@ -10,6 +10,10 @@ include:
   - project: 'rml/util/ci-templates'
     ref: main
     file: 'CHANGELOG.gitlab-ci.yml'
+  # Make sure the repository token is always valid
+  - project: 'rml/util/ci-templates'
+    ref: main
+    file: 'Token.gitlab-ci.yml'
   # Push a Docker Image to Docker Hub on new tags
   - project: 'rml/util/ci-templates'
     ref: main
