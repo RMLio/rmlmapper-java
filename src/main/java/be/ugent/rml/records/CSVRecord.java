@@ -17,8 +17,9 @@ public class CSVRecord extends Record {
 
     CSVRecord(String[] header, String[] data, Map<String, String> datatypes) {
         this.data = new HashMap<>();
-        for(int i = 0; i < header.length; i += 1){
-            this.data.put(header[i].toLowerCase(), data[i]);
+        for (int i = 0; i < header.length; i += 1) {
+            if (header[i] != null)
+                this.data.put(header[i].toLowerCase(), data[i]);
         }
         this.datatypes = datatypes;
     }
@@ -57,7 +58,13 @@ public class CSVRecord extends Record {
     @Override
     public List<Object> get(String value) {
         List<Object> result = new ArrayList<>();
-        Object obj = this.data.get(value.toLowerCase());
+        String key = value.toLowerCase();
+
+        /* Raise an exception if a value does not exist in the data set */
+        if (!this.data.containsKey(key))
+            throw new IllegalArgumentException("Key '" + key + "' does not exist in " + this.data.keySet().toString());
+
+        Object obj = this.data.get(key);
 
         // needed for finding NULL in CSV serialization
         if (obj != null) {
