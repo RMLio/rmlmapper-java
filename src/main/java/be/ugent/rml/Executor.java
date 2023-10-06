@@ -248,8 +248,6 @@ public class Executor {
                         /* Named Graph */
                         if (pogGraphMappingInfo != null) {
                             pogGraphGenerator = pogGraphMappingInfo.getTermGenerator();
-                            if (pogGraphGenerator != null && !pogGraphGenerator.magic())
-                                continue;
                         }
 
                         if (pogGraphGenerator != null) {
@@ -263,8 +261,6 @@ public class Executor {
                         /* Predicates */
                         if (pogPredicateMappingInfo != null) {
                             pogPredicateGenerator = pogPredicateMappingInfo.getTermGenerator();
-                            if (pogPredicateGenerator != null && !pogPredicateGenerator.magic())
-                                continue;
                         }
 
                         pogPredicateGenerator.generate(record).forEach(p -> {
@@ -274,8 +270,6 @@ public class Executor {
                         /* Objects */
                         if (pogObjectMappingInfo != null) {
                             pogObjectGenerator = pogObjectMappingInfo.getTermGenerator();
-                            if (pogObjectGenerator != null && !pogObjectGenerator.magic())
-                                continue;
                         }
 
                         if (pogObjectMappingInfo != null && pogObjectGenerator != null) {
@@ -298,7 +292,6 @@ public class Executor {
                             //check if need to apply a join condition
                             if (!pogMapping.getJoinConditions().isEmpty()) {
                                 objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
-                                //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
                             } else {
                                 objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
                             }
@@ -391,6 +384,17 @@ public class Executor {
                 g = graph.getTerm();
                 targets.addAll(graph.getTargets());
             }
+
+            if (subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
+                    || subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || predicate.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
+                    || predicate.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || object.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
+                    || object.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED))
+                return false;
+
+            if (g != null && (g.getValue().contains(IDLabFunctions.MAGIC_MARKER) || g.getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)))
+                return false;
 
             // Get all possible targets for triple, the Set guarantees that we don't have duplicates
             targets.addAll(subject.getTargets());
