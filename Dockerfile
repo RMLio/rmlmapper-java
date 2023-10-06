@@ -1,15 +1,14 @@
 # Build image
-FROM eclipse-temurin:19-jdk as buildimage
+FROM maven:3-eclipse-temurin-17 as buildimage
 
 ADD . /rmlmapper-java
 
-RUN apt update && apt install maven -y
 WORKDIR rmlmapper-java
-RUN mvn -Pno-buildnumber clean install -DskipTests=true
-RUN mv `find target/ -iname rmlmapper-*-all.jar;` /rmlmapper.jar
+RUN mvn -Pno-buildnumber clean package -DskipTests=true
+RUN mv $(readlink -f target/rmlmapper-*-all.jar) /rmlmapper.jar
 
-# Base image
-FROM eclipse-temurin:19-jre
+# "Runtime" image
+FROM eclipse-temurin:17-jre
 COPY --from=buildimage /rmlmapper.jar /rmlmapper.jar
 
 WORKDIR /data
