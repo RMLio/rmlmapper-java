@@ -213,7 +213,7 @@ R2RML Test Report:
     - apk add git python3 python3-dev py3-pip postgresql-dev postgresql libpq gcc musl-dev docker docker-compose java-jre-headless maven java-jdk
 
     # Clone the repository via HTTPS inside a new directory
-    - git clone "https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${CI_SERVER_HOST}/rml/doc/rmlio-website.git"
+    - git clone "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/rml/doc/rmlio-website.git"
     - git clone "https://github.com/kg-construct/r2rml-test-cases-support"
 
     # Set the displayed user with the commits that are about to be made
