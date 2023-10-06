@@ -7,6 +7,7 @@ import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,12 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             throw new Exception("No function was defined for parameters: " + arguments.getArgumentNames());
         } else {
             final String functionId = fnTerms.get(0).getValue();
-            return functionAgent.execute(functionId, arguments);
+            try {
+                return functionAgent.execute(functionId, arguments);
+            } catch (NullPointerException e) {
+                logger.error("Function '{}' failed to execute with NullPointerException", functionId);
+                return null;
+            }
         }
     }
 }
