@@ -27,6 +27,9 @@ public abstract class TermGenerator {
     }
 
     public boolean magic() {
-        return this.functionExecutor.magic();
+        if (this.functionExecutor != null)
+            return this.functionExecutor.magic();
+
+        return false;
     }
 }
