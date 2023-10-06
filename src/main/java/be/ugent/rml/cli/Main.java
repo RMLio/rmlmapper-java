@@ -424,7 +424,7 @@ public class Main {
             }
 
             HashMap<Term, QuadStore> targets = executor.getTargets();
-            if (targets != null){
+            if (targets != null) {
                 result = targets.get(new NamedNode("rmlmapper://default.store"));
                 if(result != null) {
                     result.copyNameSpaces(rmlStore);
