@@ -43,7 +43,7 @@ public class NamedNodeGenerator extends TermGenerator {
         List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(record));
         ArrayList<Term> objects = new ArrayList<>();
 
-        if (objectStrings.size() > 0) {
+        if (!objectStrings.isEmpty()) {
             for (String object : objectStrings) {
                 String iri = object;
 
