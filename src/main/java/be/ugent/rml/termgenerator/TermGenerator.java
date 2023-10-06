@@ -25,4 +25,8 @@ public abstract class TermGenerator {
         return "gen(" + functionExecutor +
                 ')';
     }
+
+    public boolean magic() {
+        return this.functionExecutor.magic();
+    }
 }

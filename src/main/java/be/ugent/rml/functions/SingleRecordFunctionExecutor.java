@@ -5,4 +5,8 @@ import be.ugent.rml.records.Record;
 public interface SingleRecordFunctionExecutor {
 
     Object execute(Record record) throws Exception;
+
+    default boolean magic() {
+        return false;
+    }
 }
