@@ -35,7 +35,7 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
         //we only return a result when all elements of the template are found
         boolean allValuesFound = true;
         int referenceCount = 0;
-        String onlyConstants = "";
+        StringBuilder onlyConstants = new StringBuilder();
 
         //we iterate over all elements of the template, unless one is not found
         for (int i = 0; allValuesFound && i < extractors.size(); i++) {
@@ -52,14 +52,12 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
                         if (isReferenceExtractor) {
                             if (encodeURI)
                                 value = Utils.encodeURI(value);
-
                             referenceCount ++;
                         } else if (isConstantExtractor) {
-                            onlyConstants += value;
+                            onlyConstants.append(value);
                         }
 
-                        result += value;
-                        temp.add(result);
+                        temp.add(result + value);
                     }
                 }
 
@@ -72,7 +70,7 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
             }
         }
 
-        if (!allValuesFound || (referenceCount > 0 && results.contains(onlyConstants)))
+        if (!allValuesFound || (referenceCount > 0 && results.contains(onlyConstants.toString())))
             return new ArrayList<>();
 
         return results;
