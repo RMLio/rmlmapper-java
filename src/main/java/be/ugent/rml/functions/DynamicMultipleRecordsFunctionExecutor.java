@@ -11,6 +11,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
@@ -39,8 +40,9 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             pv.getParameterGenerators().forEach(parameterGen -> {
                 try {
                     parameters.addAll(parameterGen.generate(child));
+                } catch (IllegalArgumentException e) {
+                    logger.error(e.getMessage());
                 } catch (Exception e) {
-                    //todo be more nice and gentle
                     e.printStackTrace();
                 }
             });
@@ -48,8 +50,9 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             pv.getValueGeneratorPairs().forEach(pair -> {
                 try {
                     values.addAll(pair.getTermGenerator().generate(records.get(pair.getOrigin())));
+                } catch (IllegalArgumentException e) {
+                    logger.error(e.getMessage());
                 } catch (Exception e) {
-                    //todo be more nice and gentle
                     e.printStackTrace();
                 }
             });
@@ -74,8 +77,8 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             final String functionId = fnTerms.get(0).getValue();
             try {
                 return functionAgent.execute(functionId, arguments);
-            } catch (NullPointerException e) {
-                logger.error("Function '{}' failed to execute with NullPointerException", functionId);
+            } catch (InvocationTargetException e) {
+                logger.error("Function '{}' failed to execute with {}", functionId, e.getTargetException().getMessage());
                 return null;
             }
         }
