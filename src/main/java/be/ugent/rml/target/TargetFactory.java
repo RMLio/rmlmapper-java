@@ -1,6 +1,5 @@
 package be.ugent.rml.target;
 
-import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.Quad;
@@ -14,11 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -35,12 +30,15 @@ public class TargetFactory {
         this.basePath = basePath;
     }
 
-    private void detectLDESEvenStreamTarget(Term logicalTarget, List<Quad> metadata, QuadStore rmlStore, QuadStore outputStore) {
+    private void detectLDESEventStreamTarget(Term logicalTarget, List<Quad> metadata, QuadStore rmlStore, QuadStore outputStore) {
         List<Term> types = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
                 new NamedNode(NAMESPACES.RDF + "type"), null));
         for (Term type: types) {
             // Target has LDES features, read them
-            if (type.getValue().equals(NAMESPACES.RMLT + "EventStreamTarget")) {
+            if (type.getValue().equals(NAMESPACES.LDES + "EventStreamTarget")) {
+                logger.error("'{}EventStreamTarget' is not supported anymore. Use '{}/EventStreamTarget'. Not generating LDES metadata!", NAMESPACES.LDES, NAMESPACES.RMLT);
+                return;
+            } else if (type.getValue().equals(NAMESPACES.RMLT + "EventStreamTarget")) {
                 logger.debug("Found RMLT EventStreamTarget");
                 Term iri;
                 Term ldes_iri = null;
@@ -51,13 +49,13 @@ public class TargetFactory {
                 boolean ldesGenerateImmutableIRI = false;
 
                 try {
-                    // Check if LDES IRI is given 
+                    // Check if LDES IRI is given
                     iri = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
                             new NamedNode(NAMESPACES.RMLT + "ldesBaseIRI"), null)).get(0);
                     ldes_iri = new NamedNode(iri.getValue());
                     logger.debug("LDES base IRI: {}", iri.getValue());
 
-                    // LDES RDF type EvenStream
+                    // LDES RDF type EventStream
                     metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.RDF + "type"),
                         new NamedNode(NAMESPACES.LDES + "EventStream")));
                 }
@@ -183,7 +181,7 @@ public class TargetFactory {
                         if (timestampPathObj != null) {
                             List<Term> timestampObj = Utils.getObjectsFromQuads(outputStore.getQuads(m, timestampPathObj, null));
                             if (timestampObj.isEmpty()) {
-                                outputStore.addQuad(new Quad(memberIRI, timestampPathObj, 
+                                outputStore.addQuad(new Quad(memberIRI, timestampPathObj,
                                     new Literal(Instant.ofEpochMilli(currentTime).toString(), new NamedNode(NAMESPACES.XSD + "dateTime"))));
                             } else {
                                 for (Term v : timestampObj) {
@@ -297,7 +295,7 @@ public class TargetFactory {
         }
 
         // Detect LDES EventStreamTarget
-        this.detectLDESEvenStreamTarget(logicalTarget, metadata, rmlStore, outputStore);
+        this.detectLDESEventStreamTarget(logicalTarget, metadata, rmlStore, outputStore);
 
         // Build target
         if (!targets.isEmpty()) {
