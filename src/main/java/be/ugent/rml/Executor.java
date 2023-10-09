@@ -111,9 +111,7 @@ public class Executor {
                     metadataGenerator.insertQuad(new ProvenancedQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph()));
             };
         } else {
-            pogFunction = (subject, pog) -> {
-                generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
-            };
+            pogFunction = (subject, pog) -> generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
         }
 
         return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
@@ -178,13 +176,12 @@ public class Executor {
             Mapping mapping = this.mappings.get(triplesMap);
             List<ProvenancedTerm> subjects = new ArrayList<>();
             TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
-            List<Term> nodes = null;
 
             /* Skip any subjects that are not applicable for the marker */
             if (!generator.magic())
                 continue;
 
-            nodes = generator.generate(record);
+            List<Term> nodes = generator.generate(record);
 
             if (!nodes.isEmpty()) {
                 List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
@@ -222,9 +219,7 @@ public class Executor {
 
                     List<PredicateObjectGraph> pogs = generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
-                    pogs.forEach(pog -> {
-                        pogFunction.accept(finalSubject, pog);
-                    });
+                    pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
                 }
             }
         }
@@ -271,9 +266,7 @@ public class Executor {
             /* Predicates */
             if (pogPredicateMappingInfo != null) {
                 TermGenerator pogPredicateGenerator = pogPredicateMappingInfo.getTermGenerator();
-                pogPredicateGenerator.generate(record).forEach(p -> {
-                    predicates.add(new ProvenancedTerm(p, pogPredicateMappingInfo));
-                });
+                pogPredicateGenerator.generate(record).forEach(p -> predicates.add(new ProvenancedTerm(p, pogPredicateMappingInfo)));
             }
 
             /* Objects */
@@ -283,9 +276,7 @@ public class Executor {
                     List<Term> objects = pogObjectGenerator.generate(record);
                     List<ProvenancedTerm> provenancedObjects = new ArrayList<>();
 
-                    objects.forEach(object -> {
-                        provenancedObjects.add(new ProvenancedTerm(object, pogObjectMappingInfo));
-                    });
+                    objects.forEach(object -> provenancedObjects.add(new ProvenancedTerm(object, pogObjectMappingInfo)));
 
                     if (!objects.isEmpty()) {
                         //add pogs
@@ -314,7 +305,7 @@ public class Executor {
 
     private boolean generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
         Term g = null;
-        Set<Term> targets = new HashSet<Term>();
+        Set<Term> targets = new HashSet<>();
 
         if (subject != null && predicate != null && object != null) {
             if (graph != null) {
@@ -356,8 +347,8 @@ public class Executor {
     }
 
     private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws Exception {
-        ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<ProvenancedTerm>();
-        ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
+        ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<>();
+        ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<>();
 
         for (MultipleRecordsFunctionExecutor condition : conditions) {
             allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
@@ -387,7 +378,7 @@ public class Executor {
         //iterator over all the records corresponding with @triplesMap
         List<Record> records = this.getRecords(triplesMap);
         //this array contains all the IRIs that are valid regarding @path and @values
-        ArrayList<ProvenancedTerm> iris = new ArrayList<ProvenancedTerm>();
+        ArrayList<ProvenancedTerm> iris = new ArrayList<>();
 
         for (int i = 0; i < records.size(); i++) {
             Record parent = records.get(i);
@@ -411,7 +402,7 @@ public class Executor {
 
     private List<ProvenancedTerm> getSubject(Term triplesMap, Mapping mapping, Record record, int i) throws Exception {
         if (!this.subjectCache.containsKey(triplesMap)) {
-            this.subjectCache.put(triplesMap, new HashMap<Integer, List<ProvenancedTerm>>());
+            this.subjectCache.put(triplesMap, new HashMap<>());
         }
 
         if (!this.subjectCache.get(triplesMap).containsKey(i)) {
@@ -439,7 +430,7 @@ public class Executor {
         Mapping mapping = this.mappings.get(triplesMap);
 
         List<Record> records = getRecords(triplesMap);
-        ArrayList<ProvenancedTerm> iris = new ArrayList<ProvenancedTerm>();
+        ArrayList<ProvenancedTerm> iris = new ArrayList<>();
 
         for (int i = 0; i < records.size(); i++) {
             Record record = records.get(i);
@@ -466,13 +457,13 @@ public class Executor {
             graphs.add(null);
         }
 
-        predicates.forEach(p -> {
-            objects.forEach(o -> {
-                graphs.forEach(g -> {
-                    results.add(new PredicateObjectGraph(p, o, g));
-                });
-            });
-        });
+        predicates.forEach(
+                p -> objects.forEach(
+                        o -> graphs.forEach(
+                                g -> results.add(new PredicateObjectGraph(p, o, g))
+                        )
+                )
+        );
 
         return results;
     }
