@@ -3,27 +3,28 @@ package be.ugent.rml;
 import be.ugent.rml.term.Term;
 import be.ugent.rml.termgenerator.TermGenerator;
 
-import java.util.ArrayList;
+import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
 public class MappingInfo {
-    private Term term;
-    private TermGenerator termGenerator;
-    private List<Term> targets;
+    private final Term term;
+    private final TermGenerator termGenerator;
+    private final List<Term> targets;
 
-    public MappingInfo(Term term, TermGenerator termGenerator, List<Term> targets) {
+    public MappingInfo(@Nonnull Term term, @Nonnull TermGenerator termGenerator, @Nonnull List<Term> targets) {
         this.term = term;
         this.termGenerator = termGenerator;
         this.targets = targets;
     }
 
-    public MappingInfo(Term term, TermGenerator termGenerator) {
+    public MappingInfo(@Nonnull Term term, @Nonnull TermGenerator termGenerator) {
         this.term = term;
         this.termGenerator = termGenerator;
-        this.targets = new ArrayList<Term>();
+        this.targets = Collections.emptyList();
     }
 
-    public MappingInfo(Term term, List<Term> targets) {
+    public MappingInfo(@Nonnull Term term, @Nonnull List<Term> targets) {
         this.term = term;
         this.termGenerator = null;
         this.targets = targets;
@@ -41,8 +42,7 @@ public class MappingInfo {
         return targets;
     }
 
-    public List<Term> addTargets(List<Term> targets) {
+    public void addTargets(List<Term> targets) {
         this.targets.addAll(targets);
-        return this.targets;
     }
 }
