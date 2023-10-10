@@ -216,9 +216,7 @@ public class Executor {
 
                         try {
                             TermGenerator generatorGraph = mappingInfo.getTermGenerator();
-                            /* Skip generators which do not even need markers */
-                            if (generatorGraph.magic())
-                                terms = generatorGraph.generate(record);
+                            terms = generatorGraph.generate(record);
                         } catch (Exception e) {
                             //todo be more nice and gentle
                             e.printStackTrace();
