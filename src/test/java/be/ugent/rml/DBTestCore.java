@@ -18,7 +18,7 @@ import java.util.Iterator;
 @Testcontainers
 public abstract class DBTestCore extends TestCore {
     protected static Logger logger;
-    protected static HashSet<String> tempFiles = new HashSet<>();
+    protected static Set<String> tempFiles = new HashSet<>();
 
     // Testcontainers library uses SELF-typing, which will be removed in later versions. That's why <?>.
     // omitting <?> causes compiler to complain
