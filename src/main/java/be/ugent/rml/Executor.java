@@ -178,72 +178,6 @@ public class Executor {
         return this.execute(triplesMaps, false, null);
     }
 
-
-    private List<PredicateObjectGraph> generatePredicateObjectGraphs(Mapping mapping, Record record, List<ProvenancedTerm> alreadyNeededGraphs) throws Exception {
-        List<PredicateObjectGraph> pogs = new ArrayList<>();
-
-        List<PredicateObjectGraphMapping> predicateObjectGraphMappings = mapping.getPredicateObjectGraphMappings();
-
-        for (PredicateObjectGraphMapping pogMapping : predicateObjectGraphMappings) {
-            ArrayList<ProvenancedTerm> predicates = new ArrayList<>();
-            MappingInfo pogGraphMappingInfo = pogMapping.getGraphMappingInfo();
-            MappingInfo pogPredicateMappingInfo = pogMapping.getPredicateMappingInfo();
-            MappingInfo pogObjectMappingInfo = pogMapping.getObjectMappingInfo();
-
-            ArrayList<ProvenancedTerm> poGraphs = new ArrayList<>(alreadyNeededGraphs);
-
-            if (pogGraphMappingInfo != null) {
-                TermGenerator pogGraphGenerator = pogGraphMappingInfo.getTermGenerator();
-                if (pogGraphGenerator != null) {
-                    pogGraphGenerator.generate(record).forEach(term -> {
-                        if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
-                            poGraphs.add(new ProvenancedTerm(term));
-                        }
-                    });
-                }
-            }
-
-
-            /* Predicates */
-            if (pogPredicateMappingInfo != null) {
-                TermGenerator pogPredicateGenerator = pogPredicateMappingInfo.getTermGenerator();
-                pogPredicateGenerator.generate(record).forEach(p -> predicates.add(new ProvenancedTerm(p, pogPredicateMappingInfo)));
-            }
-
-            /* Objects */
-            if (pogObjectMappingInfo != null) {
-                TermGenerator pogObjectGenerator = pogObjectMappingInfo.getTermGenerator();
-                if (pogObjectGenerator != null) {
-                    List<Term> objects = pogObjectGenerator.generate(record);
-                    List<ProvenancedTerm> provenancedObjects = new ArrayList<>();
-
-                    objects.forEach(object -> provenancedObjects.add(new ProvenancedTerm(object, pogObjectMappingInfo)));
-
-                    if (!objects.isEmpty()) {
-                        //add pogs
-                        pogs.addAll(combineMultiplePOGs(predicates, provenancedObjects, poGraphs));
-                    }
-                }
-
-            //check if we are dealing with a parentTriplesMap (RefObjMap)
-            } else if (pogMapping.getParentTriplesMap() != null) {
-                List<ProvenancedTerm> objects;
-
-                //check if need to apply a join condition
-                if (!pogMapping.getJoinConditions().isEmpty()) {
-                    objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
-                    //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
-                } else {
-                    objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
-                }
-
-                pogs.addAll(combineMultiplePOGs(predicates, objects, poGraphs));
-            }
-        }
-
-        return pogs;
-    }
-
     private boolean generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
         Term g = null;
         Set<Term> targets = new HashSet<>();
@@ -485,7 +419,65 @@ public class Executor {
                     }
                 });
 
-                List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
+                List<PredicateObjectGraph> pogs = new ArrayList<>();
+                List<PredicateObjectGraphMapping> predicateObjectGraphMappings = mapping.getPredicateObjectGraphMappings();
+
+                for (PredicateObjectGraphMapping pogMapping : predicateObjectGraphMappings) {
+                    ArrayList<ProvenancedTerm> predicates = new ArrayList<>();
+                    MappingInfo pogGraphMappingInfo = pogMapping.getGraphMappingInfo();
+                    MappingInfo pogPredicateMappingInfo = pogMapping.getPredicateMappingInfo();
+                    MappingInfo pogObjectMappingInfo = pogMapping.getObjectMappingInfo();
+
+                    ArrayList<ProvenancedTerm> poGraphs = new ArrayList<>(subjectGraphs);
+
+                    if (pogGraphMappingInfo != null) {
+                        TermGenerator pogGraphGenerator = pogGraphMappingInfo.getTermGenerator();
+                        if (pogGraphGenerator != null) {
+                            pogGraphGenerator.generate(record).forEach(term -> {
+                                if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                                    poGraphs.add(new ProvenancedTerm(term));
+                                }
+                            });
+                        }
+                    }
+
+
+                    /* Predicates */
+                    if (pogPredicateMappingInfo != null) {
+                        TermGenerator pogPredicateGenerator = pogPredicateMappingInfo.getTermGenerator();
+                        pogPredicateGenerator.generate(record).forEach(p -> predicates.add(new ProvenancedTerm(p, pogPredicateMappingInfo)));
+                    }
+
+                    /* Objects */
+                    if (pogObjectMappingInfo != null) {
+                        TermGenerator pogObjectGenerator = pogObjectMappingInfo.getTermGenerator();
+                        if (pogObjectGenerator != null) {
+                            List<Term> objects = pogObjectGenerator.generate(record);
+                            List<ProvenancedTerm> provenancedObjects = new ArrayList<>();
+
+                            objects.forEach(object -> provenancedObjects.add(new ProvenancedTerm(object, pogObjectMappingInfo)));
+
+                            if (!objects.isEmpty()) {
+                                //add pogs
+                                pogs.addAll(combineMultiplePOGs(predicates, provenancedObjects, poGraphs));
+                            }
+                        }
+
+                    //check if we are dealing with a parentTriplesMap (RefObjMap)
+                    } else if (pogMapping.getParentTriplesMap() != null) {
+                        List<ProvenancedTerm> objects;
+
+                        //check if need to apply a join condition
+                        if (!pogMapping.getJoinConditions().isEmpty()) {
+                            objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
+                            //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
+                        } else {
+                            objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
+                        }
+
+                        pogs.addAll(combineMultiplePOGs(predicates, objects, poGraphs));
+                    }
+                }
 
                 pogs.forEach(pog -> pogFunction.accept(subject, pog));
             }
