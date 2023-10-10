@@ -35,7 +35,7 @@
 # LDES output
 <#LDESLogicalTarget> a rmlt:EventStreamTarget;
     rmlt:target [ a void:Dataset;
-        void:dataDump <file://./out-bluebike-change-stations-base.nq>;
+        void:dataDump <file://./output-base.nq>;
     ];
     rmlt:serialization formats:N-Quads;
     rmlt:ldes [ a ldes:EvenStream;
@@ -165,7 +165,7 @@
       rr:predicateObjectMap [
         rr:predicate idlab-fn:state ;
         rr:objectMap [
-          rr:constant "/tmp/bluebike_create_state";
+          rr:constant "/tmp/create_state";
           rr:dataType xsd:string;
         ];
       ];
@@ -213,7 +213,7 @@
       # Directory path where the state for this function is/will be stored
       rr:predicateObjectMap [
         rr:predicate idlab-fn:state ;
-        rr:objectMap [ rr:constant "/tmp/bluebike_change_state"; rr:dataType xsd:string; ]
+        rr:objectMap [ rr:constant "/tmp/change_state"; rr:dataType xsd:string; ]
       ];
     ];
     rr:class mobivoc:BicycleParkingStation;
@@ -249,7 +249,7 @@
         # Directory path where the state for this function is/will be stored
         rr:predicateObjectMap [
           rr:predicate idlab-fn:state ;
-          rr:objectMap [ rr:constant "/tmp/bluebike_delete_state"; rr:dataType xsd:string; ]
+          rr:objectMap [ rr:constant "/tmp/delete_state"; rr:dataType xsd:string; ]
         ];
     ];
     rr:termType rr:IRI;

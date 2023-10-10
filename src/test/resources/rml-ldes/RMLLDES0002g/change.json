@@ -1,0 +1,5 @@
+{
+    "sensors": [
+        { "sensor": 2, "temperature": 18, "pressure": 999 }
+    ]
+}
