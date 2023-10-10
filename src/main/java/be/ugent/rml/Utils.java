@@ -66,10 +66,10 @@ public class Utils {
     }
 
     public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType) throws IOException {
-        return getInputStreamFromLocation(location, basePath, contentType, new HashMap<String, String>());
+        return getInputStreamFromLocation(location, basePath, contentType, new HashMap<>());
     }
 
-    public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType, HashMap<String, String> headers) throws IOException {
+    public static InputStream getInputStreamFromLocation(String location, File basePath, String contentType, Map<String, String> headers) throws IOException {
         if (isRemoteFile(location)) {
             return getInputStreamFromURL(new URL(location), contentType, headers);
         } else {
@@ -236,7 +236,7 @@ public class Utils {
         return inputStream;
     }
 
-    public static InputStream getInputStreamFromURL(URL url, String contentType, HashMap<String, String> headers) {
+    public static InputStream getInputStreamFromURL(URL url, String contentType, Map<String, String> headers) {
         InputStream inputStream = null;
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -264,7 +264,7 @@ public class Utils {
         return inputStream;
     }
 
-    public static InputStream getInputStreamFromAuthURL(URL url, String contentType, HashMap<String, String> headers) throws Exception {
+    public static InputStream getInputStreamFromAuthURL(URL url, String contentType, Map<String, String> headers) throws Exception {
         InputStream inputStream = null;
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -299,7 +299,7 @@ public class Utils {
 
     public static InputStream getPostRequestResponse(URL url, String contentType, byte[] auth ){
         InputStream inputStream = null;
-        HashMap<String, String> headers = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("charset", "utf-8");
 
         try {

@@ -9,13 +9,14 @@ import be.ugent.rml.term.Term;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Initializer {
 
     private final MappingFactory factory;
     private final QuadStore rmlStore;
     private final List<Term> triplesMaps;
-    private final HashMap<Term, Mapping> mappings;
+    private final Map<Term, Mapping> mappings;
 
     public Initializer(final QuadStore rmlStore, final Agent functionAgent, final String baseIRI, final StrictMode strictMode) throws Exception {
         this.rmlStore = rmlStore;
@@ -62,7 +63,7 @@ public class Initializer {
         }
     }
 
-    public HashMap<Term, Mapping> getMappings() {
+    public Map<Term, Mapping> getMappings() {
         return this.mappings;
     }
 

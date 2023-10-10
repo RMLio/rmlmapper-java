@@ -158,7 +158,7 @@ public abstract class TestCore {
      * @param privateSecurityDataPath The path of the private security data file.
      * @return The Executor used to execute the mapping.
      */
-    public Executor doMapping(String mapPath, HashMap<Term, String> outPaths, String privateSecurityDataPath) {
+    public Executor doMapping(String mapPath, Map<Term, String> outPaths, String privateSecurityDataPath) {
         try {
             Executor executor = this.createExecutorPrivateSecurityData(mapPath, privateSecurityDataPath);
             doMapping(executor, outPaths);
@@ -176,7 +176,7 @@ public abstract class TestCore {
      * @param outPaths The paths of the files with the expected output.
      * @return The Executor used to execute the mapping.
      */
-    public Executor doMapping(String mapPath, HashMap<Term, String> outPaths) {
+    public Executor doMapping(String mapPath, Map<Term, String> outPaths) {
         try {
             Executor executor = this.createExecutor(mapPath);
             doMapping(executor, outPaths);
@@ -225,10 +225,10 @@ public abstract class TestCore {
      * @param executor The Executor that is used to execute the mapping.
      * @param outPaths The paths of the files with the expected output.
      */
-    void doMapping(Executor executor, HashMap<Term, String> outPaths) throws Exception {
+    void doMapping(Executor executor, Map<Term, String> outPaths) throws Exception {
         logger.debug("Comparing target outputs");
         TargetFactory targetFactory = new TargetFactory("http://example.org/rules/");
-        HashMap<Term, QuadStore> results = executor.execute(null);
+        Map<Term, QuadStore> results = executor.execute(null);
 
         for (Map.Entry<Term, String> entry: outPaths.entrySet()) {
             Term target = entry.getKey();

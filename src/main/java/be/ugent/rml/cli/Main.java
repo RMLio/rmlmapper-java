@@ -410,7 +410,7 @@ public class Main {
             QuadStore result = null;
 
             try {
-                HashMap<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                Map<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                         metadataGenerator);
 
             } catch (Exception e) {
@@ -420,7 +420,7 @@ public class Main {
                 functionAgent.close();
             }
 
-            HashMap<Term, QuadStore> targets = executor.getTargets();
+            Map<Term, QuadStore> targets = executor.getTargets();
             if (targets != null) {
                 result = targets.get(new NamedNode("rmlmapper://default.store"));
                 if(result != null) {
@@ -455,7 +455,7 @@ public class Main {
         }
     }
 
-    private static void writeOutputTargets(HashMap<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault) throws Exception {
+    private static void writeOutputTargets(Map<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault) throws Exception {
         boolean hasNoResults = true;
 
         logger.debug("Writing to Targets: {}", targets.keySet());

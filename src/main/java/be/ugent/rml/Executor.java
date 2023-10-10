@@ -31,13 +31,13 @@ public class Executor {
      * this map stores for every Triples Map, which is a Term,
      * a map with the record index and the record's corresponding subject, which is a ProvenancedTerm.
      */
-    private final HashMap<Term, HashMap<Integer, List<ProvenancedTerm>>> subjectCache;
+    private final Map<Term, Map<Integer, List<ProvenancedTerm>>> subjectCache;
     private final QuadStore resultingQuads;
     private final QuadStore rmlStore;
-    private final HashMap<Term, QuadStore> targetStores;
+    private final Map<Term, QuadStore> targetStores;
     private final RecordsFactory recordsFactory;
     private static int blankNodeCounter;
-    private final HashMap<Term, Mapping> mappings;
+    private final Map<Term, Mapping> mappings;
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
         this(rmlStore, recordsFactory, null, baseIRI, strictMode, functionAgent);
@@ -101,7 +101,7 @@ public class Executor {
     /*
      * New public API for the V5.X.X. releases
      */
-    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
+    public Map<Term, QuadStore> execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
 
         BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
 
@@ -117,7 +117,7 @@ public class Executor {
         return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
     }
 
-    public HashMap<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
+    public Map<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
@@ -173,7 +173,7 @@ public class Executor {
         return this.targetStores;
     }
 
-    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps) throws Exception {
+    public Map<Term, QuadStore> execute(List<Term> triplesMaps) throws Exception {
         return this.execute(triplesMaps, false, null);
     }
 
@@ -257,7 +257,7 @@ public class Executor {
         for (int i = 0; i < records.size(); i++) {
             Record parent = records.get(i);
 
-            HashMap<String, Record> recordsMap = new HashMap<>();
+            Map<String, Record> recordsMap = new HashMap<>();
             recordsMap.put("child", child);
             recordsMap.put("parent", parent);
 
@@ -357,7 +357,7 @@ public class Executor {
         return this.rmlStore;
     }
 
-    public HashMap<Term, QuadStore> getTargets(){
+    public Map<Term, QuadStore> getTargets(){
         if (this.targetStores.isEmpty()){
             return null;
         }
