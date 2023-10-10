@@ -137,7 +137,7 @@ public class Executor {
                 if (subjects == null)
                     continue;
 
-                generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, false);
+                generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction);
             }
         }
 
@@ -163,7 +163,7 @@ public class Executor {
                 }
             }
 
-            generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, true);
+            generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction);
         }
 
         if (removeDuplicates) {
@@ -387,8 +387,7 @@ public class Executor {
     private void generatePredicateObjectsForSubjects(final List<ProvenancedTerm> subjects,
                                                      final Mapping mapping,
                                                      final Record record,
-                                                     final BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction,
-                                                     final boolean checkMagic) throws Exception {
+                                                     final BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
         for (ProvenancedTerm subject: subjects) {
             //TODO validate subject or check if blank node
             if (subject != null) {
