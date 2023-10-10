@@ -1,0 +1,9 @@
+{
+    "addition": [
+        { "id": 1, "sensor": 1, "temperature": 20, "pressure": 1013, "modified": "2023‐07‐04T05:11:21Z" },
+        { "id": 2, "sensor": 2, "temperature": 22, "pressure": 1005, "modified": "2023‐07‐04T05:11:21Z" },
+        { "id": 3, "sensor": 3, "temperature": 25, "pressure": 1026, "modified": "2023‐07‐04T05:11:21Z" }
+    ],
+    "modification": [],
+    "deletion": [ { "id": 4, "sensor": 3, "modified": "2023‐07‐05T05:11:21Z" } ]
+}

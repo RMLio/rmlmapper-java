@@ -1,0 +1,24 @@
+<http://example.com/event/create> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/ns/activitystreams#Create> .
+<http://example.com/event/create> <https://www.w3.org/ns/activitystreams#actor> <https://example.com/dataset> .
+<http://example.com/event/delete> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/ns/activitystreams#Delete> .
+<http://example.com/event/delete> <https://www.w3.org/ns/activitystreams#actor> <https://example.com/dataset> .
+<http://example.com/event/update> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/ns/activitystreams#Update> .
+<http://example.com/event/update> <https://www.w3.org/ns/activitystreams#actor> <https://example.com/dataset> .
+<http://example.com/sensor/1/> <http://example.com/pressure> "1013" <http://example.com/event/create> .
+<http://example.com/sensor/1/> <http://example.com/temperature> "20" <http://example.com/event/create> .
+<http://example.com/sensor/1/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Sensor> <http://example.com/event/create> .
+<http://example.com/sensor/2/> <http://example.com/pressure> "1005" <http://example.com/event/create> .
+<http://example.com/sensor/2/> <http://example.com/temperature> "22" <http://example.com/event/create> .
+<http://example.com/sensor/2/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Sensor> <http://example.com/event/create> .
+<http://example.com/sensor/3/> <http://example.com/pressure> "1026" <http://example.com/event/create> .
+<http://example.com/sensor/3/> <http://example.com/temperature> "25" <http://example.com/event/create> .
+<http://example.com/sensor/3/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Sensor> <http://example.com/event/create> .
+<https://example.com/ldes> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/ldes#EventStream> .
+<https://example.com/ldes> <https://w3id.org/ldes#timestampPath> <http://purl.org/dc/terms/created> .
+<https://example.com/ldes> <https://w3id.org/ldes#versionOfPath> <http://purl.org/dc/terms/isVersionOf> .
+<https://example.com/ldes> <https://w3id.org/tree#member> <http://example.com/event/create> .
+<https://example.com/ldes> <https://w3id.org/tree#member> <http://example.com/event/delete> .
+<https://example.com/ldes> <https://w3id.org/tree#member> <http://example.com/event/update> .
+<https://example.com/ldes> <https://w3id.org/tree#member> <http://example.com/sensor/1/> .
+<https://example.com/ldes> <https://w3id.org/tree#member> <http://example.com/sensor/2/> .
+<https://example.com/ldes> <https://w3id.org/tree#member> <http://example.com/sensor/3/> .
