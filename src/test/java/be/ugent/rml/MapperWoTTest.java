@@ -27,7 +27,7 @@ public class MapperWoTTest extends TestCore {
         server.setExecutor(null); // creates a default executor
         server.start();
 
-        HashMap<Term, String> outPaths = new HashMap<>();
+        Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/essence/out-local-file.nt");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/essence/out-default.nq");
         doMapping("./web-of-things/essence/mapping.ttl", outPaths, "./web-of-things/essence/private-security-data.ttl");
@@ -43,7 +43,7 @@ public class MapperWoTTest extends TestCore {
         server.setExecutor(null); // creates a default executor
         server.start();
 
-        HashMap<Term, String> outPaths = new HashMap<>();
+        Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/irail-stations/out-default.nq");
         doMapping("./web-of-things/irail-stations/mapping.ttl", outPaths);
 
@@ -298,7 +298,7 @@ public class MapperWoTTest extends TestCore {
 
             private void validateBody(InputStream body) {
                 logger.debug("trying to validate refresh request");
-                Map<String, String> jsonResponse = (HashMap<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(body, StandardCharsets.UTF_8.name());
+                Map<String, String> jsonResponse = (Map<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(body, StandardCharsets.UTF_8.name());
                 assert jsonResponse.containsKey("refresh");
                 assert jsonResponse.get("refresh").equals("xur2saef4s");
 

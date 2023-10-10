@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static be.ugent.rml.Utils.isRemoteFile;
 
@@ -107,10 +108,10 @@ public class AccessFactory {
 
                         break;
                     case NAMESPACES.TD + "PropertyAffordance":
-                        HashMap<String, String> headers = new HashMap<String, String>();
-                        HashMap<String, HashMap<String, String>> auth = new HashMap<>();
-                        auth.put("data", new HashMap<String, String>());
-                        auth.put("info", new HashMap<String, String>());
+                        Map<String, String> headers = new HashMap<>();
+                        Map<String, Map<String, String>> auth = new HashMap<>();
+                        auth.put("data", new HashMap<>());
+                        auth.put("info", new HashMap<>());
 
                         List<Term> form = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.TD + "hasForm"), null));
                         List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "hasTarget"), null));

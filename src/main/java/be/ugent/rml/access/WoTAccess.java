@@ -17,17 +17,17 @@ import static be.ugent.rml.Utils.*;
 public class WoTAccess implements Access {
 
     private static final Logger logger = LoggerFactory.getLogger(WoTAccess.class);
-    private final HashMap<String, HashMap<String, String>> auth;
+    private final Map<String, Map<String, String>> auth;
     private String location;
     private String contentType;
-    private HashMap<String, String> headers;
+    private Map<String, String> headers;
 
     /**
      * This constructor of WoTAccess taking location and content type as arguments.
      * @param location the location of the WoT Thing.
      * @param contentType the content type of the WoT Thing.
      */
-    public WoTAccess (String location, String contentType, HashMap<String, String> headers, HashMap<String, HashMap<String, String>> auth) {
+    public WoTAccess (String location, String contentType, Map<String, String> headers, Map<String, Map<String, String>> auth) {
         this.location = location;
         this.contentType = contentType;
         this.headers = headers;
@@ -112,7 +112,7 @@ public class WoTAccess implements Access {
         data.append("}");
         logger.debug(data.toString());
         InputStream response = getPostRequestResponse(new URL(auth.get("info").get("authorization")), contentType, data.toString().getBytes());
-        HashMap<String, String> jsonResponse = (HashMap<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(response, "utf-8");
+        Map<String, String> jsonResponse = (Map<String, String>) Configuration.defaultConfiguration().jsonProvider().parse(response, "utf-8");
         this.headers.put(auth.get("info").get("name"), "Bearer " + jsonResponse.get("access_token"));
     }
 }

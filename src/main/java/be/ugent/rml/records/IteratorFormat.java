@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This an abstract class for reference formulation-specific record factories that use iterators.
@@ -22,7 +23,7 @@ import java.util.List;
 public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulationRecordFactory {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
-    private HashMap<Access, DocumentClass> documentMap = new HashMap<>();
+    private final Map<Access, DocumentClass> documentMap = new HashMap<>();
 
     /**
      * This method returns a list of records for a data source.
