@@ -457,8 +457,6 @@ public class Executor {
                                                      final BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction,
                                                      final boolean checkMagic) throws Exception {
         for (ProvenancedTerm subject: subjects) {
-            final ProvenancedTerm finalSubject = subject; // TODO: finalSubject unnecessary?
-
             //TODO validate subject or check if blank node
             if (subject != null) {
                 List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
@@ -491,7 +489,7 @@ public class Executor {
 
                 List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
 
-                pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
+                pogs.forEach(pog -> pogFunction.accept(subject, pog));
             }
         }
     }
