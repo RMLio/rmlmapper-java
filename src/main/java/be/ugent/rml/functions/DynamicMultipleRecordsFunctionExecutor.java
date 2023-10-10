@@ -29,13 +29,13 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
 
     @Override
     public Object execute(Map<String, Record> records) throws Exception {
-        final ArrayList<Term> fnTerms = new ArrayList<>();
+        final List<Term> fnTerms = new ArrayList<>();
         final Arguments arguments = new Arguments();
         final Record child = records.get("child");
 
         parameterValuePairs.forEach(pv -> {
-            ArrayList<Term> parameters = new ArrayList<>();
-            ArrayList<Term> values = new ArrayList<>();
+            List<Term> parameters = new ArrayList<>();
+            List<Term> values = new ArrayList<>();
 
             pv.getParameterGenerators().forEach(parameterGen -> {
                 try {

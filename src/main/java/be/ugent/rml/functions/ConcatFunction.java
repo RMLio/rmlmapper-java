@@ -29,7 +29,7 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
     }
 
     private List<String> concat(Record record) {
-        ArrayList<String> results = new ArrayList<>();
+        List<String> results = new ArrayList<>();
         results.add("");
 
         //we only return a result when all elements of the template are found
@@ -45,7 +45,7 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
             List<String> extractedValues = FunctionUtils.functionObjectToList(extractor.extract(record));
 
             if (!extractedValues.isEmpty()) {
-                ArrayList<String> temp = new ArrayList<>();
+                List<String> temp = new ArrayList<>();
 
                 for (String result : results) {
                     for (String value : extractedValues) {

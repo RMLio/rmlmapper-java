@@ -262,7 +262,7 @@ public class MappingFactory {
 
                 List<Term> rrJoinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RR + "joinCondition"), null));
                 List<Term> rmljoinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "joinCondition"), null));
-                ArrayList<MultipleRecordsFunctionExecutor> joinConditionFunctionExecutors = new ArrayList<>();
+                List<MultipleRecordsFunctionExecutor> joinConditionFunctionExecutors = new ArrayList<>();
 
                 for (Term joinCondition : rrJoinConditions) {
 
@@ -349,7 +349,7 @@ public class MappingFactory {
     }
 
     private List<MappingInfo> parseGraphMapsAndShortcuts(Term termMap) throws Exception {
-        ArrayList<MappingInfo> graphMappingInfos = new ArrayList<>();
+        List<MappingInfo> graphMappingInfos = new ArrayList<>();
 
         List<Term> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "graphMap"), null));
 
@@ -408,7 +408,7 @@ public class MappingFactory {
     }
 
     private List<MappingInfo> parsePredicateMapsAndShortcuts(Term termMap) throws IOException {
-        ArrayList<MappingInfo> predicateMappingInfos = new ArrayList<>();
+        List<MappingInfo> predicateMappingInfos = new ArrayList<>();
 
         List<Term> predicateMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RR + "predicateMap"), null));
 

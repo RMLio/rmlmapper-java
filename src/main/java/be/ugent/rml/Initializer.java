@@ -46,7 +46,7 @@ public class Initializer {
         List<Term> maps = Utils.getSubjectsFromQuads(this.rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
         //filter outer Triples Maps that are used for functions
-        ArrayList<Term> temp = new ArrayList<>();
+        List<Term> temp = new ArrayList<>();
 
         for(Term map: maps) {
             if (this.rmlStore.getQuads(null, new NamedNode(NAMESPACES.FNML + "functionValue"), map).isEmpty()) {

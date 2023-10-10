@@ -64,7 +64,7 @@ public class JSONRecord extends Record {
 
             if (t instanceof JSONArray) {
                 JSONArray array = (JSONArray) t;
-                ArrayList<String> tempList = new ArrayList<>();
+                List<String> tempList = new ArrayList<>();
 
                 for (Object o : array) {
                     if (o != null) {
