@@ -142,14 +142,15 @@ public class Executor {
 
         /* Magic Marker */
         for (Term triplesMap : triplesMaps) {
-            Record record = new MarkerRecord();
             Mapping mapping = this.mappings.get(triplesMap);
-            List<ProvenancedTerm> subjects = new ArrayList<>();
             TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
 
             /* Skip any subjects that are not applicable for the marker */
             if (!generator.magic())
                 continue;
+
+            Record record = new MarkerRecord();
+            List<ProvenancedTerm> subjects = new ArrayList<>();
 
             List<Term> nodes = generator.generate(record);
 
