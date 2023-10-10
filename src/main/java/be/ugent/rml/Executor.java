@@ -136,37 +136,7 @@ public class Executor {
                 if (subjects == null)
                     continue;
 
-                for (ProvenancedTerm subject: subjects) {
-                    final ProvenancedTerm finalSubject = subject;
-
-                    //TODO validate subject or check if blank node
-                    if (subject != null) {
-                        List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
-
-                        mapping.getGraphMappingInfos().forEach(mappingInfo -> {
-                            List<Term> terms = null;
-
-                            try {
-                                terms = mappingInfo.getTermGenerator().generate(record);
-                            } catch (Exception e) {
-                                //todo be more nice and gentle
-                                logger.error("Could not generate graph term for record {}", record, e);
-                            }
-
-                            if (terms != null) {
-                                terms.forEach(term -> {
-                                    if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
-                                        subjectGraphs.add(new ProvenancedTerm(term));
-                                    }
-                                });
-                            }
-                        });
-
-                        List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
-
-                        pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
-                    }
-                }
+                generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, false);
             }
         }
 
@@ -191,37 +161,7 @@ public class Executor {
                 }
             }
 
-            for (ProvenancedTerm subject : subjects) {
-                final ProvenancedTerm finalSubject = subject;
-
-                //TODO validate subject or check if blank node
-                if (subject != null) {
-                    List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
-                    mapping.getGraphMappingInfos().forEach(mappingInfo -> {
-                        List<Term> terms = new ArrayList<>();
-
-                        try {
-                            TermGenerator generatorGraph = mappingInfo.getTermGenerator();
-                            /* Skip generators which do not even need markers */
-                            if (generatorGraph.magic())
-                                terms = generatorGraph.generate(record);
-                        } catch (Exception e) {
-                            //todo be more nice and gentle
-                            logger.error("Could not generate graph term with magick value for record {}", record, e);
-                        }
-
-                        terms.forEach(term -> {
-                            if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
-                                subjectGraphs.add(new ProvenancedTerm(term));
-                            }
-                        });
-                    });
-
-                    List<PredicateObjectGraph> pogs = generatePredicateObjectGraphs(mapping, record, subjectGraphs);
-
-                    pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
-                }
-            }
+            generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, true);
         }
 
         if (removeDuplicates) {
@@ -507,6 +447,51 @@ public class Executor {
                     }
                     is.close(); // close resources.
                 }
+            }
+        }
+    }
+
+    private void generatePredicateObjectsForSubjects(final List<ProvenancedTerm> subjects,
+                                                     final Mapping mapping,
+                                                     final Record record,
+                                                     final BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction,
+                                                     final boolean checkMagic) throws Exception {
+        for (ProvenancedTerm subject: subjects) {
+            final ProvenancedTerm finalSubject = subject; // TODO: finalSubject unnecessary?
+
+            //TODO validate subject or check if blank node
+            if (subject != null) {
+                List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
+
+                mapping.getGraphMappingInfos().forEach(mappingInfo -> {
+                    List<Term> terms = null;
+
+                    try {
+                        TermGenerator generatorGraph = mappingInfo.getTermGenerator();
+                        if (checkMagic) {
+                            /* Skip generators which do not even need markers */
+                            if (generatorGraph.magic())
+                                terms = generatorGraph.generate(record);
+                        } else {
+                            terms = generatorGraph.generate(record);
+                        }
+                    } catch (Exception e) {
+                        //todo be more nice and gentle
+                        logger.error("Could not generate graph term for record {}", record, e);
+                    }
+
+                    if (terms != null) {
+                        terms.forEach(term -> {
+                            if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                                subjectGraphs.add(new ProvenancedTerm(term));
+                            }
+                        });
+                    }
+                });
+
+                List<PredicateObjectGraph> pogs = this.generatePredicateObjectGraphs(mapping, record, subjectGraphs);
+
+                pogs.forEach(pog -> pogFunction.accept(finalSubject, pog));
             }
         }
     }
