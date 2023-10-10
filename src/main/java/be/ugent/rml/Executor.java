@@ -221,8 +221,8 @@ public class Executor {
     }
 
     private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws Exception {
-        ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<>();
-        ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<>();
+        List<ProvenancedTerm> goodIRIs = new ArrayList<>();
+        List<List<ProvenancedTerm>> allIRIs = new ArrayList<>();
 
         for (MultipleRecordsFunctionExecutor condition : conditions) {
             allIRIs.add(this.getIRIsWithTrueCondition(record, triplesMap, condition));
@@ -252,7 +252,7 @@ public class Executor {
         //iterator over all the records corresponding with @triplesMap
         List<Record> records = this.getRecords(triplesMap);
         //this array contains all the IRIs that are valid regarding @path and @values
-        ArrayList<ProvenancedTerm> iris = new ArrayList<>();
+        List<ProvenancedTerm> iris = new ArrayList<>();
 
         for (int i = 0; i < records.size(); i++) {
             Record parent = records.get(i);
@@ -304,7 +304,7 @@ public class Executor {
         Mapping mapping = this.mappings.get(triplesMap);
 
         List<Record> records = getRecords(triplesMap);
-        ArrayList<ProvenancedTerm> iris = new ArrayList<>();
+        List<ProvenancedTerm> iris = new ArrayList<>();
 
         for (int i = 0; i < records.size(); i++) {
             Record record = records.get(i);
@@ -325,7 +325,7 @@ public class Executor {
     }
 
     private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, List<ProvenancedTerm> objects, List<ProvenancedTerm> graphs) {
-        ArrayList<PredicateObjectGraph> results = new ArrayList<>();
+        List<PredicateObjectGraph> results = new ArrayList<>();
 
         if (graphs.isEmpty()) {
             graphs.add(null);

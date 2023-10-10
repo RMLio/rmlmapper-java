@@ -14,7 +14,7 @@ public class HashExtractor implements Extractor, SingleRecordFunctionExecutor {
 
     @Override
     public List<Object> extract(Record record) {
-        ArrayList<Object> result = new ArrayList<>();
+        List<Object> result = new ArrayList<>();
         result.add("" + record.hashCode());
         return result;
     }

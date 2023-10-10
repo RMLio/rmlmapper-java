@@ -323,7 +323,7 @@ public class Utils {
     }
 
     public static List<Term> getSubjectsFromQuads(List<Quad> quads) {
-        ArrayList<Term> subjects = new ArrayList<>();
+        List<Term> subjects = new ArrayList<>();
 
         for (Quad quad : quads) {
             subjects.add(quad.getSubject());
@@ -333,7 +333,7 @@ public class Utils {
     }
 
     public static List<Term> getObjectsFromQuads(List<Quad> quads) {
-        ArrayList<Term> objects = new ArrayList<>();
+        List<Term> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
             objects.add(quad.getObject());
@@ -343,7 +343,7 @@ public class Utils {
     }
 
     public static List<String> getLiteralObjectsFromQuads(List<Quad> quads) {
-        ArrayList<String> objects = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
             objects.add(((Literal) quad.getObject()).getValue());
@@ -481,7 +481,7 @@ public class Utils {
      * @return list of extractors
      **/
     public static List<Extractor> parseTemplate(String template, boolean ignoreDoubleQuotes) {
-        ArrayList<Extractor> extractors = new ArrayList<>();
+        List<Extractor> extractors = new ArrayList<>();
         String current = "";
         boolean previousWasBackslash = false;
         boolean variableBusy = false;
