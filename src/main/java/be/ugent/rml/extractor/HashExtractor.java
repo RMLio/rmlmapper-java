@@ -4,7 +4,6 @@ import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HashExtractor implements Extractor, SingleRecordFunctionExecutor {
@@ -14,9 +13,7 @@ public class HashExtractor implements Extractor, SingleRecordFunctionExecutor {
 
     @Override
     public List<Object> extract(Record record) {
-        List<Object> result = new ArrayList<>();
-        result.add("" + record.hashCode());
-        return result;
+        return List.of(String.valueOf(record.hashCode()));
     }
 
     @Override
