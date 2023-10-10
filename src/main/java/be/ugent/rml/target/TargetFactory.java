@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TargetFactory {
 
@@ -144,7 +145,7 @@ public class TargetFactory {
                 long currentTime = System.currentTimeMillis();
                 long seed = (long)(Math.random() * 1000);
                 long index = 0;
-                HashSet<Term> processedMembers = new HashSet<>();
+                Set<Term> processedMembers = new HashSet<>();
                 for (Term m: ldesMembers) {
                     Term memberIRI = m;
                     if (processedMembers.contains(memberIRI))
