@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Build Docker image in two stages, reducing the final image size.
 - LDES EventStreamTarget properties are now all optional.
+- Refactoring to use interfaces where possible (e.g. `ArrayList` -> `List`). This has consequences on the API.
 
 ### Fixed
 - Use correct prefix for `EventStreamTarget`s in tests.
