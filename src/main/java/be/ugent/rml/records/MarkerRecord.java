@@ -1,8 +1,6 @@
 package be.ugent.rml.records;
 
 import be.ugent.knows.idlabFunctions.IDLabFunctions;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,9 +15,6 @@ public class MarkerRecord extends Record {
      */
     @Override
     public List<Object> get(String value) {
-        List<Object> result = new ArrayList<>();
-        result.add(IDLabFunctions.MAGIC_MARKER);
-
-        return result;
+        return List.of(IDLabFunctions.MAGIC_MARKER);
     }
 }
