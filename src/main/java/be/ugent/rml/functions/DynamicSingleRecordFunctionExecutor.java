@@ -13,17 +13,11 @@ public class DynamicSingleRecordFunctionExecutor extends AbstractSingleRecordFun
         parameterValuePairs.forEach(pair -> {
             List<TermGeneratorOriginPair> objectGeneratorOriginPairs = new ArrayList<>();
 
-            pair.getValueGenerators().forEach(vGen -> {
-                objectGeneratorOriginPairs.add(new TermGeneratorOriginPair(vGen, "_default"));
-            });
+            pair.getValueGenerators().forEach(vGen -> objectGeneratorOriginPairs.add(new TermGeneratorOriginPair(vGen, "_default")));
 
             pairs.add(new ParameterValueOriginPair(pair.getParameterGenerators(), objectGeneratorOriginPairs));
         });
 
         functionExecutor = new DynamicMultipleRecordsFunctionExecutor(pairs, functionAgent);
-    }
-
-    public boolean magic() {
-        return true;
     }
 }

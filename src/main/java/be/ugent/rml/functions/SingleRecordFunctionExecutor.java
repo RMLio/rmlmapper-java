@@ -7,7 +7,7 @@ public interface SingleRecordFunctionExecutor {
 
     Object execute(Record record) throws Exception;
 
-    default boolean magic() {
+    default boolean needsMagicEndValue() {
         return false;
     }
 }

@@ -10,8 +10,11 @@ public abstract class TermGenerator {
 
     protected SingleRecordFunctionExecutor functionExecutor;
 
+    private final boolean needsMagicEndValue;
+
     public TermGenerator(SingleRecordFunctionExecutor functionExecutor) {
         this.functionExecutor = functionExecutor;
+        needsMagicEndValue = functionExecutor != null && functionExecutor.needsMagicEndValue();
     }
 
     public abstract List<Term> generate(Record record) throws Exception;
@@ -26,10 +29,7 @@ public abstract class TermGenerator {
                 ')';
     }
 
-    public boolean magic() {
-        if (this.functionExecutor != null)
-            return this.functionExecutor.magic();
-
-        return false;
+    public boolean needsMagicEndValue() {
+        return needsMagicEndValue;
     }
 }
