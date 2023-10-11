@@ -133,36 +133,27 @@ public class Executor {
                 Record record = records.get(j);
                 List<ProvenancedTerm> subjects = getSubject(triplesMap, mapping, record, j);
 
-                if (subjects == null)
-                    continue;
-
-                generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction);
-            }
-        }
-
-        /* Magic Marker */
-        for (Term triplesMap : triplesMaps) {
-            Mapping mapping = this.mappings.get(triplesMap);
-            TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
-
-            /* Skip any subjects that are not applicable for the marker */
-            if (!generator.magic())
-                continue;
-
-            Record record = new MarkerRecord();
-            List<ProvenancedTerm> subjects = new ArrayList<>();
-
-            List<Term> nodes = generator.generate(record);
-
-            if (!nodes.isEmpty()) {
-                List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
-
-                for (Term node : nodes) {
-                    subjects.add(new ProvenancedTerm(node, null, targets));
+                if (subjects != null) {
+                    generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction);
                 }
             }
 
-            generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction);
+            // check magic marker: necessary for IDLabFunctions#implicitDelete.
+            TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
+            /* Skip any subjects that are not applicable for the marker */
+            if (generator.magic()) { // = if not function
+                Record record = new MarkerRecord();
+                List<ProvenancedTerm> subjects = new ArrayList<>();
+                List<Term> nodes = generator.generate(record);
+
+                if (!nodes.isEmpty()) {
+                    List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
+                    for (Term node : nodes) {
+                        subjects.add(new ProvenancedTerm(node, null, targets));
+                    }
+                }
+                generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction);
+            }
         }
 
         if (removeDuplicates) {
