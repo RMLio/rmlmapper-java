@@ -142,7 +142,7 @@ public class Executor {
             // check magic marker: necessary for IDLabFunctions#implicitDelete.
             TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
             /* Skip any subjects that are not applicable for the marker */
-            if (generator.magic()) { // = if not function
+            if (generator.needsMagicEndValue()) { // = if not function
                 Record record = new MarkerRecord();
                 List<ProvenancedTerm> subjects = new ArrayList<>();
                 List<Term> nodes = generator.generate(record);

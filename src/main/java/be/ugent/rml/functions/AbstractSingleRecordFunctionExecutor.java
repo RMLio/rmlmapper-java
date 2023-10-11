@@ -15,4 +15,9 @@ public abstract class AbstractSingleRecordFunctionExecutor implements SingleReco
 
         return this.functionExecutor.execute(recordsMap);
     }
+
+    @Override
+    public boolean needsMagicEndValue() {
+        return functionExecutor.needsMagicEndValue();
+    }
 }

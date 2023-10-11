@@ -2,29 +2,38 @@ package be.ugent.rml.functions;
 
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.Arguments;
-import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFunctionExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicMultipleRecordsFunctionExecutor.class);
     private final List<ParameterValueOriginPair> parameterValuePairs;
-    private final Map<String, List<Term>> parametersCache = new HashMap<>();
-
     private final Agent functionAgent;
+
+    private boolean needsMagicEndValue = false;
 
     public DynamicMultipleRecordsFunctionExecutor(final List<ParameterValueOriginPair> parameterValuePairs, final Agent functionAgent) {
         this.parameterValuePairs = parameterValuePairs;
         this.functionAgent = functionAgent;
+        // check if executor contains term generator that needs a magic value
+        for (ParameterValueOriginPair parameterValuePair : parameterValuePairs) {
+            for (TermGeneratorOriginPair valueGeneratorPair : parameterValuePair.getValueGeneratorPairs()) {
+                if (valueGeneratorPair.getTermGenerator().needsMagicEndValue()) {
+                    needsMagicEndValue = true;
+                    return;
+                }
+            }
+        }
     }
 
     @Override
@@ -40,20 +49,16 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
             pv.getParameterGenerators().forEach(parameterGen -> {
                 try {
                     parameters.addAll(parameterGen.generate(child));
-                } catch (IllegalArgumentException e) {
-                    logger.error(e.getMessage());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             });
 
             pv.getValueGeneratorPairs().forEach(pair -> {
                 try {
                     values.addAll(pair.getTermGenerator().generate(records.get(pair.getOrigin())));
-                } catch (IllegalArgumentException e) {
-                    logger.error(e.getMessage());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             });
 
@@ -82,5 +87,10 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
                 return null;
             }
         }
+    }
+
+    @Override
+    public boolean needsMagicEndValue() {
+        return needsMagicEndValue;
     }
 }

@@ -7,4 +7,6 @@ import java.util.Map;
 public interface MultipleRecordsFunctionExecutor {
 
     Object execute(Map<String, Record> records) throws Exception;
+
+    default boolean needsMagicEndValue() {return false;}
 }
