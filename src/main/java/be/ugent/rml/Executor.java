@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 public class Executor {
 
@@ -103,21 +102,22 @@ public class Executor {
      */
     public Map<Term, QuadStore> execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
 
-        BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
+        POGFunction pogFunction;
 
         if (metadataGenerator != null && metadataGenerator.getDetailLevel().getLevel() >= MetadataGenerator.DETAIL_LEVEL.TRIPLE.getLevel()) {
-            pogFunction = (subject, pog) -> {
-                if (generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph()))
-                    metadataGenerator.insertQuad(new ProvenancedQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph()));
+            pogFunction = (subject, predicate, object, graph, checkMagicValue) -> {
+                if (generateQuad(subject, predicate, object, graph , checkMagicValue)) {
+                    metadataGenerator.insertQuad(new ProvenancedQuad(subject, predicate, object, graph));
+                }
             };
         } else {
-            pogFunction = (subject, pog) -> generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph());
+            pogFunction = this::generateQuad;
         }
 
         return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
     }
 
-    public Map<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
+    public Map<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, POGFunction pogFunction) throws Exception {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
@@ -134,7 +134,7 @@ public class Executor {
                 List<ProvenancedTerm> subjects = getSubject(triplesMap, mapping, record, j);
 
                 if (subjects != null) {
-                    generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction);
+                    generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, false);
                 }
             }
 
@@ -152,7 +152,7 @@ public class Executor {
                         subjects.add(new ProvenancedTerm(node, null, targets));
                     }
                 }
-                generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction);
+                generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, true);
             }
         }
 
@@ -169,7 +169,7 @@ public class Executor {
         return this.execute(triplesMaps, false, null);
     }
 
-    private boolean generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
+    private boolean generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph, boolean checkMagicValue) {
         Term g = null;
         Set<Term> targets = new HashSet<>();
 
@@ -179,16 +179,18 @@ public class Executor {
                 targets.addAll(graph.getTargets());
             }
 
-            if (subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
-                    || subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
-                    || predicate.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
-                    || predicate.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
-                    || object.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
-                    || object.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED))
-                return false;
+            if (checkMagicValue) {
+                if (subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
+                        || subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                        || predicate.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
+                        || predicate.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                        || object.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
+                        || object.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED))
+                    return false;
 
-            if (g != null && (g.getValue().contains(IDLabFunctions.MAGIC_MARKER) || g.getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)))
-                return false;
+                if (g != null && (g.getValue().contains(IDLabFunctions.MAGIC_MARKER) || g.getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)))
+                    return false;
+            }
 
             // Get all possible targets for triple, the Set guarantees that we don't have duplicates
             targets.addAll(subject.getTargets());
@@ -380,7 +382,8 @@ public class Executor {
     private void generatePredicateObjectsForSubjects(final List<ProvenancedTerm> subjects,
                                                      final Mapping mapping,
                                                      final Record record,
-                                                     final BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
+                                                     final POGFunction pogFunction,
+                                                     final boolean checkMagicValue) throws Exception {
         for (ProvenancedTerm subject: subjects) {
             //TODO validate subject or check if blank node
             if (subject != null) {
@@ -472,7 +475,7 @@ public class Executor {
                     }
                 }
 
-                pogs.forEach(pog -> pogFunction.accept(subject, pog));
+                pogs.forEach(pog -> pogFunction.generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph(), checkMagicValue));
             }
         }
     }
