@@ -10,11 +10,14 @@ public abstract class TermGenerator {
 
     protected SingleRecordFunctionExecutor functionExecutor;
 
-    private final boolean needsMagicEndValue;
+    /**
+     * Indicates whether the functionExecutor needs a special marker in the data to indicate End-of-File (EOF)
+     */
+    private final boolean needsEOFMarker;
 
     public TermGenerator(SingleRecordFunctionExecutor functionExecutor) {
         this.functionExecutor = functionExecutor;
-        needsMagicEndValue = functionExecutor != null && functionExecutor.needsMagicEndValue();
+        needsEOFMarker = functionExecutor != null && functionExecutor.needsEOFMarker();
     }
 
     public abstract List<Term> generate(Record record) throws Exception;
@@ -29,7 +32,7 @@ public abstract class TermGenerator {
                 ')';
     }
 
-    public boolean needsMagicEndValue() {
-        return needsMagicEndValue;
+    public boolean needsEOFMarker() {
+        return needsEOFMarker;
     }
 }

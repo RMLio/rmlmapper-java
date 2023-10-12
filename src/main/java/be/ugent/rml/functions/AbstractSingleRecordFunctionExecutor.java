@@ -17,7 +17,7 @@ public abstract class AbstractSingleRecordFunctionExecutor implements SingleReco
     }
 
     @Override
-    public boolean needsMagicEndValue() {
-        return functionExecutor.needsMagicEndValue();
+    public boolean needsEOFMarker() {
+        return functionExecutor.needsEOFMarker();
     }
 }

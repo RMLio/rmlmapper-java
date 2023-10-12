@@ -106,8 +106,8 @@ public class Executor {
         POGFunction pogFunction;
 
         if (metadataGenerator != null && metadataGenerator.getDetailLevel().getLevel() >= MetadataGenerator.DETAIL_LEVEL.TRIPLE.getLevel()) {
-            pogFunction = (subject, predicate, object, graph, checkMagicValue) -> {
-                if (generateQuad(subject, predicate, object, graph , checkMagicValue)) {
+            pogFunction = (subject, predicate, object, graph, checkEOFMarker) -> {
+                if (generateQuad(subject, predicate, object, graph , checkEOFMarker)) {
                     metadataGenerator.insertQuad(new ProvenancedQuad(subject, predicate, object, graph));
                 }
             };
@@ -128,9 +128,9 @@ public class Executor {
         for (Term triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
 
-            // check magic marker: necessary for IDLabFunctions#implicitDelete.
+            // check EOF marker: necessary for IDLabFunctions#implicitDelete.
             TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
-            boolean needsMagicEndValue = generator.needsMagicEndValue();
+            boolean needsEOFMarker = generator.needsEOFMarker();
 
             List<Record> records = this.getRecords(triplesMap);
 
@@ -139,12 +139,12 @@ public class Executor {
                 List<ProvenancedTerm> subjects = getSubject(triplesMap, mapping, record, j);
 
                 if (subjects != null) {
-                    generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, needsMagicEndValue);
+                    generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, needsEOFMarker);
                 }
             }
 
-            // generate a magic value to indicate the end of the data source.
-            if (needsMagicEndValue) {
+            // generate an EOF marker to indicate the end of the data source.
+            if (needsEOFMarker) {
                 Record record = new MarkerRecord();
                 List<ProvenancedTerm> subjects = new ArrayList<>();
                 List<Term> nodes = generator.generate(record);
@@ -172,7 +172,7 @@ public class Executor {
         return this.execute(triplesMaps, false, null);
     }
 
-    private boolean generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph, boolean checkMagicValue) {
+    private boolean generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph, boolean checkEOFMarker) {
         Term g = null;
         Set<Term> targets = new HashSet<>();
 
@@ -182,7 +182,7 @@ public class Executor {
                 targets.addAll(graph.getTargets());
             }
 
-            if (checkMagicValue) {
+            if (checkEOFMarker) {
                 if (subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
                         || subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
                         || predicate.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)

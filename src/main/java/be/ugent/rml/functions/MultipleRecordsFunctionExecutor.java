@@ -8,5 +8,9 @@ public interface MultipleRecordsFunctionExecutor {
 
     Object execute(Map<String, Record> records) throws Exception;
 
-    default boolean needsMagicEndValue() {return false;}
+    /**
+     * Returns {@code true} when a function is used in this executor that needs a special marker
+     * to indicate "End-of-File" (EOF).
+     */
+    default boolean needsEOFMarker() {return false;}
 }
