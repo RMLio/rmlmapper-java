@@ -128,6 +128,10 @@ public class Executor {
         for (Term triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
 
+            // check magic marker: necessary for IDLabFunctions#implicitDelete.
+            TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
+            boolean needsMagicEndValue = generator.needsMagicEndValue();
+
             List<Record> records = this.getRecords(triplesMap);
 
             for (int j = 0; j < records.size(); j++) {
@@ -135,14 +139,12 @@ public class Executor {
                 List<ProvenancedTerm> subjects = getSubject(triplesMap, mapping, record, j);
 
                 if (subjects != null) {
-                    generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, false);
+                    generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, needsMagicEndValue);
                 }
             }
 
-            // check magic marker: necessary for IDLabFunctions#implicitDelete.
-            TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
-            /* Skip any subjects that are not applicable for the marker */
-            if (generator.needsMagicEndValue()) { // = if not function
+            // generate a magic value to indicate the end of the data source.
+            if (needsMagicEndValue) {
                 Record record = new MarkerRecord();
                 List<ProvenancedTerm> subjects = new ArrayList<>();
                 List<Term> nodes = generator.generate(record);
