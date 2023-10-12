@@ -38,6 +38,13 @@ public class Executor {
     private static int blankNodeCounter;
     private final Map<Term, Mapping> mappings;
 
+    /**
+     * Indicates whether the data to process contains an End-of-File (EOF) marker.
+     * If it is not provided, it will be automatically inserted when necessary.
+     * Don't change unless you're generating LDES and know what you're doing!
+     */
+    private boolean EOFProvidedInData = false;
+
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
         this(rmlStore, recordsFactory, null, baseIRI, strictMode, functionAgent);
     }
@@ -48,6 +55,15 @@ public class Executor {
      */
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, final Agent functionAgent) throws Exception {
         this(rmlStore, recordsFactory, resultingQuads, baseIRI, StrictMode.BEST_EFFORT, functionAgent);
+    }
+
+    /**
+     * Call this if the data to process contains a specific End-of-File (EOF) marker.
+     * If it is not provided, it will be automatically inserted when necessary.
+     * Don't change unless you're generating LDES and know what you're doing!
+     */
+    public void setEOFProvidedInData() {
+        this.EOFProvidedInData = true;
     }
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
@@ -91,10 +107,6 @@ public class Executor {
                 this.targetStores.put(t, new RDF4JStore());
             }
         }
-    }
-
-    public Executor(RDF4JStore rmlStore, RecordsFactory factory, QuadStore outputStore, final Agent functionAgent) throws Exception {
-        this(rmlStore, factory, outputStore, rmlStore.getBase(), functionAgent);
     }
 
     /*
@@ -142,8 +154,9 @@ public class Executor {
                 }
             }
 
-            // generate an EOF marker to indicate the end of the data source.
-            if (needsEOFMarker) {
+            // Generate an EOF marker to indicate the end of the data source and run mappings once more (if not provided).
+            // This is a hack to call implicitDelete a final time, where it then returns the list of deleted records
+            if (!EOFProvidedInData && needsEOFMarker) {
                 Record record = new MarkerRecord();
                 List<ProvenancedTerm> subjects = new ArrayList<>();
                 List<Term> nodes = generator.generate(record);
@@ -154,7 +167,9 @@ public class Executor {
                         subjects.add(new ProvenancedTerm(node, null, targets));
                     }
                 }
-                generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, true);
+                // TODO this only works for the constants in the triples map!
+                // TODO `record` is not really used, we only need to generate a subject here
+                generatePredicateObjectsForSubjects(subjects, mapping, null, pogFunction, true);
             }
         }
 

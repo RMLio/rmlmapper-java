@@ -488,4 +488,17 @@ public class ArgumentsTest extends TestCore {
         assertThrows(IllegalArgumentException.class, () ->
                 Main.run("-m ./argument-config-file-test-cases/mapping.ttl -o ./wrong/file/output/generated_output.nq".split(" ")));
     }
+
+    @Test
+    public void disableEOFMarker() throws Exception {
+        String[] args = {"-m", "./argument/mapping.ttl", "-v"};
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        try (PrintStream ps = new PrintStream(stdout)) {
+            System.setErr(ps);
+            Main.run(args);
+        } finally {
+            System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
+        }
+        assertThat(stdout.toString(), containsString("Automatic EOF marker disabled!"));
+    }
 }

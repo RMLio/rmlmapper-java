@@ -150,6 +150,11 @@ public class Main {
                 .desc("Base IRI used to expand relative IRIs in generated terms in the output.")
                 .hasArg()
                 .build();
+        Option provideOwnEOFMarkerOption = Option.builder()
+                .longOpt("disable-automatic-eof-marker")
+                .desc("Setting this option assumes input data has a kind of End-of-File marker. " +
+                        "Don't use unless you're absolutely sure what you're doing!")
+                .build();
 
         options.addOption(mappingdocOption);
         options.addOption(privateSecurityDataOption);
@@ -168,6 +173,7 @@ public class Main {
         options.addOption(usernameOption);
         options.addOption(strictModeOption);
         options.addOption(baseIriOption);
+        options.addOption(provideOwnEOFMarkerOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -398,6 +404,11 @@ public class Main {
                 functionAgent = AgentFactory.createFromFnO(optionWithIDLabFunctionArgs);
             }
             executor = new Executor(rmlStore, factory, outputStore, baseIRI, strictMode, functionAgent);
+
+            if (options.hasOption("disable-automatic-eof-marker")) {
+                logger.warn("Automatic EOF marker disabled!");
+                executor.setEOFProvidedInData();
+            }
 
             executor.verifySources(basePath);
             if (metadataGenerator != null) {
