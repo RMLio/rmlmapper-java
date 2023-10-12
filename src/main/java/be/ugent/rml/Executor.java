@@ -140,10 +140,6 @@ public class Executor {
         for (Term triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
 
-            // check EOF marker: necessary for IDLabFunctions#implicitDelete.
-            TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
-            boolean needsEOFMarker = generator.needsEOFMarker();
-
             List<Record> records = this.getRecords(triplesMap);
 
             for (int j = 0; j < records.size(); j++) {
@@ -151,26 +147,30 @@ public class Executor {
                 List<ProvenancedTerm> subjects = getSubject(triplesMap, mapping, record, j);
 
                 if (subjects != null) {
-                    generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, needsEOFMarker);
+                    generatePredicateObjectsForSubjects(subjects, mapping, record, pogFunction, EOFProvidedInData);
                 }
             }
 
-            // Generate an EOF marker to indicate the end of the data source and run mappings once more (if not provided).
-            // This is a hack to call implicitDelete a final time, where it then returns the list of deleted records
-            if (!EOFProvidedInData && needsEOFMarker) {
-                Record record = new MarkerRecord();
-                List<ProvenancedTerm> subjects = new ArrayList<>();
-                List<Term> nodes = generator.generate(record);
+            if (!EOFProvidedInData) {
+                // Generate an EOF marker to indicate the end of the data source and run mappings once more (if not provided).
+                // This is a hack to call implicitDelete a final time, where it then returns the list of deleted records
+                TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
+                boolean needsEOFMarker = generator.needsEOFMarker();
+                if (needsEOFMarker) {
+                    Record record = new MarkerRecord();
+                    List<ProvenancedTerm> subjects = new ArrayList<>();
+                    List<Term> nodes = generator.generate(record);
 
-                if (!nodes.isEmpty()) {
-                    List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
-                    for (Term node : nodes) {
-                        subjects.add(new ProvenancedTerm(node, null, targets));
+                    if (!nodes.isEmpty()) {
+                        List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
+                        for (Term node : nodes) {
+                            subjects.add(new ProvenancedTerm(node, null, targets));
+                        }
                     }
+                    // TODO this only works for the constants in the triples map!
+                    // TODO `record` is not really used, we only need to generate a subject here
+                    generatePredicateObjectsForSubjects(subjects, mapping, null, pogFunction, true);
                 }
-                // TODO this only works for the constants in the triples map!
-                // TODO `record` is not really used, we only need to generate a subject here
-                generatePredicateObjectsForSubjects(subjects, mapping, null, pogFunction, true);
             }
         }
 
@@ -398,7 +398,7 @@ public class Executor {
                                                      final Mapping mapping,
                                                      final Record record,
                                                      final POGFunction pogFunction,
-                                                     final boolean checkMagicValue) throws Exception {
+                                                     final boolean checkEOFMarker) throws Exception {
         for (ProvenancedTerm subject: subjects) {
             //TODO validate subject or check if blank node
             if (subject != null) {
@@ -483,7 +483,7 @@ public class Executor {
                     }
                 }
 
-                pogs.forEach(pog -> pogFunction.generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph(), checkMagicValue));
+                pogs.forEach(pog -> pogFunction.generateQuad(subject, pog.getPredicate(), pog.getObject(), pog.getGraph(), checkEOFMarker));
             }
         }
     }
