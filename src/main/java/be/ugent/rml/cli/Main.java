@@ -8,7 +8,7 @@ import be.ugent.rml.StrictMode;
 import be.ugent.rml.Utils;
 import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.metadata.MetadataGenerator;
-import be.ugent.rml.records.SourcesFactory;
+import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
@@ -298,7 +298,7 @@ public class Main {
                 logger.error(fatal, "Failed to make mapping file conformant to RML spec.", e);
             }
 
-            SourcesFactory factory = new SourcesFactory(basePath);
+            RecordsFactory factory = new RecordsFactory(basePath);
 
             String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
             QuadStore outputStore = getStoreForFormat(outputFormat);

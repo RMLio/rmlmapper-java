@@ -8,7 +8,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class XMLRecordFactory extends IteratorFormat2 {
+public class XMLRecordFactory extends IteratorFormat {
     @Override
     protected SourceIterator getIterator(Access access, String iterator) throws SQLException, IOException, SaxonApiException {
         return new XMLSourceIterator(access, iterator);

@@ -1,82 +1,61 @@
 package be.ugent.rml.records;
 
 import be.ugent.idlab.knows.dataio.access.Access;
-import be.ugent.idlab.knows.dataio.source.Source;
+import be.ugent.idlab.knows.dataio.access.VirtualAccess;
+import be.ugent.idlab.knows.dataio.iterators.SourceIterator;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import net.sf.saxon.s9api.SaxonApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * This an abstract class for reference formulation-specific record factories that use iterators.
- * @param <DocumentClass>: the class used to represent a format-specific document that can be reused.
- */
-public abstract class IteratorFormat<DocumentClass> implements ReferenceFormulationRecordFactory {
-
+public abstract class IteratorFormat implements ReferenceFormulationRecordFactory {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
-    private HashMap<Access, DocumentClass> documentMap = new HashMap<>();
+    protected Map<Access, VirtualAccess> cache;
 
-    /**
-     * This method returns a list of records for a data source.
-     * @param access the access from which records need to be fetched.
-     * @param logicalSource the used Logical Source.
-     * @param rmlStore the QuadStore with the RML rules.
-     * @return a list of records.
-     * @throws IOException
-     */
+    public IteratorFormat() {
+        this.cache = new HashMap<>();
+    }
     @Override
-    public List<Source> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws IOException, SQLException {
-        // Check if the needed document is already in the cache.
-        // If not, a new one is created, based on the InputStream from the access.
-        if (! documentMap.containsKey(access)) {
+    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
+        // if the access object is not yet cached, cache it
+        if (!this.cache.containsKey(access)) {
             logger.debug("No document found for {}. Creating new one", access);
-            try (InputStream stream = access.getInputStream()) {
-                documentMap.put(access, getDocumentFromStream(stream, access.getContentType()));
-            }
+            // create a new virtual access to cache the data
+            VirtualAccess virtualAccess = new VirtualAccess(access);
+            this.cache.put(access, virtualAccess);
         }
 
+        // document is definitely in cache, fetch records out of it
+        String iterator;
         List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "iterator"), null));
 
-        if (!iterators.isEmpty()) {
-            String iterator = iterators.get(0).getValue();
-            return getRecordsFromDocument(documentMap.get(access), iterator);
+        if (iterators.isEmpty()) {
+            // if there's no iterator present, we're dealing with XML access to PostgreSQL.
+            // XML is built on the fly and accessible on this XPath iterator
+            iterator = "/Results/row";
         } else {
-            /* 
-             * PostgresSQL builds its XML on the fly and can be accessed 
-             * with a fixed XPath iterator '/Results/row'
-             */
-            String iterator = "/Results/row";
-            return getRecordsFromDocument(documentMap.get(access), iterator);
+            iterator = iterators.get(0).getValue();
         }
+
+        List<Record> sources = new ArrayList<>();
+        try (SourceIterator it = getIterator(cache.get(access), iterator)) {
+            it.forEachRemaining(sources::add);
+        }
+
+        return sources;
     }
 
-    /**
-     * This method returns the records from a document based on an iterator.
-     * @param document the document from which records need to get.
-     * @param iterator the used iterator.
-     * @return a list of records.
-     * @throws IOException
-     */
-    abstract List<Source> getRecordsFromDocument(DocumentClass document, String iterator) throws IOException;
-
-    /**
-     * This method returns a document from an InputStream.
-     * @param stream the used InputStream.
-     * @return a format-specific document.
-     * @throws IOException
-     */
-    abstract DocumentClass getDocumentFromStream(InputStream stream) throws IOException;
-
-    DocumentClass getDocumentFromStream(InputStream stream, String contentType) throws IOException {
-        return getDocumentFromStream(stream);
-    }
+    protected abstract SourceIterator getIterator(Access access, String iterator) throws SQLException, IOException, SaxonApiException;
 }

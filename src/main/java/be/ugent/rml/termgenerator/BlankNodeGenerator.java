@@ -1,6 +1,6 @@
 package be.ugent.rml.termgenerator;
 
-import be.ugent.idlab.knows.dataio.source.Source;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.Executor;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
@@ -21,11 +21,11 @@ public class BlankNodeGenerator extends TermGenerator {
     }
 
     @Override
-    public List<Term> generate(Source source) throws Exception {
+    public List<Term> generate(Record record) throws Exception {
         ArrayList<Term> nodes = new ArrayList<>();
 
         if (this.functionExecutor != null) {
-            List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(source));
+            List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(record));
 
             objectStrings.forEach(object -> {
                 nodes.add(new BlankNode(object));

@@ -4,7 +4,7 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.ExcelSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.ODSSourceIterator;
-import be.ugent.idlab.knows.dataio.source.Source;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
@@ -37,7 +37,7 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @throws IOException
      */
     @Override
-    public List<Source> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
+    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
 
@@ -75,8 +75,8 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @param access Access to consume sources from
      * @return a list of sources
      */
-    private List<Source> getRecordsForExcel(Access access) throws IOException, SQLException {
-        List<Source> output = new ArrayList<>();
+    private List<Record> getRecordsForExcel(Access access) throws IOException, SQLException {
+        List<Record> output = new ArrayList<>();
         try (ExcelSourceIterator iterator = new ExcelSourceIterator(access)) {
             iterator.forEachRemaining(output::add);
         }
@@ -90,8 +90,8 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @param access Access to consume sources from
      * @return a list of ODT sources
      */
-    private List<Source> getRecordsForODT(Access access) throws Exception {
-        List<Source> output = new ArrayList<>();
+    private List<Record> getRecordsForODT(Access access) throws Exception {
+        List<Record> output = new ArrayList<>();
         try (ODSSourceIterator iterator = new ODSSourceIterator(access)) {
             iterator.forEachRemaining(output::add);
         }
@@ -105,14 +105,13 @@ public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
      * @return a CSVParser.
      * @throws IOException
      */
-    private List<Source> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException {
+    private List<Record> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException {
         try {
             // Check if we are dealing with CSVW.
             if (csvw == null) {
                 // RDBs fall under this
                 try (CSVSourceIterator iterator = new CSVSourceIterator(access)) {
-                    List<Source> results = new ArrayList<>();
-
+                    List<Record> results = new ArrayList<>();
                     iterator.forEachRemaining(results::add);
 
                     return results;

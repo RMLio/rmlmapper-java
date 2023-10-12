@@ -4,32 +4,19 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVWSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.csvw.CSVWConfiguration;
 import be.ugent.idlab.knows.dataio.iterators.csvw.CSVWConfigurationBuilder;
-import be.ugent.idlab.knows.dataio.source.CSVSource;
-import be.ugent.idlab.knows.dataio.source.Source;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
-import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
-import org.apache.commons.io.input.BOMInputStream;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class has as main goal to create a CSVParser for a Logical Source with CSVW.
@@ -49,12 +36,12 @@ public class CSVW {
      * @param access The access containing the records
      * @return The list of records in the Access
      */
-    List<Source> getRecords(Access access) throws IOException, CsvException, SQLException {
+    List<Record> getRecords(Access access) throws IOException, CsvException, SQLException {
         List<Term> sources = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
 
         CSVWConfiguration config = getConfiguration(source);
-        List<Source> records = new ArrayList<>();
+        List<Record> records = new ArrayList<>();
         try (CSVWSourceIterator iterator = new CSVWSourceIterator(access, config)) {
             iterator.forEachRemaining(records::add);
         }

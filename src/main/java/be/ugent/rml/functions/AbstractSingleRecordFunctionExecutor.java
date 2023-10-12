@@ -1,7 +1,6 @@
 package be.ugent.rml.functions;
 
-import be.ugent.idlab.knows.dataio.source.Source;
-import be.ugent.rml.records.Record;
+import be.ugent.idlab.knows.dataio.record.Record;
 
 import java.util.HashMap;
 
@@ -9,9 +8,9 @@ public abstract class AbstractSingleRecordFunctionExecutor implements SingleReco
 
     protected MultipleRecordsFunctionExecutor functionExecutor;
 
-    public Object execute(Source source) throws Exception {
-        HashMap<String, Source> recordsMap = new HashMap<>();
-        recordsMap.put("_default", source);
+    public Object execute(Record record) throws Exception {
+        HashMap<String, Record> recordsMap = new HashMap<>();
+        recordsMap.put("_default", record);
 
         return this.functionExecutor.execute(recordsMap);
     }

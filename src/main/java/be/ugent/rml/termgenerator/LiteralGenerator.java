@@ -1,6 +1,6 @@
 package be.ugent.rml.termgenerator;
 
-import be.ugent.idlab.knows.dataio.source.Source;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.Utils;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.FunctionUtils;
@@ -42,13 +42,13 @@ public class LiteralGenerator extends TermGenerator {
     }
 
     @Override
-    public List<Term> generate(Source source) throws Exception {
+    public List<Term> generate(Record record) throws Exception {
         List<Term> objects = new ArrayList<>();
-        List<String> objectStrings = FunctionUtils.functionObjectToList(this.functionExecutor.execute(source));
+        List<String> objectStrings = FunctionUtils.functionObjectToList(this.functionExecutor.execute(record));
 
         String dataTypeSource = null;
         if (this.functionExecutor instanceof ReferenceExtractor) {
-            dataTypeSource = source.getDataType(((ReferenceExtractor) this.functionExecutor).reference);
+            dataTypeSource = record.getDataType(((ReferenceExtractor) this.functionExecutor).reference);
         }
 
         if (!objectStrings.isEmpty()) {
@@ -57,7 +57,7 @@ public class LiteralGenerator extends TermGenerator {
             objectStrings.forEach(objectString -> {
                 if (languageExecutor != null) {
                     try {
-                        List<String> languages = FunctionUtils.functionObjectToList(this.languageExecutor.execute(source));
+                        List<String> languages = FunctionUtils.functionObjectToList(this.languageExecutor.execute(record));
 
                         if (!languages.isEmpty()) {
                             String language = languages.get(0);

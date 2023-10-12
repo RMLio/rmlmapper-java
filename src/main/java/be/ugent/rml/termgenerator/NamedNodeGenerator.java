@@ -1,10 +1,9 @@
 package be.ugent.rml.termgenerator;
 
-import be.ugent.idlab.knows.dataio.source.Source;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
-import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.common.net.ParsedIRI;
@@ -33,8 +32,8 @@ public class NamedNodeGenerator extends TermGenerator {
     }
 
     @Override
-    public List<Term> generate(Source source) throws Exception {
-        List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(source));
+    public List<Term> generate(Record record) throws Exception {
+        List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(record));
         ArrayList<Term> objects = new ArrayList<>();
 
         if (!objectStrings.isEmpty()) {

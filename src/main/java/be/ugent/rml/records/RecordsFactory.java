@@ -1,6 +1,6 @@
 package be.ugent.rml.records;
 
-import be.ugent.idlab.knows.dataio.source.Source;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.access.AccessFactory;
@@ -22,20 +22,19 @@ import java.util.Map;
 /**
  * This class creates records based on RML rules.
  */
-public class SourcesFactory {
-
-    private Map<Access, Map<String, Map<String, List<Source>>>> sourcesCache;
+public class RecordsFactory {
+    private Map<Access, Map<String, Map<String, List<Record>>>> recordsCache;
     private AccessFactory accessFactory;
     private Map<String, ReferenceFormulationRecordFactory> referenceFormulationRecordFactoryMap;
-    private static final Logger logger = LoggerFactory.getLogger(SourcesFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(RecordsFactory.class);
 
-    public SourcesFactory(String basePath) {
+    public RecordsFactory(String basePath) {
         accessFactory = new AccessFactory(basePath);
-        sourcesCache = new HashMap<>();
+        recordsCache = new HashMap<>();
 
         referenceFormulationRecordFactoryMap = new HashMap<>();
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.XPath, new XMLRecordFactory());
-        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.JSONPath, new JSONRecordFactory2());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.JSONPath, new JSONRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSV, new CSVRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDB, new CSVRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSS3, new HTMLRecordFactory());
@@ -48,7 +47,7 @@ public class SourcesFactory {
      * @return a list of records.
      * @throws IOException
      */
-    public List<Source> createSources(Term triplesMap, QuadStore rmlStore) throws Exception {
+    public List<Record> createSources(Term triplesMap, QuadStore rmlStore) throws Exception {
         // Get Logical Sources.
         List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
@@ -87,12 +86,12 @@ public class SourcesFactory {
      * @param hash the hash used for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
      * @return
      */
-    private List<Source> getSourcesFromCache(Access access, String referenceFormulation, String hash) {
-        if (sourcesCache.containsKey(access)
-                && sourcesCache.get(access).containsKey(referenceFormulation)
-                && sourcesCache.get(access).get(referenceFormulation).containsKey(hash)
+    private List<Record> getSourcesFromCache(Access access, String referenceFormulation, String hash) {
+        if (recordsCache.containsKey(access)
+                && recordsCache.get(access).containsKey(referenceFormulation)
+                && recordsCache.get(access).get(referenceFormulation).containsKey(hash)
         ) {
-            return sourcesCache.get(access).get(referenceFormulation).get(hash);
+            return recordsCache.get(access).get(referenceFormulation).get(hash);
         } else {
             return null;
         }
@@ -105,16 +104,16 @@ public class SourcesFactory {
      * @param hash the used hash for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
      * @param records the records that needs to be put into the cache.
      */
-    private void putSourcesIntoCache(Access access, String referenceFormulation, String hash, List<Source> records) {
-        if (!sourcesCache.containsKey(access)) {
-            sourcesCache.put(access, new HashMap<>());
+    private void putSourcesIntoCache(Access access, String referenceFormulation, String hash, List<Record> records) {
+        if (!recordsCache.containsKey(access)) {
+            recordsCache.put(access, new HashMap<>());
         }
 
-        if (!sourcesCache.get(access).containsKey(referenceFormulation)) {
-            sourcesCache.get(access).put(referenceFormulation, new HashMap<>());
+        if (!recordsCache.get(access).containsKey(referenceFormulation)) {
+            recordsCache.get(access).put(referenceFormulation, new HashMap<>());
         }
 
-        sourcesCache.get(access).get(referenceFormulation).put(hash, records);
+        recordsCache.get(access).get(referenceFormulation).put(hash, records);
 
     }
 
@@ -127,11 +126,11 @@ public class SourcesFactory {
      * @return a list of records.
      * @throws IOException
      */
-    private List<Source> getSources(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
+    private List<Record> getSources(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
         String logicalSourceHash = hashLogicalSource(logicalSource, rmlStore);
 
         // Try to get the sources from the cache.
-        List<Source> sources = getSourcesFromCache(access, referenceFormulation, logicalSourceHash);
+        List<Record> sources = getSourcesFromCache(access, referenceFormulation, logicalSourceHash);
 
         // If there are no sources in the cache.
         // fetch from the data source.

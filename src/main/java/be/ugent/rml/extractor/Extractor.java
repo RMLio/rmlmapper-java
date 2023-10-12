@@ -1,11 +1,11 @@
 package be.ugent.rml.extractor;
 
-import be.ugent.idlab.knows.dataio.source.Source;
-import be.ugent.rml.records.Record;
+
+import be.ugent.idlab.knows.dataio.record.Record;
 
 import java.util.List;
 
 public interface Extractor {
 
-    List<Object> extract(Source source);
+    List<Object> extract(Record source);
 }
