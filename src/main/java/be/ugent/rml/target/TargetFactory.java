@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,186 @@ public class TargetFactory {
      */
     public TargetFactory(String basePath) {
         this.basePath = basePath;
+    }
+
+    private void detectLDESEventStreamTarget(Term logicalTarget, List<Quad> metadata, QuadStore rmlStore, QuadStore outputStore) {
+        List<Term> types = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                new NamedNode(NAMESPACES.RDF + "type"), null));
+        for (Term type: types) {
+            // Target has LDES features, read them
+            if (type.getValue().equals(NAMESPACES.LDES + "EventStreamTarget")) {
+                logger.error("'{}EventStreamTarget' is not supported anymore. Use '{}/EventStreamTarget'. Not generating LDES metadata!", NAMESPACES.LDES, NAMESPACES.RMLT);
+                return;
+            } else if (type.getValue().equals(NAMESPACES.RMLT + "EventStreamTarget")) {
+                logger.debug("Found RMLT EventStreamTarget");
+                Term iri;
+                Term ldes_iri = null;
+                Term ldes = null;
+                Term versionOfPathObj = null;
+                Term timestampPathObj = null;
+                Term memberTargetClass = null;
+                boolean ldesGenerateImmutableIRI = false;
+
+                try {
+                    // Check if LDES IRI is given
+                    iri = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                            new NamedNode(NAMESPACES.RMLT + "ldesBaseIRI"), null)).get(0);
+                    ldes_iri = new NamedNode(iri.getValue());
+                    logger.debug("LDES base IRI: {}", iri.getValue());
+
+                    // LDES RDF type EventStream
+                    metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.RDF + "type"),
+                        new NamedNode(NAMESPACES.LDES + "EventStream")));
+                }
+                catch (IndexOutOfBoundsException e) {
+                    logger.debug("No LDES metadata will be generated since no LDES base IRI was specified");
+                }
+
+                try {
+                    // LDES Member configuration properties
+                    ldes = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                            new NamedNode(NAMESPACES.RMLT + "ldes"), null)).get(0);
+                } catch (IndexOutOfBoundsException e) {
+                    logger.debug("No LDES member metadata found.");
+                }
+
+                if (ldes != null) {
+                    // Optional SHACL shape
+                    if (ldes_iri != null) {
+                        try {
+                            Term shape = Utils.getObjectsFromQuads(rmlStore.getQuads(ldes,
+                                new NamedNode(NAMESPACES.TREE + "shape"), null)).get(0);
+                            logger.debug("SHACL shape: {}", shape.getValue());
+                            // TODO: Handle embedded SHACL shapes in RML mapping rules as well.
+                            metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.TREE + "shape"), shape));
+                        } catch (IndexOutOfBoundsException e) {
+                            logger.debug("No TREE SHACL shape specified for LDES.");
+                        }
+                    }
+                    
+                    // Optional versionOf path
+                    try {
+                        versionOfPathObj = Utils.getObjectsFromQuads(rmlStore.getQuads(ldes,
+                                new NamedNode(NAMESPACES.LDES + "versionOfPath"), null)).get(0);
+                        logger.debug("VersionOf path: {}", versionOfPathObj.getValue());
+                        if (ldes_iri != null) {
+                            metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.LDES + "versionOfPath"), versionOfPathObj));
+                        }
+                    } catch (IndexOutOfBoundsException e) {
+                        logger.debug("No LDES versionOf path found");
+                    }
+
+                    // Optional timestamp path
+                    try {
+                        timestampPathObj = Utils.getObjectsFromQuads(rmlStore.getQuads(ldes,
+                                new NamedNode(NAMESPACES.LDES + "timestampPath"), null)).get(0);
+                        if (ldes_iri != null) {
+                            metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.LDES + "timestampPath"), timestampPathObj));
+                        }
+                    } catch (IndexOutOfBoundsException e) {
+                        logger.debug("No LDES timestamp path found");
+                    }
+                }
+
+                // Optional unique IRI generation for mutable object IRIs
+                try {
+                    Term generateImmutableIRIObj = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                            new NamedNode(NAMESPACES.RMLT + "ldesGenerateImmutableIRI"), null)).get(0);
+                    ldesGenerateImmutableIRI = generateImmutableIRIObj.getValue().equals("true");
+                    logger.debug("LDES Immutable IRI generation: {}", ldesGenerateImmutableIRI? "yes": "no");
+                } catch (IndexOutOfBoundsException e) {
+                    logger.debug("No LDES generateImmutableIRI found");
+                }
+
+                /*
+                 * If a member path is provided, use the subjects with a specific target class like SHACL targetClass.
+                 * Otherwise, use the subjects of all generated triples as LDES members.
+                 */
+                try {
+                    memberTargetClass = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                            new NamedNode(NAMESPACES.RMLT + "ldesMemberTargetClass"), null)).get(0);
+                    logger.debug("LDES member target class: {}", memberTargetClass);
+                } catch (IndexOutOfBoundsException e) {
+                    logger.debug("No LDES member target class found");
+                }
+
+                List<Term> ldesMembers;
+                if (memberTargetClass != null)
+                    ldesMembers = Utils.getSubjectsFromQuads(outputStore.getQuads(null, new NamedNode(NAMESPACES.RDF + "type"), memberTargetClass));
+                else
+                    ldesMembers = outputStore.getSubjects();
+
+                /*
+                 * Add LDES member IRIs to the output. If needed, the member IRIs are made immutable if they aren't yet
+                 * as required by the LDES specification.
+                 */
+                long currentTime = System.currentTimeMillis();
+                long seed = (long)(Math.random() * 1000);
+                long index = 0;
+                HashSet<Term> processedMembers = new HashSet<>();
+                for (Term m: ldesMembers) {
+                    Term memberIRI = m;
+                    if (processedMembers.contains(memberIRI))
+                        continue;
+
+                    processedMembers.add(memberIRI);
+                    index++;
+
+                    if (ldesGenerateImmutableIRI) {
+                        /* avoid collisions by combining current time with a seed and a specific index for each member */
+                        memberIRI = new NamedNode(m.getValue() + "#" + (currentTime + seed + index));
+
+                        /*
+                         * Add member versionOf if versionOf path is specified. If the mapping already provided one,
+                         * use that instead. This is necessary because the provided IRI from the mapping is the IRI of
+                         * the object while the immutable IRI is a version of the object.
+                         */
+                        if (versionOfPathObj != null) {
+                            List<Term> versionOfObj = Utils.getObjectsFromQuads(outputStore.getQuads(m, versionOfPathObj, null));
+                            if (versionOfObj.isEmpty()) {
+                                outputStore.addQuad(new Quad(memberIRI, versionOfPathObj, m));
+                            } else {
+                                for (Term v : versionOfObj) {
+                                    outputStore.addQuad(new Quad(memberIRI, versionOfPathObj, v));
+                                }
+                            }
+                        }
+
+                        /*
+                         * Add member timestamp if timestamp path is specified. If the mapping already provided one,
+                         * use that instead. This is necessary because the provided IRI from the mapping is the IRI of
+                         * the object while the immutable IRI is a version of the object.
+                         */
+                        if (timestampPathObj != null) {
+                            List<Term> timestampObj = Utils.getObjectsFromQuads(outputStore.getQuads(m, timestampPathObj, null));
+                            if (timestampObj.isEmpty()) {
+                                outputStore.addQuad(new Quad(memberIRI, timestampPathObj,
+                                    new Literal(Instant.ofEpochMilli(currentTime).toString(), new NamedNode(NAMESPACES.XSD + "dateTime"))));
+                            } else {
+                                for (Term v : timestampObj) {
+                                    outputStore.addQuad(new Quad(memberIRI, timestampPathObj, v));
+                                }
+                            }
+                        }
+
+                        /* Add all other member properties as well */
+                        List<Quad> memberProperties = outputStore.getQuads(m, null, null);
+                        for (Quad property: memberProperties) {
+                            outputStore.addQuad(memberIRI, property.getPredicate(), property.getObject(), property.getGraph());
+                            outputStore.removeQuads(property);
+                        }
+                    }
+
+                    // Only materialize if LDES IRI was defined
+                    if (ldes_iri != null) {
+                        Quad q = new Quad(ldes_iri, new NamedNode(NAMESPACES.TREE + "member"), memberIRI);
+                        metadata.add(q);
+                    }
+                }
+
+                break;
+            }
+        }
     }
 
     /**
@@ -91,6 +272,8 @@ public class TargetFactory {
             logger.debug("No serialization format specified, falling back to default N-Quads");
         }
 
+        logger.debug("Serialization: " + serializationFormat);
+
         // Read compression
         try {
             Term comp = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
@@ -112,71 +295,7 @@ public class TargetFactory {
         }
 
         // Detect LDES EventStreamTarget
-        List<Term> types = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                new NamedNode(NAMESPACES.RDF + "type"), null));
-        for (Term type: types) {
-            // Target has LDES features, read them
-            if (type.getValue().equals(NAMESPACES.LDES + "EventStreamTarget")) {
-                logger.debug("Found LDES EventStreamTarget");
-                Term iri;
-                Term eventstream_iri;
-                Term versionOfPathObj = null;
-                Term timestampPathObj = null;
-
-                // Required LDES IRI
-                try {
-                    iri = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                            new NamedNode(NAMESPACES.LDES + "baseIRI"), null)).get(0);
-                    eventstream_iri = new NamedNode(iri.getValue());
-                    logger.debug("LDES base IRI: {}", iri.getValue());
-                }
-                catch (IndexOutOfBoundsException e) {
-                    throw new IllegalArgumentException("No base IRI specified for LDES!");
-                }
-
-                // Optional SHACL shape
-                try {
-                    Term shape = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                            new NamedNode(NAMESPACES.TREE + "shape"), null)).get(0);
-                    logger.debug("SHACL shape: {}", shape.getValue());
-
-                    // TODO: Handle embedded SHACL shapes in RML mapping rules as well.
-                    metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.TREE + "shape"), shape));
-                }
-                catch (IndexOutOfBoundsException e) {
-                    logger.debug("No SHACL shape specified for LDES.");
-                }
-
-                metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.RDF + "type"),
-                        new NamedNode(NAMESPACES.LDES + "EventStream")));
-                List<Term> subjects = new ArrayList<>(new HashSet<>(Utils.getSubjectsFromQuads(outputStore.getQuads(null, null, null))));
-                for (Term s: subjects) {
-                    metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.TREE + "member"), s));
-                }
-
-                // Optional versionOf path
-                try {
-                    versionOfPathObj = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                            new NamedNode(NAMESPACES.LDES + "versionOfPath"), null)).get(0);
-                    metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.LDES + "versionOfPath"), versionOfPathObj));
-                }
-                catch (IndexOutOfBoundsException e) {
-                    logger.debug("No versionOfPath found");
-                }
-
-                // Optional timestamp path
-                try {
-                    timestampPathObj = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                            new NamedNode(NAMESPACES.LDES + "timestampPath"), null)).get(0);
-                    metadata.add(new Quad(eventstream_iri, new NamedNode(NAMESPACES.LDES + "timestampPath"), timestampPathObj));
-                }
-                catch (IndexOutOfBoundsException e) {
-                    logger.debug("No timestampPath found");
-                }
-
-                break;
-            }
-        }
+        this.detectLDESEventStreamTarget(logicalTarget, metadata, rmlStore, outputStore);
 
         // Build target
         if (!targets.isEmpty()) {

@@ -110,7 +110,8 @@ that output is found below.
 usage: java -jar mapper.jar <options>
 options:
  -c,--configfile <arg>               path to configuration file
- -d,--duplicates                     remove duplicates in the output
+ -d,--duplicates                     remove duplicates in the HDT, N-Triples,
+                                     or N-Quads output
  -dsn,--r2rml-jdbcDSN <arg>          DSN of the database when using R2RML
                                      rules
  -e,--metadatafile <arg>             path to output metadata file

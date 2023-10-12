@@ -4,16 +4,19 @@ import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.Executor;
+import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.Utils;
 import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
+import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
@@ -45,6 +48,7 @@ public class Main {
         try {
             run(args, System.getProperty("user.dir"));
         } catch (Exception e) {
+            System.out.println(e);
             System.exit(1);
         }
     }
@@ -95,7 +99,7 @@ public class Main {
                 .build();
         Option removeduplicatesOption = Option.builder("d")
                 .longOpt("duplicates")
-                .desc("remove duplicates in the output")
+                .desc("remove duplicates in the HDT, N-Triples, or N-Quads output")
                 .build();
         Option configfileOption = Option.builder("c")
                 .longOpt("configfile")
@@ -420,7 +424,7 @@ public class Main {
             }
 
             HashMap<Term, QuadStore> targets = executor.getTargets();
-            if(targets != null){
+            if (targets != null) {
                 result = targets.get(new NamedNode("rmlmapper://default.store"));
                 if(result != null) {
                     result.copyNameSpaces(rmlStore);
@@ -468,6 +472,19 @@ public class Main {
             if (store.size() > 0) {
                 hasNoResults = false;
                 logger.info("Target: {} has {} results", term, store.size());
+            }
+
+            /* Remove magic marker from output */
+            List<Quad> quads = store.getQuads(null, null, null, null);
+            for (Quad q: quads) {
+                String subject = q.getSubject().toString();
+                String object = q.getObject().toString();
+                if (subject.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                        || subject.contains(IDLabFunctions.MAGIC_MARKER)
+                        || object.contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                        || object.contains(IDLabFunctions.MAGIC_MARKER) ) {
+                    store.removeQuads(q.getSubject(), q.getPredicate(), q.getObject(), q.getGraph());
+                }
             }
 
             // Default target is exported separately for backwards compatibility reasons

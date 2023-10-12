@@ -10,10 +10,10 @@ include:
   - project: 'rml/util/ci-templates'
     ref: main
     file: 'CHANGELOG.gitlab-ci.yml'
-  # Make a Github Release on new tags
+  # Make sure the repository token is always valid
   - project: 'rml/util/ci-templates'
     ref: main
-    file: 'Github-Release.gitlab-ci.yml'
+    file: 'Token.gitlab-ci.yml'
   # Push a Docker Image to Docker Hub on new tags
   - project: 'rml/util/ci-templates'
     ref: main
@@ -68,7 +68,11 @@ General:
     # Improve performance with overlayfs.
     DOCKER_DRIVER: overlay2
   script:
-    - 'mvn $MAVEN_CLI_OPTS -Dtest=$TEST test'
+    - 'mvn $MAVEN_CLI_OPTS -Dtest=$TEST test 2>&1 | tee $TEST.log'
+  artifacts:
+    when: always
+    paths:
+      - '$TEST.log'
   parallel:
     matrix:
       - TEST: [ArgumentsTest, MapperCSVTest, MapperJSONTest, MapperMySQLTest, MapperPostgresR2RMLTest, MapperWoTTest, ArgumentsTestMySQLTest, MapperCSVWTest, MapperLDESTest, MapperODSTest, MapperOracleDBTest, MapperPostgresXMLTest, MapperXMLTest, CustomRMLFnOMapperCSVTest, MapperEXCELTest, MapperMappingFileURLTest, MapperSPARQLTest, MetadataTest, CustomRMLFnOMapperJSONTest, CustomRMLFnOMapperTest, MapperHTMLTest, MapperMySQLR2RMLTest, MapperPostgresCSVTest, MapperSQLServerTest, OptimizationsTest, R2RMLConverterTest, QuadTest, ReadmeTest, ReadmeFunctionTest, ConformerDetectionTest]
@@ -136,7 +140,7 @@ Create Release:
     # Dependencies
     - apk add maven java-jdk
     # Clone the repository via HTTPS inside a new directory
-    - git clone "https://${GITLAB_USERNAME}:${GITLAB_TOKEN_RMLMAPPER}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "${CI_COMMIT_SHA}"
+    - git clone "https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "${CI_COMMIT_SHA}"
 
     # Set the displayed user with the commits that are about to be made
     - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
@@ -194,6 +198,8 @@ Create Release:
         git push origin master
       fi
   when: manual
+  only:
+    - development
 
 # Generate R2RML test report and send MR to rml.io website
 # Push options: https://docs.gitlab.com/ee/user/project/push_options.html
@@ -207,7 +213,7 @@ R2RML Test Report:
     - apk add git python3 python3-dev py3-pip postgresql-dev postgresql libpq gcc musl-dev docker docker-compose java-jre-headless maven java-jdk
 
     # Clone the repository via HTTPS inside a new directory
-    - git clone "https://${GITLAB_USERNAME}:${GITLAB_TOKEN_WEBSITE}@${CI_SERVER_HOST}/rml/doc/rmlio-website.git"
+    - git clone "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/rml/doc/rmlio-website.git"
     - git clone "https://github.com/kg-construct/r2rml-test-cases-support"
 
     # Set the displayed user with the commits that are about to be made

@@ -1,0 +1,1172 @@
+[
+  {
+    "id": 48,
+    "type": 1,
+    "name": "Station Antwerpen-Centraal",
+    "latitude": "51.217611000000",
+    "longitude": "4.421000000000",
+    "last_seen": "2023-07-07T20:58:50",
+    "bikes_available": 20,
+    "bikes_in_use": 36
+  },
+  {
+    "id": 1000,
+    "type": 1,
+    "name": "New BlueBike Station",
+    "latitude": "50.844833000000",
+    "longitude": "4.355861000000",
+    "last_seen": "2023-07-07T20:55:35",
+    "bikes_available": 100,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 50,
+    "type": 1,
+    "name": "Station Leuven (Tiensevest) 1",
+    "latitude": "50.880028000000",
+    "longitude": "4.715667000000",
+    "last_seen": "2023-07-07T19:58:42",
+    "bikes_available": 57,
+    "bikes_in_use": 24
+  },
+  {
+    "id": 51,
+    "type": 1,
+    "name": "Station Aarschot",
+    "latitude": "50.983778000000",
+    "longitude": "4.823778000000",
+    "last_seen": "2023-07-07T19:59:01",
+    "bikes_available": 13,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 52,
+    "type": 1,
+    "name": "Station Sint-Truiden",
+    "latitude": "50.817222000000",
+    "longitude": "5.176167000000",
+    "last_seen": "2023-07-07T19:58:46",
+    "bikes_available": 10,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 53,
+    "type": 1,
+    "name": "Station Hasselt",
+    "latitude": "50.931028000000",
+    "longitude": "5.327139000000",
+    "last_seen": "2023-07-07T19:59:37",
+    "bikes_available": 48,
+    "bikes_in_use": 4
+  },
+  {
+    "id": 54,
+    "type": 1,
+    "name": "Station Mol",
+    "latitude": "51.190639000000",
+    "longitude": "5.115389000000",
+    "last_seen": "2023-07-07T19:58:31",
+    "bikes_available": 20,
+    "bikes_in_use": 9
+  },
+  {
+    "id": 55,
+    "type": 1,
+    "name": "Brussel Noord/Bruxelles Nord",
+    "latitude": "50.861514000000",
+    "longitude": "4.361356000000",
+    "last_seen": "2023-07-07T19:59:20",
+    "bikes_available": 18,
+    "bikes_in_use": 5
+  },
+  {
+    "id": 59,
+    "type": 1,
+    "name": "Gare de Namur",
+    "latitude": "50.468556000000",
+    "longitude": "4.861944000000",
+    "last_seen": "2023-07-07T19:56:12",
+    "bikes_available": 5,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 60,
+    "type": 1,
+    "name": "Station Kortrijk",
+    "latitude": "50.823667000000",
+    "longitude": "3.262944000000",
+    "last_seen": "2023-07-07T19:55:26",
+    "bikes_available": 57,
+    "bikes_in_use": 11
+  },
+  {
+    "id": 61,
+    "type": 1,
+    "name": "Station Deinze",
+    "latitude": "50.978194000000",
+    "longitude": "3.534556000000",
+    "last_seen": "2023-07-07T19:54:54",
+    "bikes_available": 52,
+    "bikes_in_use": 8
+  },
+  {
+    "id": 62,
+    "type": 1,
+    "name": "Station Waregem",
+    "latitude": "50.891917000000",
+    "longitude": "3.424889000000",
+    "last_seen": "2023-07-07T19:56:54",
+    "bikes_available": 15,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 63,
+    "type": 1,
+    "name": "Gare de Li\u00e8ge-Guillemins",
+    "latitude": "50.625722000000",
+    "longitude": "5.565750000000",
+    "last_seen": "2023-07-07T19:54:53",
+    "bikes_available": 5,
+    "bikes_in_use": 4
+  },
+  {
+    "id": 64,
+    "type": 1,
+    "name": "Station Brugge 1",
+    "latitude": "51.196991000000",
+    "longitude": "3.218624000000",
+    "last_seen": "2023-07-07T19:59:34",
+    "bikes_available": 36,
+    "bikes_in_use": 40
+  },
+  {
+    "id": 65,
+    "type": 1,
+    "name": "Station Oostende",
+    "latitude": "51.228306000000",
+    "longitude": "2.925639000000",
+    "last_seen": "2023-07-07T19:57:47",
+    "bikes_available": 53,
+    "bikes_in_use": 16
+  },
+  {
+    "id": 66,
+    "type": 1,
+    "name": "Station Torhout",
+    "latitude": "51.065083000000",
+    "longitude": "3.105611000000",
+    "last_seen": "2023-07-07T19:55:12",
+    "bikes_available": 6,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 68,
+    "type": 1,
+    "name": "Station Roeselare",
+    "latitude": "50.948944000000",
+    "longitude": "3.130611000000",
+    "last_seen": "2023-07-07T19:57:24",
+    "bikes_available": 28,
+    "bikes_in_use": 6
+  },
+  {
+    "id": 69,
+    "type": 1,
+    "name": "Station Sint-Niklaas",
+    "latitude": "51.171444000000",
+    "longitude": "4.143528000000",
+    "last_seen": "2023-07-07T19:55:31",
+    "bikes_available": 45,
+    "bikes_in_use": 9
+  },
+  {
+    "id": 70,
+    "type": 1,
+    "name": "Station Lokeren",
+    "latitude": "51.107444000000",
+    "longitude": "3.986722000000",
+    "last_seen": "2023-07-07T19:59:30",
+    "bikes_available": 13,
+    "bikes_in_use": 4
+  },
+  {
+    "id": 71,
+    "type": 1,
+    "name": "Gare de Mons",
+    "latitude": "50.455693000000",
+    "longitude": "3.944177000000",
+    "last_seen": "2023-07-07T19:58:28",
+    "bikes_available": 0,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 72,
+    "type": 1,
+    "name": "Station Gent-Dampoort",
+    "latitude": "51.056083000000",
+    "longitude": "3.740194000000",
+    "last_seen": "2023-07-07T19:57:36",
+    "bikes_available": 21,
+    "bikes_in_use": 34
+  },
+  {
+    "id": 73,
+    "type": 1,
+    "name": "Station Gent-St. P. (St.-Denijslaan)",
+    "latitude": "51.034889000000",
+    "longitude": "3.709667000000",
+    "last_seen": "2023-07-07T19:56:22",
+    "bikes_available": 21,
+    "bikes_in_use": 42
+  },
+  {
+    "id": 74,
+    "type": 1,
+    "name": "Station Mechelen",
+    "latitude": "51.017806000000",
+    "longitude": "4.483000000000",
+    "last_seen": "2023-07-07T19:57:44",
+    "bikes_available": 59,
+    "bikes_in_use": 22
+  },
+  {
+    "id": 75,
+    "type": 1,
+    "name": "Station Vilvoorde",
+    "latitude": "50.924750000000",
+    "longitude": "4.433000000000",
+    "last_seen": "2023-07-07T19:57:17",
+    "bikes_available": 40,
+    "bikes_in_use": 6
+  },
+  {
+    "id": 76,
+    "type": 1,
+    "name": "Station Antwerpen-Berchem",
+    "latitude": "51.199503000000",
+    "longitude": "4.431682000000",
+    "last_seen": "2023-07-07T19:57:33",
+    "bikes_available": 63,
+    "bikes_in_use": 19
+  },
+  {
+    "id": 77,
+    "type": 1,
+    "name": "Station Lier",
+    "latitude": "51.135778000000",
+    "longitude": "4.561500000000",
+    "last_seen": "2023-07-07T19:59:22",
+    "bikes_available": 18,
+    "bikes_in_use": 11
+  },
+  {
+    "id": 78,
+    "type": 1,
+    "name": "Station Mortsel Oude God",
+    "latitude": "51.171222000000",
+    "longitude": "4.455944000000",
+    "last_seen": "2023-07-07T19:55:03",
+    "bikes_available": 8,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 79,
+    "type": 1,
+    "name": "Station Herentals",
+    "latitude": "51.181139000000",
+    "longitude": "4.829278000000",
+    "last_seen": "2023-07-07T19:57:55",
+    "bikes_available": 18,
+    "bikes_in_use": 13
+  },
+  {
+    "id": 80,
+    "type": 1,
+    "name": "Station Turnhout",
+    "latitude": "51.321944000000",
+    "longitude": "4.937611000000",
+    "last_seen": "2023-07-07T19:58:10",
+    "bikes_available": 17,
+    "bikes_in_use": 7
+  },
+  {
+    "id": 81,
+    "type": 1,
+    "name": "Station Aalst",
+    "latitude": "50.942944000000",
+    "longitude": "4.038623000000",
+    "last_seen": "2023-07-07T19:59:29",
+    "bikes_available": 16,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 89,
+    "type": 1,
+    "name": "Station Dendermonde",
+    "latitude": "51.023444000000",
+    "longitude": "4.101778000000",
+    "last_seen": "2023-07-07T19:58:05",
+    "bikes_available": 15,
+    "bikes_in_use": 7
+  },
+  {
+    "id": 90,
+    "type": 1,
+    "name": "Brussel Luxemburg/Bruxelles Luxembourg",
+    "latitude": "50.838194000000",
+    "longitude": "4.372889000000",
+    "last_seen": "2023-07-07T19:58:58",
+    "bikes_available": 6,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 91,
+    "type": 1,
+    "name": "Station Asse",
+    "latitude": "50.906306000000",
+    "longitude": "4.207806000000",
+    "last_seen": "2023-07-07T19:58:56",
+    "bikes_available": 12,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 92,
+    "type": 1,
+    "name": "Station Diest",
+    "latitude": "50.992972000000",
+    "longitude": "5.050833000000",
+    "last_seen": "2023-07-07T19:56:23",
+    "bikes_available": 18,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 93,
+    "type": 1,
+    "name": "Station Genk",
+    "latitude": "50.967000000000",
+    "longitude": "5.497111000000",
+    "last_seen": "2023-07-07T19:58:09",
+    "bikes_available": 10,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 103,
+    "type": 1,
+    "name": "Station Geel",
+    "latitude": "51.168778000000",
+    "longitude": "4.988778000000",
+    "last_seen": "2023-07-07T19:58:56",
+    "bikes_available": 25,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 104,
+    "type": 1,
+    "name": "Station Eeklo",
+    "latitude": "51.180972000000",
+    "longitude": "3.574750000000",
+    "last_seen": "2023-07-07T19:56:07",
+    "bikes_available": 14,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 105,
+    "type": 1,
+    "name": "Station Ninove",
+    "latitude": "50.839306000000",
+    "longitude": "4.026167000000",
+    "last_seen": "2023-07-07T19:58:30",
+    "bikes_available": 11,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 108,
+    "type": 1,
+    "name": "Halte Lier-Veemarkt",
+    "latitude": "51.128389000000",
+    "longitude": "4.582861000000",
+    "last_seen": "2023-07-07T19:57:57",
+    "bikes_available": 4,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 109,
+    "type": 1,
+    "name": "Parking Lier-De Mol",
+    "latitude": "51.125194000000",
+    "longitude": "4.573500000000",
+    "last_seen": "2023-07-07T19:59:10",
+    "bikes_available": 8,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 111,
+    "type": 1,
+    "name": "Station Heist-op-den-Berg",
+    "latitude": "51.074167000000",
+    "longitude": "4.708583000000",
+    "last_seen": "2023-07-07T19:58:53",
+    "bikes_available": 11,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 112,
+    "type": 1,
+    "name": "Station Mechelen-Nekkerspoel ",
+    "latitude": "51.030222000000",
+    "longitude": "4.489750000000",
+    "last_seen": "2023-07-07T19:55:25",
+    "bikes_available": 13,
+    "bikes_in_use": 4
+  },
+  {
+    "id": 113,
+    "type": 1,
+    "name": "Station Oudenaarde",
+    "latitude": "50.851333000000",
+    "longitude": "3.602000000000",
+    "last_seen": "2023-07-07T19:58:49",
+    "bikes_available": 7,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 114,
+    "type": 1,
+    "name": "Station Geraardsbergen",
+    "latitude": "50.770528000000",
+    "longitude": "3.872528000000",
+    "last_seen": "2023-07-07T19:56:17",
+    "bikes_available": 10,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 115,
+    "type": 1,
+    "name": "Station Tongeren",
+    "latitude": "50.784111000000",
+    "longitude": "5.473444000000",
+    "last_seen": "2023-07-07T19:58:39",
+    "bikes_available": 8,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 117,
+    "type": 1,
+    "name": "Station Aalter",
+    "latitude": "51.091889000000",
+    "longitude": "3.448750000000",
+    "last_seen": "2023-07-07T19:59:15",
+    "bikes_available": 4,
+    "bikes_in_use": 3
+  },
+  {
+    "id": 118,
+    "type": 1,
+    "name": "Parking Deinze-Leiespiegel",
+    "latitude": "50.982417000000",
+    "longitude": "3.525778000000",
+    "last_seen": "2023-07-07T19:55:39",
+    "bikes_available": 15,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 119,
+    "type": 1,
+    "name": "Parking Waregem-Expo",
+    "latitude": "50.881722000000",
+    "longitude": "3.427361000000",
+    "last_seen": "2023-07-07T19:58:50",
+    "bikes_available": 4,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 120,
+    "type": 1,
+    "name": "Station Tienen",
+    "latitude": "50.808222000000",
+    "longitude": "4.925639000000",
+    "last_seen": "2023-07-07T19:58:55",
+    "bikes_available": 9,
+    "bikes_in_use": 3
+  },
+  {
+    "id": 122,
+    "type": 1,
+    "name": "Station Poperinge",
+    "latitude": "50.854554000000",
+    "longitude": "2.735738000000",
+    "last_seen": "2023-07-07T19:57:32",
+    "bikes_available": 5,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 123,
+    "type": 1,
+    "name": "Station Noorderkempen",
+    "latitude": "51.357028000000",
+    "longitude": "4.632333000000",
+    "last_seen": "2023-07-07T19:59:10",
+    "bikes_available": 6,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 124,
+    "type": 1,
+    "name": "Halte Mechelen-Veemarkt",
+    "latitude": "51.029332000000",
+    "longitude": "4.484311000000",
+    "last_seen": "2023-07-07T19:55:07",
+    "bikes_available": 7,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 125,
+    "type": 1,
+    "name": "Station Heide",
+    "latitude": "51.365056000000",
+    "longitude": "4.460556000000",
+    "last_seen": "2023-07-07T19:55:01",
+    "bikes_available": 9,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 127,
+    "type": 1,
+    "name": "Station Kontich-Lint",
+    "latitude": "51.134278000000",
+    "longitude": "4.476111000000",
+    "last_seen": "2023-07-07T19:55:57",
+    "bikes_available": 8,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 128,
+    "type": 1,
+    "name": "Station Tielt",
+    "latitude": "50.990612000000",
+    "longitude": "3.329817000000",
+    "last_seen": "2023-07-07T19:58:03",
+    "bikes_available": 4,
+    "bikes_in_use": 4
+  },
+  {
+    "id": 129,
+    "type": 1,
+    "name": "Station Zaventem",
+    "latitude": "50.885208000000",
+    "longitude": "4.470866000000",
+    "last_seen": "2023-07-07T19:58:30",
+    "bikes_available": 6,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 130,
+    "type": 1,
+    "name": "Station Antwerpen-Zuid",
+    "latitude": "51.197956000000",
+    "longitude": "4.390815000000",
+    "last_seen": "2023-07-07T19:57:10",
+    "bikes_available": 9,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 131,
+    "type": 1,
+    "name": "Station Leuven (Kop van Kessel-Lo)",
+    "latitude": "50.882490000000",
+    "longitude": "4.716641000000",
+    "last_seen": "2023-07-07T19:57:00",
+    "bikes_available": 31,
+    "bikes_in_use": 9
+  },
+  {
+    "id": 132,
+    "type": 1,
+    "name": "Station Izegem",
+    "latitude": "50.920906000000",
+    "longitude": "3.214821000000",
+    "last_seen": "2023-07-07T19:57:01",
+    "bikes_available": 7,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 133,
+    "type": 1,
+    "name": "Station Gent-St. P. (M. Hendrikaplein)",
+    "latitude": "51.035976907399",
+    "longitude": "3.711892073826",
+    "last_seen": "2023-07-07T19:57:31",
+    "bikes_available": 32,
+    "bikes_in_use": 32
+  },
+  {
+    "id": 135,
+    "type": 1,
+    "name": "Station Brugge (Kamgebouw)",
+    "latitude": "51.196771900000",
+    "longitude": "3.216080100000",
+    "last_seen": "2023-07-07T19:56:25",
+    "bikes_available": 20,
+    "bikes_in_use": 10
+  },
+  {
+    "id": 136,
+    "type": 1,
+    "name": "Station Beveren-Waas",
+    "latitude": "51.208483000000",
+    "longitude": "4.260263000000",
+    "last_seen": "2023-07-07T19:58:32",
+    "bikes_available": 13,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 137,
+    "type": 1,
+    "name": "Station Heverlee",
+    "latitude": "50.862615000000",
+    "longitude": "4.695441000000",
+    "last_seen": "2023-07-07T19:55:35",
+    "bikes_available": 11,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 139,
+    "type": 1,
+    "name": "Station Gavere-Asper",
+    "latitude": "50.929443000000",
+    "longitude": "3.640126000000",
+    "last_seen": "2023-07-07T19:55:41",
+    "bikes_available": 7,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 140,
+    "type": 1,
+    "name": "Mobipunt Gavere",
+    "latitude": "50.930522000000",
+    "longitude": "3.654694000000",
+    "last_seen": "2023-07-07T19:56:23",
+    "bikes_available": 1,
+    "bikes_in_use": 3
+  },
+  {
+    "id": 141,
+    "type": 1,
+    "name": "Station Harelbeke",
+    "latitude": "50.855703000000",
+    "longitude": "3.313743000000",
+    "last_seen": "2023-07-07T19:59:41",
+    "bikes_available": 12,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 142,
+    "type": 1,
+    "name": "P&R Mol - De Nete",
+    "latitude": "51.181190000000",
+    "longitude": "5.112421000000",
+    "last_seen": "2023-07-07T19:57:17",
+    "bikes_available": 6,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 144,
+    "type": 2,
+    "name": "Station Antwerpen-Luchtbal",
+    "latitude": "51.245426000000",
+    "longitude": "4.424388000000",
+    "last_seen": null,
+    "bikes_available": 9,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 145,
+    "type": 2,
+    "name": "Station Antwerpen-Noorderdokken",
+    "latitude": "51.261640000000",
+    "longitude": "4.427910000000",
+    "last_seen": null,
+    "bikes_available": 8,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 146,
+    "type": 2,
+    "name": "Station Ekeren Perron 1",
+    "latitude": "51.284248000000",
+    "longitude": "4.435012000000",
+    "last_seen": null,
+    "bikes_available": 3,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 147,
+    "type": 2,
+    "name": "Station Ekeren Perron 2",
+    "latitude": "51.281430000000",
+    "longitude": "4.434365000000",
+    "last_seen": null,
+    "bikes_available": 7,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 148,
+    "type": 2,
+    "name": "Station Diegem",
+    "latitude": "50.889126000000",
+    "longitude": "4.447706000000",
+    "last_seen": null,
+    "bikes_available": 5,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 149,
+    "type": 2,
+    "name": "Station Antwerpen-Centraal E-lock",
+    "latitude": "51.217611000000",
+    "longitude": "4.421000000000",
+    "last_seen": null,
+    "bikes_available": 0,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 151,
+    "type": 2,
+    "name": "Station Bouwel",
+    "latitude": "51.165508000000",
+    "longitude": "4.746427000000",
+    "last_seen": null,
+    "bikes_available": 6,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 152,
+    "type": 2,
+    "name": "Station Haacht",
+    "latitude": "50.966578000000",
+    "longitude": "4.613315000000",
+    "last_seen": null,
+    "bikes_available": 5,
+    "bikes_in_use": 3
+  },
+  {
+    "id": 153,
+    "type": 2,
+    "name": "Station Heusden",
+    "latitude": "51.038330000000",
+    "longitude": "5.281699000000",
+    "last_seen": null,
+    "bikes_available": 6,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 154,
+    "type": 2,
+    "name": "Station Lommel",
+    "latitude": "51.211770000000",
+    "longitude": "5.312579000000",
+    "last_seen": null,
+    "bikes_available": 6,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 155,
+    "type": 2,
+    "name": "Station Zolder",
+    "latitude": "51.033617000000",
+    "longitude": "5.329922000000",
+    "last_seen": null,
+    "bikes_available": 9,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 156,
+    "type": 2,
+    "name": "Station Essen",
+    "latitude": "51.462176000000",
+    "longitude": "4.451532000000",
+    "last_seen": null,
+    "bikes_available": 5,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 157,
+    "type": 2,
+    "name": "Station Landegem",
+    "latitude": "51.064208000000",
+    "longitude": "3.575647000000",
+    "last_seen": null,
+    "bikes_available": 9,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 158,
+    "type": 2,
+    "name": "Station Temse",
+    "latitude": "51.126293000000",
+    "longitude": "4.221356000000",
+    "last_seen": null,
+    "bikes_available": 4,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 159,
+    "type": 2,
+    "name": "Station Wevelgem",
+    "latitude": "50.810926000000",
+    "longitude": "3.182521000000",
+    "last_seen": null,
+    "bikes_available": 8,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 160,
+    "type": 2,
+    "name": "Station Zele",
+    "latitude": "51.073108000000",
+    "longitude": "4.041885000000",
+    "last_seen": null,
+    "bikes_available": 9,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 161,
+    "type": 2,
+    "name": "Station Zottegem",
+    "latitude": "50.869480000000",
+    "longitude": "3.814341000000",
+    "last_seen": null,
+    "bikes_available": 10,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 162,
+    "type": 2,
+    "name": "Station Hove",
+    "latitude": "51.154119500000",
+    "longitude": "4.464733000000",
+    "last_seen": null,
+    "bikes_available": 6,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 163,
+    "type": 2,
+    "name": "Station Landen",
+    "latitude": "50.748290000000",
+    "longitude": "5.079402000000",
+    "last_seen": null,
+    "bikes_available": 4,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 164,
+    "type": 2,
+    "name": "Hoppinpunt Vilvoorde Kassei",
+    "latitude": "50.923187000000",
+    "longitude": "4.413591000000",
+    "last_seen": null,
+    "bikes_available": 3,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 165,
+    "type": 2,
+    "name": "Station Sint-Genesius-Rode",
+    "latitude": "50.747786000000",
+    "longitude": "4.361626000000",
+    "last_seen": null,
+    "bikes_available": 7,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 166,
+    "type": 2,
+    "name": "Station Blankenberge",
+    "latitude": "51.311900000000",
+    "longitude": "3.133800000000",
+    "last_seen": null,
+    "bikes_available": 5,
+    "bikes_in_use": 3
+  },
+  {
+    "id": 167,
+    "type": 2,
+    "name": "Station De Panne",
+    "latitude": "51.077376000000",
+    "longitude": "2.601611000000",
+    "last_seen": null,
+    "bikes_available": 5,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 168,
+    "type": 2,
+    "name": "Station Heist",
+    "latitude": "51.334168000000",
+    "longitude": "3.239668000000",
+    "last_seen": null,
+    "bikes_available": 5,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 169,
+    "type": 2,
+    "name": "Station Knokke",
+    "latitude": "51.340180000000",
+    "longitude": "3.284540000000",
+    "last_seen": null,
+    "bikes_available": 12,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 170,
+    "type": 2,
+    "name": "Station Zeebrugge-Dorp",
+    "latitude": "51.326510000000",
+    "longitude": "3.195476000000",
+    "last_seen": null,
+    "bikes_available": 4,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 173,
+    "type": 2,
+    "name": "Brussel-Zuid/Bruxelles Midi",
+    "latitude": "50.835529468767",
+    "longitude": "4.333756181866",
+    "last_seen": null,
+    "bikes_available": 2,
+    "bikes_in_use": 3
+  },
+  {
+    "id": 174,
+    "type": 2,
+    "name": "Station Oudenaarde e-lock",
+    "latitude": "50.851333000000",
+    "longitude": "3.602000000000",
+    "last_seen": null,
+    "bikes_available": 5,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 175,
+    "type": 1,
+    "name": "Station Merelbeke",
+    "latitude": "51.019906000000",
+    "longitude": "3.764767000000",
+    "last_seen": "2023-07-07T19:57:10",
+    "bikes_available": 6,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 176,
+    "type": 1,
+    "name": "Station Drongen",
+    "latitude": "51.047438000000",
+    "longitude": "3.654975000000",
+    "last_seen": "2023-07-07T19:59:41",
+    "bikes_available": 6,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 177,
+    "type": 2,
+    "name": "P&R Tienen Sporthalstraat",
+    "latitude": "50.819656000000",
+    "longitude": "4.944743000000",
+    "last_seen": null,
+    "bikes_available": 4,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 178,
+    "type": 1,
+    "name": "Station Wondelgem",
+    "latitude": "51.089503000000",
+    "longitude": "3.719586000000",
+    "last_seen": "2023-07-07T19:56:47",
+    "bikes_available": 7,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 179,
+    "type": 2,
+    "name": "Station Wezemaal",
+    "latitude": "50.956061000000",
+    "longitude": "4.747323000000",
+    "last_seen": null,
+    "bikes_available": 5,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 180,
+    "type": 2,
+    "name": "Halte Bourget - NAVO",
+    "latitude": "50.878262000000",
+    "longitude": "4.432225000000",
+    "last_seen": null,
+    "bikes_available": 1,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 181,
+    "type": 2,
+    "name": "Station Zeebrugge-Strand",
+    "latitude": "51.329778000000",
+    "longitude": "3.183928000000",
+    "last_seen": null,
+    "bikes_available": 3,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 182,
+    "type": 2,
+    "name": "Station Kalmthout",
+    "latitude": "51.390916000000",
+    "longitude": "4.466811000000",
+    "last_seen": null,
+    "bikes_available": 7,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 183,
+    "type": 2,
+    "name": "Station Antwerpen-Zuid E-lock",
+    "latitude": "51.197974000000",
+    "longitude": "4.390746000000",
+    "last_seen": null,
+    "bikes_available": 10,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 186,
+    "type": 2,
+    "name": "Tervuren - Moorsel Waterhoenlaan",
+    "latitude": "50.855892828152",
+    "longitude": "4.549415697127",
+    "last_seen": null,
+    "bikes_available": 6,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 187,
+    "type": 2,
+    "name": "Landen - Eenmeilaan",
+    "latitude": "50.754831000000",
+    "longitude": "5.087257000000",
+    "last_seen": null,
+    "bikes_available": 7,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 190,
+    "type": 2,
+    "name": "Station Boechout",
+    "latitude": "51.163288567851",
+    "longitude": "4.495192546475",
+    "last_seen": null,
+    "bikes_available": 6,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 192,
+    "type": 2,
+    "name": "Station Gent-St P (Denijs) E-lock",
+    "latitude": "51.034889000000",
+    "longitude": "3.709667000000",
+    "last_seen": null,
+    "bikes_available": 18,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 193,
+    "type": 2,
+    "name": "Station Deinze E-Lock",
+    "latitude": "50.978194000000",
+    "longitude": "3.534556000000",
+    "last_seen": null,
+    "bikes_available": 46,
+    "bikes_in_use": 8
+  },
+  {
+    "id": 194,
+    "type": 2,
+    "name": "Station Mechelen (Arsenaal)",
+    "latitude": "51.016184000000",
+    "longitude": "4.483694000000",
+    "last_seen": null,
+    "bikes_available": 19,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 195,
+    "type": 2,
+    "name": "Station Antwerpen-Berchem E-lock",
+    "latitude": "51.200465000000",
+    "longitude": "4.432695000000",
+    "last_seen": null,
+    "bikes_available": 5,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 196,
+    "type": 2,
+    "name": "Station Merchtem",
+    "latitude": "50.953699000000",
+    "longitude": "4.224162000000",
+    "last_seen": null,
+    "bikes_available": 7,
+    "bikes_in_use": 0
+  },
+  {
+    "id": 197,
+    "type": 2,
+    "name": "Station Ieper E-Lock",
+    "latitude": "50.848500000000",
+    "longitude": "2.876222000000",
+    "last_seen": null,
+    "bikes_available": 9,
+    "bikes_in_use": 1
+  },
+  {
+    "id": 198,
+    "type": 1,
+    "name": "Station Leuven (Tiensevest) 2",
+    "latitude": "50.879636000000",
+    "longitude": "4.715847000000",
+    "last_seen": "2023-07-07T19:56:38",
+    "bikes_available": 37,
+    "bikes_in_use": 6
+  },
+  {
+    "id": 199,
+    "type": 1,
+    "name": "Station Brugge 2",
+    "latitude": "51.197024000000",
+    "longitude": "3.218736000000",
+    "last_seen": "2023-07-07T19:56:29",
+    "bikes_available": 19,
+    "bikes_in_use": 11
+  },
+  {
+    "id": 200,
+    "type": 2,
+    "name": "Station Kortrijk Spoor 1",
+    "latitude": "50.824540397245",
+    "longitude": "3.265369112466",
+    "last_seen": null,
+    "bikes_available": 9,
+    "bikes_in_use": 2
+  },
+  {
+    "id": 201,
+    "type": 2,
+    "name": "Station Halle (E-lock)",
+    "latitude": "50.733920000000",
+    "longitude": "4.240670000000",
+    "last_seen": null,
+    "bikes_available": 11,
+    "bikes_in_use": 5
+  }
+]

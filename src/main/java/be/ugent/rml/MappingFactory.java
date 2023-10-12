@@ -308,7 +308,7 @@ public class MappingFactory {
                 }
                 // Check if there is at least one Logical Source.
                 // If logical sources are the same (i.e., have the same IRI): the condition is 'join on same record'
-                if (logicalSource.equals(parentLogicalSource)) {
+                if (logicalSource.equals(parentLogicalSource) && rrJoinConditions.isEmpty() && rmljoinConditions.isEmpty()) {
                     // TODO this is a _WILDLY_ inefficient way of handling this: a join is still executed, but then on the hashcode of the record.
                     // I'm not sure what a more elegant solution would entail in the current architecture: joins are currently hard to optimize
                     joinConditionFunctionExecutors.add(generateSameLogicalSourceJoinConditionFunctionTermMap());

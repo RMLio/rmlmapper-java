@@ -22,4 +22,8 @@ public class DynamicSingleRecordFunctionExecutor extends AbstractSingleRecordFun
 
         functionExecutor = new DynamicMultipleRecordsFunctionExecutor(pairs, functionAgent);
     }
+
+    public boolean magic() {
+        return true;
+    }
 }

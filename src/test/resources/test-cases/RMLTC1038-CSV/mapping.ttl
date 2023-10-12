@@ -1,0 +1,35 @@
+# example from gtfs, join on same logical source, without join conditions
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix void: <http://rdfs.org/ns/void#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix : <http://mapping.example.com/>.
+@prefix gtfs: <http://vocab.gtfs.org/terms#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+:rules_000 a void:Dataset;
+    void:exampleResource :map_services1_000.
+:map_services1_000 rml:logicalSource :source_000.
+:source_000 a rml:LogicalSource;
+            rml:source "calendar.csv";
+            rml:referenceFormulation ql:CSV.
+:map_services1_000 a rr:TriplesMap;
+    rdfs:label "services1".
+:s_000 a rr:SubjectMap.
+:map_services1_000 rr:subjectMap :s_000.
+:s_000 rr:template "http://transport.linkeddata.es/madrid/metro/services/{service_id}".
+:pom_001 a rr:PredicateObjectMap.
+:map_services1_000 rr:predicateObjectMap :pom_001.
+:pm_001 a rr:PredicateMap.
+:pom_001 rr:predicateMap :pm_001.
+:pm_001 rr:constant gtfs:parentStation.
+:pom_001 rr:objectMap :om_001.
+:om_001 a rr:ObjectMap;
+    rr:parentTriplesMap :map_services1_000.
+
+:map_calendar_rules_000 rml:logicalSource :source_000;
+    a rr:TriplesMap;
+    rdfs:label "calendar_rules".
+:s_001 a rr:SubjectMap.
+:map_calendar_rules_000 rr:subjectMap :s_001.
+:s_001 rr:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}".

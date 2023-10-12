@@ -27,13 +27,15 @@
 @prefix idlab-fn: <http://example.com/idlab/function/> .
 @base <http://example.com/rules/> .
 
-<#TargetDump> a rmlt:LogicalTarget, ldes:EventStreamTarget;
+<#TargetDump> a rmlt:LogicalTarget, rmlt:EventStreamTarget;
   rmlt:target [ a void:Dataset;
     void:dataDump <file:///tmp/out.nt>;
   ];
   rmlt:serialization formats:N-Triples;
-  ldes:baseIRI <https://pieter.pm/RML-LDES-prototype/bluebike.ttl>;
-  tree:shape <https://pieter.pm/RML-LDES-prototype/shape.shacl>;
+  rmlt:ldes [ a ldes:EventStream;
+    tree:shape <https://pieter.pm/RML-LDES-prototype/shape.shacl>;
+  ];
+  rmlt:ldesBaseIRI <https://pieter.pm/RML-LDES-prototype/bluebike.ttl>;
 .
 
 <#WoTWebResource> a td:PropertyAffordance;

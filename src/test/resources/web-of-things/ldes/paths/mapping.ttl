@@ -26,15 +26,18 @@
 @prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
 @base <http://example.com/rules/> .
 
-<#TargetDump> a rmlt:LogicalTarget, ldes:EventStreamTarget;
+<#TargetDump> a rmlt:LogicalTarget, rmlt:EventStreamTarget;
   rmlt:target [ a void:Dataset;
     void:dataDump <file:///tmp/out.nt>;
   ];
   rmlt:serialization formats:N-Triples;
-  ldes:baseIRI <https://pieter.pm/RML-LDES-prototype/bluebike.ttl>;
-  ldes:timestampPath purl:created;
-  ldes:versionOfPath purl:isVersionOf;
-  tree:shape <https://pieter.pm/RML-LDES-prototype/shape.shacl>;
+  rmlt:ldesBaseIRI <https://pieter.pm/RML-LDES-prototype/bluebike.ttl>;
+  rmlt:ldes [
+    a ldes:EventStream;
+    tree:shape <https://pieter.pm/RML-LDES-prototype/shape.shacl>;
+    ldes:timestampPath purl:created;
+    ldes:versionOfPath purl:isVersionOf;
+  ];
 .
 
 <#WoTWebResource> a td:PropertyAffordance;

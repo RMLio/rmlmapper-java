@@ -1,0 +1,61 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ex: <http://example.com/> .
+@prefix rdfs: <https://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix as: <https://www.w3.org/ns/activitystreams#> .
+@prefix tree: <https://w3id.org/tree#> .
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix formats: <http://www.w3.org/ns/formats/> .
+@base <http://example.com/rules/> .
+
+# Updated object to publish
+<#TriplesMapObjectUpdate>
+  a rr:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "change.json";
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$.modification[*]";
+  ];
+
+  rr:subjectMap [
+    fnml:functionValue [
+      rr:predicateObjectMap [
+        rr:predicate fno:executes ;
+        rr:objectMap [ rr:constant idlab-fn:implicitUpdate ] ] ;
+        # IRI template
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:iri ;
+          rr:objectMap [ rr:template "http://ex.org/sensor/{sensor}/" ]
+        ];
+        # Properties to watch, can be one or multiple
+        # Note that the template does not need to match with these properties!
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:watchedProperty ;
+          rr:objectMap [ rml:reference "temperature" ]
+        ];
+        # Directory path where the state for this function is/will be stored
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:state ;
+          rr:objectMap [ rr:constant "/tmp/implicit_change_state"; rr:dataType xsd:string; ]
+        ];
+     ];
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:temperature;
+    rr:objectMap [ rml:reference "temperature" ];
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:pressure;
+    rr:objectMap [ rml:reference "pressure" ];
+  ];
+.

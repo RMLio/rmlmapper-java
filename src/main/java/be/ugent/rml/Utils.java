@@ -386,9 +386,20 @@ public class Utils {
     }
 
     public static String encodeURI(String url) {
-        return URLEncoder.encode(url, StandardCharsets.UTF_8)
-                .replaceAll("\\+", "%20")
-                .replaceAll("\\*", "%2A");
+        /* Avoid using regex to escape + and * chars for performance */
+        final StringBuilder builder = new StringBuilder();
+        final String encoded = URLEncoder.encode(url, StandardCharsets.UTF_8);
+
+        for (char c: encoded.toCharArray()) {
+            if (c == '+')
+                builder.append("%20");
+            else if (c == '*')
+                builder.append("%2A");
+            else
+                builder.append(c);
+        }
+
+        return builder.toString();
     }
 
     public static String fileToString(File file) throws IOException {

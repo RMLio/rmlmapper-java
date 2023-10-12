@@ -1,0 +1,31 @@
+<http://blue-bike.be/event/create> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/ns/activitystreams#Create> .
+<http://blue-bike.be/event/create> <https://www.w3.org/ns/activitystreams#actor> <https://blue-bike.be/dataset> .
+<http://blue-bike.be/event/delete> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/ns/activitystreams#Delete> .
+<http://blue-bike.be/event/delete> <https://www.w3.org/ns/activitystreams#actor> <https://blue-bike.be/dataset> .
+<http://blue-bike.be/event/update> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/ns/activitystreams#Update> .
+<http://blue-bike.be/event/update> <https://www.w3.org/ns/activitystreams#actor> <https://blue-bike.be/dataset> .
+<https://blue-bike.be/ldes.ttl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/ldes#EventStream> .
+<https://blue-bike.be/ldes.ttl> <https://w3id.org/ldes#timestampPath> <http://purl.org/dc/terms/created> .
+<https://blue-bike.be/ldes.ttl> <https://w3id.org/ldes#versionOfPath> <http://purl.org/dc/terms/isVersionOf> .
+<https://blue-bike.be/ldes.ttl> <https://w3id.org/tree#member> <http://blue-bike.be/event/create> .
+<https://blue-bike.be/ldes.ttl> <https://w3id.org/tree#member> <http://blue-bike.be/event/delete> .
+<https://blue-bike.be/ldes.ttl> <https://w3id.org/tree#member> <http://blue-bike.be/event/update> .
+<https://blue-bike.be/ldes.ttl> <https://w3id.org/tree#member> <https://blue-bike.be/stations/1000> .
+<https://blue-bike.be/ldes.ttl> <https://w3id.org/tree#member> <https://blue-bike.be/stations/48> .
+<https://blue-bike.be/ldes.ttl> <https://w3id.org/tree#member> <https://blue-bike.be/stations/49> .
+<https://blue-bike.be/ldes.ttl> <https://w3id.org/tree#shape> <https://blue-bike.be/shape.ttl> .
+<https://blue-bike.be/stations/1000> <http://purl.org/dc/terms/created> "2023-07-07T20:55:35"^^<http://www.w3.org/2001/XMLSchema#dateTime> <http://blue-bike.be/event/create> .
+<https://blue-bike.be/stations/1000> <http://schema.org/name> "New BlueBike Station" <http://blue-bike.be/event/create> .
+<https://blue-bike.be/stations/1000> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.mobivoc.org/#BicycleParkingStation> <http://blue-bike.be/event/create> .
+<https://blue-bike.be/stations/1000> <http://www.w3.org/2003/01/geo/wgs84_pos#latitude> "50.844833000000"^^<http://www.w3.org/2001/XMLSchema#float> <http://blue-bike.be/event/create> .
+<https://blue-bike.be/stations/1000> <http://www.w3.org/2003/01/geo/wgs84_pos#longitude> "4.355861000000"^^<http://www.w3.org/2001/XMLSchema#float> <http://blue-bike.be/event/create> .
+<https://blue-bike.be/stations/1000> <https://w3id.org/gbfs#num_bikes_available> "100"^^<http://www.w3.org/2001/XMLSchema#integer> <http://blue-bike.be/event/create> .
+<https://blue-bike.be/stations/1000> <https://w3id.org/gbfs#station_id> "1000" <http://blue-bike.be/event/create> .
+<https://blue-bike.be/stations/48> <http://purl.org/dc/terms/created> "2023-07-07T20:58:50"^^<http://www.w3.org/2001/XMLSchema#dateTime> <http://blue-bike.be/event/update> .
+<https://blue-bike.be/stations/48> <http://schema.org/name> "Station Antwerpen-Centraal" <http://blue-bike.be/event/update> .
+<https://blue-bike.be/stations/48> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.mobivoc.org/#BicycleParkingStation> <http://blue-bike.be/event/update> .
+<https://blue-bike.be/stations/48> <http://www.w3.org/2003/01/geo/wgs84_pos#latitude> "51.217611000000"^^<http://www.w3.org/2001/XMLSchema#float> <http://blue-bike.be/event/update> .
+<https://blue-bike.be/stations/48> <http://www.w3.org/2003/01/geo/wgs84_pos#longitude> "4.421000000000"^^<http://www.w3.org/2001/XMLSchema#float> <http://blue-bike.be/event/update> .
+<https://blue-bike.be/stations/48> <https://w3id.org/gbfs#num_bikes_available> "20"^^<http://www.w3.org/2001/XMLSchema#integer> <http://blue-bike.be/event/update> .
+<https://blue-bike.be/stations/48> <https://w3id.org/gbfs#station_id> "48" <http://blue-bike.be/event/update> .
+<https://blue-bike.be/stations/49> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.mobivoc.org/#BicycleParkingStation> <http://blue-bike.be/event/delete> .

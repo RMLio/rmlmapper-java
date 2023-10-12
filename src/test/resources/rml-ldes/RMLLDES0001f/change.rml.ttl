@@ -1,0 +1,210 @@
+# 
+# RML-LDES test case RMLLDES0001f
+# (c) Dylan Van Assche (2023)
+# IDLab - Ghent University - imec
+#
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ex: <http://example.com/> .
+@prefix rdfs: <https://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rmlt: <http://semweb.mmlab.be/ns/rml-target#> .
+@prefix comp: <http://semweb.mmlab.be/ns/rml-compression#> .
+@prefix formats: <http://www.w3.org/ns/formats/> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix tree: <https://w3id.org/tree#> .
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix purl: <http://purl.org/dc/terms/> .
+@prefix as: <https://www.w3.org/ns/activitystreams#> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
+@prefix htv: <http://www.w3.org/2011/http#> .
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
+@prefix gbfs: <https://w3id.org/gbfs#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix schema: <http://schema.org/> .
+@prefix mobivoc: <http://schema.mobivoc.org/#> .
+@base <http://example.com/rules/> .
+
+# LDES output
+<#LDESLogicalTarget> a rmlt:EventStreamTarget;
+    rmlt:target [ a void:Dataset;
+        void:dataDump <file://./output-change.nq>;
+    ];
+    rmlt:serialization formats:N-Quads;
+    rmlt:ldes [ a ldes:EvenStream;
+      ldes:timestampPath dct:created;
+      ldes:versionOfPath dct:isVersionOf;
+    ];
+    rmlt:ldesBaseIRI <https://example.com/ldes>;
+    rmlt:ldesGenerateImmutableIRI "false"^^xsd:boolean;
+.
+
+# ActivityStreams as:actor object is always the same
+<#PredicateObjectMapASActor> a rr:PredicateObjectMap;
+  rr:predicate as:actor;
+  rr:object <https://example.com/dataset>;
+.
+
+<#PropertyPressure> a rr:PredicateObjectMap;
+  rr:predicateMap [ rr:constant ex:pressure ];
+  rr:objectMap [ rml:reference "pressure" ];
+.
+
+<#PropertyTemperature> a rr:PredicateObjectMap;
+  rr:predicateMap [ rr:constant ex:temperature ];
+  rr:objectMap [ rml:reference "temperature" ];
+.
+
+################################################################################
+# Event log
+################################################################################
+
+<#ASDataSource> a rml:LogicalSource;
+  rml:source "change.json";
+  rml:referenceFormulation ql:JSONPath;
+  rml:iterator "$";
+.
+
+# ActivityStreams as:Create
+<#TriplesMapASCreate> a rr:TriplesMap;
+  rml:logicalSource <#ASDataSource>;
+
+  rr:subjectMap [
+    rr:constant "http://example.com/event/create";
+    rr:termType rr:IRI;
+    rr:class as:Create;
+    rml:logicalTarget <#LDESLogicalTarget>;
+  ];
+
+  rr:predicateObjectMap <#PredicateObjectMapASActor>;
+.
+
+# ActivityStreams as:Update
+<#TriplesMapASUpdate> a rr:TriplesMap;
+  rml:logicalSource <#ASDataSource>;
+
+  rr:subjectMap [
+    rr:constant "http://example.com/event/update";
+    rr:termType rr:IRI;
+    rr:class as:Update;
+    rml:logicalTarget <#LDESLogicalTarget>;
+  ];
+
+  rr:predicateObjectMap <#PredicateObjectMapASActor>;
+.
+
+# ActivityStreams as:Delete
+<#TriplesMapASDelete> a rr:TriplesMap;
+  rml:logicalSource <#ASDataSource>;
+
+  rr:subjectMap [
+    rr:constant "http://example.com/event/delete";
+    rr:termType rr:IRI;
+    rr:class as:Delete;
+    rml:logicalTarget <#LDESLogicalTarget>;
+  ];
+
+  rr:predicateObjectMap <#PredicateObjectMapASActor>;
+.
+
+################################################################################
+# Sensors
+################################################################################
+
+<#SensorsDataSource> a rml:LogicalSource;
+  rml:source "change.json";
+  rml:referenceFormulation ql:JSONPath;
+  rml:iterator "$.sensors[*]";
+.
+
+<#TriplesMapObjectCreate> a rr:TriplesMap;
+  rml:logicalSource <#SensorsDataSource>;
+  rr:subjectMap [
+    fnml:functionValue [
+      rr:predicateObjectMap [
+        rr:predicate fno:executes ;
+        rr:objectMap [ rr:constant idlab-fn:implicitCreate ] ] ;
+        # IRI template
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:iri ;
+          rr:objectMap [ rr:template "http://example.com/sensor/{sensor}/" ]
+        ];
+        # Directory path where the state for this function is/will be stored
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:state ;
+          rr:objectMap [ rr:constant "/tmp/create_state"; rr:dataType xsd:string; ]
+        ];
+     ];
+    rml:logicalTarget <#LDESLogicalTarget>;
+    rr:graph <http://example.com/event/create>;
+  ];
+
+  rr:predicateObjectMap <#PropertyPressure>;
+  rr:predicateObjectMap <#PropertyTemperature>;
+.
+
+<#TriplesMapObjectUpdate> a rr:TriplesMap;
+  rml:logicalSource <#SensorsDataSource>;
+  rr:subjectMap [
+    fnml:functionValue [
+      rr:predicateObjectMap [
+        rr:predicate fno:executes ;
+        rr:objectMap [ rr:constant idlab-fn:implicitUpdate ] ] ;
+        # IRI template
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:iri ;
+          rr:objectMap [ rr:template "http://example.com/sensor/{sensor}/" ]
+        ];
+        # Properties to watch, can be one or multiple
+        # Note that the template does not need to match with these properties!
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:watchedProperty ;
+          rr:objectMap [ rml:reference "temperature" ]
+        ];
+        # Directory path where the state for this function is/will be stored
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:state ;
+          rr:objectMap [ rr:constant "/tmp/update_state"; rr:dataType xsd:string; ]
+        ];
+     ];
+    rml:logicalTarget <#LDESLogicalTarget>;
+    rr:graph <http://example.com/event/update>;
+  ];
+
+  rr:predicateObjectMap <#PropertyPressure>;
+  rr:predicateObjectMap <#PropertyTemperature>;
+.
+
+<#TriplesMapObjectDelete> a rr:TriplesMap;
+  rml:logicalSource <#SensorsDataSource>;
+  rr:subjectMap [
+    fnml:functionValue [
+      rr:predicateObjectMap [
+        rr:predicate fno:executes ;
+        rr:objectMap [ rr:constant idlab-fn:implicitDelete ] ] ;
+        # IRI template
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:iri ;
+          rr:objectMap [ rr:template "http://example.com/sensor/{sensor}/" ]
+        ];
+        # Directory path where the state for this function is/will be stored
+        rr:predicateObjectMap [
+          rr:predicate idlab-fn:state ;
+          rr:objectMap [ rr:constant "/tmp/delete_state"; rr:dataType xsd:string; ]
+        ];
+    ];
+    rml:logicalTarget <#LDESLogicalTarget>;
+    rr:class as:Delete;
+    rr:graph <http://example.com/event/delete>;
+  ];
+
+  rr:predicateObjectMap <#PredicateObjectMapASActor>;
+.
+

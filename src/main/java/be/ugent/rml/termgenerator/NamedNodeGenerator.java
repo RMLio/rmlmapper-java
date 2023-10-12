@@ -6,11 +6,11 @@ import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import org.apache.jena.iri.IRIException;
 import org.eclipse.rdf4j.common.net.ParsedIRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,29 +38,28 @@ public class NamedNodeGenerator extends TermGenerator {
 
         if (!objectStrings.isEmpty()) {
             for (String object : objectStrings) {
-                try {
-                    // check if IRI is valid
-                    ParsedIRI parsedIRI = new ParsedIRI(object);
-                    if (!parsedIRI.isAbsolute()) {
-                        final String iriWithBase = baseIRI + object;
-                        try {
-                            new ParsedIRI(iriWithBase);
-                            objects.add(new NamedNode(iriWithBase));
-                        } catch (URISyntaxException ue) {
-                            if (strictMode.equals(StrictMode.STRICT)) {
-                                throw new Exception("The base IRI is not valid, so relative IRI '" + object + "' cannot be turned in to absolute IRI.");
-                            }
-                            logger.error("IRI '{}' Is not valid. Skipped.", iriWithBase);
-                        }
-                    } else {
-                        objects.add(new NamedNode(object));
+                String iri = object;
+
+                /* Detect relative IRIs and append base IRI if needed */
+                if (object.indexOf(':') < 0)
+                    iri = baseIRI + object;
+
+                /* Validate IRIs only in STRICT mode as this is a very expensive operation */
+                if (strictMode.equals(StrictMode.STRICT)) {
+                    try {
+                        new ParsedIRI(iri);
+                    } catch (IRIException e) {
+                        logger.error("'" + iri + "' is not a valid IRI");
+                        throw new Exception("'" + iri + "' is not a valid IRI");
                     }
-                } catch (URISyntaxException e) {
-                    if (strictMode.equals(StrictMode.STRICT)) {
-                        throw new Exception("IRI " + object + " is not valid");
+                } else {
+                    /* Basic IRI validation */
+                    if (iri.contains(" ")) {
+                        continue;
                     }
-                    logger.error("IRI '{}' is not valid. Skipped.", object);
                 }
+
+                objects.add(new NamedNode(iri));
             }
         }
 

@@ -47,7 +47,7 @@ public class RecordsFactory {
      * @return a list of records.
      * @throws IOException
      */
-    public List<Record> createSources(Term triplesMap, QuadStore rmlStore) throws Exception {
+    public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws Exception {
         // Get Logical Sources.
         List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 

@@ -3,7 +3,7 @@
     <groupId>be.ugent.rml</groupId>
     <artifactId>rmlmapper</artifactId>
     <name>RMLMapper</name>
-    <version>6.2.1</version>
+    <version>6.3.0</version>
     <description>
         The RMLMapper executes RML rules to generate high quality Linked Data from multiple originally (semi-)structured data sources.
     </description>
@@ -279,9 +279,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.github.rdfhdt</groupId>
-            <artifactId>hdt-java</artifactId>
-            <version>v3.0.5</version>
+            <groupId>org.rdfhdt</groupId>
+            <artifactId>hdt-java-core</artifactId>
+            <version>3.0.10</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.jena</groupId>
@@ -312,12 +312,12 @@
         <dependency>
             <groupId>com.github.fnoio</groupId>
             <artifactId>idlab-functions-java</artifactId>
-            <version>v1.0.0</version>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.rmlio</groupId>
             <artifactId>dataio</artifactId>
-            <version>v0.1.2</version>
+            <version>v0.1.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -328,7 +328,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.7.1</version>
+            <version>5.8</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>

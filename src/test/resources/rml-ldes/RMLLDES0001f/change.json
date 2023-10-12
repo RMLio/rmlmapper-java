@@ -1,0 +1,8 @@
+{
+    "sensors": [
+        { "id": 1, "sensor": 1, "temperature": 20, "pressure": 1013 },
+        { "id": 2, "sensor": 2, "temperature": 22, "pressure": 1005 },
+        { "id": 3, "sensor": 3, "temperature": 25, "pressure": 1026 },
+        { "id": 4, "sensor": 4, "temperature": 27, "pressure": 1027 }
+    ]
+}

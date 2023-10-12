@@ -1,0 +1,9 @@
+_:create <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/ns/activitystreams#Create>.
+_:create <https://www.w3.org/ns/activitystreams#actor> <http://example.org/myDataset/>.
+<http://ex.org/sensor/3/> <http://example.com/temperature> "19".
+<http://ex.org/sensor/3/> <http://example.com/pressure> "1027".
+_:update <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/ns/activitystreams#Update>.
+_:update <https://www.w3.org/ns/activitystreams#object> <http://ex.org/sensor/3/>.
+_:update <https://www.w3.org/ns/activitystreams#actor> <http://example.org/myDataset/>.
+_:delete <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/ns/activitystreams#Delete>.
+_:delete <https://www.w3.org/ns/activitystreams#actor> <http://example.org/myDataset/>.

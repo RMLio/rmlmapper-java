@@ -5,22 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [6.2.2] - 2023-08-17
+## Unreleased
+
+### Improvements
+- Add support for detecting additions, modifications, and deletions in a Knowledge Graph with FnO functions.
+- Verify LDES EventStreamTarget output for additions, modifications, and deletions.
+- Added RML-LDES test-cases.
 
 ### Changed
-
+- Build Docker image in two stages, reducing the final image size.
+- LDES EventStreamTarget properties are now all optional.
 - Use the DataIO library to handle access to files.
 
 ### Fixed
+- Don't close output streams that don't need closing.
 - Add url decoders to file paths so special characters and spaces work.
-- Don't close output streams.
 - Test cases: add array initializers to avoid bugs.
 
+## [6.2.2] - 2023-10-05
+
+### Fixed
+- Use correct prefix for `EventStreamTarget`s in tests.
+- Fixed self-joins with join conditions ([internal issue #199](https://github.com/RMLio/rmlmapper-java/issues/199))
+- Upgrade to rdfhdt to 3.0.10 ([issue #215](https://github.com/RMLio/rmlmapper-java/issues/215))
+- Improve docs on deduplication ([issue #214](https://github.com/RMLio/rmlmapper-java/issues/214))
+- Handle plain old Java Arrays as well for FnO return values
+- Update dependency to `idlab-functions-java`, fixing [issue #218](https://github.com/RMLio/rmlmapper-java/issues/218) 
+
+### Changed
+- Dockefile: switched to Eclipse OpenJDK Docker base image because OpenJDK is deprecated
+- CI: dropped GitHub release automation
+- CI: verify if token is valid
+
+### Improvements
+- Heavily increased performance of RMLMapper through several optimizations
+>>>>>>> development
 
 ## [6.2.1] - 2023-07-06
 
 ### Fixed
 - Updated idlab-functions-java to v1.0.0
+- CSVW 1025 testcase now reads correct logical source
 
 ## [6.2.0] - 2023-06-22
 
@@ -627,6 +652,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[6.2.2]: https://github.com/RMLio/rmlmapper-java/compare/v6.2.1...v6.2.2
 [6.2.1]: https://github.com/RMLio/rmlmapper-java/compare/v6.2.0...v6.2.1
 [6.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.3...v6.2.0
 [6.1.3]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.2...v6.1.3

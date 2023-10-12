@@ -6,4 +6,8 @@ import be.ugent.idlab.knows.dataio.record.Record;
 public interface SingleRecordFunctionExecutor {
 
     Object execute(Record record) throws Exception;
+
+    default boolean magic() {
+        return false;
+    }
 }

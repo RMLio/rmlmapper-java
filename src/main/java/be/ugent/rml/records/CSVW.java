@@ -58,7 +58,7 @@ public class CSVW {
         List<Term> dialectTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.CSVW + "dialect"), null));
         if (!dialectTerms.isEmpty()) {
             Term dialect = dialectTerms.get(0);
-            setDialectOptions(dialect, configBuilder);
+            configBuilder = setDialectOptions(dialect, configBuilder);
         }
 
         return configBuilder.build();

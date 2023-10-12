@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface Extractor {
 
-    List<Object> extract(Record source);
+    List<Object> extract(Record record);
 }

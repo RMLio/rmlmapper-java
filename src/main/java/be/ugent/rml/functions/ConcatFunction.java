@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ConcatFunction implements SingleRecordFunctionExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcatFunction.class);
@@ -27,45 +28,36 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
        return concat(record);
     }
 
-    private List<String> concat(Record source) {
+    private List<String> concat(Record record) {
         ArrayList<String> results = new ArrayList<>();
         results.add("");
 
         //we only return a result when all elements of the template are found
         boolean allValuesFound = true;
         int referenceCount = 0;
-        String onlyConstants = "";
+        StringBuilder onlyConstants = new StringBuilder();
 
         //we iterate over all elements of the template, unless one is not found
         for (int i = 0; allValuesFound && i < extractors.size(); i++) {
             Extractor extractor = extractors.get(i);
-
-            List<String> extractedValues = FunctionUtils.functionObjectToList(extractor.extract(source));
+            final boolean isReferenceExtractor = extractor instanceof ReferenceExtractor;
+            final boolean isConstantExtractor = extractor instanceof ConstantExtractor;
+            List<String> extractedValues = FunctionUtils.functionObjectToList(extractor.extract(record));
 
             if (!extractedValues.isEmpty()) {
                 ArrayList<String> temp = new ArrayList<>();
 
-                for (int k = 0; k < results.size(); k ++) {
-
-                    for (int j = 0; j < extractedValues.size(); j ++) {
-                        String result = results.get(k);
-                        String value = extractedValues.get(j);
-
-                        if (encodeURI && extractor instanceof ReferenceExtractor) {
-                            value = Utils.encodeURI(value);
+                for (String result : results) {
+                    for (String value : extractedValues) {
+                        if (isReferenceExtractor) {
+                            if (encodeURI)
+                                value = Utils.encodeURI(value);
+                            referenceCount ++;
+                        } else if (isConstantExtractor) {
+                            onlyConstants.append(value);
                         }
 
-                        result += value;
-
-                        if (extractor instanceof ConstantExtractor) {
-                            onlyConstants += value;
-                        }
-
-                        temp.add(result);
-                    }
-
-                    if (extractor instanceof ReferenceExtractor) {
-                        referenceCount ++;
+                        temp.add(result + value);
                     }
                 }
 
@@ -78,9 +70,8 @@ public class ConcatFunction implements SingleRecordFunctionExecutor {
             }
         }
 
-        if ((allValuesFound && referenceCount > 0 && results.contains(onlyConstants)) || !allValuesFound) {
-            results = new ArrayList<>();
-        }
+        if (!allValuesFound || (referenceCount > 0 && results.contains(onlyConstants.toString())))
+            return new ArrayList<>();
 
         return results;
     }

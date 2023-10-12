@@ -21,14 +21,14 @@ public class ReferenceExtractor implements Extractor, SingleRecordFunctionExecut
     }
 
     @Override
-    public List<Object> extract(Record source) {
+    public List<Object> extract(Record record) {
         String temp = this.reference;
 
         if (ignoreDoubleQuotes && temp.startsWith("\"") && temp.endsWith("\"")) {
             temp = temp.substring(1, temp.length() - 1);
         }
 
-        return source.get(temp);
+        return record.get(temp);
     }
 
     @Override
