@@ -20,16 +20,17 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     private final List<ParameterValueOriginPair> parameterValuePairs;
     private final Agent functionAgent;
 
-    private boolean needsMagicEndValue = false;
+
+    private boolean needsEOFMarker = false;
 
     public DynamicMultipleRecordsFunctionExecutor(final List<ParameterValueOriginPair> parameterValuePairs, final Agent functionAgent) {
         this.parameterValuePairs = parameterValuePairs;
         this.functionAgent = functionAgent;
-        // check if executor contains term generator that needs a magic value
+        // check if executor contains term generator that needs an EOF marker
         for (ParameterValueOriginPair parameterValuePair : parameterValuePairs) {
             for (TermGeneratorOriginPair valueGeneratorPair : parameterValuePair.getValueGeneratorPairs()) {
-                if (valueGeneratorPair.getTermGenerator().needsMagicEndValue()) {
-                    needsMagicEndValue = true;
+                if (valueGeneratorPair.getTermGenerator().needsEOFMarker()) {
+                    needsEOFMarker = true;
                     return;
                 }
             }
@@ -90,7 +91,7 @@ public class DynamicMultipleRecordsFunctionExecutor implements MultipleRecordsFu
     }
 
     @Override
-    public boolean needsMagicEndValue() {
-        return needsMagicEndValue;
+    public boolean needsEOFMarker() {
+        return needsEOFMarker;
     }
 }

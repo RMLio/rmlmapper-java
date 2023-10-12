@@ -12,12 +12,15 @@ public class ConstantExtractor implements Extractor, SingleRecordFunctionExecuto
     private final String constant;
     private final List<Object> constantList;
 
-    private final boolean needsMagic;
+    /**
+     * Becomes true when a function is detected that needs a special marker to indicate "End-of-File" (EOF).
+     */
+    private final boolean needsEOFMarker;
 
     public ConstantExtractor(String constant) {
         this. constantList = List.of(constant);
         this.constant = constant;
-        needsMagic = constant.equals(NAMESPACES.IDLABFN + "implicitDelete");
+        needsEOFMarker = constant.equals(NAMESPACES.IDLABFN + "implicitDelete");
     }
 
     @Override
@@ -31,13 +34,13 @@ public class ConstantExtractor implements Extractor, SingleRecordFunctionExecuto
     }
 
     /**
-     * Returns true id this extractor needs a magic value at the end of the dataset.
-     * At this moment only http://example.com/idlab/function/implicitDelete needs one.
-     * @return {@code true} if a magic value is required.
+     * Returns {@code true} if this extractor needs an End-of-File (EOF) marker the end of the dataset.
+     * At this moment only required if function http://example.com/idlab/function/implicitDelete is used.
+     * @return {@code true} if an EOF marker is required.
      */
     @Override
-    public boolean needsMagicEndValue() {
-        return needsMagic;
+    public boolean needsEOFMarker() {
+        return needsEOFMarker;
     }
 
     /**
