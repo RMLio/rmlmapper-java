@@ -35,8 +35,8 @@ public class RecordsFactory {
         referenceFormulationRecordFactoryMap = new HashMap<>();
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.XPath, new XMLRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.JSONPath, new JSONRecordFactory());
-        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSV, new CSVRecordFactory());
-        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDB, new CSVRecordFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSV, new TabularSourceFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDB, new TabularSourceFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSS3, new HTMLRecordFactory());
     }
 

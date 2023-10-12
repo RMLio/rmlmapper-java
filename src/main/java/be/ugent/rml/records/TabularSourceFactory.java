@@ -24,8 +24,8 @@ import java.util.List;
 /**
  * This class is a record factory that creates CSV records.
  */
-public class CSVRecordFactory implements ReferenceFormulationRecordFactory {
-    private static final Logger logger = LoggerFactory.getLogger(CSVRecordFactory.class);
+public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
+    private static final Logger logger = LoggerFactory.getLogger(TabularSourceFactory.class);
 
     /**
      * This method returns a list of CSV records for a data source.
