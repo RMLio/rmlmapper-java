@@ -72,7 +72,7 @@ public class RecordsFactory {
             } else {
                 String referenceFormulation = referenceFormulations.get(0).getValue();
 
-                return getSources(access, logicalSource, referenceFormulation, rmlStore);
+                return getRecords(access, logicalSource, referenceFormulation, rmlStore);
             }
         } else {
             throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
@@ -86,7 +86,7 @@ public class RecordsFactory {
      * @param hash the hash used for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
      * @return
      */
-    private List<Record> getSourcesFromCache(Access access, String referenceFormulation, String hash) {
+    private List<Record> getRecordsFromCache(Access access, String referenceFormulation, String hash) {
         if (recordsCache.containsKey(access)
                 && recordsCache.get(access).containsKey(referenceFormulation)
                 && recordsCache.get(access).get(referenceFormulation).containsKey(hash)
@@ -104,7 +104,7 @@ public class RecordsFactory {
      * @param hash the used hash for the cache. Currently, this hash is based on the Logical Source (see hashLogicalSource()).
      * @param records the records that needs to be put into the cache.
      */
-    private void putSourcesIntoCache(Access access, String referenceFormulation, String hash, List<Record> records) {
+    private void putRecordsIntoCache(Access access, String referenceFormulation, String hash, List<Record> records) {
         if (!recordsCache.containsKey(access)) {
             recordsCache.put(access, new HashMap<>());
         }
@@ -126,33 +126,33 @@ public class RecordsFactory {
      * @return a list of records.
      * @throws IOException
      */
-    private List<Record> getSources(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
+    private List<Record> getRecords(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
         String logicalSourceHash = hashLogicalSource(logicalSource, rmlStore);
 
-        // Try to get the sources from the cache.
-        List<Record> sources = getSourcesFromCache(access, referenceFormulation, logicalSourceHash);
+        // Try to get the records from the cache.
+        List<Record> records = getRecordsFromCache(access, referenceFormulation, logicalSourceHash);
 
-        // If there are no sources in the cache.
+        // If there are no records in the cache.
         // fetch from the data source.
-        if (sources == null) {
+        if (records == null) {
             try {
                 // Select the Record Factory based on the reference formulation.
                 if (!referenceFormulationRecordFactoryMap.containsKey(referenceFormulation)) {
                     logger.error("Referenceformulation {} is unsupported!", referenceFormulation);
                 }
                 ReferenceFormulationRecordFactory factory = referenceFormulationRecordFactoryMap.get(referenceFormulation);
-                sources = factory.getRecords(access, logicalSource, rmlStore);
+                records = factory.getRecords(access, logicalSource, rmlStore);
 
-                // Store the sources in the cache for later.
-                putSourcesIntoCache(access, referenceFormulation, logicalSourceHash, sources);
+                // Store the records in the cache for later.
+                putRecordsIntoCache(access, referenceFormulation, logicalSourceHash, records);
 
-                return sources;
+                return records;
             } catch (Exception e) {
                 throw e;
             }
         }
 
-        return sources;
+        return records;
     }
 
     /**
