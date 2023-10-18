@@ -10,10 +10,7 @@ import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import com.opencsv.exceptions.CsvException;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +33,7 @@ public class CSVW {
      * @param access The access containing the records
      * @return The list of records in the Access
      */
-    List<Record> getRecords(Access access) throws IOException, CsvException, SQLException {
+    List<Record> getRecords(Access access) throws Exception {
         List<Term> sources = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
 

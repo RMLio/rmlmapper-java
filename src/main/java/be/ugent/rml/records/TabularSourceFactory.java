@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +74,7 @@ public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
      * @param access Access to consume sources from
      * @return a list of sources
      */
-    private List<Record> getRecordsForExcel(Access access) throws IOException, SQLException {
+    private List<Record> getRecordsForExcel(Access access) throws Exception {
         List<Record> output = new ArrayList<>();
         try (ExcelSourceIterator iterator = new ExcelSourceIterator(access)) {
             iterator.forEachRemaining(output::add);
@@ -105,7 +104,7 @@ public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
      * @return a CSVParser.
      * @throws IOException
      */
-    private List<Record> getRecordsForCSV(Access access, CSVW csvw) throws IOException, SQLException {
+    private List<Record> getRecordsForCSV(Access access, CSVW csvw) throws Exception {
         try {
             // Check if we are dealing with CSVW.
             if (csvw == null) {

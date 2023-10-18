@@ -9,12 +9,9 @@ import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import net.sf.saxon.s9api.SaxonApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,5 +54,5 @@ public abstract class IteratorFormat implements ReferenceFormulationRecordFactor
         return sources;
     }
 
-    protected abstract SourceIterator getIterator(Access access, String iterator) throws SQLException, IOException, SaxonApiException;
+    protected abstract SourceIterator getIterator(Access access, String iterator) throws Exception;
 }

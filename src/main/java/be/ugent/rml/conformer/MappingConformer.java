@@ -1,7 +1,6 @@
 package be.ugent.rml.conformer;
 
 import be.ugent.rml.Utils;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
