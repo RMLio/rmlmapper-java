@@ -4,10 +4,10 @@ import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
 import be.ugent.idlab.knows.dataio.access.RemoteFileAccess;
 import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.idlab.knows.functions.agent.Agent;
+import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
-import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.records.MarkerRecord;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
@@ -17,7 +17,6 @@ import be.ugent.rml.termgenerator.TermGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -553,7 +552,7 @@ public class Executor {
     }
 
     
-    public void verifySources(String basepath) throws IOException {
+    public void verifySources(String basepath) throws Exception {
         for (Term triplesMap : this.getTriplesMaps()) {
             List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
             Term logicalSource = logicalSources.get(0);

@@ -3,24 +3,20 @@ package be.ugent.rml;
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.knows.idlabFunctions.IDLabFunctions;
-import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.term.Term;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
-import java.nio.charset.Charset;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.NoSuchFileException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
