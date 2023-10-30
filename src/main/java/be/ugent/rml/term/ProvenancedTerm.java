@@ -2,36 +2,35 @@ package be.ugent.rml.term;
 
 import be.ugent.rml.MappingInfo;
 import be.ugent.rml.metadata.Metadata;
-import org.eclipse.rdf4j.model.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProvenancedTerm {
 
-    private Value term;
+    private Term term;
     private Metadata metadata;
-    private List<Value> targets;
+    private List<Term> targets;
 
-    public ProvenancedTerm(Value term, Metadata metadata, List<Value> targets) {
+    public ProvenancedTerm(Term term, Metadata metadata, List<Term> targets) {
         this.term = term;
         this.metadata = metadata;
         this.targets = targets;
     }
 
-    public ProvenancedTerm(Value term, MappingInfo mappingInfo) {
+    public ProvenancedTerm(Term term, MappingInfo mappingInfo) {
         this.term = term;
         this.metadata = new Metadata();
         this.metadata.setSourceMap(mappingInfo.getTerm());
         this.targets = mappingInfo.getTargets();
     }
 
-    public ProvenancedTerm(Value term) {
+    public ProvenancedTerm(Term term) {
         this.term = term;
-        this.targets = new ArrayList<Value>();
+        this.targets = new ArrayList<Term>();
     }
 
-    public Value getTerm() {
+    public Term getTerm() {
         return term;
     }
 
@@ -39,5 +38,5 @@ public class ProvenancedTerm {
         return metadata;
     }
 
-    public List<Value> getTargets() { return targets; };
+    public List<Term> getTargets() { return targets; };
 }

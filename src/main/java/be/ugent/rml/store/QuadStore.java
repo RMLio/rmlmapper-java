@@ -1,8 +1,6 @@
 package be.ugent.rml.store;
 
 import be.ugent.rml.term.Term;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 import java.io.*;
@@ -28,7 +26,7 @@ public abstract class QuadStore {
      * @param object
      * @param graph
      */
-    public abstract void removeQuads(Value subject, Value predicate, Value object, Value graph);
+    public abstract void removeQuads(Term subject, Term predicate, Term object, Term graph);
 
     /**
      * True if Quad matching input is present in store.
@@ -38,7 +36,7 @@ public abstract class QuadStore {
      * @param graph
      * @return
      */
-    public abstract boolean contains(Value subject, Value predicate, Value object, Value graph);
+    public abstract boolean contains(Term subject, Term predicate, Term object, Term graph);
 
     /**
      * Test if given store and this store are isomorphic RDF graph representations
@@ -66,7 +64,7 @@ public abstract class QuadStore {
      * @param object
      * @param graph
      */
-    public abstract void addQuad(Value subject, Value predicate, Value object, Value graph);
+    public abstract void addQuad(Term subject, Term predicate, Term object, Term graph);
 
     /**
      * Get all Quads in store matching arguments.
@@ -77,7 +75,7 @@ public abstract class QuadStore {
      * @param graph
      * @return
      */
-    public abstract List<Statement> getQuads(Value subject, Value predicate, Value object, Value graph);
+    public abstract List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph);
 
     /**
      * Copy namespaces between stores. Used in retaining the prefixes in the mapping file in the output.
@@ -156,8 +154,8 @@ public abstract class QuadStore {
      * @return
      * @throws Exception
      */
-    public final Statement getQuad(Value subject, Value predicate, Value object, Value graph) throws Exception {
-        List<Statement> list = getQuads(subject, predicate, object, graph);
+    public final Quad getQuad(Term subject, Term predicate, Term object, Term graph) throws Exception {
+        List<Quad> list = getQuads(subject, predicate, object, graph);
         if (list.size() != 1) {
             throw new Exception(String.format("Single Quad expected, found %s", list.size()));
         }
@@ -173,7 +171,7 @@ public abstract class QuadStore {
      * @return
      * @throws Exception
      */
-    public final Statement getQuad(Value subject, Value predicate, Value object) throws Exception {
+    public final Quad getQuad(Term subject, Term predicate, Term object) throws Exception {
         return getQuad(subject, predicate, object, null);
     }
 
@@ -185,11 +183,11 @@ public abstract class QuadStore {
      * @param object
      * @return
      */
-    public final List<Statement> getQuads(Value subject, Value predicate, Value object) {
+    public final List<Quad> getQuads(Term subject, Term predicate, Term object) {
         return getQuads(subject, predicate, object, null);
     }
 
-    public abstract List<Value> getSubjects();
+    public abstract List<Term> getSubjects();
 
     /**
      * Helper function
@@ -198,7 +196,7 @@ public abstract class QuadStore {
      * @param object
      * @return
      */
-    public final boolean contains(Value subject, Value predicate, Value object) {
+    public final boolean contains(Term subject, Term predicate, Term object) {
         return contains(subject, predicate, object, null);
     }
 
@@ -209,7 +207,7 @@ public abstract class QuadStore {
      * @param predicate
      * @param object
      */
-    public final void addQuad(Value subject, Value predicate, Value object) {
+    public final void addQuad(Term subject, Term predicate, Term object) {
         addQuad(subject, predicate, object, null);
     }
 
@@ -217,8 +215,8 @@ public abstract class QuadStore {
      * Helper function
      * @param q
      */
-    public final void addQuad(Statement q) {
-        addQuad(q.getSubject(), q.getPredicate(), q.getObject(), q.getContext());
+    public final void addQuad(Quad q) {
+        addQuad(q.getSubject(), q.getPredicate(), q.getObject(), q.getGraph());
     }
 
     /**
@@ -226,8 +224,8 @@ public abstract class QuadStore {
      *
      * @param quads to be added to QuadStore
      */
-    public final void addQuads(List<Statement> quads) {
-        quads.forEach(quad -> addQuad(quad.getSubject(), quad.getPredicate(), quad.getObject(), quad.getContext()));
+    public final void addQuads(List<Quad> quads) {
+        quads.forEach(quad -> addQuad(quad.getSubject(), quad.getPredicate(), quad.getObject(), quad.getGraph()));
     }
 
     /**
@@ -236,16 +234,16 @@ public abstract class QuadStore {
      * @param predicate
      * @param object
      */
-    public final void removeQuads(Value subject, Value predicate, Value object) {
+    public final void removeQuads(Term subject, Term predicate, Term object) {
         removeQuads(subject, predicate, object, null);
     }
 
-    public final void removeQuads(Statement quad) {
-        removeQuads(quad.getSubject(), quad.getPredicate(), quad.getObject(), quad.getContext());
+    public final void removeQuads(Quad quad) {
+        removeQuads(quad.getSubject(), quad.getPredicate(), quad.getObject(), quad.getGraph());
     }
 
-    public final void removeQuads(List<Statement> quads) {
-        for (Statement quad : quads) {
+    public final void removeQuads(List<Quad> quads) {
+        for (Quad quad : quads) {
             removeQuads(quad);
         }
     }
@@ -257,9 +255,9 @@ public abstract class QuadStore {
      * @param to
      * @param toPredicate
      */
-    public final void tryPropertyTranslation(Value from, Value fromPredicate, Value to, Value toPredicate) {
-        List<Statement> quads = getQuads(from, fromPredicate, null);
-        for (Statement quad : quads) {
+    public final void tryPropertyTranslation(Term from, Term fromPredicate, Term to, Term toPredicate) {
+        List<Quad> quads = getQuads(from, fromPredicate, null);
+        for (Quad quad : quads) {
             addQuad(to, toPredicate, quad.getObject());
         }
         removeQuads(quads);
@@ -270,9 +268,9 @@ public abstract class QuadStore {
      * @param fromPredicate predicate to be renamed
      * @param toPredicate new predicate name
      */
-    public final void renameAll(Value fromPredicate, Value toPredicate) {
-        List<Statement> quads = getQuads(null, fromPredicate, null);
-        for (Statement q : quads) {
+    public final void renameAll(Term fromPredicate, Term toPredicate) {
+        List<Quad> quads = getQuads(null, fromPredicate, null);
+        for (Quad q : quads) {
             addQuad(q.getSubject(), toPredicate, q.getObject());
         }
         removeQuads(quads);
@@ -286,10 +284,10 @@ public abstract class QuadStore {
     public final String toString() {
         StringBuilder output = new StringBuilder();
 
-        List<Statement> quads = getQuads(null, null, null);
+        List<Quad> quads = getQuads(null, null, null);
 
-        for (Statement q : quads) {
-            output.append(q.getSubject()).append(" ").append(q.getPredicate()).append(" ").append(q.getObject()).append(" ").append(q.getContext()).append("\n");
+        for (Quad q : quads) {
+            output.append(q.getSubject()).append(" ").append(q.getPredicate()).append(" ").append(q.getObject()).append(" ").append(q.getGraph()).append("\n");
         }
 
         return output.toString();
@@ -303,12 +301,12 @@ public abstract class QuadStore {
     public final String toSortedString() {
         StringBuilder output = new StringBuilder();
 
-        List<Statement> quads = getQuads(null, null, null);
+        List<Quad> quads = getQuads(null, null, null);
 
         Collections.sort(quads);
 
-        for (Statement q : quads) {
-            output.append(q.getSubject()).append(" ").append(q.getPredicate()).append(" ").append(q.getObject()).append(" ").append(q.getContext()).append("\n");
+        for (Quad q : quads) {
+            output.append(q.getSubject()).append(" ").append(q.getPredicate()).append(" ").append(q.getObject()).append(" ").append(q.getGraph()).append("\n");
         }
 
         return output.toString();
