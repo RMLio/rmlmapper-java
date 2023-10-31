@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Build Docker image in two stages, reducing the final image size.
 - LDES EventStreamTarget properties are now all optional.
 - Use the DataIO library to handle access to files.
+- Requires Java 17 language level.
 
 ### Fixed
 - Don't close output streams that don't need closing.
