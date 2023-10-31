@@ -315,9 +315,9 @@
             <version>1.2.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.rmlio</groupId>
+            <groupId>be.ugent.idlab.knows</groupId>
             <artifactId>dataio</artifactId>
-            <version>main-SNAPSHOT</version>
+            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
