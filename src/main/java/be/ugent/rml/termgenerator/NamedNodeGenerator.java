@@ -6,7 +6,6 @@ import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import org.apache.jena.iri.IRIException;
 import org.eclipse.rdf4j.common.net.ParsedIRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,7 @@ public class NamedNodeGenerator extends TermGenerator {
                 if (strictMode.equals(StrictMode.STRICT)) {
                     try {
                         new ParsedIRI(iri);
-                    } catch (IRIException e) {
+                    } catch (Exception e) {
                         logger.error("'" + iri + "' is not a valid IRI");
                         throw new Exception("'" + iri + "' is not a valid IRI");
                     }

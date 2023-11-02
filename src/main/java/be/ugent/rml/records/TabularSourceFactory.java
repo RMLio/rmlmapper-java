@@ -11,7 +11,6 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import com.opencsv.exceptions.CsvException;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +118,7 @@ public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
                 return csvw.getRecords(access);
             }
 
-        } catch (IllegalArgumentException | CsvException e) {
+        } catch (IllegalArgumentException e) {
             // We still return an empty list of records when a parser is not found.
             // This is to support certain use cases with RDBs where queries might not be valid,
             // but you don't want the RMLMapper to crash.
