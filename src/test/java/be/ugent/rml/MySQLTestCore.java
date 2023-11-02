@@ -19,8 +19,7 @@ public abstract class MySQLTestCore extends DBTestCore {
                 .withPassword(PASSWORD)
                 .withEnv("allowPublicKeyRetrieval", "true")
                 .withEnv("useSSL", "false")
-                .withEnv("runID", Integer.toString(this.hashCode()))
-                .withConfigurationOverride("mysql_override");
+                .withEnv("runID", Integer.toString(this.hashCode()));
     }
 
     protected MySQLTestCore() {

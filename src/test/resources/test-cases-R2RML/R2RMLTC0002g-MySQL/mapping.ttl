@@ -18,6 +18,6 @@
     rr:predicateObjectMap
     [ 
       rr:predicate		ex:id ; 
-      rr:objectMap		[ rr:column "\"ID\""; ]
+      rr:objectMap		[ rr:column "ID"; ]
     ];
     .

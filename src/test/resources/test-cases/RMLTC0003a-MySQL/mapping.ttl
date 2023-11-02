@@ -12,10 +12,10 @@
   rml:logicalSource [
     rml:source <#DB_source> ;
     rml:query """
-SELECT "ID",
-       "FirstName",
-        "LastName"
-FROM "student"
+SELECT ID,
+       FirstName,
+       LastName
+FROM student
 """ ;
     rr:tableName "student" ;
     rr:sqlVersion rr:SQL1979

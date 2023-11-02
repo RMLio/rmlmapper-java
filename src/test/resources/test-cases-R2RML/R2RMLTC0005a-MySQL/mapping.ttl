@@ -7,15 +7,15 @@
 <TriplesMap1>
     a rr:TriplesMap;
     
-    rr:logicalTable [ rr:tableName "\"IOUs\"" ];
+    rr:logicalTable [ rr:tableName "IOUs" ];
 
-    rr:subjectMap [ rr:template "http://example.com/{\"fname\"};{\"lname\"}";
+    rr:subjectMap [ rr:template "http://example.com/{fname};{lname}";
                     rr:class foaf:Person ];
 
     rr:predicateObjectMap
     [ 
       rr:predicate		ex:owes ; 
-      rr:objectMap		[ rr:column "\"amount\""; ]
+      rr:objectMap		[ rr:column "amount"; ]
     ];
 
     .

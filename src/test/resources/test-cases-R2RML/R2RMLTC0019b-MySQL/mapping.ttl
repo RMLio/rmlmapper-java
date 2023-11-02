@@ -6,11 +6,11 @@
 
 <TriplesMap1>
     a rr:TriplesMap;
-    rr:logicalTable [ rr:tableName "\"Employee\"" ];
-	rr:subjectMap [ rr:column "\"FirstName\"" ]; 
+    rr:logicalTable [ rr:tableName "Employee" ];
+	rr:subjectMap [ rr:column "FirstName" ]; 
 	rr:predicateObjectMap
     [ 
       rr:predicate	foaf:name; 
-      rr:objectMap	[ rr:column "\"FirstName\"" ];
+      rr:objectMap	[ rr:column "FirstName" ];
     ];
 .

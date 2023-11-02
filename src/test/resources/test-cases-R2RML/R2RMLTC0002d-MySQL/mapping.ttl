@@ -9,10 +9,10 @@
 
     rr:logicalTable [
                      rr:sqlQuery """
-                       Select CONCAT('Student', "ID") AS StudentId
-                            , "ID"
-                            , "Name"
-                         from "Student"
+                       Select CONCAT('Student', ID) AS StudentId
+                            , ID
+                            , Name
+                         from Student
                        """
                        ];
 
@@ -21,6 +21,6 @@
     rr:predicateObjectMap
     [
       rr:predicate		foaf:name ;
-      rr:objectMap		[ rr:column "\"Name\"" ]
+      rr:objectMap		[ rr:column "Name" ]
     ]
     .

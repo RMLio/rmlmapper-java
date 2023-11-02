@@ -10,32 +10,32 @@
 <TriplesMap1>
     a rr:TriplesMap;
     rr:logicalTable [ rr:sqlQuery """
-       Select CONCAT('Department',"deptno") AS deptId
-            , "deptno"
-            , "dname"
-            , "loc"
-         from "DEPT"
+       Select CONCAT('Department',deptno) AS deptId
+            , deptno
+            , dname
+            , loc
+         from DEPT
        """ ];
 
     rr:subjectMap [ rr:column "deptId"; rr:termType rr:BlankNode;
-                    rr:inverseExpression "{\"deptno\"} = substr({deptId},length('Department')+1)"];
+                    rr:inverseExpression "{deptno} = substr({deptId},length('Department')+1)"];
 
     rr:predicateObjectMap
     [
       rr:predicate		dept:deptno ;
-      rr:objectMap    [ rr:column "\"deptno\""; rr:datatype xsd:positiveInteger ]
+      rr:objectMap    [ rr:column "deptno"; rr:datatype xsd:positiveInteger ]
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		dept:name ;
-      rr:objectMap    [ rr:column "\"dname\"" ]
+      rr:objectMap    [ rr:column "dname" ]
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		dept:location ;
-      rr:objectMap    [ rr:column "\"loc\"" ]
+      rr:objectMap    [ rr:column "loc" ]
     ];
 
     rr:predicateObjectMap
@@ -48,20 +48,20 @@
 
 <jobtypeObjectMap>
     a rr:ObjectMap;
-    rr:template "http://example.com/emp/job/{\"job\"}"
+    rr:template "http://example.com/emp/job/{job}"
     .
 
 <emptypeObjectMap>
     a rr:ObjectMap;
-    rr:template "http://example.com/emp/etype/{\"etype\"}"
+    rr:template "http://example.com/emp/etype/{etype}"
     .
 
 <TriplesMap2>
     a rr:TriplesMap;
 
-    rr:logicalTable [ rr:tableName "\"EMP\"" ];
+    rr:logicalTable [ rr:tableName "EMP" ];
 
-    rr:subjectMap [ rr:template "http://example.com/emp/{\"empno\"}"; ];
+    rr:subjectMap [ rr:template "http://example.com/emp/{empno}"; ];
 
     rr:predicateObjectMap
     [
@@ -90,31 +90,31 @@
     rr:predicateObjectMap
     [
       rr:predicate		emp:empno ;
-      rr:objectMap    [ rr:column "\"empno\"" ]
+      rr:objectMap    [ rr:column "empno" ]
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		emp:name ;
-      rr:objectMap    [ rr:column "\"ename\"" ];
+      rr:objectMap    [ rr:column "ename" ];
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		emp:job ;
-      rr:objectMap    [ rr:column "\"job\"" ]
+      rr:objectMap    [ rr:column "job" ]
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		emp:deptNum ;
-      rr:objectMap    [ rr:column "\"deptno\"" ]
+      rr:objectMap    [ rr:column "deptno" ]
     ];
 
     rr:predicateObjectMap
     [
       rr:predicate		emp:etype ;
-      rr:objectMap    [ rr:column "\"etype\"" ]
+      rr:objectMap    [ rr:column "etype" ]
     ];
 
     rr:predicateObjectMap [
@@ -123,8 +123,8 @@
       	a rr:RefObjectMap ;
         rr:parentTriplesMap <TriplesMap1>;
         rr:joinCondition [
-          rr:child "\"deptno\"";
-          rr:parent "\"deptno\"";
+          rr:child "deptno";
+          rr:parent "deptno";
         ];
       ];
     ]

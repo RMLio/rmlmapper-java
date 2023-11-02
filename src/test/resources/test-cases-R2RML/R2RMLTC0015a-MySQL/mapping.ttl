@@ -10,17 +10,17 @@
     a rr:TriplesMap;
       
 	rr:logicalTable [  rr:sqlQuery """
-						SELECT "Code", "Name", "Lan"
-						FROM "Country"
-						WHERE "Lan" = 'EN';
+						SELECT Code, Name, Lan
+						FROM Country
+						WHERE Lan = 'EN';
                        """ ] ;
 	
-    rr:subjectMap [ rr:template "http://example.com/{\"Code\"}" ]; 
+    rr:subjectMap [ rr:template "http://example.com/{Code}" ]; 
 	
     rr:predicateObjectMap
     [ 
       rr:predicate	rdfs:label;
-      rr:objectMap	[ rr:column "\"Name\""; rr:language "en" ]
+      rr:objectMap	[ rr:column "Name"; rr:language "en" ]
     ]
     .
 	
@@ -28,16 +28,16 @@
     a rr:TriplesMap;
       
 	rr:logicalTable [  rr:sqlQuery """
-                       SELECT "Code", "Name", "Lan"
-                       FROM "Country"
-					   WHERE "Lan" = 'ES';
+                       SELECT Code, Name, Lan
+                       FROM Country
+					   WHERE Lan = 'ES';
                        """ ] ;
 	
-    rr:subjectMap [ rr:template "http://example.com/{\"Code\"}" ]; 
+    rr:subjectMap [ rr:template "http://example.com/{Code}" ]; 
 	
     rr:predicateObjectMap
     [ 
       rr:predicate rdfs:label;
-      rr:objectMap    [ rr:column "\"Name\""; rr:language "es" ]
+      rr:objectMap    [ rr:column "Name"; rr:language "es" ]
     ]
     .	

@@ -7,13 +7,13 @@
 <TriplesMap1>
     a rr:TriplesMap;
         
-	rr:logicalTable [ rr:tableName "\"Country Info\""; ] ;
+	rr:logicalTable [ rr:tableName "`Country Info`"; ] ;
 	
-	rr:subjectMap [ rr:template "http://example.com/{\"Country Code\"}" ]; 
+	rr:subjectMap [ rr:template "http://example.com/{Country Code}" ];
 	
 	rr:predicateObjectMap
 	[ 
 		rr:predicate		ex:name ; 
-		rr:objectMap		[ rr:column "\"Name\"" ]
+		rr:objectMap		[ rr:column "Name" ]
  	]
  	.
