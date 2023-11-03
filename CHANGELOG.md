@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ### Changed
-- Refactoring to use interfaces where possible (e.g. `ArrayList` -> `List`).
+- Refactoring to use interfaces where possible (e.g. `ArrayList` -> `List`). This has consequences on the API.
+- Use the DataIO library to handle access to files.
+- Requires Java 17 language level. `List`).
 
 ## [6.4.0] - 2023-11-14
 
@@ -18,9 +20,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Use the DataIO library to handle access to files.
 - Requires Java 17 language level.
+- Refactoring to use interfaces where possible (e.g. `ArrayList` -> `List`).
 
 ### Fixed
 - Test cases: add array initializers to avoid bugs.
+- Use correct prefix for `EventStreamTarget`s in tests.
+- Refactoring of Executor: code deduplication
 
 ## [6.3.0] - 2023-11-14
 
