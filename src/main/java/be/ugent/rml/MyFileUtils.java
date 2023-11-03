@@ -20,7 +20,7 @@ class MyFileUtils {
      */
     static File getResourceAsFile(String resource) throws IOException {
         logger.debug("Searching for '{}' in resources.", resource);
-        ClassLoader cl = Utils.class.getClassLoader();
+        ClassLoader cl = MyFileUtils.class.getClassLoader();
         URL resourceUrl = cl.getResource(resource);
         logger.debug("default class loader found '{}'", resourceUrl);
         if (resourceUrl == null) {

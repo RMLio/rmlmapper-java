@@ -128,7 +128,7 @@ public class MapperTargetTest extends TestCore {
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        String tempMappingPath = replaceSerializationFormatInMappingFile("./web-of-things/serialization/mapping.ttl", "N-Quads");
+        String tempMappingPath = replaceSerializationFormatInMappingFile("N-Quads");
         HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.nq");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.nq");
@@ -153,7 +153,7 @@ public class MapperTargetTest extends TestCore {
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        String tempMappingPath = replaceSerializationFormatInMappingFile("./web-of-things/serialization/mapping.ttl", "Turtle");
+        String tempMappingPath = replaceSerializationFormatInMappingFile("Turtle");
         HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.ttl");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.ttl");
@@ -178,7 +178,7 @@ public class MapperTargetTest extends TestCore {
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        String tempMappingPath = replaceSerializationFormatInMappingFile("./web-of-things/serialization/mapping.ttl", "N-Triples");
+        String tempMappingPath = replaceSerializationFormatInMappingFile("N-Triples");
         HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.nt");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.nt");
@@ -204,7 +204,7 @@ public class MapperTargetTest extends TestCore {
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        String tempMappingPath = replaceSerializationFormatInMappingFile("./web-of-things/serialization/mapping.ttl", "JSON-LD");
+        String tempMappingPath = replaceSerializationFormatInMappingFile("JSON-LD");
         HashMap<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.jsonld");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.jsonld");
@@ -258,17 +258,17 @@ public class MapperTargetTest extends TestCore {
     private String replaceKeyInMappingFile(String path, String key, String port) {
         try {
             // Read mapping file
-            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path).getAbsolutePath())), StandardCharsets.UTF_8);
+            String mapping = Files.readString(Paths.get(Utils.getFile(path).getAbsolutePath()),StandardCharsets.UTF_8);
 
             // Replace key in mapping file by new port
             mapping = mapping.replace(key, port);
 
             // Write to temp mapping file
-            String fileName = port + ".ttl";
-            Path file = Paths.get(fileName);
-            Files.write(file, Arrays.asList(mapping.split("\n")));
+            File tempFile = File.createTempFile(port, ".ttl");
+            tempFile.deleteOnExit();
+            Files.writeString(tempFile.toPath(), mapping, StandardCharsets.UTF_8);
 
-            return Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
+            return tempFile.getAbsolutePath();
         } catch (IOException ex) {
             throw new Error(ex.getMessage());
         }
@@ -277,20 +277,20 @@ public class MapperTargetTest extends TestCore {
         Replaces the "FORMAT" in the given mapping file to the given format and saves this in a new temp file
         Returns the absolute path to the temp mapping file
      */
-    private String replaceSerializationFormatInMappingFile(String path, String format) {
+    private String replaceSerializationFormatInMappingFile(String format) {
         try {
             // Read mapping file
-            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path).getAbsolutePath())), StandardCharsets.UTF_8);
+            String mapping = Files.readString(Paths.get(Utils.getFile("./web-of-things/serialization/mapping.ttl").getAbsolutePath()), StandardCharsets.UTF_8);
 
             // Replace "FORMAT" in mapping file by new port
             mapping = mapping.replace("FORMAT", format);
 
             // Write to temp mapping file
-            String fileName = format + ".ttl";
-            Path file = Paths.get(fileName);
-            Files.write(file, Arrays.asList(mapping.split("\n")));
+            File tempFile = File.createTempFile(format, ".ttl");
+            tempFile.deleteOnExit();
+            Files.writeString(tempFile.toPath(), mapping, StandardCharsets.UTF_8);
 
-            return Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
+            return tempFile.getAbsolutePath();
         } catch (IOException ex) {
             throw new Error(ex.getMessage());
         }

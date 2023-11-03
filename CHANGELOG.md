@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add support for detecting additions, modifications, and deletions in a Knowledge Graph with FnO functions.
 - Verify LDES EventStreamTarget output for additions, modifications, and deletions.
 - Added RML-LDES test-cases.
+- Tests: let Java handle temporary files.
 
 ### Changed
 - Build Docker image in two stages, reducing the final image size.

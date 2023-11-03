@@ -20,9 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,16 +69,7 @@ public abstract class TestCore {
      * @throws Exception When something goes wrong
      */
     Executor createExecutor(String mapPath, List<Quad> extraQuads, String parentPath, StrictMode strictMode) throws Exception {
-        ClassLoader classLoader = getClass().getClassLoader();
-        // execute mapping file
-        URL url = classLoader.getResource(mapPath);
-
-        if (url != null) {
-            mapPath = url.getFile();
-            mapPath = URLDecoder.decode(mapPath, StandardCharsets.UTF_8); // path with spaces
-        }
-
-        File mappingFile = new File(mapPath);
+        File mappingFile = Utils.getFile(mapPath);
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
         if (parentPath == null) {
@@ -103,23 +91,8 @@ public abstract class TestCore {
      *  Note: the created Executor will run in best effort mode
      */
     Executor createExecutorPrivateSecurityData(String mapPath, String privateSecurityDataPath) throws Exception {
-        ClassLoader classLoader = getClass().getClassLoader();
-        // execute mapping file
-        URL url1 = classLoader.getResource(mapPath);
-        URL url2 = classLoader.getResource(privateSecurityDataPath);
-
-        if (url1 != null) {
-            mapPath = url1.getFile();
-            mapPath = URLDecoder.decode(mapPath, StandardCharsets.UTF_8);
-        }
-
-        if (url2 != null) {
-            privateSecurityDataPath = url2.getFile();
-            privateSecurityDataPath = URLDecoder.decode(privateSecurityDataPath, StandardCharsets.UTF_8);
-        }
-
-        File mappingFile = new File(mapPath);
-        File privateSecurityDataFile = new File(privateSecurityDataPath);
+        File mappingFile = Utils.getFile(mapPath);
+        File privateSecurityDataFile = Utils.getFile(privateSecurityDataPath);
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
         rmlStore.read(new FileInputStream(privateSecurityDataFile), null, RDFFormat.TURTLE);
         String parentPath = mappingFile.getParent();
@@ -136,11 +109,7 @@ public abstract class TestCore {
      *  Note: the created Executor will run in best effort mode
      */
     Executor createExecutor(String mapPath, final Agent functionAgent) throws Exception {
-        ClassLoader classLoader = getClass().getClassLoader();
-        // execute mapping file
-        String filename = classLoader.getResource(mapPath).getFile();
-        filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
-        File mappingFile = new File(filename);
+        File mappingFile = Utils.getFile(mapPath);
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
         return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, BEST_EFFORT, functionAgent);
@@ -159,7 +128,7 @@ public abstract class TestCore {
                     false
                 );
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 fail();
             }
         } finally {
@@ -168,7 +137,7 @@ public abstract class TestCore {
                 File outputFile = Utils.getFile(output);
                 assertTrue(outputFile.delete());
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn(e.getMessage(), e);
             }
         }
     }
@@ -303,16 +272,7 @@ public abstract class TestCore {
      * @param strictMode should the used Executor operate in strict mode
      */
     void doMappingExpectError(String mapPath, StrictMode strictMode) {
-        ClassLoader classLoader = getClass().getClassLoader();
-
-        File mappingFile = new File(mapPath);
-
-        if (!mappingFile.isAbsolute()) {
-            String filename = classLoader.getResource(mapPath).getFile();
-            filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
-            mappingFile = new File(filename);
-        }
-
+        File mappingFile = null;
         QuadStore rmlStore = null;
 
         // Fail the test if there is an error reading the mappingFile or converting R2RML to RML.
@@ -320,9 +280,10 @@ public abstract class TestCore {
             /* NOTE: this is an important step in the Main method to enable R2RML mapping.
                Ideally, this should code should be shared between the tests and the Main
                method to avoid different behavior between test code and the CLI interface! */
+            mappingFile = Utils.getFile(mapPath);
             rmlStore = QuadStoreFactory.read(mappingFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             fail();
         }
 
@@ -391,13 +352,7 @@ public abstract class TestCore {
 
     private QuadStore filePathToStore(String path) throws Exception {
         // load output-turtle file
-        File outputFile = null;
-
-        try {
-            outputFile = Utils.getFile(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File outputFile = Utils.getFile(path);
 
         QuadStore store;
 
