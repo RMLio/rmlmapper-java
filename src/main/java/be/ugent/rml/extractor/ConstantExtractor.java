@@ -1,6 +1,7 @@
 package be.ugent.rml.extractor;
 
 import be.ugent.idlab.knows.dataio.record.Record;
+import be.ugent.idlab.knows.functions.agent.functionModelProvider.fno.NAMESPACES;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 
 import java.io.IOException;

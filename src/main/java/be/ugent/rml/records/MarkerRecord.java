@@ -1,5 +1,6 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.knows.idlabFunctions.IDLabFunctions;
 
 import java.util.Collections;
