@@ -7,19 +7,19 @@
 <TriplesMap1>
     a rr:TriplesMap;
 
-	rr:logicalTable [ rr:tableName  "\"IOUs\"" ];
+	rr:logicalTable [ rr:tableName  "IOUs" ];
 	
     rr:subjectMap [
-            rr:template "{\"fname\"}_{\"lname\"}_{\"amount\"}"; 
+            rr:template "{fname}_{lname}_{amount}"; 
       ];
 
     rr:subjectMap [
-            rr:template "{\"amount\"}_{\"fname\"}_{\"lname\"}"; 
+            rr:template "{amount}_{fname}_{lname}"; 
       ];
     
     rr:predicateObjectMap
     [ 
       rr:predicate		ex:amount ; 
-      rr:objectMap		[ rr:column "\"amount\""; ]
+      rr:objectMap		[ rr:column "amount"; ]
     ];
 	.

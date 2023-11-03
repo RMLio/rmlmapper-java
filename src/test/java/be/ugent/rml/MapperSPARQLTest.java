@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -146,17 +147,16 @@ public class MapperSPARQLTest extends TestCore {
     private String replacePortInMappingFile(String path, String port) {
         try {
             // Read mapping file
-            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path).getAbsolutePath())), StandardCharsets.UTF_8);
+            String mapping = Files.readString(Paths.get(Utils.getFile(path).getAbsolutePath()), StandardCharsets.UTF_8);
 
             // Replace "PORT" in mapping file by new port
             mapping = mapping.replace("PORT", port);
 
             // Write to temp mapping file
-            String fileName = port + ".ttl";
-            Path file = Paths.get(fileName);
-            Files.write(file, Arrays.asList(mapping.split("\n")));
-
-            return Paths.get(Utils.getFile(fileName).getAbsolutePath()).toString();
+            File tempFile = File.createTempFile("MapperSPARQLTest" + port, ".ttl");
+            tempFile.deleteOnExit();
+            Files.writeString(tempFile.toPath(), mapping, StandardCharsets.UTF_8);
+            return tempFile.getCanonicalPath();
         } catch (IOException ex) {
             throw new Error(ex.getMessage());
         }

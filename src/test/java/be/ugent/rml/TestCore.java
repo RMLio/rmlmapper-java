@@ -12,15 +12,12 @@ import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import ch.qos.logback.classic.Level;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,21 +27,12 @@ import java.util.Map;
 import static be.ugent.rml.StrictMode.BEST_EFFORT;
 import static org.junit.jupiter.api.Assertions.*;
 
-@net.jcip.annotations.NotThreadSafe
 public abstract class TestCore {
 
     final String DEFAULT_BASE_IRI = "http://example.com/base/";
-    final ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    final static Logger logger = LoggerFactory.getLogger(TestCore.class);
     // Mapping options to be applied by the MappingConformer
     protected static Map<String, String> mappingOptions = new HashMap<>();
-
-    protected TestCore(){
-        if(System.getenv("VERBOSE") != null){
-            logger.setLevel(Level.DEBUG);
-            logger.debug("Set logger level to DEBUG because of system env VERBOSE value " + System.getenv("VERBOSE"));
-        }
-    }
-
 
     /**
      *  Note: the created Executor will run in best effort mode
@@ -71,15 +59,7 @@ public abstract class TestCore {
      * @throws Exception When something goes wrong
      */
     Executor createExecutor(String mapPath, List<Quad> extraQuads, String parentPath, StrictMode strictMode) throws Exception {
-        ClassLoader classLoader = getClass().getClassLoader();
-        // execute mapping file
-        URL url = classLoader.getResource(mapPath);
-
-        if (url != null) {
-            mapPath = url.getFile();
-        }
-
-        File mappingFile = new File(mapPath);
+        File mappingFile = Utils.getFile(mapPath);
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
         if (parentPath == null) {
@@ -101,21 +81,8 @@ public abstract class TestCore {
      *  Note: the created Executor will run in best effort mode
      */
     Executor createExecutorPrivateSecurityData(String mapPath, String privateSecurityDataPath) throws Exception {
-        ClassLoader classLoader = getClass().getClassLoader();
-        // execute mapping file
-        URL url1 = classLoader.getResource(mapPath);
-        URL url2 = classLoader.getResource(privateSecurityDataPath);
-
-        if (url1 != null) {
-            mapPath = url1.getFile();
-        }
-
-        if (url2 != null) {
-            privateSecurityDataPath = url2.getFile();
-        }
-
-        File mappingFile = new File(mapPath);
-        File privateSecurityDataFile = new File(privateSecurityDataPath);
+        File mappingFile = Utils.getFile(mapPath);
+        File privateSecurityDataFile = Utils.getFile(privateSecurityDataPath);
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
         rmlStore.read(new FileInputStream(privateSecurityDataFile), null, RDFFormat.TURTLE);
         String parentPath = mappingFile.getParent();
@@ -132,9 +99,7 @@ public abstract class TestCore {
      *  Note: the created Executor will run in best effort mode
      */
     Executor createExecutor(String mapPath, final Agent functionAgent) throws Exception {
-        ClassLoader classLoader = getClass().getClassLoader();
-        // execute mapping file
-        File mappingFile = new File(classLoader.getResource(mapPath).getFile());
+        File mappingFile = Utils.getFile(mapPath);
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
 
         return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, BEST_EFFORT, functionAgent);
@@ -153,7 +118,7 @@ public abstract class TestCore {
                     false
                 );
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 fail();
             }
         } finally {
@@ -162,7 +127,7 @@ public abstract class TestCore {
                 File outputFile = Utils.getFile(output);
                 assertTrue(outputFile.delete());
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn(e.getMessage(), e);
             }
         }
     }
@@ -297,14 +262,7 @@ public abstract class TestCore {
      * @param strictMode should the used Executor operate in strict mode
      */
     void doMappingExpectError(String mapPath, StrictMode strictMode) {
-        ClassLoader classLoader = getClass().getClassLoader();
-
-        File mappingFile = new File(mapPath);
-
-        if (!mappingFile.isAbsolute()) {
-            mappingFile = new File(classLoader.getResource(mapPath).getFile());
-        }
-
+        File mappingFile = null;
         QuadStore rmlStore = null;
 
         // Fail the test if there is an error reading the mappingFile or converting R2RML to RML.
@@ -312,9 +270,10 @@ public abstract class TestCore {
             /* NOTE: this is an important step in the Main method to enable R2RML mapping.
                Ideally, this should code should be shared between the tests and the Main
                method to avoid different behavior between test code and the CLI interface! */
+            mappingFile = Utils.getFile(mapPath);
             rmlStore = QuadStoreFactory.read(mappingFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             fail();
         }
 
@@ -383,13 +342,7 @@ public abstract class TestCore {
 
     private QuadStore filePathToStore(String path) throws Exception {
         // load output-turtle file
-        File outputFile = null;
-
-        try {
-            outputFile = Utils.getFile(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File outputFile = Utils.getFile(path);
 
         QuadStore store;
 

@@ -1,8 +1,8 @@
 package be.ugent.rml.functions;
 
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.Arguments;
-import be.ugent.rml.records.Record;
 
 import java.util.Map;
 

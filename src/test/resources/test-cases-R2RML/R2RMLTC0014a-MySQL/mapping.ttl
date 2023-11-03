@@ -6,20 +6,20 @@
 <TriplesMap1>
     a rr:TriplesMap;
     rr:logicalTable [ rr:sqlQuery """
-       SELECT CONCAT('Department', "deptno") AS "deptId"
-            , "deptno"
-            , "dname"
-            , "loc"
-       FROM "DEPT"
+       SELECT CONCAT('Department', deptno) AS deptId
+            , deptno
+            , dname
+            , loc
+       FROM DEPT
        """ ];
 
-    rr:subjectMap [ rr:column "\"deptId\""; rr:termType rr:BlankNode;
-                    rr:inverseExpression "{\"deptno\"} = substr({\"deptId\"},length('Department')+1)"];
+    rr:subjectMap [ rr:column "deptId"; rr:termType rr:BlankNode;
+                    rr:inverseExpression "{deptno} = substr({deptId},length('Department')+1)"];
 
     rr:predicateObjectMap
     [
       rr:predicate	dept:location ;
-      rr:objectMap	[ rr:column "\"loc\"" ]
+      rr:objectMap	[ rr:column "loc" ]
     ];
 
 .

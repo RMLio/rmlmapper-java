@@ -1,52 +1,31 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.access.Access;
+import be.ugent.idlab.knows.dataio.iterators.CSVWSourceIterator;
+import be.ugent.idlab.knows.dataio.iterators.csvw.CSVWConfiguration;
+import be.ugent.idlab.knows.dataio.iterators.csvw.CSVWConfigurationBuilder;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
-import be.ugent.rml.access.Access;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.enums.CSVReaderNullFieldIndicator;
-import com.opencsv.exceptions.CsvException;
-import org.apache.commons.io.input.BOMInputStream;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class has as main goal to create a CSVParser for a Logical Source with CSVW.
  */
-class CSVW {
-
-    private com.opencsv.CSVParserBuilder csvParser = new CSVParserBuilder().withIgnoreLeadingWhiteSpace(true);
-    private Charset csvCharset = StandardCharsets.UTF_8;
-
-    private QuadStore rmlStore;
-    private Term dialect;
-    private Term logicalSource;
-    private List<String> nulls;
-    private boolean skipHeader = false;
-    private String commentPrefix = "#";
+public class CSVW {
+    private final QuadStore rmlStore;
+    private final Term logicalSource;
 
     CSVW(QuadStore rmlStore, Term logicalSource) {
         this.rmlStore = rmlStore;
         this.logicalSource = logicalSource;
-        this.nulls = new ArrayList<>();
-        setOptions();
     }
-
 
     /**
      * Read the records from the given Access
@@ -54,205 +33,111 @@ class CSVW {
      * @param access The access containing the records
      * @return The list of records in the Access
      */
-    List<Record> getRecords(Access access) throws IOException, CsvException, SQLException, ClassNotFoundException {
-        int skipLines = this.skipHeader ? 1 : 0;
-        try (BOMInputStream inputStream = new BOMInputStream(access.getInputStream());
-             CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, csvCharset))
-                     .withCSVParser(this.csvParser.build())
-                     .withSkipLines(skipLines)
-                     .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
-                     .build()
-        ) {
-            List<String[]> records = reader.readAll();
-            // filter away comments
-            records = records.stream()
-                    .filter(row -> !row[0].startsWith(getCommentPrefix()))
-                    .collect(Collectors.toList());
-
-            String[] header = records.get(0);
-            Stream<String[]> readRecords = records.subList(1, records.size())
-                    .stream()
-                    // throw away empty records
-                    .filter(r -> r.length != 0 && !(r.length == 1 && r[0] == null))
-                    // throw away records that don't contain enough information -> not all columns hold a value
-                    .filter(r -> r.length >= header.length);
-            if (this.getTrim()) { // trim each record value
-                readRecords = readRecords.map(r -> Arrays.stream(r).map(String::trim).toArray(String[]::new));
-            }
-            return readRecords
-                    .map(record -> new CSVRecord(header, record, access.getDataTypes()))
-                    .map(this::replaceNulls)
-                    .collect(Collectors.toList());
-        }
-    }
-
-    /**
-     * Based on the CSVW details the options for the CSVParser are set.
-     */
-    private void setOptions() {
-        List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+    List<Record> getRecords(Access access) throws Exception {
+        List<Term> sources = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Term source = sources.get(0);
 
-        List<Term> nullTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "null"), null));
-        if (!nullTerms.isEmpty()) {
-            this.nulls.addAll(nullTerms.stream().map(Term::getValue).collect(Collectors.toList()));
+        CSVWConfiguration config = getConfiguration(source);
+        List<Record> records = new ArrayList<>();
+        try (CSVWSourceIterator iterator = new CSVWSourceIterator(access, config)) {
+            iterator.forEachRemaining(records::add);
         }
 
-        // CSVW Dialect options
-        List<Term> dialectTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "dialect"), null));
+        return records;
+    }
 
+    private CSVWConfiguration getConfiguration(Term logicalSource) {
+        CSVWConfigurationBuilder configBuilder = CSVWConfiguration.builder();
+
+        configBuilder = setOptionList(logicalSource, "null", configBuilder, CSVWConfigurationBuilder::withNulls);
+
+        // extract data from dialect
+        List<Term> dialectTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.CSVW + "dialect"), null));
         if (!dialectTerms.isEmpty()) {
-
-            this.dialect = dialectTerms.get(0);
-            // TODO implement rest of https://www.w3.org/TR/tabular-metadata/#dialect-descriptions
-            // TODO implement CSVW Schema class to add header types
-            this.csvParser = this.csvParser
-                    // commentPrefix TODO
-                    // .withComment(getCommentPrefix())
-                    // delimiter
-                    .withSeparator(getDelimiter())
-                    // doubleQuote
-                    .withEscapeChar(getEscapeCharacter())
-                    // header TODO
-                    //.(getSkipHeaderRecord())
-                    // headerRowCount
-                    // lineTerminators
-                    // trim
-                    // TODO Commons CSV doesn't support start or end trimming
-                    .withIgnoreLeadingWhiteSpace(getTrim())
-                    // skipBlankRows
-                    // skipColumns
-                    // skipInitialSpace
-                    // skipRows
-                    // @id
-                    // @type
-                    // withQuoteChar
-                    .withQuoteChar(getQuoteCharacter())
-            ;
-            this.skipHeader = getSkipHeaderRecord();
-            this.commentPrefix = getCommentPrefix();
-            // Encoding
-            String encoding = getValueFromTerm("encoding");
-
-            if (encoding != null) {
-                this.csvCharset = Charset.forName(encoding);
-            }
+            Term dialect = dialectTerms.get(0);
+            configBuilder = setDialectOptions(dialect, configBuilder);
         }
+
+        return configBuilder.build();
+    }
+
+    private CSVWConfigurationBuilder setDialectOptions(Term dialect, CSVWConfigurationBuilder configBuilder) {
+        configBuilder = setOptionString(dialect, "commentPrefix", configBuilder, CSVWConfigurationBuilder::withCommentPrefix);
+
+        configBuilder = setOptionChar(dialect, "delimiter", configBuilder, CSVWConfigurationBuilder::withDelimiter);
+
+        configBuilder = setOptionChar(dialect, "doubleQuote", configBuilder, CSVWConfigurationBuilder::withEscapeCharacter);
+
+        configBuilder = setOptionString(dialect, "trim", configBuilder, CSVWConfigurationBuilder::withTrim);
+
+        configBuilder = setOptionChar(dialect, "quoteChar", configBuilder, CSVWConfigurationBuilder::withQuoteCharacter);
+
+        configBuilder = setOptionString(dialect, "encoding", configBuilder, CSVWConfigurationBuilder::withEncoding);
+
+        return configBuilder;
     }
 
     /**
-     * This method returns a single value (or null) for a CSVW term.
+     * Sets an option in CSVWConfigurationBuilder that expects a string
      *
-     * @param term the CSVW term, without CSVW namespace.
-     * @return the value of the term, if one is found, else null.
+     * @param dialect Term containing the dialect
+     * @param option  option to read form dialect
+     * @param builder CSVWConfigurationBuilder to set the option in
+     * @param setter  method of CSVWConfigurationBuilder to call
+     * @return a CSVWConfigurationBuilder with the option set if the option is present in the dialect, otherwise the original CSVWConfigurationBuilder is returned
      */
-    private String getValueFromTerm(String term) {
-        List<Term> terms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.dialect, new NamedNode(NAMESPACES.CSVW + term), null));
-
-        if (!terms.isEmpty()) {
-            return terms.get(0).getValue();
+    private CSVWConfigurationBuilder setOptionString(Term dialect, String option, CSVWConfigurationBuilder builder, StringOptionSetter setter) {
+        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + option), null));
+        if (!optionTerms.isEmpty()) {
+            builder = setter.call(builder, optionTerms.get(0).getValue());
         }
 
-        return null;
+        return builder;
     }
 
     /**
-     * This method determines the comment prefix.
+     * Sets an option in CSVWConfigurationBuilder that expects a character
      *
-     * @return the comment prefix.
+     * @param term    Term containing the option
+     * @param option  option to read form term
+     * @param builder CSVWConfigurationBuilder to set the option in
+     * @param setter  method of CSVWConfigurationBuilder to call
+     * @return a CSVWConfigurationBuilder with the option set if the option is present in the term, otherwise the original CSVWConfigurationBuilder is returned
      */
-    private String getCommentPrefix() {
-        String output = getValueFromTerm("commentPrefix");
-
-        if (output == null) {
-            return this.commentPrefix;
-        } else {
-            return output;
+    private CSVWConfigurationBuilder setOptionChar(Term term, String option, CSVWConfigurationBuilder builder, CharacterOptionSetter setter) {
+        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(term, new NamedNode(NAMESPACES.CSVW + option), null));
+        if (!optionTerms.isEmpty()) {
+            builder = setter.call(builder, optionTerms.get(0).getValue().charAt(0));
         }
+
+        return builder;
+    }
+
+    private CSVWConfigurationBuilder setOptionList(Term term, String option, CSVWConfigurationBuilder builder, ListOptionSetter setter) {
+        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(term, new NamedNode(NAMESPACES.CSVW + option), null));
+        if (!optionTerms.isEmpty()) {
+            List<String> nulls = optionTerms.stream().map(Term::getValue).collect(Collectors.toList());
+            builder = setter.call(builder, nulls);
+        }
+
+        return builder;
     }
 
     /**
-     * This method returns whether to skip the header record.
-     *
-     * @return true or false.
+     * Functional interface to set a value of CSVWConfigurationBuilder that expects a string.
      */
-    private boolean getSkipHeaderRecord() {
-        String output = getValueFromTerm("header");
-
-        if (output == null) {
-            return this.skipHeader;
-        } else {
-            return output.equals("true");
-        }
+    private interface StringOptionSetter {
+        CSVWConfigurationBuilder call(CSVWConfigurationBuilder builder, String value);
     }
 
     /**
-     * This method returns whether to trim leading and trailing blanks.
-     *
-     * @return true or false.
+     * Functional interface to set a value of CSVWConfigurationBuilder that expects a character.
      */
-    private boolean getTrim() {
-        String output = getValueFromTerm("trim");
-
-        if (output == null) {
-            return this.csvParser.isIgnoreLeadingWhiteSpace();
-        } else {
-            return output.equals("true");
-        }
+    private interface CharacterOptionSetter {
+        CSVWConfigurationBuilder call(CSVWConfigurationBuilder builder, Character value);
     }
 
-    /**
-     * This method returns the character delimiting the values (typically ';', ',' or '\t').
-     *
-     * @return the delimiter.
-     */
-    private Character getDelimiter() {
-        String output = getValueFromTerm("delimiter");
-
-        if (output == null) {
-            return this.csvParser.getSeparator();
-        } else {
-            return output.toCharArray()[0];
-        }
-    }
-
-    /**
-     * This method returns the escape character.
-     *
-     * @return the escape character.
-     */
-    private Character getEscapeCharacter() {
-        String output = getValueFromTerm("doubleQuote");
-
-        if (output == null) {
-            return this.csvParser.getEscapeChar();
-        } else {
-            return output.equals("true") ? '\\' : '"';
-        }
-    }
-
-    /**
-     * This method returns the character used to encapsulate values containing special characters.
-     *
-     * @return the quote character.
-     */
-    private Character getQuoteCharacter() {
-        String output = getValueFromTerm("quoteChar");
-
-        if (output == null) {
-            return this.csvParser.getQuoteChar();
-        } else {
-            return output.toCharArray()[0];
-        }
-    }
-
-    public CSVRecord replaceNulls(CSVRecord record) {
-        Map<String, String> data = record.getData();
-        data.forEach((key, value) -> {
-            if (this.nulls.contains(value)) {
-                data.put(key, null);
-            }
-        });
-        return record;
+    private interface ListOptionSetter<T> {
+        CSVWConfigurationBuilder call(CSVWConfigurationBuilder builder, List<T> values);
     }
 }

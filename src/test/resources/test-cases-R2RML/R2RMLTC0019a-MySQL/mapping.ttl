@@ -8,16 +8,16 @@
     a rr:TriplesMap;
  	rr:logicalTable [ 
                      rr:sqlQuery """
-                       SELECT "ID", "FirstName", "LastName" 
-                       FROM "Employee"
-                       WHERE "ID" < 30
+                       SELECT ID, FirstName, LastName 
+                       FROM Employee
+                       WHERE ID < 30
                        """
                        ];
     
-	rr:subjectMap [ rr:column "\"FirstName\"" ]; 
+	rr:subjectMap [ rr:column "FirstName" ]; 
 	rr:predicateObjectMap
     [ 
       rr:predicate		foaf:name; 
-      rr:objectMap		[ rr:column "\"FirstName\"" ];
+      rr:objectMap		[ rr:column "FirstName" ];
     ];
 .

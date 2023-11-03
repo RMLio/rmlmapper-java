@@ -3,10 +3,6 @@ package be.ugent.rml;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.InvocationTargetException;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 public class CustomRMLFnOMapperCSVTest extends TestFunctionCore {
     @Test

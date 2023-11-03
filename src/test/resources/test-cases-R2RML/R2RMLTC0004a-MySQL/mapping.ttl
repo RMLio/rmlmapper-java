@@ -7,29 +7,29 @@
 <TriplesMap1>
     a rr:TriplesMap;
 
-	rr:logicalTable [ rr:tableName  "\"Student_Sport\"" ];
+	rr:logicalTable [ rr:tableName  "Student_Sport" ];
 	
-    rr:subjectMap [ rr:template "http://example.com/{\"Student\"}";
+    rr:subjectMap [ rr:template "http://example.com/{Student}";
                     rr:class ex:Student ];
 	
     rr:predicateObjectMap
     [ 
       rr:predicate		foaf:name ; 
-      rr:objectMap		[ rr:column "\"Student\"" ]
+      rr:objectMap		[ rr:column "Student" ]
     ]
     .
 
 <TriplesMap2>
     a rr:TriplesMap;
 
-	rr:logicalTable [ rr:tableName  "\"Student_Sport\"" ];
+	rr:logicalTable [ rr:tableName  "Student_Sport" ];
 	
-    rr:subjectMap [ rr:template "http://example.com/{\"Sport\"}";
+    rr:subjectMap [ rr:template "http://example.com/{Sport}";
                     rr:class ex:Sport  ];
 	
     rr:predicateObjectMap
     [ 
       rr:predicate		foaf:name ; 
-      rr:objectMap		[ rr:column "\"Sport\"" ]
+      rr:objectMap		[ rr:column "Sport" ]
     ]
 	.

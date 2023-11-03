@@ -608,7 +608,7 @@ public class Main {
         try {
 
             String doneMessage = null;
-
+            boolean isSystemOut = false;
             //if output file provided, write to triples output file
             if (outputFile != null) {
                 targetFile = new File(outputFile);
@@ -623,11 +623,15 @@ public class Main {
                 out = Files.newBufferedWriter(targetFile.toPath(), StandardCharsets.UTF_8);
 
             } else {
+                isSystemOut = true;
                 out = new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
             }
 
             store.write(out, format);
-            out.close();
+            if (isSystemOut) {
+                out.flush(); // flush System.out stream
+                out = null; // replace with null, so it won't be closed later;
+            }
 
             if (doneMessage != null) {
                 logger.info(doneMessage);

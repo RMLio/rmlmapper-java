@@ -86,7 +86,15 @@ public class Utils {
     public static InputStream getInputStreamFromFileOrContentString(String mOptionValue) {
         InputStream out;
         logger.debug("{} mapping file", mOptionValue);
-        String extension = FilenameUtils.getExtension(mOptionValue);
+        String extension;
+        try{
+            // will throw illegalArgumentException on a windows NTFS if a ":" is present
+            // on Windows a : is the identifier of an alternate data stream
+            extension = FilenameUtils.getExtension(mOptionValue);
+        }
+        catch (IllegalArgumentException e){
+            return IOUtils.toInputStream(mOptionValue, StandardCharsets.UTF_8);
+        }
         if (extension != null) {
             // Windows paths 🤷‍♂️
             mOptionValue = mOptionValue.replaceAll("\\\\", "/");

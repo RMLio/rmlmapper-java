@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add support for detecting additions, modifications, and deletions in a Knowledge Graph with FnO functions.
 - Verify LDES EventStreamTarget output for additions, modifications, and deletions.
 - Added RML-LDES test-cases.
+- Tests: let Java handle temporary files.
 
 ### Changed
 - Build Docker image in two stages, reducing the final image size.
@@ -20,10 +21,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Use correct prefix for `EventStreamTarget`s in tests.
 - Refactoring of Executor: code deduplication
+- Use the DataIO library to handle access to files.
+- Requires Java 17 language level.
+- Don't close output streams that don't need closing.
+- Add url decoders to file paths so special characters and spaces work.
+- Test cases: add array initializers to avoid bugs.
 
 ## [6.2.2] - 2023-10-05
 
 ### Fixed
+- Use correct prefix for `EventStreamTarget`s in tests.
 - Fixed self-joins with join conditions ([internal issue #199](https://github.com/RMLio/rmlmapper-java/issues/199))
 - Upgrade to rdfhdt to 3.0.10 ([issue #215](https://github.com/RMLio/rmlmapper-java/issues/215))
 - Improve docs on deduplication ([issue #214](https://github.com/RMLio/rmlmapper-java/issues/214))

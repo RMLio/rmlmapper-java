@@ -8,14 +8,14 @@
 <TriplesMap1>
     a rr:TriplesMap;
         
-	rr:logicalTable [ rr:tableName  "\"Student\"" ];
+	rr:logicalTable [ rr:tableName  "Student" ];
 	
-    rr:subjectMap [ rr:template "http://example.com/resource/student_{\"ID\"}"; ]; 
+    rr:subjectMap [ rr:template "http://example.com/resource/student_{ID}"; ]; 
 	
     rr:predicateObjectMap
     [ 
 		rr:predicate	foaf:name ; 
-		rr:objectMap	[ rr:column "\"Name\""; ];
+		rr:objectMap	[ rr:column "Name"; ];
     ];
 
     rr:predicateObjectMap
@@ -25,8 +25,8 @@
            a rr:RefObjectMap ;
            rr:parentTriplesMap <TriplesMap2>;
            rr:joinCondition [
-				rr:child "\"Sport\"" ;
-				rr:parent "\"ID\"" ;
+				rr:child "Sport" ;
+				rr:parent "ID" ;
 		  ]
       ];
     ];
@@ -35,13 +35,13 @@
 <TriplesMap2>
     a rr:TriplesMap;
 		
-	rr:logicalTable [ rr:tableName  "\"Sport\"" ];
+	rr:logicalTable [ rr:tableName  "Sport" ];
 
-    rr:subjectMap [ rr:template "http://example.com/resource/sport_{\"ID\"}"; ]; 
+    rr:subjectMap [ rr:template "http://example.com/resource/sport_{ID}"; ]; 
 	
     rr:predicateObjectMap
     [ 
 		rr:predicate	rdfs:label ; 
-		rr:objectMap	[ rr:column "\"Name\""; ];
+		rr:objectMap	[ rr:column "Name"; ];
     ];
 	.

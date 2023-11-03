@@ -1,7 +1,7 @@
 package be.ugent.rml.extractor;
 
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
-import be.ugent.rml.records.Record;
 
 import java.io.IOException;
 import java.util.List;

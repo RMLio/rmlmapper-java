@@ -1,16 +1,17 @@
 package be.ugent.rml.records;
 
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
-import be.ugent.rml.access.Access;
 import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import be.ugent.idlab.knows.dataio.access.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,21 +23,20 @@ import java.util.Map;
  * This class creates records based on RML rules.
  */
 public class RecordsFactory {
-
-    private Map<Access, Map<String, Map<String, List<Record>>>> recordCache;
+    private Map<Access, Map<String, Map<String, List<Record>>>> recordsCache;
     private AccessFactory accessFactory;
     private Map<String, ReferenceFormulationRecordFactory> referenceFormulationRecordFactoryMap;
     private static final Logger logger = LoggerFactory.getLogger(RecordsFactory.class);
 
     public RecordsFactory(String basePath) {
         accessFactory = new AccessFactory(basePath);
-        recordCache = new HashMap<>();
+        recordsCache = new HashMap<>();
 
         referenceFormulationRecordFactoryMap = new HashMap<>();
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.XPath, new XMLRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.JSONPath, new JSONRecordFactory());
-        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSV, new CSVRecordFactory());
-        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDB, new CSVRecordFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSV, new TabularSourceFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDB, new TabularSourceFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSS3, new HTMLRecordFactory());
     }
 
@@ -87,11 +87,11 @@ public class RecordsFactory {
      * @return
      */
     private List<Record> getRecordsFromCache(Access access, String referenceFormulation, String hash) {
-        if (recordCache.containsKey(access)
-                && recordCache.get(access).containsKey(referenceFormulation)
-                && recordCache.get(access).get(referenceFormulation).containsKey(hash)
+        if (recordsCache.containsKey(access)
+                && recordsCache.get(access).containsKey(referenceFormulation)
+                && recordsCache.get(access).get(referenceFormulation).containsKey(hash)
         ) {
-            return recordCache.get(access).get(referenceFormulation).get(hash);
+            return recordsCache.get(access).get(referenceFormulation).get(hash);
         } else {
             return null;
         }
@@ -105,15 +105,15 @@ public class RecordsFactory {
      * @param records the records that needs to be put into the cache.
      */
     private void putRecordsIntoCache(Access access, String referenceFormulation, String hash, List<Record> records) {
-        if (!recordCache.containsKey(access)) {
-            recordCache.put(access, new HashMap<>());
+        if (!recordsCache.containsKey(access)) {
+            recordsCache.put(access, new HashMap<>());
         }
 
-        if (!recordCache.get(access).containsKey(referenceFormulation)) {
-            recordCache.get(access).put(referenceFormulation, new HashMap<>());
+        if (!recordsCache.get(access).containsKey(referenceFormulation)) {
+            recordsCache.get(access).put(referenceFormulation, new HashMap<>());
         }
 
-        recordCache.get(access).get(referenceFormulation).put(hash, records);
+        recordsCache.get(access).get(referenceFormulation).put(hash, records);
 
     }
 

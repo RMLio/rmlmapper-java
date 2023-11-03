@@ -9,13 +9,13 @@
 
      rr:logicalTable [
                      rr:sqlQuery """
-                     SELECT "ID",
-                            CONCAT("FirstName", ' ',"LastName") AS Name
-                     FROM "Student"
+                     SELECT ID,
+                            CONCAT(FirstName, ' ',LastName) AS Name
+                     FROM Student
                      """
                      ];
 
-    rr:subjectMap [ rr:template "http://example.com/Student/{\"ID\"}"; ];
+    rr:subjectMap [ rr:template "http://example.com/Student/{ID}"; ];
 
     rr:predicateObjectMap
     [

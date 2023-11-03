@@ -9,13 +9,13 @@
 <TriplesMap1>
      a rr:TriplesMap;
 
-	rr:logicalTable [ rr:tableName "\"Person\"" ];
+	rr:logicalTable [ rr:tableName "Person" ];
 
-    rr:subjectMap [ rr:template "http://example.com/Person/{\"ID\"}/{\"Name\"}/{\"DateOfBirth\"}";  ];
+    rr:subjectMap [ rr:template "http://example.com/Person/{ID}/{Name}/{DateOfBirth}";  ];
 	
     rr:predicateObjectMap
     [ 
       rr:predicate		ex:BirthDay ;
-      rr:objectMap		[ rr:column "\"DateOfBirth\"" ]
+      rr:objectMap		[ rr:column "DateOfBirth" ]
     ]
     .

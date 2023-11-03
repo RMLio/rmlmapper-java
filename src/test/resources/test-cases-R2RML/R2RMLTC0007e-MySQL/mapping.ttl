@@ -9,9 +9,9 @@
 <TriplesMap1>
      a rr:TriplesMap;
 
-	rr:logicalTable [ rr:tableName "\"Student\"" ];
+	rr:logicalTable [ rr:tableName "Student" ];
 
-    rr:subjectMap [ rr:template "http://example.com/Student/{\"ID\"}/{\"Name\"}"; 
+    rr:subjectMap [ rr:template "http://example.com/Student/{ID}/{Name}"; 
 					rr:graph	ex:PersonGraph ;
 					rr:class foaf:Person
 	];
@@ -19,13 +19,13 @@
     rr:predicateObjectMap
     [ 
 		rr:predicate	ex:id ;
-		rr:objectMap	[ rr:column "\"ID\""; ]
+		rr:objectMap	[ rr:column "ID"; ]
     ];
 
     rr:predicateObjectMap
     [ 
       rr:predicate		foaf:name ;
-      rr:objectMap		[ rr:column "\"Name\"" ]
+      rr:objectMap		[ rr:column "Name" ]
     ]
 
     .

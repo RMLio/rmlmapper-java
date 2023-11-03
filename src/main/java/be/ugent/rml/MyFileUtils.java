@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 class MyFileUtils {
     private static Logger logger = LoggerFactory.getLogger(MyFileUtils.class);
@@ -18,7 +20,7 @@ class MyFileUtils {
      */
     static File getResourceAsFile(String resource) throws IOException {
         logger.debug("Searching for '{}' in resources.", resource);
-        ClassLoader cl = Utils.class.getClassLoader();
+        ClassLoader cl = MyFileUtils.class.getClassLoader();
         URL resourceUrl = cl.getResource(resource);
         logger.debug("default class loader found '{}'", resourceUrl);
         if (resourceUrl == null) {
@@ -29,6 +31,7 @@ class MyFileUtils {
 
                 String path = resourceUrl.toURI().getRawPath();
                 logger.debug("returning file '{}'", path);
+                path = URLDecoder.decode(path, StandardCharsets.UTF_8);
                 return new File(path);
             } catch (URISyntaxException e) {
                 throw new IOException("Unable to get file through class loader: " + cl, e);
@@ -53,6 +56,7 @@ class MyFileUtils {
 
         if (url != null) {
             path = url.getFile();
+            path = URLDecoder.decode(path, StandardCharsets.UTF_8);
         }
 
         File outputFile = new File(path);

@@ -1,10 +1,10 @@
 package be.ugent.rml.termgenerator;
 
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.Utils;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
-import be.ugent.rml.records.Record;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
@@ -51,7 +51,7 @@ public class LiteralGenerator extends TermGenerator {
             dataTypeSource = record.getDataType(((ReferenceExtractor) this.functionExecutor).reference);
         }
 
-        if (objectStrings.size() > 0) {
+        if (!objectStrings.isEmpty()) {
             //add language tag if present
             String finalDataTypeSource = dataTypeSource;
             objectStrings.forEach(objectString -> {

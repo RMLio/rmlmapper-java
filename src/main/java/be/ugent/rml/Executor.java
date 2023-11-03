@@ -1,14 +1,14 @@
 package be.ugent.rml;
 
+import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
+import be.ugent.idlab.knows.dataio.access.RemoteFileAccess;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.knows.idlabFunctions.IDLabFunctions;
-import be.ugent.rml.access.LocalFileAccess;
-import be.ugent.rml.access.RemoteFileAccess;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.MarkerRecord;
-import be.ugent.rml.records.Record;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
@@ -17,7 +17,6 @@ import be.ugent.rml.termgenerator.TermGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -26,6 +25,7 @@ public class Executor {
     private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
     private final Initializer initializer;
+    private final Map<Term, List<Record>> recordsHolders = new HashMap<>();
 
     /*
      * this map stores for every Triples Map, which is a Term,
@@ -329,8 +329,11 @@ public class Executor {
     }
 
     private List<Record> getRecords(Term triplesMap) throws Exception {
-        /* RecordsFactory caches records internally */
-        return this.recordsFactory.createRecords(triplesMap, this.rmlStore);
+        if (!this.recordsHolders.containsKey(triplesMap)) {
+            this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
+        }
+
+        return this.recordsHolders.get(triplesMap);
     }
 
     private List<PredicateObjectGraph> combineMultiplePOGs(List<ProvenancedTerm> predicates, List<ProvenancedTerm> objects, List<ProvenancedTerm> graphs) {
@@ -374,7 +377,7 @@ public class Executor {
     }
 
     
-    public void verifySources(String basepath) throws IOException {
+    public void verifySources(String basepath) throws Exception {
         for (Term triplesMap : this.getTriplesMaps()) {
             List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
             Term logicalSource = logicalSources.get(0);
@@ -386,7 +389,7 @@ public class Executor {
                     if (Utils.isRemoteFile(value)) {
                         is = new RemoteFileAccess(value).getInputStream();
                     } else {
-                        is = new LocalFileAccess(value, basepath).getInputStream();
+                        is = new LocalFileAccess(value, basepath, ((Literal) source).getDatatype().getValue()).getInputStream();
                     }
                     is.close(); // close resources.
                 }

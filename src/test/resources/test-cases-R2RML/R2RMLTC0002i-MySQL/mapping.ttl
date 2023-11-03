@@ -9,20 +9,20 @@
     
     rr:logicalTable [ 
                      rr:sqlQuery """
-                       SELECT "ID",
-                              "Name"
-                         FROM "Student"
+                       SELECT ID,
+                              Name
+                         FROM Student
                        """;
 					   
 			rr:sqlVersion rr:SQL2008 				   
 					   
                        ];
 	
-    rr:subjectMap [ rr:template "http://example.com/{\"ID\"}/{\"Name\"}";  ];
+    rr:subjectMap [ rr:template "http://example.com/{ID}/{Name}";  ];
 
     rr:predicateObjectMap
     [ 
       rr:predicate	foaf:name ; 
-      rr:objectMap	[ rr:column "\"Name\"" ]
+      rr:objectMap	[ rr:column "Name" ]
     ]
     .

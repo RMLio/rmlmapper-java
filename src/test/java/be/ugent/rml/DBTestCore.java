@@ -8,12 +8,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
 
 @Testcontainers
 public abstract class DBTestCore extends TestCore {
@@ -51,7 +51,7 @@ public abstract class DBTestCore extends TestCore {
                     }
                 } catch (Exception ex) {
                     counter++;
-                    ex.printStackTrace();
+                    logger.warn(ex.getMessage(), ex);
                     // Prevent infinity loops
                     if (counter > 100) {
                         throw new Error("Could not remove all temp mapping files.");
@@ -64,44 +64,35 @@ public abstract class DBTestCore extends TestCore {
     protected String replaceDSNInMappingFile(String path) {
         try {
             // Read mapping file
-            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
+            String mapping = Files.readString(Paths.get(Utils.getFile(path).getAbsolutePath()), StandardCharsets.UTF_8);
 
             // Replace "PORT" in mapping file by new port
             mapping = mapping.replace("CONNECTIONDSN", getDbURL());
 
             // Write to temp mapping file
-
-            String fileName = Integer.toString(Math.abs(path.hashCode())) + "tempMapping.ttl";
-            Path file = Paths.get(fileName);
-            Files.write(file, Arrays.asList(mapping.split("\n")));
-
-            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
-            tempFiles.add(absolutePath);
-
-            return absolutePath;
-
+            return writeMappingFile(mapping);
         } catch (IOException ex) {
-            throw new Error(ex.getMessage());
+            throw new Error(ex);
         }
     }
 
     protected static String createTempMappingFile(String path) {
         try {
             // Read mapping file
-            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
+            String mapping = Files.readString(Paths.get(Utils.getFile(path).getAbsolutePath()), StandardCharsets.UTF_8);
 
             // Write to temp mapping file
             return writeMappingFile(mapping);
 
         } catch (IOException ex) {
-            throw new Error(ex.getMessage());
+            throw new Error(ex);
         }
     }
 
     protected String CreateTempMappingFileAndReplaceDSN(String path) {
         try {
             // Read mapping file
-            String mapping = new String(Files.readAllBytes(Paths.get(Utils.getFile(path, null).getAbsolutePath())), StandardCharsets.UTF_8);
+            String mapping = Files.readString(Paths.get(Utils.getFile(path, null).getAbsolutePath()), StandardCharsets.UTF_8);
 
             // Replace "CONNECTIONDSN" in mapping file by new port
             mapping = mapping.replace("CONNECTIONDSN", getDbURL());
@@ -110,7 +101,7 @@ public abstract class DBTestCore extends TestCore {
             return writeMappingFile(mapping);
 
         } catch (IOException ex) {
-            throw new Error(ex.getMessage());
+            throw new Error(ex);
         }
     }
 
@@ -124,18 +115,14 @@ public abstract class DBTestCore extends TestCore {
 
     private static String writeMappingFile(String mapping) {
         try {
-            // when multiple tests are running with the same mapping, they can remove each other's mapping files
-            // adding a random number prevents this behaviour
-            String fileName = Math.abs(new Random().nextInt()) + mapping.hashCode() + "tempMapping.ttl";
-            Path file = Paths.get(fileName);
-            Files.write(file, Arrays.asList(mapping.split("\n")));
-
-            String absolutePath = Paths.get(Utils.getFile(fileName, null).getAbsolutePath()).toString();
-            tempFiles.add(absolutePath);
-
-            return absolutePath;
+            File tempFile = File.createTempFile("DBTest", ".ttl");
+            tempFile.deleteOnExit();
+            String tempFilePath = tempFile.getCanonicalPath();
+            Files.writeString(tempFile.toPath(), mapping, StandardCharsets.UTF_8);
+            tempFiles.add(tempFilePath);
+            return tempFilePath;
         } catch (IOException ex) {
-            throw new Error(ex.getMessage());
+            throw new Error(ex);
         }
     }
 

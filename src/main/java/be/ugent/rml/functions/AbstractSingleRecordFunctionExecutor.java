@@ -1,6 +1,6 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.records.Record;
+import be.ugent.idlab.knows.dataio.record.Record;
 
 import java.util.HashMap;
 import java.util.Map;

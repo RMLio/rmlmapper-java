@@ -1,9 +1,9 @@
 package be.ugent.rml.termgenerator;
 
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.Executor;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
-import be.ugent.rml.records.Record;
 import be.ugent.rml.term.BlankNode;
 import be.ugent.rml.term.Term;
 

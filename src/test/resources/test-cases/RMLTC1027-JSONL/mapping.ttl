@@ -12,7 +12,7 @@
   rml:logicalSource [
     rml:source "data.jsonl";
     rml:referenceFormulation ql:JSONPath;
-    rml:iterator "$[*]";
+    rml:iterator "$";
   ];
 
   rr:subjectMap [

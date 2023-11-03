@@ -1,25 +1,17 @@
 package be.ugent.rml.termgenerator;
 
-import be.ugent.knows.idlabFunctions.IDLabFunctions;
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
-import be.ugent.rml.records.Record;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import com.github.jsonldjava.core.RDFDataset;
-import org.apache.jena.iri.IRI;
-import org.apache.jena.iri.IRIException;
 import org.eclipse.rdf4j.common.net.ParsedIRI;
-import org.eclipse.rdf4j.model.impl.SimpleIRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class NamedNodeGenerator extends TermGenerator {
     private static final Logger logger = LoggerFactory.getLogger(NamedNodeGenerator.class);
@@ -55,7 +47,7 @@ public class NamedNodeGenerator extends TermGenerator {
                 if (strictMode.equals(StrictMode.STRICT)) {
                     try {
                         new ParsedIRI(iri);
-                    } catch (IRIException e) {
+                    } catch (Exception e) {
                         logger.error("'" + iri + "' is not a valid IRI");
                         throw new Exception("'" + iri + "' is not a valid IRI");
                     }

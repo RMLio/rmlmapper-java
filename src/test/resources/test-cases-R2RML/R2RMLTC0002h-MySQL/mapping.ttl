@@ -9,11 +9,11 @@
     
     rr:logicalTable [ 
                      rr:sqlQuery """
-                       Select ('Student' || ID ) AS "StudentId"
-                            , "ID"
-                            , "Name"
-					, 1 AS "ID"
-                       from "Student"
+                       Select ('Student' || ID ) AS StudentId
+                            , ID
+                            , Name
+					, 1 AS ID
+                       from Student
                        """
                        ];
 
@@ -22,7 +22,7 @@
     rr:predicateObjectMap
     [ 
       rr:predicate		ex:id ; 
-      rr:objectMap		[ rr:column "\"ID\""; ]
+      rr:objectMap		[ rr:column "ID"; ]
     ];
 
     .

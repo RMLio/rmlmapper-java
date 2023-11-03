@@ -9,9 +9,9 @@
 <TriplesMap1>
     a rr:TriplesMap;
 
-	rr:logicalTable [ rr:tableName "\"Patient\"" ];
+	rr:logicalTable [ rr:tableName "Patient" ];
 
-    rr:subjectMap [ rr:template "http://example.com/Patient/{\"ID\"}"; ];
+    rr:subjectMap [ rr:template "http://example.com/Patient/{ID}"; ];
 	
     rr:predicateObjectMap
     [ 
@@ -22,25 +22,25 @@
     rr:predicateObjectMap
     [ 
 		rr:predicate	ex:id ;
-		rr:objectMap    [ rr:column "\"ID\""; ]
+		rr:objectMap    [ rr:column "ID"; ]
     ];
 
     rr:predicateObjectMap
     [ 
       rr:predicate		ex:firstName;
-      rr:objectMap		[ rr:column "\"FirstName\""; ]
+      rr:objectMap		[ rr:column "FirstName"; ]
     ];
 
     rr:predicateObjectMap
     [ 
       rr:predicate		ex:lastName;
-      rr:objectMap		[ rr:column "\"LastName\""; ]
+      rr:objectMap		[ rr:column "LastName"; ]
     ];
 
     rr:predicateObjectMap
     [ 
       rr:predicate		ex:gender;
-      rr:objectMap		[ rr:column "\"Sex\""; ]
+      rr:objectMap		[ rr:column "Sex"; ]
     ];
 
     .

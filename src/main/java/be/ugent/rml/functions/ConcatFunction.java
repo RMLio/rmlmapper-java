@@ -1,10 +1,10 @@
 package be.ugent.rml.functions;
 
+import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.Utils;
 import be.ugent.rml.extractor.ConstantExtractor;
 import be.ugent.rml.extractor.Extractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
-import be.ugent.rml.records.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

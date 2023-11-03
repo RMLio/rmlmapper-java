@@ -1,5 +1,6 @@
 package be.ugent.rml.access;
 
+import be.ugent.idlab.knows.dataio.access.*;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.SPARQLResultFormat;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,7 @@ import static be.ugent.rml.Utils.isRemoteFile;
 public class AccessFactory {
 
     // The path used when local paths are not absolute.
-    private String basePath;
+    private final String basePath;
     final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     /**
@@ -42,7 +44,7 @@ public class AccessFactory {
      */
     public Access getAccess(Term logicalSource, QuadStore rmlStore) {
         List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
-        Access access = null;
+        Access access;
 
         // check if at least one source is available.
         if (!sources.isEmpty()) {
@@ -52,11 +54,12 @@ public class AccessFactory {
             // then it's either a local or remote file.
             if (sources.get(0) instanceof Literal) {
                 String value = sources.get(0).getValue();
-
                 if (isRemoteFile(value)) {
                     access = new RemoteFileAccess(value);
                 } else {
-                    access = new LocalFileAccess(value, this.basePath);
+                    String datatype = ((Literal) sources.get(0)).getDatatype()  == null ? null :((Literal) sources.get(0)).getDatatype().getValue();
+                    access = new LocalFileAccess(value, this.basePath, datatype);
+
                 }
             } else {
                 // if not a literal, then we are dealing with a more complex description.
@@ -88,7 +91,7 @@ public class AccessFactory {
                         List<Term> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "resultFormat"), null));
                         SPARQLResultFormat resultFormat = getSPARQLResultFormat(resultFormatObject, referenceFormulations);
 
-                        access = new SPARQLEndpointAccess(resultFormat.getContentType(), endpoint.get(0).getValue(), query.get(0).getValue());;
+                        access = new SPARQLEndpointAccess(resultFormat.getContentType(), endpoint.get(0).getValue(), query.get(0).getValue());
 
                         break;
                     case NAMESPACES.CSVW + "Table": // CSVW
@@ -103,7 +106,7 @@ public class AccessFactory {
                         if (isRemoteFile(value)) {
                             access = new RemoteFileAccess(value);
                         } else {
-                            access = new LocalFileAccess(value, this.basePath);
+                            access = new LocalFileAccess(value, this.basePath, "CSVW");
                         }
 
                         break;
@@ -121,13 +124,13 @@ public class AccessFactory {
                         try {
                             Term thing = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.TD + "hasPropertyAffordance"), source)).get(0);
                             List<Term> securityConfiguration = Utils.getObjectsFromQuads(rmlStore.getQuads(thing, new NamedNode(NAMESPACES.TD + "hasSecurityConfiguration"), null));
-                            logger.debug("Security config: {}", securityConfiguration.toString());
+                            logger.debug("Security config: {}", Arrays.toString(securityConfiguration.toArray()));
 
                             for (Term sc : securityConfiguration) {
-                                boolean isOAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
-                                        new NamedNode(NAMESPACES.WOTSEC + "OAuth2SecurityScheme"))).size() != 0;
-                                boolean isBearer = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
-                                        new NamedNode(NAMESPACES.WOTSEC + "BearerSecurityScheme"))).size() != 0;
+                                boolean isOAuth = !Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
+                                        new NamedNode(NAMESPACES.WOTSEC + "OAuth2SecurityScheme"))).isEmpty();
+                                boolean isBearer = !Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
+                                        new NamedNode(NAMESPACES.WOTSEC + "BearerSecurityScheme"))).isEmpty();
                                 List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
                                 List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
                                 List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "tokenValue"), null));
@@ -151,7 +154,7 @@ public class AccessFactory {
                                         logger.debug("Refresh token: {}", securityRefresh.getValue());
                                         logger.debug("Client ID: {}", securityClientID.getValue());
                                         logger.debug("Client Secret: {}", securityClientSecret.getValue());
-////                                      //can this not be set default?
+//                                      //can this not be set default?
 //                                        auth.get("data").put("grant_type", securityGrantType.getValue());
                                     }
                                     // both oath and bearer
@@ -159,19 +162,13 @@ public class AccessFactory {
                                     securityValue.set(0, bearerToken);
                                 }
                                 try {
-                                    switch (securityIn.get(0).getValue()) {
-                                        case "header": {
-                                            logger.info("Applying security configuration of {} in header", sc.getValue());
-                                            logger.debug("Name: {}", securityName.get(0).getValue());
-                                            logger.debug("Value: {}", securityValue.get(0).getValue());
-                                            headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
-                                            break;
-                                        }
-                                        case "query":
-                                        case "body":
-                                        case "cookie":
-                                        default:
-                                            throw new NotImplementedException();
+                                    if (securityIn.get(0).getValue().equals("header")) {
+                                        logger.info("Applying security configuration of {} in header", sc.getValue());
+                                        logger.debug("Name: {}", securityName.get(0).getValue());
+                                        logger.debug("Value: {}", securityValue.get(0).getValue());
+                                        headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
+                                    } else {
+                                        throw new NotImplementedException();
                                     }
                                 } catch (IndexOutOfBoundsException e) {
                                     logger.warn("Unable to apply security configuration for {}", sc.getValue());
@@ -205,7 +202,7 @@ public class AccessFactory {
                             catch(IndexOutOfBoundsException e) {
                                 logger.warn("Unable to retrieve header name and value for {}", headerListItem.getValue());
                             }
-                        };
+                        }
                         access = new WoTAccess(target, contentType, headers, auth);
                         break;
                     default:
@@ -260,7 +257,7 @@ public class AccessFactory {
                 // TODO better message (include Triples Map somewhere)
 
                 throw new Error("The Logical Source does not include a SQL query nor a target table.");
-            } else if (tables.get(0).getValue().equals("") || tables.get(0).getValue().equals("\"\"")) {
+            } else if (tables.get(0).getValue().isEmpty() || tables.get(0).getValue().equals("\"\"")) {
                 throw new Error("The table name of a database should not be empty.");
             } else {
                 query = "SELECT * FROM " + tables.get(0).getValue();
@@ -288,7 +285,6 @@ public class AccessFactory {
 
         // - ContentType
         List<Term> contentType = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
-
 
         return new RDBAccess(dsn, database, username, password, query, (contentType.isEmpty() ? "text/csv" : contentType.get(0).getValue()));
     }
