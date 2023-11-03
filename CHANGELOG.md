@@ -17,12 +17,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Build Docker image in two stages, reducing the final image size.
 - LDES EventStreamTarget properties are now all optional.
 - Refactoring to use interfaces where possible (e.g. `ArrayList` -> `List`). This has consequences on the API.
+- Use the DataIO library to handle access to files.
+- Requires Java 17 language level.
 
 ### Fixed
 - Use correct prefix for `EventStreamTarget`s in tests.
 - Refactoring of Executor: code deduplication
-- Use the DataIO library to handle access to files.
-- Requires Java 17 language level.
 - Don't close output streams that don't need closing.
 - Add url decoders to file paths so special characters and spaces work.
 - Test cases: add array initializers to avoid bugs.
