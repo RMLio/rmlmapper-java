@@ -9,20 +9,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MapperTargetTest extends TestCore {
+    final static Logger logger = LoggerFactory.getLogger(MapperTargetTest.class);
     private static int PORTNUMBER_SPARQL;
     private static int PORTNUMBER_API;
     private FusekiServer server;
@@ -52,7 +53,7 @@ public class MapperTargetTest extends TestCore {
             assertTrue(firstOutputFile.delete());
             assertTrue(outputFile.delete());
         } catch (Exception e) {
-            e.printStackTrace();
+           logger.warn("Could not delete temporary files {} or {}", firstTempMappingPath, tempMappingPath, e);
         }
     }
 
@@ -141,7 +142,7 @@ public class MapperTargetTest extends TestCore {
             File outputFile = Utils.getFile(tempMappingPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Could not delete temporary file {}", tempMappingPath, e);
         }
     }
 
@@ -166,7 +167,7 @@ public class MapperTargetTest extends TestCore {
             File outputFile = Utils.getFile(tempMappingPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Could not delete temporary file {}", tempMappingPath, e);
         }
     }
 
@@ -191,7 +192,7 @@ public class MapperTargetTest extends TestCore {
             File outputFile = Utils.getFile(tempMappingPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Could not delete temporary file {}", tempMappingPath, e);
         }
     }
 
@@ -217,7 +218,7 @@ public class MapperTargetTest extends TestCore {
             File outputFile = Utils.getFile(tempMappingPath);
             assertTrue(outputFile.delete());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Could not delete temporary file {}", tempMappingPath, e);
         }
     }
 

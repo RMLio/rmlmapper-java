@@ -12,14 +12,12 @@ import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import ch.qos.logback.classic.Level;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,17 +30,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public abstract class TestCore {
 
     final String DEFAULT_BASE_IRI = "http://example.com/base/";
-    final ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    final static Logger logger = LoggerFactory.getLogger(TestCore.class);
     // Mapping options to be applied by the MappingConformer
     protected static Map<String, String> mappingOptions = new HashMap<>();
-
-    protected TestCore(){
-        if(System.getenv("VERBOSE") != null){
-            logger.setLevel(Level.DEBUG);
-            logger.debug("Set logger level to DEBUG because of system env VERBOSE value " + System.getenv("VERBOSE"));
-        }
-    }
-
 
     /**
      *  Note: the created Executor will run in best effort mode

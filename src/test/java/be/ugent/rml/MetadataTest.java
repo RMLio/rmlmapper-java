@@ -2,6 +2,8 @@ package be.ugent.rml;
 
 import be.ugent.rml.cli.Main;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -13,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * So when making tests, make sure to use the exact same format as the mapper output.
  */
 public class MetadataTest extends TestCore {
+    private final static Logger logger = LoggerFactory.getLogger(MetadataTest.class);
 
     @Test
     public void datasetLevelTest() throws Exception {
@@ -80,7 +83,7 @@ public class MetadataTest extends TestCore {
             }
             assertTrue(outputFile.delete());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Could not clean up temporary files", e);
         }
     }
 }
