@@ -14,6 +14,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 @Testcontainers
 public abstract class DBTestCore extends TestCore {
