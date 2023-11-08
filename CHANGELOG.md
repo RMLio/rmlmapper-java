@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+
 ### Improvements
 - Add support for detecting additions, modifications, and deletions in a Knowledge Graph with FnO functions.
 - Verify LDES EventStreamTarget output for additions, modifications, and deletions.
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - LDES EventStreamTarget properties are now all optional.
 - Use the DataIO library to handle access to files.
 - Requires Java 17 language level.
+- Removed usage of legacy RDF model, using RDF4J instead.
 
 ### Fixed
 - Don't close output streams that don't need closing.
