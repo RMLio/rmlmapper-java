@@ -1,5 +1,6 @@
 package be.ugent.rml.term;
 
+import be.ugent.rml.Utils;
 import org.eclipse.rdf4j.model.impl.SimpleBNode;
 
 public class BlankNode extends SimpleBNode implements Term {
@@ -8,12 +9,8 @@ public class BlankNode extends SimpleBNode implements Term {
         super(suffix);
     }
 
-    public BlankNode() { super(); }
+    public BlankNode() { this(Utils.randomString(10)); }
 
-    @Override
-    public String toString() {
-        return "_:" + this.getValue();
-    }
 
     @Override
     public boolean equals(Object o) {
