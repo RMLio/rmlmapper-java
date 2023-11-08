@@ -1,6 +1,8 @@
 package be.ugent.rml.term;
 
-public class NamedNode extends AbstractTerm {
+import org.eclipse.rdf4j.model.impl.SimpleIRI;
+
+public class NamedNode extends SimpleIRI implements Term{
 
     public NamedNode(final String iri) {
         super(iri);
@@ -8,7 +10,7 @@ public class NamedNode extends AbstractTerm {
 
     @Override
     public String toString() {
-        return "<" + this.getValue() + ">";
+        return "<" + this.stringValue() + ">";
     }
 
     @Override
@@ -19,4 +21,10 @@ public class NamedNode extends AbstractTerm {
             return false;
         }
     }
+
+    @Override
+    public String getValue() {
+        return this.stringValue();
+    }
+
 }

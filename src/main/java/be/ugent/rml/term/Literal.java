@@ -1,8 +1,12 @@
 package be.ugent.rml.term;
 
-public class Literal extends AbstractTerm {
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.impl.SimpleLiteral;
 
-    private String language;
+import java.util.Optional;
+
+public class Literal extends SimpleLiteral implements Term {
+
     private Term datatype;
 
     public Literal(String value) {
@@ -10,9 +14,7 @@ public class Literal extends AbstractTerm {
     }
 
     public Literal(String value, String language) {
-        this(value);
-
-        this.language = language;
+        super(value, language);
     }
 
     public Literal(String value, Term datatype) {
@@ -21,20 +23,17 @@ public class Literal extends AbstractTerm {
         this.datatype = datatype;
     }
 
-    public String getLanguage() {
-        return language;
-    }
-
-    public Term getDatatype() {
-        return datatype;
+    @Override
+    public IRI getDatatype(){
+        return (NamedNode) datatype;
     }
 
     @Override
     public String toString() {
         String temp = "\"" + escapeValue(this.getValue()) + "\"";
 
-        if (this.language != null && !this.language.equals("")) {
-            temp += "@" + this.language;
+        if (getLanguage().isPresent() && !getLanguage().get().isEmpty()) {
+            temp += "@" + getLanguage().get();
         } else if (this.datatype != null && ! this.datatype.getValue().equals("http://www.w3.org/2001/XMLSchema#string")) {
             // https://www.w3.org/TR/turtle/#h4_turtle-literals
             // > If there is no datatype IRI and no language tag, the datatype is xsd:string.
@@ -81,5 +80,10 @@ public class Literal extends AbstractTerm {
         }
 
         return result;
+    }
+
+    @Override
+    public String getValue() {
+        return this.stringValue();
     }
 }

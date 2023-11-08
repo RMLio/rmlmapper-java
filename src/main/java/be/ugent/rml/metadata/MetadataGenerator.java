@@ -77,7 +77,7 @@ public class MetadataGenerator {
     }
 
     public MetadataGenerator(DETAIL_LEVEL detailLevel, String outputFile, String[] mappingFiles, QuadStore inputData) {
-        this(detailLevel, outputFile, mappingFiles, inputData, new SimpleQuadStore());
+        this(detailLevel, outputFile, mappingFiles, inputData, new RDF4JStore());
     }
 
     /**
