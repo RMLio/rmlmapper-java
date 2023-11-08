@@ -12,7 +12,6 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
-import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
@@ -642,10 +641,6 @@ public class Main {
     }
 
     private static QuadStore getStoreForFormat(String outputFormat) {
-        if (outputFormat == null || outputFormat.equals("nquads") || outputFormat.equals("hdt")) {
-            return new SimpleQuadStore();
-        } else {
-            return new RDF4JStore();
-        }
+        return new RDF4JStore();
     }
 }
