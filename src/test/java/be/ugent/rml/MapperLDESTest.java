@@ -7,8 +7,10 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
-import be.ugent.rml.term.NamedNode;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,8 +23,12 @@ import java.nio.file.NoSuchFileException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MapperLDESTest extends TestCore {
+
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
+
     private static Agent functionAgent;
-    private static NamedNode LDES_LOGICAL_TARGET_IRI = new NamedNode("http://example.com/rules/#LDESLogicalTarget");
+    private static IRI LDES_LOGICAL_TARGET_IRI = valueFactory.createIRI("http://example.com/rules/#LDESLogicalTarget");
     private static TargetFactory targetFactory = new TargetFactory(System.getProperty("user.dir"));
 
     @AfterEach
@@ -53,7 +59,7 @@ public class MapperLDESTest extends TestCore {
      * @throws Exception
      */
     private void executeLDESMapping(String baseMappingPath, String baseOutputPath, String changeMappingPath,
-                                    String changeOutputPath, NamedNode LDESLogicalTarget) throws Exception {
+                                    String changeOutputPath, IRI LDESLogicalTarget) throws Exception {
         QuadStore outputStore;
         String expectedString;
         String resultString;
@@ -98,7 +104,7 @@ public class MapperLDESTest extends TestCore {
     @Test
     public void evaluate_repeat_LDES() throws Exception {
         Executor executor = this.createExecutor("./web-of-things/ldes/generation/repeat/mapping.ttl", functionAgent);
-        executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
+        executor.execute(null).get(valueFactory.createIRI("rmlmapper://default.store"));
         IDLabFunctions.saveState();
         executor = this.createExecutor("./web-of-things/ldes/generation/repeat/mapping.ttl", functionAgent);
         doMapping(executor, "./web-of-things/ldes/generation/repeat/output.nq");
@@ -107,10 +113,10 @@ public class MapperLDESTest extends TestCore {
     @Test
     public void evaluate_partial_repeat_LDES() throws Exception {
         Executor executor = this.createExecutor("./web-of-things/ldes/generation/partial/mapping.ttl", functionAgent);
-        QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
+        QuadStore result = executor.execute(null).get(valueFactory.createIRI("rmlmapper://default.store"));
         IDLabFunctions.saveState();
         executor = this.createExecutor("./web-of-things/ldes/generation/partial/mapping2.ttl", functionAgent);
-        QuadStore result_second = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
+        QuadStore result_second = executor.execute(null).get(valueFactory.createIRI("rmlmapper://default.store"));
         assertEquals(3, result.size());
         assertEquals(1, result_second.size());
 

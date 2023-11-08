@@ -4,9 +4,10 @@ import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
-import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.common.net.ParsedIRI;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NamedNodeGenerator extends TermGenerator {
+
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
     private static final Logger logger = LoggerFactory.getLogger(NamedNodeGenerator.class);
 
     // Base IRI to prepend to a relative IRI to make it absolute.
@@ -31,9 +35,9 @@ public class NamedNodeGenerator extends TermGenerator {
     }
 
     @Override
-    public List<Term> generate(Record record) throws Exception {
+    public List<Value> generate(Record record) throws Exception {
         List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(record));
-        ArrayList<Term> objects = new ArrayList<>();
+        ArrayList<Value> objects = new ArrayList<>();
 
         if (!objectStrings.isEmpty()) {
             for (String object : objectStrings) {
@@ -58,7 +62,7 @@ public class NamedNodeGenerator extends TermGenerator {
                     }
                 }
 
-                objects.add(new NamedNode(iri));
+                objects.add(valueFactory.createIRI(iri));
             }
         }
 

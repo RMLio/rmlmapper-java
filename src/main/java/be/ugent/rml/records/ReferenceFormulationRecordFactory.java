@@ -3,7 +3,7 @@ package be.ugent.rml.records;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.term.Term;
+import org.eclipse.rdf4j.model.Value;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,5 +22,5 @@ public interface ReferenceFormulationRecordFactory {
      * @return a list of records.
      * @throws IOException
      */
-    List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception;
+    List<Record> getRecords(Access access, Value logicalSource, QuadStore rmlStore) throws Exception;
 }

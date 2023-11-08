@@ -1,8 +1,8 @@
 package be.ugent.rml.functions;
 
-import be.ugent.rml.term.Term;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.eclipse.rdf4j.model.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
  */
 public class FunctionModel {
 
-    private final List<Term> parameters; // parameters urls
-    private final List<Term> outputs; // output types
-    private Term URI;
+    private final List<Value> parameters; // parameters urls
+    private final List<Value> outputs; // output types
+    private Value URI;
     private Method method;
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public FunctionModel(Term URI, Method m, List<Term> parameters, List<Term> outputs) {
+    public FunctionModel(Value URI, Method m, List<Value> parameters, List<Value> outputs) {
         this.URI = URI;
         this.method = m;
         this.parameters = parameters;
@@ -48,7 +48,7 @@ public class FunctionModel {
         return null;
     }
 
-    public Term getURI() {
+    public Value getURI() {
         return URI;
     }
 
@@ -57,10 +57,10 @@ public class FunctionModel {
         Type[] paramTypes = this.method.getGenericParameterTypes();
 
         for (int i = 0; i < this.parameters.size(); i++) {
-            if (parameters.get(this.parameters.get(i).getValue()) != null) {
-                args[i] = parseParameter(parameters.get(this.parameters.get(i).getValue()), paramTypes[i].getTypeName());
+            if (parameters.get(this.parameters.get(i).stringValue()) != null) {
+                args[i] = parseParameter(parameters.get(this.parameters.get(i).stringValue()), paramTypes[i].getTypeName());
             } else {
-                logger.debug("No argument was found for following parameter: {}", this.parameters.get(i).getValue());
+                logger.debug("No argument was found for following parameter: {}", this.parameters.get(i).stringValue());
                 args[i] = null;
             }
         }

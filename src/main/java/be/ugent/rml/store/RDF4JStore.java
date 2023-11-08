@@ -1,9 +1,6 @@
 package be.ugent.rml.store;
 
-import be.ugent.rml.term.BlankNode;
-import be.ugent.rml.term.Literal;
-import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.term.Term;
+import org.apache.jena.base.Sys;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.*;
 import org.eclipse.rdf4j.model.util.Models;
@@ -29,6 +26,8 @@ import java.util.regex.Pattern;
  */
 public class RDF4JStore extends QuadStore {
 
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
     private static final Logger logger = LoggerFactory.getLogger(RDF4JStore.class);
     private Model model;
     private int triplesWithGraphCounter;
@@ -48,7 +47,7 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public void addQuad(Term subject, Term predicate, Term object, Term graph) {
+    public void addQuad(Value subject, Value predicate, Value object, Value graph) {
         Resource s = getFilterSubject(subject);
         IRI p = getFilterPredicate(predicate);
         Value o = getFilterObject(object);
@@ -62,8 +61,8 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public List<Term> getSubjects() {
-        List<Term> terms = new ArrayList<>();
+    public List<Value> getSubjects() {
+        List<Value> terms = new ArrayList<>();
         for (Resource subject : model.subjects()) {
             terms.add(convertStringToTerm(subject.toString()));
         }
@@ -71,7 +70,7 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {
+    public List<Quad> getQuads(Value subject, Value predicate, Value object, Value graph) {
         Model result;
         Resource filterSubject = getFilterSubject(subject);
         IRI filterPredicate = getFilterPredicate(predicate);
@@ -88,9 +87,9 @@ public class RDF4JStore extends QuadStore {
         List<Quad> quads = new ArrayList<>();
 
         for (Statement st : result) {
-            Term s = convertStringToTerm(st.getSubject().toString());
-            Term p = convertStringToTerm(st.getPredicate().toString());
-            Term o = convertStringToTerm(st.getObject().toString());
+            Value s = convertStringToTerm(st.getSubject().toString());
+            Value p = convertStringToTerm(st.getPredicate().toString());
+            Value o = convertStringToTerm(st.getObject().toString());
 
             if (st.getContext() == null) {
                 quads.add(new Quad(s, p, o));
@@ -202,7 +201,7 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public void removeQuads(Term subject, Term predicate, Term object, Term graph) {
+    public void removeQuads(Value subject, Value predicate, Value object, Value graph) {
         Resource filterSubject = getFilterSubject(subject);
         IRI filterPredicate = getFilterPredicate(predicate);
         Value filterObject = getFilterObject(object);
@@ -211,7 +210,7 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public boolean contains(Term subject, Term predicate, Term object, Term graph) {
+    public boolean contains(Value subject, Value predicate, Value object, Value graph) {
         Resource filterSubject = getFilterSubject(subject);
         IRI filterPredicate = getFilterPredicate(predicate);
         Value filterObject = getFilterObject(object);
@@ -240,69 +239,67 @@ public class RDF4JStore extends QuadStore {
         }
     }
 
-    private Resource getFilterSubject(Term subject) {
+    private Resource getFilterSubject(Value subject) {
         if (subject != null) {
             ValueFactory vf = SimpleValueFactory.getInstance();
 
-            if (subject instanceof BlankNode) {
-                return vf.createBNode(subject.getValue());
+            if (subject.isBNode()) {
+                return vf.createBNode(subject.stringValue());
             } else {
-                return vf.createIRI(subject.getValue());
+                return vf.createIRI(subject.stringValue());
             }
         } else {
             return null;
         }
     }
 
-    private IRI getFilterPredicate(Term predicate) {
+    private IRI getFilterPredicate(Value predicate) {
         if (predicate != null) {
-            return SimpleValueFactory.getInstance().createIRI(predicate.getValue());
+            return SimpleValueFactory.getInstance().createIRI(predicate.stringValue());
         } else {
             return null;
         }
     }
 
-    private Value getFilterObject(Term object) {
+    private Value getFilterObject(Value object) {
         if (object != null) {
-            ValueFactory vf = SimpleValueFactory.getInstance();
 
-            if (object instanceof BlankNode) {
-                return vf.createBNode(object.getValue());
-            } else if (object instanceof Literal) {
+            if (object.isBNode()) {
+                return valueFactory.createBNode(object.stringValue());
+            } else if (object.isLiteral()) {
                 Literal literal = (Literal) object;
-
                 if (literal.getDatatype() != null) {
-                    return vf.createLiteral(object.getValue(), vf.createIRI(literal.getDatatype().getValue()));
-                } else if (literal.getLanguage() != null) {
-                    return vf.createLiteral(object.getValue(), literal.getLanguage());
+                    return valueFactory.createLiteral(object.stringValue(), literal.getDatatype());
+                } else if (literal.getLanguage().isPresent()) {
+                    return valueFactory.createLiteral(object.stringValue(), literal.getLanguage().get());
                 } else {
-                    return vf.createLiteral(object.getValue());
+                    return valueFactory.createLiteral(object.stringValue());
                 }
             } else {
-                return vf.createIRI(object.getValue());
+                return valueFactory.createIRI(object.stringValue());
             }
         } else {
             return null;
         }
     }
 
-    private Resource getFilterGraph(Term graph) {
+    private Resource getFilterGraph(Value graph) {
         return getFilterSubject(graph);
     }
 
     /**
-     * Convert given string to Term
+     * Convert given string to Value
      *
      * @param str
      * @return
      */
-    // TODO refactor Term class to use library (Jena/RDF4J) and have this built-in
-    private Term convertStringToTerm(String str) {
+    // TODO refactor Value class to use library (Jena/RDF4J) and have this built-in
+    private Value convertStringToTerm(String str) {
         if (str.startsWith("_:")) {
-            return new BlankNode(str.replace("_:", ""));
+            return valueFactory.createBNode(str.replace("_:", ""));
         } else if (str.startsWith("\"\"\"")) {
             // Triple quoted literal
-            return new Literal(str.substring(4, str.length() - 3));
+            return valueFactory.createLiteral(str.substring(4, str.length() - 3));
         } else if (str.startsWith("\"")) {
             Pattern pattern;
             boolean hasLanguage = str.contains("@") && str.lastIndexOf("@") > str.lastIndexOf("\"");
@@ -319,17 +316,17 @@ public class RDF4JStore extends QuadStore {
 
             if (matcher.find()) {
                 if (hasLanguage) {
-                    return new Literal(matcher.group(1), matcher.group(2));
+                    return valueFactory.createLiteral(matcher.group(1), matcher.group(2));
                 } else if (hasDatatype) {
-                    return new Literal(matcher.group(1), new NamedNode(matcher.group(2)));
+                    return valueFactory.createLiteral(matcher.group(1), valueFactory.createIRI(matcher.group(2)));
                 } else {
-                    return new Literal(matcher.group(1));
+                    return valueFactory.createLiteral(matcher.group(1));
                 }
             } else {
                 throw new Error("Invalid Literal: " + str);
             }
         } else {
-            return new NamedNode(str);
+            return valueFactory.createIRI(str);
         }
     }
 }

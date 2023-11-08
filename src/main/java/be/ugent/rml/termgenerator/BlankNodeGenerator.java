@@ -4,13 +4,17 @@ import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.Executor;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
-import be.ugent.rml.term.BlankNode;
-import be.ugent.rml.term.Term;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BlankNodeGenerator extends TermGenerator {
+
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
 
     public BlankNodeGenerator() {
         this(null);
@@ -21,17 +25,17 @@ public class BlankNodeGenerator extends TermGenerator {
     }
 
     @Override
-    public List<Term> generate(Record record) throws Exception {
-        ArrayList<Term> nodes = new ArrayList<>();
+    public List<Value> generate(Record record) throws Exception {
+        ArrayList<Value> nodes = new ArrayList<>();
 
         if (this.functionExecutor != null) {
             List<String> objectStrings = FunctionUtils.functionObjectToList(functionExecutor.execute(record));
 
             objectStrings.forEach(object -> {
-                nodes.add(new BlankNode(object));
+                nodes.add(valueFactory.createBNode(object));
             });
         } else {
-            nodes.add(new BlankNode("" + Executor.getNewBlankNodeID()));
+            nodes.add(valueFactory.createBNode( Executor.getNewBlankNodeID()));
         }
 
         return nodes;

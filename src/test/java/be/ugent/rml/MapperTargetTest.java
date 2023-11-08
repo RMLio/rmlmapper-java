@@ -1,10 +1,12 @@
 package be.ugent.rml;
 
-import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.term.Term;
+
 import com.sun.net.httpserver.HttpServer;
 import org.apache.jena.fuseki.main.FusekiServer;
 import org.apache.jena.query.DatasetFactory;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,9 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MapperTargetTest extends TestCore {
+
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
     final static Logger logger = LoggerFactory.getLogger(MapperTargetTest.class);
     private static int PORTNUMBER_SPARQL;
     private static int PORTNUMBER_API;
@@ -39,9 +44,9 @@ public class MapperTargetTest extends TestCore {
         // Replace PORT number in mapping file
         String firstTempMappingPath = replaceKeyInMappingFile("./web-of-things/logical-target/sparql/mapping.ttl", "%PORT%", "" + PORTNUMBER_SPARQL);
         String tempMappingPath = replaceKeyInMappingFile(firstTempMappingPath, "%APIPORT%", "" + PORTNUMBER_API);
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetSPARQL"), "./web-of-things/logical-target/sparql/out-sparql.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/logical-target/sparql/out-default.nq");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetSPARQL"), "./web-of-things/logical-target/sparql/out-sparql.nq");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "./web-of-things/logical-target/sparql/out-default.nq");
         doMapping(tempMappingPath, outPaths, "./web-of-things/logical-target/private-security-data.ttl");
 
         webApi.stop(0);
@@ -65,9 +70,9 @@ public class MapperTargetTest extends TestCore {
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/logical-target/local-file/void/out-local-file.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/logical-target/local-file/void/out-default.nq");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetDump"), "web-of-things/logical-target/local-file/void/out-local-file.nq");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "web-of-things/logical-target/local-file/void/out-default.nq");
         doMapping("web-of-things/logical-target/local-file/void/mapping.ttl", outPaths, "./web-of-things/logical-target/private-security-data.ttl");
 
         webApi.stop(0);
@@ -81,9 +86,9 @@ public class MapperTargetTest extends TestCore {
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/logical-target/local-file/dcat/out-local-file.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/logical-target/local-file/dcat/out-default.nq");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetDump"), "web-of-things/logical-target/local-file/dcat/out-local-file.nq");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "web-of-things/logical-target/local-file/dcat/out-default.nq");
         doMapping("web-of-things/logical-target/local-file/dcat/mapping.ttl", outPaths, "./web-of-things/logical-target/private-security-data.ttl");
 
         webApi.stop(0);
@@ -97,9 +102,9 @@ public class MapperTargetTest extends TestCore {
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/ldes/defaults/out-local-file.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/ldes/defaults/out-default.nq");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetDump"), "web-of-things/ldes/defaults/out-local-file.nq");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "web-of-things/ldes/defaults/out-default.nq");
         doMapping("web-of-things/ldes/defaults/mapping.ttl", outPaths, "./web-of-things/ldes/private-security-data.ttl");
 
         webApi.stop(0);
@@ -113,9 +118,9 @@ public class MapperTargetTest extends TestCore {
         webApi.setExecutor(null); // creates a default executor
         webApi.start();
 
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "web-of-things/ldes/paths/out-local-file.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "web-of-things/ldes/paths/out-default.nq");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetDump"), "web-of-things/ldes/paths/out-local-file.nq");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "web-of-things/ldes/paths/out-default.nq");
         doMapping("web-of-things/ldes/paths/mapping.ttl", outPaths, "./web-of-things/ldes/private-security-data.ttl");
 
         webApi.stop(0);
@@ -130,9 +135,9 @@ public class MapperTargetTest extends TestCore {
         webApi.start();
 
         String tempMappingPath = replaceSerializationFormatInMappingFile("N-Quads");
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.nq");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.nq");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "./web-of-things/serialization/out-default.nq");
         doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
 
         webApi.stop(0);
@@ -155,9 +160,9 @@ public class MapperTargetTest extends TestCore {
         webApi.start();
 
         String tempMappingPath = replaceSerializationFormatInMappingFile("Turtle");
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.ttl");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.ttl");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.ttl");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "./web-of-things/serialization/out-default.ttl");
         doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
 
         webApi.stop(0);
@@ -180,9 +185,9 @@ public class MapperTargetTest extends TestCore {
         webApi.start();
 
         String tempMappingPath = replaceSerializationFormatInMappingFile("N-Triples");
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.nt");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.nt");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.nt");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "./web-of-things/serialization/out-default.nt");
         doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
 
         webApi.stop(0);
@@ -206,9 +211,9 @@ public class MapperTargetTest extends TestCore {
         webApi.start();
 
         String tempMappingPath = replaceSerializationFormatInMappingFile("JSON-LD");
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.jsonld");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.jsonld");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.jsonld");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "./web-of-things/serialization/out-default.jsonld");
         doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
 
         webApi.stop(0);

@@ -14,6 +14,10 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.*;
 import be.ugent.rml.termgenerator.TermGenerator;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,21 +27,23 @@ import java.util.function.BiConsumer;
 
 public class Executor {
 
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
     private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
     private Initializer initializer;
-    private HashMap<Term, List<Record>> recordsHolders = new HashMap<>();
+    private HashMap<Value, List<Record>> recordsHolders = new HashMap<>();
     /*
      * this map stores for every Triples Map, which is a Term,
      * a map with the record index and the record's corresponding subject, which is a ProvenancedTerm.
      */
-    private HashMap<Term, HashMap<Integer, List<ProvenancedTerm>>> subjectCache;
+    private HashMap<Value, HashMap<Integer, List<ProvenancedTerm>>> subjectCache;
     private QuadStore resultingQuads;
     private QuadStore rmlStore;
-    private HashMap<Term, QuadStore> targetStores;
+    private HashMap<Value, QuadStore> targetStores;
     private RecordsFactory recordsFactory;
     private static int blankNodeCounter;
-    private HashMap<Term, Mapping> mappings;
+    private HashMap<Value, Mapping> mappings;
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
         this(rmlStore, recordsFactory, null, baseIRI, strictMode, functionAgent);
@@ -68,9 +74,9 @@ public class Executor {
         }
 
         // Output stores for Targets in Term Maps
-        for (Map.Entry<Term, Mapping> tm: this.mappings.entrySet()) {
+        for (Map.Entry<Value, Mapping> tm: this.mappings.entrySet()) {
             Mapping mapping = tm.getValue();
-            Set<Term> targets = new HashSet<Term>();
+            Set<Value> targets = new HashSet<>();
 
             // Subject Map
             MappingInfo subjectMapInfo = mapping.getSubjectMappingInfo();
@@ -92,7 +98,7 @@ public class Executor {
             }
 
             // Create stores
-            for (Term t: targets) {
+            for (Value t: targets) {
                 logger.debug("Adding target for {}", t);
                 this.targetStores.put(t, new RDF4JStore());
             }
@@ -106,7 +112,7 @@ public class Executor {
     /*
      * New public API for the V5.X.X. releases
      */
-    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
+    public HashMap<Value, QuadStore> execute(List<Value> triplesMaps, boolean removeDuplicates, MetadataGenerator metadataGenerator) throws Exception {
 
         BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction;
 
@@ -124,14 +130,14 @@ public class Executor {
         return executeWithFunction(triplesMaps, removeDuplicates, pogFunction);
     }
 
-    public HashMap<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
+    public HashMap<Value, QuadStore> executeWithFunction(List<Value> triplesMaps, boolean removeDuplicates, BiConsumer<ProvenancedTerm, PredicateObjectGraph> pogFunction) throws Exception {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
             triplesMaps = this.initializer.getTriplesMaps();
         }
 
         //we execute every mapping
-        for (Term triplesMap : triplesMaps) {
+        for (Value triplesMap : triplesMaps) {
             Mapping mapping = this.mappings.get(triplesMap);
 
             List<Record> records = this.getRecords(triplesMap);
@@ -151,7 +157,7 @@ public class Executor {
                         List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
 
                         mapping.getGraphMappingInfos().forEach(mappingInfo -> {
-                            List<Term> terms = null;
+                            List<Value> terms = null;
 
                             try {
                                 terms = mappingInfo.getTermGenerator().generate(record);
@@ -161,7 +167,7 @@ public class Executor {
                             }
 
                             terms.forEach(term -> {
-                                if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                                if (!term.equals(valueFactory.createIRI(NAMESPACES.RR + "defaultGraph"))) {
                                     subjectGraphs.add(new ProvenancedTerm(term));
                                 }
                             });
@@ -176,12 +182,12 @@ public class Executor {
         }
 
         /* Magic Marker */
-        for (Term triplesMap : triplesMaps) {
+        for (Value triplesMap : triplesMaps) {
             Record record = new MarkerRecord();
             Mapping mapping = this.mappings.get(triplesMap);
             List<ProvenancedTerm> subjects = new ArrayList<>();
             TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
-            List<Term> nodes = null;
+            List<Value> nodes = null;
 
             /* Skip any subjects that are not applicable for the marker */
             if (!generator.magic())
@@ -190,7 +196,7 @@ public class Executor {
             nodes = generator.generate(record);
 
             if (!nodes.isEmpty()) {
-                List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
+                List<Value> targets = mapping.getSubjectMappingInfo().getTargets();
 
                 for (int j=0; j < nodes.size(); j++) {
                     subjects.add(new ProvenancedTerm(nodes.get(j), null, targets));
@@ -204,7 +210,7 @@ public class Executor {
                 if (subject != null) {
                     List<ProvenancedTerm> subjectGraphs = new ArrayList<>();
                     mapping.getGraphMappingInfos().forEach(mappingInfo -> {
-                        List<Term> terms = new ArrayList<>();
+                        List<Value> terms = new ArrayList<>();
 
                         try {
                             TermGenerator generatorGraph = mappingInfo.getTermGenerator();
@@ -215,7 +221,7 @@ public class Executor {
                         }
 
                         terms.forEach(term -> {
-                            if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                            if (!term.equals(valueFactory.createIRI(NAMESPACES.RR + "defaultGraph"))) {
                                 subjectGraphs.add(new ProvenancedTerm(term));
                             }
                         });
@@ -242,7 +248,7 @@ public class Executor {
 
                         if (pogGraphGenerator != null) {
                             pogGraphGenerator.generate(record).forEach(term -> {
-                                if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                                if (!term.equals(valueFactory.createIRI(NAMESPACES.RR + "defaultGraph"))) {
                                     poGraphs.add(new ProvenancedTerm(term));
                                 }
                             });
@@ -263,7 +269,7 @@ public class Executor {
                         }
 
                         if (pogObjectMappingInfo != null && pogObjectGenerator != null) {
-                            List<Term> objects = pogObjectGenerator.generate(record);
+                            List<Value> objects = pogObjectGenerator.generate(record);
                             ArrayList<ProvenancedTerm> provenancedObjects = new ArrayList<>();
 
                             objects.forEach(object -> {
@@ -302,11 +308,11 @@ public class Executor {
         }
 
         // Add the legacy store to the list of targets as well
-        this.targetStores.put(new NamedNode("rmlmapper://default.store"), this.resultingQuads);
+        this.targetStores.put(valueFactory.createIRI("rmlmapper://default.store"), this.resultingQuads);
         return this.targetStores;
     }
 
-    public HashMap<Term, QuadStore> execute(List<Term> triplesMaps) throws Exception {
+    public HashMap<Value, QuadStore> execute(List<Value> triplesMaps) throws Exception {
         return this.execute(triplesMaps, false, null);
     }
 
@@ -322,7 +328,7 @@ public class Executor {
 
             if (pogMapping.getGraphMappingInfo() != null && pogMapping.getGraphMappingInfo().getTermGenerator() != null) {
                 pogMapping.getGraphMappingInfo().getTermGenerator().generate(record).forEach(term -> {
-                    if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                    if (!term.equals(valueFactory.createIRI(NAMESPACES.RR + "defaultGraph"))) {
                         poGraphs.add(new ProvenancedTerm(term));
                     }
                 });
@@ -333,7 +339,7 @@ public class Executor {
             });
 
             if (pogMapping.getObjectMappingInfo() != null && pogMapping.getObjectMappingInfo().getTermGenerator() != null) {
-                List<Term> objects = pogMapping.getObjectMappingInfo().getTermGenerator().generate(record);
+                List<Value> objects = pogMapping.getObjectMappingInfo().getTermGenerator().generate(record);
                 ArrayList<ProvenancedTerm> provenancedObjects = new ArrayList<>();
 
                 objects.forEach(object -> {
@@ -365,8 +371,8 @@ public class Executor {
     }
 
     private boolean generateQuad(ProvenancedTerm subject, ProvenancedTerm predicate, ProvenancedTerm object, ProvenancedTerm graph) {
-        Term g = null;
-        Set<Term> targets = new HashSet<Term>();
+        Value g = null;
+        Set<Value> targets = new HashSet<Value>();
 
         if (subject != null && predicate != null && object != null) {
             if (graph != null) {
@@ -374,15 +380,15 @@ public class Executor {
                 targets.addAll(graph.getTargets());
             }
 
-            if (subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
-                    || subject.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
-                    || predicate.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
-                    || predicate.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
-                    || object.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER)
-                    || object.getTerm().getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED))
+            if (subject.getTerm().stringValue().contains(IDLabFunctions.MAGIC_MARKER)
+                    || subject.getTerm().stringValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || predicate.getTerm().stringValue().contains(IDLabFunctions.MAGIC_MARKER)
+                    || predicate.getTerm().stringValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)
+                    || object.getTerm().stringValue().contains(IDLabFunctions.MAGIC_MARKER)
+                    || object.getTerm().stringValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED))
                 return false;
 
-            if (g != null && (g.getValue().contains(IDLabFunctions.MAGIC_MARKER) || g.getValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)))
+            if (g != null && (g.stringValue().contains(IDLabFunctions.MAGIC_MARKER) || g.stringValue().contains(IDLabFunctions.MAGIC_MARKER_ENCODED)))
                 return false;
 
             // Get all possible targets for triple, the Set guarantees that we don't have duplicates
@@ -392,7 +398,7 @@ public class Executor {
 
             // If we have targets, write to them
             if (!targets.isEmpty()) {
-                for (Term t: targets) {
+                for (Value t: targets) {
                     this.targetStores.get(t).addQuad(subject.getTerm(), predicate.getTerm(), object.getTerm(), g);
                 }
             }
@@ -407,7 +413,7 @@ public class Executor {
         return false;
     }
 
-    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Term triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws Exception {
+    private List<ProvenancedTerm> getIRIsWithConditions(Record record, Value triplesMap, List<MultipleRecordsFunctionExecutor> conditions) throws Exception {
         ArrayList<ProvenancedTerm> goodIRIs = new ArrayList<ProvenancedTerm>();
         ArrayList<List<ProvenancedTerm>> allIRIs = new ArrayList<List<ProvenancedTerm>>();
 
@@ -433,7 +439,7 @@ public class Executor {
         return goodIRIs;
     }
 
-    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Term triplesMap, MultipleRecordsFunctionExecutor condition) throws Exception {
+    private List<ProvenancedTerm> getIRIsWithTrueCondition(Record child, Value triplesMap, MultipleRecordsFunctionExecutor condition) throws Exception {
         Mapping mapping = this.mappings.get(triplesMap);
 
         //iterator over all the records corresponding with @triplesMap
@@ -461,17 +467,17 @@ public class Executor {
         return iris;
     }
 
-    private List<ProvenancedTerm> getSubject(Term triplesMap, Mapping mapping, Record record, int i) throws Exception {
+    private List<ProvenancedTerm> getSubject(Value triplesMap, Mapping mapping, Record record, int i) throws Exception {
         if (!this.subjectCache.containsKey(triplesMap)) {
             this.subjectCache.put(triplesMap, new HashMap<Integer, List<ProvenancedTerm>>());
         }
 
         if (!this.subjectCache.get(triplesMap).containsKey(i)) {
             TermGenerator generator = mapping.getSubjectMappingInfo().getTermGenerator();
-            List<Term> nodes = generator.generate(record);
+            List<Value> nodes = generator.generate(record);
 
             if (!nodes.isEmpty()) {
-                List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
+                List<Value> targets = mapping.getSubjectMappingInfo().getTargets();
                 List<ProvenancedTerm> terms = new ArrayList<>();
                 Metadata meta = new Metadata(triplesMap, mapping.getSubjectMappingInfo().getTerm());
 
@@ -487,7 +493,7 @@ public class Executor {
         return this.subjectCache.get(triplesMap).get(i);
     }
 
-    private List<ProvenancedTerm> getAllIRIs(Term triplesMap) throws Exception {
+    private List<ProvenancedTerm> getAllIRIs(Value triplesMap) throws Exception {
         Mapping mapping = this.mappings.get(triplesMap);
 
         List<Record> records = getRecords(triplesMap);
@@ -503,7 +509,7 @@ public class Executor {
         return iris;
     }
 
-    private List<Record> getRecords(Term triplesMap) throws Exception {
+    private List<Record> getRecords(Value triplesMap) throws Exception {
         if (!this.recordsHolders.containsKey(triplesMap)) {
             this.recordsHolders.put(triplesMap, this.recordsFactory.createRecords(triplesMap, this.rmlStore));
         }
@@ -536,7 +542,7 @@ public class Executor {
         return temp;
     }
 
-    public List<Term> getTriplesMaps() {
+    public List<Value> getTriplesMaps() {
         return initializer.getTriplesMaps();
     }
 
@@ -544,7 +550,7 @@ public class Executor {
         return this.rmlStore;
     }
 
-    public HashMap<Term, QuadStore> getTargets(){
+    public HashMap<Value, QuadStore> getTargets(){
         if (this.targetStores.isEmpty()){
             return null;
         }
@@ -553,18 +559,18 @@ public class Executor {
 
     
     public void verifySources(String basepath) throws Exception {
-        for (Term triplesMap : this.getTriplesMaps()) {
-            List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
-            Term logicalSource = logicalSources.get(0);
-            List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
-            for (Term source : sources) {
-                String value = source.getValue();
-                if (source instanceof Literal) {
+        for (Value triplesMap : this.getTriplesMaps()) {
+            List<Value> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, valueFactory.createIRI(NAMESPACES.RML + "logicalSource"), null));
+            Value logicalSource = logicalSources.get(0);
+            List<Value> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RML + "source"), null));
+            for (Value source : sources) {
+                String value = source.stringValue();
+                if (source.isLiteral()) {
                     InputStream is;
                     if (Utils.isRemoteFile(value)) {
                         is = new RemoteFileAccess(value).getInputStream();
                     } else {
-                        is = new LocalFileAccess(value, basepath, ((Literal) source).getDatatype().getValue()).getInputStream();
+                        is = new LocalFileAccess(value, basepath, ((Literal) source).getDatatype().stringValue()).getInputStream();
                     }
                     is.close(); // close resources.
                 }

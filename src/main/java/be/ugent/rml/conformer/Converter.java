@@ -1,6 +1,7 @@
 package be.ugent.rml.conformer;
 
-import be.ugent.rml.term.Term;
+
+import org.eclipse.rdf4j.model.Value;
 
 import java.util.Map;
 
@@ -14,12 +15,12 @@ interface Converter {
      * @param tm TriplesMap
      * @return true if is specific mapping format false if not
      */
-    boolean detect(Term tm);
+    boolean detect(Value tm);
 
     /**
      * Try to convert mapping language TriplesMap to RML.
      * Has to be atomic. Original model must be recovered if conversion fails.
      * @param tm TriplesMap
      */
-    void convert(Term tm, Map<String, String> mappingOptions) throws Exception;
+    void convert(Value tm, Map<String, String> mappingOptions) throws Exception;
 }

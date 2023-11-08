@@ -1,8 +1,8 @@
 package be.ugent.rml;
 
 import be.ugent.rml.store.Quad;
-import be.ugent.rml.term.Literal;
-import be.ugent.rml.term.NamedNode;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class MapperJSONTest extends TestCore {
+
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
     @Test
     public void evaluate_0000_JSON() {
         doMapping("./test-cases/RMLTC0000-JSON/mapping.ttl", "./test-cases/RMLTC0000-JSON/output.nq");
@@ -226,9 +229,9 @@ public class MapperJSONTest extends TestCore {
             URL url = classLoader.getResource("./test-cases/RMLTC1016-JSON/data.json");
             ArrayList<Quad> extraQuads = new ArrayList<>();
             extraQuads.add(new Quad(
-                    new NamedNode("http://mapping.example.com/source_0"),
-                    new NamedNode("http://semweb.mmlab.be/ns/rml#source"),
-                    new Literal(URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8))));
+                    valueFactory.createIRI("http://mapping.example.com/source_0"),
+                    valueFactory.createIRI("http://semweb.mmlab.be/ns/rml#source"),
+                    valueFactory.createLiteral(URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8))));
 
             Executor executor = createExecutor("./test-cases/RMLTC1016-JSON/mapping.ttl", extraQuads);
             doMapping(executor, "./test-cases/RMLTC1016-JSON/output.nq");

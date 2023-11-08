@@ -1,7 +1,7 @@
 package be.ugent.rml;
 
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
-import be.ugent.rml.term.Term;
+import org.eclipse.rdf4j.model.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class PredicateObjectGraphMapping {
     private final MappingInfo graphMappingInfo;
     private final MappingInfo languageMappingInfo;
     private final List<MultipleRecordsFunctionExecutor> joinConditions;
-    private Term parentTriplesMap;
+    private Value parentTriplesMap;
 
     public PredicateObjectGraphMapping(MappingInfo predicateMappingInfo, MappingInfo objectMappingInfo, MappingInfo graphMappingInfo, MappingInfo languageMappingInfo) {
         this.predicateMappingInfo = predicateMappingInfo;
@@ -29,7 +29,7 @@ public class PredicateObjectGraphMapping {
         }
     }
 
-    public Term getParentTriplesMap() {
+    public Value getParentTriplesMap() {
         return parentTriplesMap;
     }
 
@@ -37,7 +37,7 @@ public class PredicateObjectGraphMapping {
         return joinConditions;
     }
 
-    public void setParentTriplesMap(Term parentTriplesMap) {
+    public void setParentTriplesMap(Value parentTriplesMap) {
         this.parentTriplesMap = parentTriplesMap;
     }
 

@@ -1,12 +1,13 @@
 package be.ugent.rml;
 
-import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.term.Term;
 import com.jayway.jsonpath.Configuration;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -20,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 public class MapperWoTTest extends TestCore {
+
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
     @Test
     public void evaluate_essence_wot_support() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
@@ -27,9 +31,9 @@ public class MapperWoTTest extends TestCore {
         server.setExecutor(null); // creates a default executor
         server.start();
 
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/essence/out-local-file.nt");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/essence/out-default.nq");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("http://example.com/rules/#TargetDump"), "./web-of-things/essence/out-local-file.nt");
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "./web-of-things/essence/out-default.nq");
         doMapping("./web-of-things/essence/mapping.ttl", outPaths, "./web-of-things/essence/private-security-data.ttl");
 
         server.stop(0);
@@ -43,8 +47,8 @@ public class MapperWoTTest extends TestCore {
         server.setExecutor(null); // creates a default executor
         server.start();
 
-        HashMap<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/irail-stations/out-default.nq");
+        HashMap<Value, String> outPaths = new HashMap<>();
+        outPaths.put(valueFactory.createIRI("rmlmapper://default.store"), "./web-of-things/irail-stations/out-default.nq");
         doMapping("./web-of-things/irail-stations/mapping.ttl", outPaths);
 
         server.stop(0);

@@ -2,7 +2,9 @@ package be.ugent.rml.metadata;
 
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.term.*;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import java.util.List;
 import java.time.Instant;
@@ -12,44 +14,47 @@ import java.time.Instant;
  */
 public class DatasetLevelMetadataGenerator {
 
-    public static void createMetadata(Term rdfDataset, Term rdfDatasetGeneration, Term rmlMapper,
-                                      QuadStore result, List<Term> logicalSources,
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
+
+    public static void createMetadata(Value rdfDataset, Value rdfDatasetGeneration, Value rmlMapper,
+                                      QuadStore result, List<Value> logicalSources,
                                       String startTimestamp, String stopTimestamp, String[] mappingFiles) {
         // <#RDF_Dataset>
-        result.addQuad(rdfDataset, new NamedNode(NAMESPACES.RDF + "type"),
-                new NamedNode(NAMESPACES.PROV + "Entity"));
-        result.addQuad(rdfDataset, new NamedNode(NAMESPACES.RDF + "type"),
-                new NamedNode(NAMESPACES.VOID + "Dataset"));
-        result.addQuad(rdfDataset, new NamedNode(NAMESPACES.PROV + "generatedAtTime"),
-                new Literal(Instant.now().toString(), new NamedNode(NAMESPACES.XSD + "dateTime")));
-        result.addQuad(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasGeneratedBy"),
+        result.addQuad(rdfDataset, valueFactory.createIRI(NAMESPACES.RDF + "type"),
+                valueFactory.createIRI(NAMESPACES.PROV + "Entity"));
+        result.addQuad(rdfDataset, valueFactory.createIRI(NAMESPACES.RDF + "type"),
+                valueFactory.createIRI(NAMESPACES.VOID + "Dataset"));
+        result.addQuad(rdfDataset, valueFactory.createIRI(NAMESPACES.PROV + "generatedAtTime"),
+                valueFactory.createLiteral(Instant.now().toString(), valueFactory.createIRI(NAMESPACES.XSD + "dateTime")));
+        result.addQuad(rdfDataset, valueFactory.createIRI(NAMESPACES.PROV + "wasGeneratedBy"),
                 rdfDatasetGeneration);
-        result.addQuad(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasAssociatedWith"),
+        result.addQuad(rdfDataset, valueFactory.createIRI(NAMESPACES.PROV + "wasAssociatedWith"),
                 rmlMapper);
 
         // <#rmlMapper>
-        result.addQuad(rmlMapper, new NamedNode(NAMESPACES.RDF + "type"),
-                new NamedNode(NAMESPACES.PROV + "Agent"));
-        result.addQuad(rmlMapper, new NamedNode(NAMESPACES.PROV + "type"),
-                new NamedNode(NAMESPACES.PROV + "SoftwareAgent"));
+        result.addQuad(rmlMapper, valueFactory.createIRI(NAMESPACES.RDF + "type"),
+                valueFactory.createIRI(NAMESPACES.PROV + "Agent"));
+        result.addQuad(rmlMapper, valueFactory.createIRI(NAMESPACES.PROV + "type"),
+                valueFactory.createIRI(NAMESPACES.PROV + "SoftwareAgent"));
 
         // <#RDFdataset_Generation>
-        result.addQuad(rdfDatasetGeneration, new NamedNode(NAMESPACES.RDF + "type"),
-                new NamedNode(NAMESPACES.PROV + "Activity"));
-        result.addQuad(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "generated"),
+        result.addQuad(rdfDatasetGeneration, valueFactory.createIRI(NAMESPACES.RDF + "type"),
+                valueFactory.createIRI(NAMESPACES.PROV + "Activity"));
+        result.addQuad(rdfDatasetGeneration, valueFactory.createIRI(NAMESPACES.PROV + "generated"),
                 rdfDataset);
-        result.addQuad(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "startedAtTime"),
-                new Literal(startTimestamp, new NamedNode(NAMESPACES.XSD + "dateTime")));
-        result.addQuad(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "endedAtTime"),
-                new Literal(stopTimestamp, new NamedNode(NAMESPACES.XSD + "dateTime")));
+        result.addQuad(rdfDatasetGeneration, valueFactory.createIRI(NAMESPACES.PROV + "startedAtTime"),
+                valueFactory.createLiteral(startTimestamp, valueFactory.createIRI(NAMESPACES.XSD + "dateTime")));
+        result.addQuad(rdfDatasetGeneration, valueFactory.createIRI(NAMESPACES.PROV + "endedAtTime"),
+                valueFactory.createLiteral(stopTimestamp, valueFactory.createIRI(NAMESPACES.XSD + "dateTime")));
         for (String mappingFile : mappingFiles) {
-            result.addQuad(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
-                new NamedNode(String.format("file://%s", mappingFile)));
+            result.addQuad(rdfDatasetGeneration, valueFactory.createIRI(NAMESPACES.PROV + "used"),
+                valueFactory.createIRI(String.format("file://%s", mappingFile)));
         }
-        for (Term logicalSource : logicalSources) {
-            result.addQuad(rdfDataset, new NamedNode(NAMESPACES.PROV + "wasDerivedFrom"),
+        for (Value logicalSource : logicalSources) {
+            result.addQuad(rdfDataset, valueFactory.createIRI(NAMESPACES.PROV + "wasDerivedFrom"),
                     logicalSource);
-            result.addQuad(rdfDatasetGeneration, new NamedNode(NAMESPACES.PROV + "used"),
+            result.addQuad(rdfDatasetGeneration, valueFactory.createIRI(NAMESPACES.PROV + "used"),
                     logicalSource);
         }
     }

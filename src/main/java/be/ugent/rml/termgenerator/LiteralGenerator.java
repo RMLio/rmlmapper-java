@@ -5,9 +5,11 @@ import be.ugent.rml.Utils;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.FunctionUtils;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
-import be.ugent.rml.term.Literal;
-import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.term.Term;
+import org.apache.tika.exception.UnsupportedFormatException;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +18,16 @@ import static be.ugent.rml.Utils.isValidrrLanguage;
 
 public class LiteralGenerator extends TermGenerator {
 
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
+
     // The executor used to get the language for the literal.
     private final SingleRecordFunctionExecutor languageExecutor;
     // The URL of the datatype used for the literal.
-    private final Term datatype;
+    private final Value datatype;
     private final int maxNumberOfTerms;
 
-    private LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, SingleRecordFunctionExecutor languageExecutor, Term datatype, int maxNumberOfTerms) {
+    private LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, SingleRecordFunctionExecutor languageExecutor, Value datatype, int maxNumberOfTerms) {
         super(functionExecutor);
         this.languageExecutor = languageExecutor;
         this.datatype = datatype;
@@ -33,7 +38,7 @@ public class LiteralGenerator extends TermGenerator {
         this(functionExecutor, languageExecutor, null, 0);
     }
 
-    public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, Term datatype) {
+    public LiteralGenerator(SingleRecordFunctionExecutor functionExecutor, Value datatype) {
         this(functionExecutor, null, datatype, 0);
     }
 
@@ -42,8 +47,8 @@ public class LiteralGenerator extends TermGenerator {
     }
 
     @Override
-    public List<Term> generate(Record record) throws Exception {
-        List<Term> objects = new ArrayList<>();
+    public List<Value> generate(Record record) throws Exception {
+        List<Value> objects = new ArrayList<>();
         List<String> objectStrings = FunctionUtils.functionObjectToList(this.functionExecutor.execute(record));
 
         String dataTypeSource = null;
@@ -66,7 +71,7 @@ public class LiteralGenerator extends TermGenerator {
                                 throw new RuntimeException(String.format("Language tag \"%s\" does not conform to BCP 47 standards", language));
                             }
 
-                            objects.add(new Literal(objectString, language));
+                            objects.add(valueFactory.createLiteral(objectString, language));
                         }
                     } catch (Exception e) {
                         // TODO print error message
@@ -74,14 +79,17 @@ public class LiteralGenerator extends TermGenerator {
                     }
                 } else if (datatype != null) {
                     //add datatype if present; language and datatype can't be combined because the language tag implies langString as datatype
-                    objects.add(new Literal(objectString, datatype));
+                    if(!datatype.isIRI()){
+                        throw new RuntimeException("Only NamedNode supported as datatype");
+                    }
+                    objects.add(valueFactory.createLiteral(objectString, (IRI) datatype));
                 } else if (finalDataTypeSource != null) {
                     if (this.functionExecutor instanceof ReferenceExtractor) {
                         objectString = Utils.transformDatatypeString(objectString, finalDataTypeSource);
                     }
-                    objects.add(new Literal(objectString, new NamedNode(finalDataTypeSource)));
+                    objects.add(valueFactory.createLiteral(objectString, valueFactory.createIRI(finalDataTypeSource)));
                 } else {
-                    objects.add(new Literal(objectString));
+                    objects.add(valueFactory.createLiteral(objectString));
                 }
             });
         }

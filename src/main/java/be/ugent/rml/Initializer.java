@@ -3,8 +3,9 @@ package be.ugent.rml;
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.term.Term;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,16 +13,18 @@ import java.util.List;
 
 public class Initializer {
 
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
     private final MappingFactory factory;
     private final QuadStore rmlStore;
-    private final List<Term> triplesMaps;
-    private final HashMap<Term, Mapping> mappings;
+    private final List<Value> triplesMaps;
+    private final HashMap<Value, Mapping> mappings;
 
     public Initializer(final QuadStore rmlStore, final Agent functionAgent, final String baseIRI, final StrictMode strictMode) throws Exception {
         this.rmlStore = rmlStore;
         //we get all the TriplesMaps from the mapping
         this.triplesMaps = this.getAllTriplesMaps();
-        this.mappings = new HashMap<Term, Mapping>();
+        this.mappings = new HashMap<Value, Mapping>();
 
 
         final Agent initialisedFunctionAgent = functionAgent == null ?
@@ -36,19 +39,19 @@ public class Initializer {
     }
 
     private void extractMappings() throws Exception {
-        for (Term triplesMap : triplesMaps) {
+        for (Value triplesMap : triplesMaps) {
             this.mappings.put(triplesMap, factory.createMapping(triplesMap, rmlStore));
         }
     }
 
-    private List<Term> getAllTriplesMaps() {
-        List<Term> maps = Utils.getSubjectsFromQuads(this.rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
+    private List<Value> getAllTriplesMaps() {
+        List<Value> maps = Utils.getSubjectsFromQuads(this.rmlStore.getQuads(null, valueFactory.createIRI(NAMESPACES.RML + "logicalSource"), null));
 
         //filter outer Triples Maps that are used for functions
-        ArrayList<Term> temp = new ArrayList<>();
+        ArrayList<Value> temp = new ArrayList<>();
 
-        for(Term map: maps) {
-            if (this.rmlStore.getQuads(null, new NamedNode(NAMESPACES.FNML + "functionValue"), map).isEmpty()) {
+        for(Value map: maps) {
+            if (this.rmlStore.getQuads(null, valueFactory.createIRI(NAMESPACES.FNML + "functionValue"), map).isEmpty()) {
                 temp.add(map);
             }
         }
@@ -62,11 +65,11 @@ public class Initializer {
         }
     }
 
-    public HashMap<Term, Mapping> getMappings() {
+    public HashMap<Value, Mapping> getMappings() {
         return this.mappings;
     }
 
-    public List<Term> getTriplesMaps() {
+    public List<Value> getTriplesMaps() {
         return this.triplesMaps;
     }
 

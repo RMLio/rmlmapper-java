@@ -1,11 +1,16 @@
 package be.ugent.rml.store;
 
-import be.ugent.rml.term.NamedNode;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SimpleQuadStoreTest {
+
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
+
+
     @Test
     public void get_filtered_quads() {
         String s = "http://example.com/s";
@@ -15,13 +20,13 @@ public class SimpleQuadStoreTest {
 
         SimpleQuadStore store = new SimpleQuadStore();
 
-        store.addQuad(new NamedNode(s), new NamedNode(p1), new NamedNode(o), null);
-        store.addQuad(new NamedNode(s), new NamedNode(p2), new NamedNode(o), null);
+        store.addQuad(valueFactory.createIRI(s), valueFactory.createIRI(p1), valueFactory.createIRI(o), null);
+        store.addQuad(valueFactory.createIRI(s), valueFactory.createIRI(p2), valueFactory.createIRI(o), null);
 
         // get all quads
         assertEquals(2, store.getQuads(null, null, null).size());
 
         // get quads matching the predicate
-        assertEquals(1, store.getQuads(null, new NamedNode(p1), null).size());
+        assertEquals(1, store.getQuads(null, valueFactory.createIRI(p1), null).size());
     }
 }

@@ -10,8 +10,9 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
-import be.ugent.rml.term.NamedNode;
-import be.ugent.rml.term.Term;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,8 @@ import static be.ugent.rml.StrictMode.BEST_EFFORT;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class TestCore {
+
+    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
 
     final String DEFAULT_BASE_IRI = "http://example.com/base/";
     final static Logger logger = LoggerFactory.getLogger(TestCore.class);
@@ -158,7 +161,7 @@ public abstract class TestCore {
      * @param privateSecurityDataPath The path of the private security data file.
      * @return The Executor used to execute the mapping.
      */
-    public Executor doMapping(String mapPath, HashMap<Term, String> outPaths, String privateSecurityDataPath) {
+    public Executor doMapping(String mapPath, HashMap<Value, String> outPaths, String privateSecurityDataPath) {
         try {
             Executor executor = this.createExecutorPrivateSecurityData(mapPath, privateSecurityDataPath);
             doMapping(executor, outPaths);
@@ -176,7 +179,7 @@ public abstract class TestCore {
      * @param outPaths The paths of the files with the expected output.
      * @return The Executor used to execute the mapping.
      */
-    public Executor doMapping(String mapPath, HashMap<Term, String> outPaths) {
+    public Executor doMapping(String mapPath, HashMap<Value, String> outPaths) {
         try {
             Executor executor = this.createExecutor(mapPath);
             doMapping(executor, outPaths);
@@ -215,7 +218,7 @@ public abstract class TestCore {
      * @param outPath The path of the file with the expected output.
      */
     void doMapping(Executor executor, String outPath) throws Exception {
-        QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
+        QuadStore result = executor.execute(null).get(valueFactory.createIRI("rmlmapper://default.store"));
         result.removeDuplicates();
         compareStores(filePathToStore(outPath), result);
     }
@@ -225,21 +228,21 @@ public abstract class TestCore {
      * @param executor The Executor that is used to execute the mapping.
      * @param outPaths The paths of the files with the expected output.
      */
-    void doMapping(Executor executor, HashMap<Term, String> outPaths) throws Exception {
+    void doMapping(Executor executor, HashMap<Value, String> outPaths) throws Exception {
         logger.debug("Comparing target outputs");
         TargetFactory targetFactory = new TargetFactory("http://example.org/rules/");
-        HashMap<Term, QuadStore> results = executor.execute(null);
+        HashMap<Value, QuadStore> results = executor.execute(null);
 
-        for (Map.Entry<Term, String> entry: outPaths.entrySet()) {
-            Term target = entry.getKey();
+        for (Map.Entry<Value, String> entry: outPaths.entrySet()) {
+            Value target = entry.getKey();
             String outPath = entry.getValue();
-            logger.debug("Target: {}", target.getValue());
+            logger.debug("Target: {}", target.stringValue());
             logger.debug("\tOutput path: {}", outPath);
             logger.debug("\tSize: {}", results.get(target).size());
             results.get(target).removeDuplicates();
 
             // Targets may have additional metadata that needs to be included such as LDES encapsulation
-            if (!target.getValue().equals("rmlmapper://default.store")) {
+            if (!target.stringValue().equals("rmlmapper://default.store")) {
                 Target t = targetFactory.getTarget(target, executor.getRMLStore(), results.get(target));
                 results.get(target).addQuads(t.getMetadata());
             }
@@ -281,7 +284,7 @@ public abstract class TestCore {
         try {
             convertToRml(rmlStore);
             Executor executor = createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
-            executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
+            executor.execute(null).get(valueFactory.createIRI("rmlmapper://default.store"));
         } catch (Exception e) {
             // I expected you!
             logger.debug(e.getMessage(), e);
@@ -325,12 +328,12 @@ public abstract class TestCore {
         resultStore = filePathToStore(resultPath);
 
         if (removeTimestamps) {
-            expectedStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
-            resultStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#generatedAtTime"), null);
-            expectedStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
-            resultStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#endedAtTime"), null);
-            expectedStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
-            resultStore.removeQuads(null, new NamedNode("http://www.w3.org/ns/prov#startedAtTime"), null);
+            expectedStore.removeQuads(null, valueFactory.createIRI("http://www.w3.org/ns/prov#generatedAtTime"), null);
+            resultStore.removeQuads(null, valueFactory.createIRI("http://www.w3.org/ns/prov#generatedAtTime"), null);
+            expectedStore.removeQuads(null, valueFactory.createIRI("http://www.w3.org/ns/prov#endedAtTime"), null);
+            resultStore.removeQuads(null, valueFactory.createIRI("http://www.w3.org/ns/prov#endedAtTime"), null);
+            expectedStore.removeQuads(null, valueFactory.createIRI("http://www.w3.org/ns/prov#startedAtTime"), null);
+            resultStore.removeQuads(null, valueFactory.createIRI("http://www.w3.org/ns/prov#startedAtTime"), null);
         }
 
         try {
