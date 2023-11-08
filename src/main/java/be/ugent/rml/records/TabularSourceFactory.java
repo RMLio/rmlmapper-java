@@ -8,10 +8,10 @@ import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +23,6 @@ import java.util.List;
  * This class is a record factory that creates CSV records.
  */
 public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
-
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
-
     private static final Logger logger = LoggerFactory.getLogger(TabularSourceFactory.class);
 
     /**
@@ -38,14 +35,14 @@ public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
      * @throws IOException
      */
     @Override
-    public List<Record> getRecords(Access access, Value logicalSource, QuadStore rmlStore) throws Exception {
-        List<Value> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RML + "source"), null));
-        Value source = sources.get(0);
+    public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
+        List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+        Term source = sources.get(0);
 
-        if (source.isLiteral()) {
+        if (source instanceof Literal) {
             // We are not dealing with something like CSVW.
             // Check for different spreadsheet formats
-            String filePath = source.stringValue();
+            String filePath = source.getValue();
             String extension = FilenameUtils.getExtension(filePath);
             switch (extension) {
                 case "xlsx":
@@ -57,10 +54,10 @@ public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
             }
 
         } else {
-            List<Value> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.RDF + "type"), null));
+            List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
 
             // Check if we are dealing with CSVW.
-            if (sourceType.get(0).stringValue().equals(NAMESPACES.CSVW + "Table")) {
+            if (sourceType.get(0).getValue().equals(NAMESPACES.CSVW + "Table")) {
                 CSVW csvw = new CSVW(rmlStore, logicalSource);
                 return getRecordsForCSV(access, csvw);
             } else {

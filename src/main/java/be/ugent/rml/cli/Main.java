@@ -15,11 +15,10 @@ import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.store.SimpleQuadStore;
 import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import ch.qos.logback.classic.Level;
 import org.apache.commons.cli.*;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.slf4j.Logger;
@@ -39,8 +38,6 @@ import static be.ugent.rml.StrictMode.BEST_EFFORT;
 import static be.ugent.rml.StrictMode.STRICT;
 
 public class Main {
-
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static final Marker fatal = MarkerFactory.getMarker("FATAL");
@@ -376,13 +373,13 @@ public class Main {
             String[] fOptionValue = getOptionValues(functionfileOption, lineArgs, configFile);
             final Agent functionAgent;
 
-            List<Value> triplesMaps = new ArrayList<>();
+            List<Term> triplesMaps = new ArrayList<>();
 
             String tOptionValue = getPriorityOptionValue(triplesmapsOption, lineArgs, configFile);
             if (tOptionValue != null) {
                 List<String> triplesMapsIRI = Arrays.asList(tOptionValue.split(","));
                 triplesMapsIRI.forEach(iri -> {
-                    triplesMaps.add(valueFactory.createIRI(iri));
+                    triplesMaps.add(new NamedNode(iri));
                 });
             }
 
@@ -414,7 +411,7 @@ public class Main {
             QuadStore result = null;
 
             try {
-                HashMap<Value, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
+                HashMap<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
                         metadataGenerator);
 
             } catch (Exception e) {
@@ -424,9 +421,9 @@ public class Main {
                 functionAgent.close();
             }
 
-            HashMap<Value, QuadStore> targets = executor.getTargets();
+            HashMap<Term, QuadStore> targets = executor.getTargets();
             if (targets != null) {
-                result = targets.get(valueFactory.createIRI("rmlmapper://default.store"));
+                result = targets.get(new NamedNode("rmlmapper://default.store"));
                 if(result != null) {
                     result.copyNameSpaces(rmlStore);
                 }
@@ -459,15 +456,15 @@ public class Main {
         }
     }
 
-    private static void writeOutputTargets(HashMap<Value, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault) throws Exception {
+    private static void writeOutputTargets(HashMap<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault) throws Exception {
         boolean hasNoResults = true;
 
         logger.debug("Writing to Targets: {}", targets.keySet());
         TargetFactory targetFactory = new TargetFactory(basePath);
 
-        // Go over each Term and export to the Target if needed
-        for (Map.Entry<Value, QuadStore> termTargetMapping: targets.entrySet()) {
-            Value term = termTargetMapping.getKey();
+        // Go over each term and export to the Target if needed
+        for (Map.Entry<Term, QuadStore> termTargetMapping: targets.entrySet()) {
+            Term term = termTargetMapping.getKey();
             QuadStore store = termTargetMapping.getValue();
 
             if (store.size() > 0) {
@@ -489,7 +486,7 @@ public class Main {
             }
 
             // Default target is exported separately for backwards compatibility reasons
-            if (term.stringValue().equals("rmlmapper://default.store")) {
+            if (term.getValue().equals("rmlmapper://default.store")) {
                 logger.debug("Exporting to default Target");
                 writeOutput(store, outputFileDefault, outputFormatDefault);
             }

@@ -5,14 +5,13 @@ import be.ugent.rml.extractor.Extractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.common.net.ParsedIRI;
-import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.rdfhdt.hdt.enums.RDFNotation;
@@ -44,8 +43,6 @@ import java.util.stream.Stream;
  * General static utility functions
  */
 public class Utils {
-
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
     // Without support for custom registered languages of length 5-8 of the IANA language-subtag-registry
@@ -325,8 +322,8 @@ public class Utils {
         return location.startsWith("https://") || location.startsWith("http://");
     }
 
-    public static List<Value> getSubjectsFromQuads(List<Quad> quads) {
-        ArrayList<Value> subjects = new ArrayList<>();
+    public static List<Term> getSubjectsFromQuads(List<Quad> quads) {
+        ArrayList<Term> subjects = new ArrayList<>();
 
         for (Quad quad : quads) {
             subjects.add(quad.getSubject());
@@ -335,8 +332,8 @@ public class Utils {
         return subjects;
     }
 
-    public static List<Value> getObjectsFromQuads(List<Quad> quads) {
-        ArrayList<Value> objects = new ArrayList<>();
+    public static List<Term> getObjectsFromQuads(List<Quad> quads) {
+        ArrayList<Term> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
             objects.add(quad.getObject());
@@ -349,28 +346,28 @@ public class Utils {
         ArrayList<String> objects = new ArrayList<>();
 
         for (Quad quad : quads) {
-            objects.add((quad.getObject()).stringValue());
+            objects.add(((Literal) quad.getObject()).getValue());
         }
 
         return objects;
     }
 
-    public static List<Value> getList(QuadStore store, Value first) {
-        List<Value> list = new ArrayList<>();
+    public static List<Term> getList(QuadStore store, Term first) {
+        List<Term> list = new ArrayList<>();
 
         return getList(store, first, list);
     }
 
-    public static List<Value> getList(QuadStore store, Value first, List<Value> list) {
-        if (first.equals(valueFactory.createIRI(NAMESPACES.RDF + "nil"))) {
+    public static List<Term> getList(QuadStore store, Term first, List<Term> list) {
+        if (first.equals(new NamedNode(NAMESPACES.RDF + "nil"))) {
             return list;
         }
 
-        Value value = Utils.getObjectsFromQuads(store.getQuads(first, valueFactory.createIRI(NAMESPACES.RDF + "first"), null)).get(0);
-        Value next = Utils.getObjectsFromQuads(store.getQuads(first, valueFactory.createIRI(NAMESPACES.RDF + "rest"), null)).get(0);
+        Term value = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode(NAMESPACES.RDF + "first"), null)).get(0);
+        Term next = Utils.getObjectsFromQuads(store.getQuads(first, new NamedNode(NAMESPACES.RDF + "rest"), null)).get(0);
         list.add(value);
 
-        if (next.equals(valueFactory.createIRI(NAMESPACES.RDF + "nil"))) {
+        if (next.equals(new NamedNode(NAMESPACES.RDF + "nil"))) {
             return list;
         } else {
             list = getList(store, next, list);

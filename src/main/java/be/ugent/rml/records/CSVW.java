@@ -8,9 +8,8 @@ import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +19,10 @@ import java.util.stream.Collectors;
  * This class has as main goal to create a CSVParser for a Logical Source with CSVW.
  */
 public class CSVW {
-
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
-
     private final QuadStore rmlStore;
-    private final Value logicalSource;
+    private final Term logicalSource;
 
-    CSVW(QuadStore rmlStore, Value logicalSource) {
+    CSVW(QuadStore rmlStore, Term logicalSource) {
         this.rmlStore = rmlStore;
         this.logicalSource = logicalSource;
     }
@@ -38,8 +34,8 @@ public class CSVW {
      * @return The list of records in the Access
      */
     List<Record> getRecords(Access access) throws Exception {
-        List<Value> sources = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.logicalSource, valueFactory.createIRI(NAMESPACES.RML + "source"), null));
-        Value source = sources.get(0);
+        List<Term> sources = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+        Term source = sources.get(0);
 
         CSVWConfiguration config = getConfiguration(source);
         List<Record> records = new ArrayList<>();
@@ -50,22 +46,22 @@ public class CSVW {
         return records;
     }
 
-    private CSVWConfiguration getConfiguration(Value logicalSource) {
+    private CSVWConfiguration getConfiguration(Term logicalSource) {
         CSVWConfigurationBuilder configBuilder = CSVWConfiguration.builder();
 
         configBuilder = setOptionList(logicalSource, "null", configBuilder, CSVWConfigurationBuilder::withNulls);
 
         // extract data from dialect
-        List<Value> dialectTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.CSVW + "dialect"), null));
+        List<Term> dialectTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.CSVW + "dialect"), null));
         if (!dialectTerms.isEmpty()) {
-            Value dialect = dialectTerms.get(0);
+            Term dialect = dialectTerms.get(0);
             configBuilder = setDialectOptions(dialect, configBuilder);
         }
 
         return configBuilder.build();
     }
 
-    private CSVWConfigurationBuilder setDialectOptions(Value dialect, CSVWConfigurationBuilder configBuilder) {
+    private CSVWConfigurationBuilder setDialectOptions(Term dialect, CSVWConfigurationBuilder configBuilder) {
         configBuilder = setOptionString(dialect, "commentPrefix", configBuilder, CSVWConfigurationBuilder::withCommentPrefix);
 
         configBuilder = setOptionChar(dialect, "delimiter", configBuilder, CSVWConfigurationBuilder::withDelimiter);
@@ -90,10 +86,10 @@ public class CSVW {
      * @param setter  method of CSVWConfigurationBuilder to call
      * @return a CSVWConfigurationBuilder with the option set if the option is present in the dialect, otherwise the original CSVWConfigurationBuilder is returned
      */
-    private CSVWConfigurationBuilder setOptionString(Value dialect, String option, CSVWConfigurationBuilder builder, StringOptionSetter setter) {
-        List<Value> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(dialect, valueFactory.createIRI(NAMESPACES.CSVW + option), null));
+    private CSVWConfigurationBuilder setOptionString(Term dialect, String option, CSVWConfigurationBuilder builder, StringOptionSetter setter) {
+        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + option), null));
         if (!optionTerms.isEmpty()) {
-            builder = setter.call(builder, optionTerms.get(0).stringValue());
+            builder = setter.call(builder, optionTerms.get(0).getValue());
         }
 
         return builder;
@@ -108,19 +104,19 @@ public class CSVW {
      * @param setter  method of CSVWConfigurationBuilder to call
      * @return a CSVWConfigurationBuilder with the option set if the option is present in the term, otherwise the original CSVWConfigurationBuilder is returned
      */
-    private CSVWConfigurationBuilder setOptionChar(Value term, String option, CSVWConfigurationBuilder builder, CharacterOptionSetter setter) {
-        List<Value> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(term, valueFactory.createIRI(NAMESPACES.CSVW + option), null));
+    private CSVWConfigurationBuilder setOptionChar(Term term, String option, CSVWConfigurationBuilder builder, CharacterOptionSetter setter) {
+        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(term, new NamedNode(NAMESPACES.CSVW + option), null));
         if (!optionTerms.isEmpty()) {
-            builder = setter.call(builder, optionTerms.get(0).stringValue().charAt(0));
+            builder = setter.call(builder, optionTerms.get(0).getValue().charAt(0));
         }
 
         return builder;
     }
 
-    private CSVWConfigurationBuilder setOptionList(Value term, String option, CSVWConfigurationBuilder builder, ListOptionSetter setter) {
-        List<Value> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(term, valueFactory.createIRI(NAMESPACES.CSVW + option), null));
+    private CSVWConfigurationBuilder setOptionList(Term term, String option, CSVWConfigurationBuilder builder, ListOptionSetter setter) {
+        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(term, new NamedNode(NAMESPACES.CSVW + option), null));
         if (!optionTerms.isEmpty()) {
-            List<String> nulls = optionTerms.stream().map(Value::stringValue).collect(Collectors.toList());
+            List<String> nulls = optionTerms.stream().map(Term::getValue).collect(Collectors.toList());
             builder = setter.call(builder, nulls);
         }
 

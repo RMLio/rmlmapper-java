@@ -1,35 +1,35 @@
 package be.ugent.rml.store;
 
-import org.eclipse.rdf4j.model.Value;
+import be.ugent.rml.term.Term;
 
 public class Quad implements Comparable<Quad> {
 
-    private Value subject, predicate, object, graph;
+    private Term subject, predicate, object, graph;
 
-    public Quad(Value subject, Value predicate, Value object, Value graph) {
+    public Quad(Term subject, Term predicate, Term object, Term graph) {
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;
         this.graph = graph;
     }
 
-    public Quad(Value subject, Value predicate, Value object) {
+    public Quad(Term subject, Term predicate, Term object) {
         this(subject, predicate, object, null);
     }
 
-    public Value getSubject() {
+    public Term getSubject() {
         return subject;
     }
 
-    public Value getPredicate() {
+    public Term getPredicate() {
         return predicate;
     }
 
-    public Value getObject() {
+    public Term getObject() {
         return object;
     }
 
-    public Value getGraph() {
+    public Term getGraph() {
         return graph;
     }
 
@@ -66,7 +66,7 @@ public class Quad implements Comparable<Quad> {
         }
     }
 
-    private int compareTerms(Value t1, Value t2) {
+    private int compareTerms(Term t1, Term t2) {
         if (t1 == null || t2 == null) {
             return 0;
         } else {

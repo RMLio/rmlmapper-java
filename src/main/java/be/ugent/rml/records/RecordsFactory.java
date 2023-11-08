@@ -6,9 +6,8 @@ import be.ugent.rml.Utils;
 import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +23,6 @@ import java.util.Map;
  * This class creates records based on RML rules.
  */
 public class RecordsFactory {
-
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
     private Map<Access, Map<String, Map<String, List<Record>>>> recordsCache;
     private AccessFactory accessFactory;
     private Map<String, ReferenceFormulationRecordFactory> referenceFormulationRecordFactoryMap;
@@ -50,30 +47,30 @@ public class RecordsFactory {
      * @return a list of records.
      * @throws IOException
      */
-    public List<Record> createRecords(Value triplesMap, QuadStore rmlStore) throws Exception {
+    public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws Exception {
         // Get Logical Sources.
-        List<Value> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, valueFactory.createIRI(NAMESPACES.RML + "logicalSource"), null));
+        List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
 
         // Check if there is at least one Logical Source.
         if (!logicalSources.isEmpty()) {
-            Value logicalSource = logicalSources.get(0);
+            Term logicalSource = logicalSources.get(0);
 
             Access access = accessFactory.getAccess(logicalSource, rmlStore);
 
             // Get Logical Source information
-            List<Value> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RML + "referenceFormulation"), null));
-            List<Value> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RR + "tableName"), null));
+            List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
+            List<Term> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "tableName"), null));
 
             // If no rml:referenceFormulation is given, but a table is given --> CSV
             if (referenceFormulations.isEmpty() && !tables.isEmpty()) {
                 referenceFormulations = new ArrayList<>();
-                referenceFormulations.add(0, valueFactory.createIRI(ReferenceFormulation.RDB));
+                referenceFormulations.add(0, new NamedNode(ReferenceFormulation.RDB));
             }
 
             if (referenceFormulations.isEmpty()) {
                 throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
             } else {
-                String referenceFormulation = referenceFormulations.get(0).stringValue();
+                String referenceFormulation = referenceFormulations.get(0).getValue();
 
                 return getRecords(access, logicalSource, referenceFormulation, rmlStore);
             }
@@ -129,7 +126,7 @@ public class RecordsFactory {
      * @return a list of records.
      * @throws IOException
      */
-    private List<Record> getRecords(Access access, Value logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
+    private List<Record> getRecords(Access access, Term logicalSource, String referenceFormulation, QuadStore rmlStore) throws Exception {
         String logicalSourceHash = hashLogicalSource(logicalSource, rmlStore);
 
         // Try to get the records from the cache.
@@ -164,14 +161,14 @@ public class RecordsFactory {
      * @param rmlStore the QuadStore of the RML rules.
      * @return a hash for the Logical Source.
      */
-    private String hashLogicalSource(Value logicalSource, QuadStore rmlStore) {
+    private String hashLogicalSource(Term logicalSource, QuadStore rmlStore) {
         List<Quad> quads = rmlStore.getQuads(logicalSource, null, null);
         final String[] hash = {""};
 
         quads.forEach(quad -> {
-            if (!quad.getPredicate().stringValue().equals(NAMESPACES.RML + "source")
-                    && !quad.getPredicate().stringValue().equals(NAMESPACES.RML + "referenceFormulation") ) {
-                hash[0] += quad.getObject().stringValue();
+            if (!quad.getPredicate().getValue().equals(NAMESPACES.RML + "source")
+                    && !quad.getPredicate().getValue().equals(NAMESPACES.RML + "referenceFormulation") ) {
+                hash[0] += quad.getObject().getValue();
             }
         });
 

@@ -3,10 +3,10 @@ package be.ugent.rml.conformer;
 import be.ugent.idlab.knows.dataio.access.DatabaseType;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.store.QuadStore;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 
 import java.util.Map;
 
@@ -19,7 +19,6 @@ import static be.ugent.rml.NAMESPACES.*;
  * Uses the first "a d2rq:Database" it finds as source
  */
 public class R2RMLConverter implements Converter {
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
 
     private QuadStore store;
 
@@ -33,8 +32,8 @@ public class R2RMLConverter implements Converter {
      * @param triplesMap
      * @return true if triplesMap is R2RML (tripleMap contains a rr:logicalTable)
      */
-    public boolean detect(Value triplesMap) {
-        return store.contains(triplesMap, valueFactory.createIRI(RR + "logicalTable"), null);
+    public boolean detect(Term triplesMap) {
+        return store.contains(triplesMap, new NamedNode(RR + "logicalTable"), null);
     }
 
     /**
@@ -49,39 +48,39 @@ public class R2RMLConverter implements Converter {
      *
      * @param triplesMap rr:TriplesMap
      */
-    public void convert(Value triplesMap, Map<String, String> mappingOptions) throws Exception {
+    public void convert(Term triplesMap, Map<String, String> mappingOptions) throws Exception {
         // UNSAFE store changes not yet allowed; check if all required properties are present
-        Value logicalTable;
+        Term logicalTable;
 
         // Get logical table
         try {
             logicalTable = store
-                    .getQuad(triplesMap, valueFactory.createIRI(RR + "logicalTable"), null)
+                    .getQuad(triplesMap, new NamedNode(RR + "logicalTable"), null)
                     .getObject();
         } catch (Exception e) {
             // Also not R2RML
             throw new UnsupportedOperationException("Mapping is either RML without logicalSource or R2RML without logicalTable");
         }
 
-        Value database;
+        Term database;
 
         // SAFE store changes allowed
 
-//        if (! store.contains(null, null, valueFactory.createIRI(D2RQ + "Database"))) {
-        database = valueFactory.createIRI(triplesMap.stringValue() + "_database");
+//        if (! store.contains(null, null, new NamedNode(D2RQ + "Database"))) {
+        database = new NamedNode(triplesMap.getValue() + "_database");
 
         if (mappingOptions != null) {
-            store.addQuad(database, valueFactory.createIRI(RDF + "type"), valueFactory.createIRI(D2RQ + "Database"));
+            store.addQuad(database, new NamedNode(RDF + "type"), new NamedNode(D2RQ + "Database"));
 
             for (Map.Entry<String, String> entry : mappingOptions.entrySet()) {
                 String removePrefix = entry.getKey();
-                store.addQuad(database, valueFactory.createIRI(D2RQ + removePrefix), valueFactory.createLiteral(entry.getValue()));
+                store.addQuad(database, new NamedNode(D2RQ + removePrefix), new Literal(entry.getValue()));
 
                 if (removePrefix.equals("jdbcDSN")) {
                     DatabaseType type = DatabaseType.getDBtype(entry.getValue());
                     String driver = type.getDriver();
 
-                    store.addQuad(database, valueFactory.createIRI(D2RQ + "jdbcDriver"), valueFactory.createLiteral(driver));
+                    store.addQuad(database, new NamedNode(D2RQ + "jdbcDriver"), new Literal(driver));
                 }
             }
         }
@@ -91,24 +90,24 @@ public class R2RMLConverter implements Converter {
 //        }
 
         // Add logical source
-        String logicalSourceIRI = triplesMap.stringValue() + "_logicalSource";
-        Value logicalSource = valueFactory.createIRI(logicalSourceIRI);
+        String logicalSourceIRI = triplesMap.getValue() + "_logicalSource";
+        Term logicalSource = new NamedNode(logicalSourceIRI);
 
-        store.addQuad(triplesMap, valueFactory.createIRI(RML + "logicalSource"), logicalSource, null);
-        store.addQuad(logicalSource, valueFactory.createIRI(RML + "referenceFormulation"),
-                valueFactory.createIRI(NAMESPACES.QL + "CSV")
+        store.addQuad(triplesMap, new NamedNode(RML + "logicalSource"), logicalSource, null);
+        store.addQuad(logicalSource, new NamedNode(RML + "referenceFormulation"),
+                new NamedNode(NAMESPACES.QL + "CSV")
         );
 
         // Also add old R2RML for AccessFactory property
-        store.addQuad(logicalSource, valueFactory.createIRI(RML + "source"),
+        store.addQuad(logicalSource, new NamedNode(RML + "source"),
                 database
         );
-        store.tryPropertyTranslation(logicalTable, valueFactory.createIRI(RR + "sqlQuery"), logicalSource, valueFactory.createIRI(RML + "query"));
-        store.tryPropertyTranslation(logicalTable, valueFactory.createIRI(RR + "tableName"), logicalSource, valueFactory.createIRI(RR + "tableName"));
-        store.tryPropertyTranslation(logicalTable, valueFactory.createIRI(RR + "sqlVersion"), logicalSource, valueFactory.createIRI(RR + "sqlVersion"));
+        store.tryPropertyTranslation(logicalTable, new NamedNode(RR + "sqlQuery"), logicalSource, new NamedNode(RML + "query"));
+        store.tryPropertyTranslation(logicalTable, new NamedNode(RR + "tableName"), logicalSource, new NamedNode(RR + "tableName"));
+        store.tryPropertyTranslation(logicalTable, new NamedNode(RR + "sqlVersion"), logicalSource, new NamedNode(RR + "sqlVersion"));
 
         // Rename on whole store instead of deep search in TriplesMap Resource
-        store.renameAll(valueFactory.createIRI(RR + "column"), valueFactory.createIRI(RML + "reference"));
-        store.removeQuads(triplesMap, valueFactory.createIRI(RR + "logicalTable"), null);
+        store.renameAll(new NamedNode(RR + "column"), new NamedNode(RML + "reference"));
+        store.removeQuads(triplesMap, new NamedNode(RR + "logicalTable"), null);
     }
 }

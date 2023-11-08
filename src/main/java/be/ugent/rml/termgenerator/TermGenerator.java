@@ -2,7 +2,7 @@ package be.ugent.rml.termgenerator;
 
 import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
-import org.eclipse.rdf4j.model.Value;
+import be.ugent.rml.term.Term;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public abstract class TermGenerator {
         this.functionExecutor = functionExecutor;
     }
 
-    public abstract List<Value> generate(Record record) throws Exception;
+    public abstract List<Term> generate(Record record) throws Exception;
 
     /**
      * to string method

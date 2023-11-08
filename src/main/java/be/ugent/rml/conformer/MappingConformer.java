@@ -2,9 +2,8 @@ package be.ugent.rml.conformer;
 
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -25,11 +24,8 @@ import static be.ugent.rml.NAMESPACES.*;
  */
 public class MappingConformer {
 
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
-
-
     private QuadStore store;
-    private List<Value> unconvertedTriplesMaps = new ArrayList<>();
+    private List<Term> unconvertedTriplesMaps = new ArrayList<>();
     private Map<String, String> mappingOptions;
 
     /**
@@ -80,13 +76,13 @@ public class MappingConformer {
         Converter converter = new R2RMLConverter(store);
 
         // grab all terms that contain a subject map
-        List<Value> triplesMaps = Utils.getSubjectsFromQuads(store.getQuads(null, valueFactory.createIRI(RR + "subjectMap"), null));
+        List<Term> triplesMaps = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RR + "subjectMap"), null));
 
         // grab all terms that contain a logical source
-        List<Value> logicalSources = Utils.getSubjectsFromQuads(store.getQuads(null, valueFactory.createIRI(RML + "logicalSource"), null));
+        List<Term> logicalSources = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RML + "logicalSource"), null));
 
         // grab all terms that contain a logical table
-        List<Value> logicalTables = Utils.getSubjectsFromQuads(store.getQuads(null, valueFactory.createIRI(RR + "logicalTable"), null));
+        List<Term> logicalTables = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RR + "logicalTable"), null));
 
         triplesMaps = triplesMaps.stream()
                 .filter(term -> logicalSources.contains(term) || logicalTables.contains(term))
@@ -99,7 +95,7 @@ public class MappingConformer {
         // Find all triples maps
         // This could be more efficient with a while loop,
         // but these TriplesMaps are needed in any case when calling convert().
-        for (Value triplesMap : triplesMaps) {
+        for (Term triplesMap : triplesMaps) {
             if (converter.detect(triplesMap)) {
                 unconvertedTriplesMaps.add(triplesMap);
             }
@@ -117,7 +113,7 @@ public class MappingConformer {
         // TODO generalise for multiple converters
         Converter converter = new R2RMLConverter(store);
 
-        for (Value unconvertedTriplesMap : unconvertedTriplesMaps) {
+        for (Term unconvertedTriplesMap : unconvertedTriplesMaps) {
             converter.convert(unconvertedTriplesMap, mappingOptions);
         }
     }

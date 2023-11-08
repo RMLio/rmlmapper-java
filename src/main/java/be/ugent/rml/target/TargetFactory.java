@@ -4,10 +4,10 @@ import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.apache.commons.lang3.NotImplementedException;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 
 public class TargetFactory {
-
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
 
     // The path used when local paths are not absolute.
     private final String basePath;
@@ -32,34 +30,34 @@ public class TargetFactory {
         this.basePath = basePath;
     }
 
-    private void detectLDESEventStreamTarget(Value logicalTarget, List<Quad> metadata, QuadStore rmlStore, QuadStore outputStore) {
-        List<Value> types = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                valueFactory.createIRI(NAMESPACES.RDF + "type"), null));
-        for (Value type: types) {
+    private void detectLDESEventStreamTarget(Term logicalTarget, List<Quad> metadata, QuadStore rmlStore, QuadStore outputStore) {
+        List<Term> types = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                new NamedNode(NAMESPACES.RDF + "type"), null));
+        for (Term type: types) {
             // Target has LDES features, read them
-            if (type.stringValue().equals(NAMESPACES.LDES + "EventStreamTarget")) {
+            if (type.getValue().equals(NAMESPACES.LDES + "EventStreamTarget")) {
                 logger.error("'{}EventStreamTarget' is not supported anymore. Use '{}/EventStreamTarget'. Not generating LDES metadata!", NAMESPACES.LDES, NAMESPACES.RMLT);
                 return;
-            } else if (type.stringValue().equals(NAMESPACES.RMLT + "EventStreamTarget")) {
+            } else if (type.getValue().equals(NAMESPACES.RMLT + "EventStreamTarget")) {
                 logger.debug("Found RMLT EventStreamTarget");
-                Value iri;
-                Value ldes_iri = null;
-                Value ldes = null;
-                Value versionOfPathObj = null;
-                Value timestampPathObj = null;
-                Value memberTargetClass = null;
+                Term iri;
+                Term ldes_iri = null;
+                Term ldes = null;
+                Term versionOfPathObj = null;
+                Term timestampPathObj = null;
+                Term memberTargetClass = null;
                 boolean ldesGenerateImmutableIRI = false;
 
                 try {
                     // Check if LDES IRI is given
                     iri = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                            valueFactory.createIRI(NAMESPACES.RMLT + "ldesBaseIRI"), null)).get(0);
-                    ldes_iri = valueFactory.createIRI(iri.stringValue());
-                    logger.debug("LDES base IRI: {}", iri.stringValue());
+                            new NamedNode(NAMESPACES.RMLT + "ldesBaseIRI"), null)).get(0);
+                    ldes_iri = new NamedNode(iri.getValue());
+                    logger.debug("LDES base IRI: {}", iri.getValue());
 
                     // LDES RDF type EventStream
-                    metadata.add(new Quad(ldes_iri, valueFactory.createIRI(NAMESPACES.RDF + "type"),
-                        valueFactory.createIRI(NAMESPACES.LDES + "EventStream")));
+                    metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.RDF + "type"),
+                        new NamedNode(NAMESPACES.LDES + "EventStream")));
                 }
                 catch (IndexOutOfBoundsException e) {
                     logger.debug("No LDES metadata will be generated since no LDES base IRI was specified");
@@ -68,7 +66,7 @@ public class TargetFactory {
                 try {
                     // LDES Member configuration properties
                     ldes = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                            valueFactory.createIRI(NAMESPACES.RMLT + "ldes"), null)).get(0);
+                            new NamedNode(NAMESPACES.RMLT + "ldes"), null)).get(0);
                 } catch (IndexOutOfBoundsException e) {
                     logger.debug("No LDES member metadata found.");
                 }
@@ -77,11 +75,11 @@ public class TargetFactory {
                     // Optional SHACL shape
                     if (ldes_iri != null) {
                         try {
-                            Value shape = Utils.getObjectsFromQuads(rmlStore.getQuads(ldes,
-                                valueFactory.createIRI(NAMESPACES.TREE + "shape"), null)).get(0);
-                            logger.debug("SHACL shape: {}", shape.stringValue());
+                            Term shape = Utils.getObjectsFromQuads(rmlStore.getQuads(ldes,
+                                new NamedNode(NAMESPACES.TREE + "shape"), null)).get(0);
+                            logger.debug("SHACL shape: {}", shape.getValue());
                             // TODO: Handle embedded SHACL shapes in RML mapping rules as well.
-                            metadata.add(new Quad(ldes_iri, valueFactory.createIRI(NAMESPACES.TREE + "shape"), shape));
+                            metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.TREE + "shape"), shape));
                         } catch (IndexOutOfBoundsException e) {
                             logger.debug("No TREE SHACL shape specified for LDES.");
                         }
@@ -90,10 +88,10 @@ public class TargetFactory {
                     // Optional versionOf path
                     try {
                         versionOfPathObj = Utils.getObjectsFromQuads(rmlStore.getQuads(ldes,
-                                valueFactory.createIRI(NAMESPACES.LDES + "versionOfPath"), null)).get(0);
-                        logger.debug("VersionOf path: {}", versionOfPathObj.stringValue());
+                                new NamedNode(NAMESPACES.LDES + "versionOfPath"), null)).get(0);
+                        logger.debug("VersionOf path: {}", versionOfPathObj.getValue());
                         if (ldes_iri != null) {
-                            metadata.add(new Quad(ldes_iri, valueFactory.createIRI(NAMESPACES.LDES + "versionOfPath"), versionOfPathObj));
+                            metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.LDES + "versionOfPath"), versionOfPathObj));
                         }
                     } catch (IndexOutOfBoundsException e) {
                         logger.debug("No LDES versionOf path found");
@@ -102,9 +100,9 @@ public class TargetFactory {
                     // Optional timestamp path
                     try {
                         timestampPathObj = Utils.getObjectsFromQuads(rmlStore.getQuads(ldes,
-                                valueFactory.createIRI(NAMESPACES.LDES + "timestampPath"), null)).get(0);
+                                new NamedNode(NAMESPACES.LDES + "timestampPath"), null)).get(0);
                         if (ldes_iri != null) {
-                            metadata.add(new Quad(ldes_iri, valueFactory.createIRI(NAMESPACES.LDES + "timestampPath"), timestampPathObj));
+                            metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.LDES + "timestampPath"), timestampPathObj));
                         }
                     } catch (IndexOutOfBoundsException e) {
                         logger.debug("No LDES timestamp path found");
@@ -113,9 +111,9 @@ public class TargetFactory {
 
                 // Optional unique IRI generation for mutable object IRIs
                 try {
-                    Value generateImmutableIRIObj = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                            valueFactory.createIRI(NAMESPACES.RMLT + "ldesGenerateImmutableIRI"), null)).get(0);
-                    ldesGenerateImmutableIRI = generateImmutableIRIObj.stringValue().equals("true");
+                    Term generateImmutableIRIObj = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                            new NamedNode(NAMESPACES.RMLT + "ldesGenerateImmutableIRI"), null)).get(0);
+                    ldesGenerateImmutableIRI = generateImmutableIRIObj.getValue().equals("true");
                     logger.debug("LDES Immutable IRI generation: {}", ldesGenerateImmutableIRI? "yes": "no");
                 } catch (IndexOutOfBoundsException e) {
                     logger.debug("No LDES generateImmutableIRI found");
@@ -127,15 +125,15 @@ public class TargetFactory {
                  */
                 try {
                     memberTargetClass = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                            valueFactory.createIRI(NAMESPACES.RMLT + "ldesMemberTargetClass"), null)).get(0);
+                            new NamedNode(NAMESPACES.RMLT + "ldesMemberTargetClass"), null)).get(0);
                     logger.debug("LDES member target class: {}", memberTargetClass);
                 } catch (IndexOutOfBoundsException e) {
                     logger.debug("No LDES member target class found");
                 }
 
-                List<Value> ldesMembers;
+                List<Term> ldesMembers;
                 if (memberTargetClass != null)
-                    ldesMembers = Utils.getSubjectsFromQuads(outputStore.getQuads(null, valueFactory.createIRI(NAMESPACES.RDF + "type"), memberTargetClass));
+                    ldesMembers = Utils.getSubjectsFromQuads(outputStore.getQuads(null, new NamedNode(NAMESPACES.RDF + "type"), memberTargetClass));
                 else
                     ldesMembers = outputStore.getSubjects();
 
@@ -146,9 +144,9 @@ public class TargetFactory {
                 long currentTime = System.currentTimeMillis();
                 long seed = (long)(Math.random() * 1000);
                 long index = 0;
-                HashSet<Value> processedMembers = new HashSet<>();
-                for (Value m: ldesMembers) {
-                    Value memberIRI = m;
+                HashSet<Term> processedMembers = new HashSet<>();
+                for (Term m: ldesMembers) {
+                    Term memberIRI = m;
                     if (processedMembers.contains(memberIRI))
                         continue;
 
@@ -157,7 +155,7 @@ public class TargetFactory {
 
                     if (ldesGenerateImmutableIRI) {
                         /* avoid collisions by combining current time with a seed and a specific index for each member */
-                        memberIRI = valueFactory.createIRI(m.stringValue() + "#" + (currentTime + seed + index));
+                        memberIRI = new NamedNode(m.getValue() + "#" + (currentTime + seed + index));
 
                         /*
                          * Add member versionOf if versionOf path is specified. If the mapping already provided one,
@@ -165,11 +163,11 @@ public class TargetFactory {
                          * the object while the immutable IRI is a version of the object.
                          */
                         if (versionOfPathObj != null) {
-                            List<Value> versionOfObj = Utils.getObjectsFromQuads(outputStore.getQuads(m, versionOfPathObj, null));
+                            List<Term> versionOfObj = Utils.getObjectsFromQuads(outputStore.getQuads(m, versionOfPathObj, null));
                             if (versionOfObj.isEmpty()) {
                                 outputStore.addQuad(new Quad(memberIRI, versionOfPathObj, m));
                             } else {
-                                for (Value v : versionOfObj) {
+                                for (Term v : versionOfObj) {
                                     outputStore.addQuad(new Quad(memberIRI, versionOfPathObj, v));
                                 }
                             }
@@ -181,12 +179,12 @@ public class TargetFactory {
                          * the object while the immutable IRI is a version of the object.
                          */
                         if (timestampPathObj != null) {
-                            List<Value> timestampObj = Utils.getObjectsFromQuads(outputStore.getQuads(m, timestampPathObj, null));
+                            List<Term> timestampObj = Utils.getObjectsFromQuads(outputStore.getQuads(m, timestampPathObj, null));
                             if (timestampObj.isEmpty()) {
                                 outputStore.addQuad(new Quad(memberIRI, timestampPathObj,
-                                    valueFactory.createLiteral(Instant.ofEpochMilli(currentTime).toString(), valueFactory.createIRI(NAMESPACES.XSD + "dateTime"))));
+                                    new Literal(Instant.ofEpochMilli(currentTime).toString(), new NamedNode(NAMESPACES.XSD + "dateTime"))));
                             } else {
-                                for (Value v : timestampObj) {
+                                for (Term v : timestampObj) {
                                     outputStore.addQuad(new Quad(memberIRI, timestampPathObj, v));
                                 }
                             }
@@ -202,7 +200,7 @@ public class TargetFactory {
 
                     // Only materialize if LDES IRI was defined
                     if (ldes_iri != null) {
-                        Quad q = new Quad(ldes_iri, valueFactory.createIRI(NAMESPACES.TREE + "member"), memberIRI);
+                        Quad q = new Quad(ldes_iri, new NamedNode(NAMESPACES.TREE + "member"), memberIRI);
                         metadata.add(q);
                     }
                 }
@@ -218,16 +216,16 @@ public class TargetFactory {
      * @param rmlStore a QuadStore with RML rules.
      * @param outputStore a QuadStore with the RDF triples to write to the target.
      */
-    public Target getTarget(Value logicalTarget, QuadStore rmlStore, QuadStore outputStore) throws NotImplementedException, IOException {
+    public Target getTarget(Term logicalTarget, QuadStore rmlStore, QuadStore outputStore) throws NotImplementedException, IOException {
         Target target = null;
         String serializationFormat = "nquads";
         String compression = null;
         List<Quad> metadata = new ArrayList<>();
 
         // Old Logical Source reference is supported for Logical Targets as well for backwards compatibility
-        if (logicalTarget.isLiteral()) {
+        if (logicalTarget instanceof Literal) {
             logger.warn("Legacy string output path for Target found, do not use, this is only supported for backwards compatibility reasons.");
-            String location = logicalTarget.stringValue();
+            String location = logicalTarget.getValue();
             if (location.endsWith(".nq")) {
                 serializationFormat = "nquads";
             }
@@ -247,12 +245,12 @@ public class TargetFactory {
             return target;
         }
 
-        List<Value> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                valueFactory.createIRI(NAMESPACES.RMLT + "target"), null));
+        List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                new NamedNode(NAMESPACES.RMLT + "target"), null));
 
         // Read serialization format
         try {
-            String sf = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget, valueFactory.createIRI(NAMESPACES.RMLT + "serialization"), null)).get(0).stringValue();
+            String sf = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget, new NamedNode(NAMESPACES.RMLT + "serialization"), null)).get(0).getValue();
             switch (sf) {
                 case NAMESPACES.FORMATS + "N-Triples":
                     serializationFormat = "ntriples";
@@ -278,9 +276,9 @@ public class TargetFactory {
 
         // Read compression
         try {
-            Value comp = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                    valueFactory.createIRI(NAMESPACES.RMLT + "compression"), null)).get(0);
-            switch (comp.stringValue()) {
+            Term comp = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                    new NamedNode(NAMESPACES.RMLT + "compression"), null)).get(0);
+            switch (comp.getValue()) {
                 case NAMESPACES.COMP + "gzip":
                     compression = "gzip";
                     break;
@@ -301,19 +299,19 @@ public class TargetFactory {
 
         // Build target
         if (!targets.isEmpty()) {
-            Value t = targets.get(0);
+            Term t = targets.get(0);
             logger.debug("getTarget() for {}", t.toString());
 
             // If not a literal, then we are dealing with a more complex description.
             String targetType = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
-                    valueFactory.createIRI(NAMESPACES.RDF + "type"), null)).get(0).stringValue();
+                    new NamedNode(NAMESPACES.RDF + "type"), null)).get(0).getValue();
             logger.debug("Target is IRI, target type: {}", targetType);
 
             switch(targetType) {
                 case NAMESPACES.VOID + "Dataset": { // VoID Dataset
                     logger.debug("Target is a VoID Dataset");
                     String location = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
-                            valueFactory.createIRI(NAMESPACES.VOID + "dataDump"), null)).get(0).stringValue();
+                            new NamedNode(NAMESPACES.VOID + "dataDump"), null)).get(0).getValue();
                     location = location.replace("file://", ""); // Local file starts with file://
                     logger.debug("VoID datadump location: {}", location);
                     target = new LocalFileTarget(location, this.basePath, serializationFormat, compression, metadata);
@@ -322,7 +320,7 @@ public class TargetFactory {
                 case NAMESPACES.DCAT + "Dataset": { // DCAT Dataset
                     logger.debug("Target is a DCAT Dataset");
                     String location = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
-                            valueFactory.createIRI(NAMESPACES.DCAT + "dataDump"), null)).get(0).stringValue();
+                            new NamedNode(NAMESPACES.DCAT + "dataDump"), null)).get(0).getValue();
                     location = location.replace("file://", ""); // Local file starts with file://
                     logger.debug("DCAT datadump location: {}", location);
                     target = new LocalFileTarget(location, this.basePath, serializationFormat, compression, metadata);
@@ -331,9 +329,9 @@ public class TargetFactory {
                 case NAMESPACES.SD + "Service": { // SPARQL Service
                     logger.debug("Target is a SD Service");
                     String endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
-                            valueFactory.createIRI(NAMESPACES.SD + "endpoint"), null)).get(0).stringValue();
+                            new NamedNode(NAMESPACES.SD + "endpoint"), null)).get(0).getValue();
                     String supportedLanguage = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
-                            valueFactory.createIRI(NAMESPACES.SD + "supportedLanguage"), null)).get(0).stringValue();
+                            new NamedNode(NAMESPACES.SD + "supportedLanguage"), null)).get(0).getValue();
                     logger.debug("SPARQL Service endpoint: {}", endpoint);
                     logger.debug("SPARQL Service supported language: {}", supportedLanguage);
 

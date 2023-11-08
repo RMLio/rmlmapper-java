@@ -1,35 +1,35 @@
 package be.ugent.rml;
 
+import be.ugent.rml.term.Term;
 import be.ugent.rml.termgenerator.TermGenerator;
-import org.eclipse.rdf4j.model.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MappingInfo {
-    private Value term;
+    private Term term;
     private TermGenerator termGenerator;
-    private List<Value> targets;
+    private List<Term> targets;
 
-    public MappingInfo(Value term, TermGenerator termGenerator, List<Value> targets) {
+    public MappingInfo(Term term, TermGenerator termGenerator, List<Term> targets) {
         this.term = term;
         this.termGenerator = termGenerator;
         this.targets = targets;
     }
 
-    public MappingInfo(Value term, TermGenerator termGenerator) {
+    public MappingInfo(Term term, TermGenerator termGenerator) {
         this.term = term;
         this.termGenerator = termGenerator;
-        this.targets = new ArrayList<Value>();
+        this.targets = new ArrayList<Term>();
     }
 
-    public MappingInfo(Value term, List<Value> targets) {
+    public MappingInfo(Term term, List<Term> targets) {
         this.term = term;
         this.termGenerator = null;
         this.targets = targets;
     }
 
-    public Value getTerm() {
+    public Term getTerm() {
         return term;
     }
 
@@ -37,11 +37,11 @@ public class MappingInfo {
         return termGenerator;
     }
 
-    public List<Value> getTargets() {
+    public List<Term> getTargets() {
         return targets;
     }
 
-    public List<Value> addTargets(List<Value> targets) {
+    public List<Term> addTargets(List<Term> targets) {
         this.targets.addAll(targets);
         return this.targets;
     }

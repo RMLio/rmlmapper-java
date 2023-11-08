@@ -8,8 +8,7 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
 import be.ugent.rml.store.RDF4JStore;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import be.ugent.rml.term.NamedNode;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -18,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class ReadmeFunctionTest {
-
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
 
     @Test
     public void function() {
@@ -49,7 +46,7 @@ public class ReadmeFunctionTest {
             Executor executor = new Executor(rmlStore, factory, outputStore, Utils.getBaseDirectiveTurtle(mappingStream), functionAgent);
 
             // Execute the mapping
-            QuadStore result = executor.execute(null).get(valueFactory.createIRI("rmlmapper://default.store"));
+            QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
 
             // Output the result
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));

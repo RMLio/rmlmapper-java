@@ -5,11 +5,10 @@ import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.SPARQLResultFormat;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.term.Literal;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import org.apache.commons.lang3.NotImplementedException;
-import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,6 @@ import static be.ugent.rml.Utils.isRemoteFile;
  */
 public class AccessFactory {
 
-    private static final ValueFactory valueFactory = SimpleValueFactory.getInstance();
     // The path used when local paths are not absolute.
     private final String basePath;
     final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -44,37 +42,37 @@ public class AccessFactory {
      * @param rmlStore a QuadStore with RML rules.
      * @return an Access instance based on the RML rules in rmlStore.
      */
-    public Access getAccess(Value logicalSource, QuadStore rmlStore) {
-        List<Value> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RML + "source"), null));
+    public Access getAccess(Term logicalSource, QuadStore rmlStore) {
+        List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
         Access access;
 
         // check if at least one source is available.
         if (!sources.isEmpty()) {
-            Value source = sources.get(0);
+            Term source = sources.get(0);
 
             // if we are dealing with a literal,
             // then it's either a local or remote file.
-            if (sources.get(0).isLiteral()) {
-                String value = sources.get(0).stringValue();
+            if (sources.get(0) instanceof Literal) {
+                String value = sources.get(0).getValue();
                 if (isRemoteFile(value)) {
                     access = new RemoteFileAccess(value);
                 } else {
-                    String datatype = ((Literal) sources.get(0)).getDatatype()  == null ? null :((Literal) sources.get(0)).getDatatype().stringValue();
+                    String datatype = ((Literal) sources.get(0)).getDatatype()  == null ? null :((Literal) sources.get(0)).getDatatype().getValue();
                     access = new LocalFileAccess(value, this.basePath, datatype);
 
                 }
             } else {
                 // if not a literal, then we are dealing with a more complex description.
-                List<Value> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.RDF + "type"), null));
+                List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
 
-                switch(sourceType.get(0).stringValue()) {
+                switch(sourceType.get(0).getValue()) {
                     case NAMESPACES.D2RQ + "Database":  // RDBs
                         access = getRDBAccess(rmlStore, source, logicalSource);
 
                         break;
                     case NAMESPACES.SD + "Service":  // SPARQL
                         // Check if SPARQL Endpoint is given
-                        List<Value> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.SD + "endpoint"),
+                        List<Term> endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "endpoint"),
                                 null));
 
                         if (endpoint.isEmpty()) {
@@ -82,28 +80,28 @@ public class AccessFactory {
                         }
 
                         // Get query
-                        List<Value> query = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RML + "query"), null));
+                        List<Term> query = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "query"), null));
                         if (query.isEmpty()) {
                             throw new Error("No SPARQL query found");
                         }
 
-                        List<Value> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RML + "referenceFormulation"), null));
+                        List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
 
                         // Get result format
-                        List<Value> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.SD + "resultFormat"), null));
+                        List<Term> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "resultFormat"), null));
                         SPARQLResultFormat resultFormat = getSPARQLResultFormat(resultFormatObject, referenceFormulations);
 
-                        access = new SPARQLEndpointAccess(resultFormat.getContentType(), endpoint.get(0).stringValue(), query.get(0).stringValue());
+                        access = new SPARQLEndpointAccess(resultFormat.getContentType(), endpoint.get(0).getValue(), query.get(0).getValue());
 
                         break;
                     case NAMESPACES.CSVW + "Table": // CSVW
-                        List<Value> urls = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.CSVW + "url"), null));
+                        List<Term> urls = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.CSVW + "url"), null));
 
                         if (urls.isEmpty()) {
                             throw new Error("No url found for the CSVW Table");
                         }
 
-                        String value = urls.get(0).stringValue();
+                        String value = urls.get(0).getValue();
 
                         if (isRemoteFile(value)) {
                             access = new RemoteFileAccess(value);
@@ -118,62 +116,62 @@ public class AccessFactory {
                         auth.put("data", new HashMap<>());
                         auth.put("info", new HashMap<>());
 
-                        List<Value> form = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.TD + "hasForm"), null));
-                        List<Value> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), valueFactory.createIRI(NAMESPACES.HCTL + "hasTarget"), null));
-                        List<Value> contentTypes = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), valueFactory.createIRI(NAMESPACES.HCTL + "forContentType"), null));
-                        List<Value> headerList = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), valueFactory.createIRI(NAMESPACES.HTV + "headers"), null));
+                        List<Term> form = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.TD + "hasForm"), null));
+                        List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "hasTarget"), null));
+                        List<Term> contentTypes = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "forContentType"), null));
+                        List<Term> headerList = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HTV + "headers"), null));
                         // Security schema & data
                         try {
-                            Value thing = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, valueFactory.createIRI(NAMESPACES.TD + "hasPropertyAffordance"), source)).get(0);
-                            List<Value> securityConfiguration = Utils.getObjectsFromQuads(rmlStore.getQuads(thing, valueFactory.createIRI(NAMESPACES.TD + "hasSecurityConfiguration"), null));
+                            Term thing = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.TD + "hasPropertyAffordance"), source)).get(0);
+                            List<Term> securityConfiguration = Utils.getObjectsFromQuads(rmlStore.getQuads(thing, new NamedNode(NAMESPACES.TD + "hasSecurityConfiguration"), null));
                             logger.debug("Security config: {}", Arrays.toString(securityConfiguration.toArray()));
 
-                            for (Value sc : securityConfiguration) {
-                                boolean isOAuth = !Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.RDF + "type"),
-                                        valueFactory.createIRI(NAMESPACES.WOTSEC + "OAuth2SecurityScheme"))).isEmpty();
-                                boolean isBearer = !Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.RDF + "type"),
-                                        valueFactory.createIRI(NAMESPACES.WOTSEC + "BearerSecurityScheme"))).isEmpty();
-                                List<Value> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.WOTSEC + "in"), null));
-                                List<Value> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.WOTSEC + "name"), null));
-                                List<Value> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.IDSA + "tokenValue"), null));
+                            for (Term sc : securityConfiguration) {
+                                boolean isOAuth = !Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
+                                        new NamedNode(NAMESPACES.WOTSEC + "OAuth2SecurityScheme"))).isEmpty();
+                                boolean isBearer = !Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.RDF + "type"),
+                                        new NamedNode(NAMESPACES.WOTSEC + "BearerSecurityScheme"))).isEmpty();
+                                List<Term> securityIn = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "in"), null));
+                                List<Term> securityName = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "name"), null));
+                                List<Term> securityValue = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "tokenValue"), null));
                                 if (isOAuth || isBearer) {
                                     // BearerSecurityScheme
                                     // OAuth2 specific
                                     if (isOAuth) {
                                         logger.debug("OAuth2 is used");
-                                        Value securityAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.WOTSEC + "authorization"), null)).get(0);
-                                        auth.get("info").put("authorization", securityAuth.stringValue());
-                                        auth.get("info").put("name", securityName.get(0).stringValue());
+                                        Term securityAuth = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "authorization"), null)).get(0);
+                                        auth.get("info").put("authorization", securityAuth.getValue());
+                                        auth.get("info").put("name", securityName.get(0).getValue());
 
-                                        Value securityRefresh = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.IDSA + "refreshValue"), null)).get(0);
-                                        Value securityClientID = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.IDSA + "clientID"), null)).get(0);
-                                        Value securityClientSecret = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.IDSA + "clientSecret"), null)).get(0);
-//                                        Value securityGrantType = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, valueFactory.createIRI(NAMESPACES.WOTSEC + "grant_type"), null)).get(0);
+                                        Term securityRefresh = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "refreshValue"), null)).get(0);
+                                        Term securityClientID = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "clientID"), null)).get(0);
+                                        Term securityClientSecret = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.IDSA + "clientSecret"), null)).get(0);
+//                                        Term securityGrantType = Utils.getObjectsFromQuads(rmlStore.getQuads(sc, new NamedNode(NAMESPACES.WOTSEC + "grant_type"), null)).get(0);
 
-                                        auth.get("data").put("refresh", securityRefresh.stringValue());
-                                        auth.get("data").put("client_id", securityClientID.stringValue());
-                                        auth.get("data").put("client_secret", securityClientSecret.stringValue());
-                                        logger.debug("Refresh token: {}", securityRefresh.stringValue());
-                                        logger.debug("Client ID: {}", securityClientID.stringValue());
-                                        logger.debug("Client Secret: {}", securityClientSecret.stringValue());
+                                        auth.get("data").put("refresh", securityRefresh.getValue());
+                                        auth.get("data").put("client_id", securityClientID.getValue());
+                                        auth.get("data").put("client_secret", securityClientSecret.getValue());
+                                        logger.debug("Refresh token: {}", securityRefresh.getValue());
+                                        logger.debug("Client ID: {}", securityClientID.getValue());
+                                        logger.debug("Client Secret: {}", securityClientSecret.getValue());
 //                                      //can this not be set default?
-//                                        auth.get("data").put("grant_type", securityGrantType.stringValue());
+//                                        auth.get("data").put("grant_type", securityGrantType.getValue());
                                     }
                                     // both oath and bearer
-                                    Value bearerToken = valueFactory.createLiteral("Bearer " + securityValue.get(0).stringValue());
+                                    Term bearerToken = new Literal("Bearer " + securityValue.get(0).getValue());
                                     securityValue.set(0, bearerToken);
                                 }
                                 try {
-                                    if (securityIn.get(0).stringValue().equals("header")) {
-                                        logger.info("Applying security configuration of {} in header", sc.stringValue());
-                                        logger.debug("Name: {}", securityName.get(0).stringValue());
-                                        logger.debug("Value: {}", securityValue.get(0).stringValue());
-                                        headers.put(securityName.get(0).stringValue(), securityValue.get(0).stringValue());
+                                    if (securityIn.get(0).getValue().equals("header")) {
+                                        logger.info("Applying security configuration of {} in header", sc.getValue());
+                                        logger.debug("Name: {}", securityName.get(0).getValue());
+                                        logger.debug("Value: {}", securityValue.get(0).getValue());
+                                        headers.put(securityName.get(0).getValue(), securityValue.get(0).getValue());
                                     } else {
                                         throw new NotImplementedException();
                                     }
                                 } catch (IndexOutOfBoundsException e) {
-                                    logger.warn("Unable to apply security configuration for {}", sc.stringValue());
+                                    logger.warn("Unable to apply security configuration for {}", sc.getValue());
                                 }
                             }
 
@@ -187,22 +185,22 @@ public class AccessFactory {
                         }
 
                         // TODO: determine which protocol is used to know which vocabulary is needed for the protocol specific part.
-                        String target = targets.get(0).stringValue();
-                        String contentType = contentTypes.isEmpty()? null: contentTypes.get(0).stringValue();
+                        String target = targets.get(0).getValue();
+                        String contentType = contentTypes.isEmpty()? null: contentTypes.get(0).getValue();
 
                         // Retrieve HTTP headers
-                        for (Value headerListItem: headerList) {
+                        for (Term headerListItem: headerList) {
                             try {
-                                List<Value> header = Utils.getList(rmlStore, headerListItem);
-                                for(Value h: header) {
-                                    String headerName = Utils.getObjectsFromQuads(rmlStore.getQuads(h, valueFactory.createIRI(NAMESPACES.HTV + "fieldName"), null)).get(0).stringValue();
-                                    String headerValue = Utils.getObjectsFromQuads(rmlStore.getQuads(h, valueFactory.createIRI(NAMESPACES.HTV + "fieldValue"), null)).get(0).stringValue();
+                                List<Term> header = Utils.getList(rmlStore, headerListItem);
+                                for(Term h: header) {
+                                    String headerName = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldName"), null)).get(0).getValue();
+                                    String headerValue = Utils.getObjectsFromQuads(rmlStore.getQuads(h, new NamedNode(NAMESPACES.HTV + "fieldValue"), null)).get(0).getValue();
                                     logger.debug("Retrieved HTTP header: '{}','{}'", headerName, headerValue);
                                     headers.put(headerName, headerValue);
                                 }
                             }
                             catch(IndexOutOfBoundsException e) {
-                                logger.warn("Unable to retrieve header name and value for {}", headerListItem.stringValue());
+                                logger.warn("Unable to retrieve header name and value for {}", headerListItem.getValue());
                             }
                         }
                         access = new WoTAccess(target, contentType, headers, auth);
@@ -225,70 +223,70 @@ public class AccessFactory {
      * @param logicalSource the Logical Source for which the Access instance need to be created.
      * @return an RDB Access instance for the RML rules in rmlStore.
      */
-    private RDBAccess getRDBAccess(QuadStore rmlStore, Value source, Value logicalSource) {
+    private RDBAccess getRDBAccess(QuadStore rmlStore, Term source, Term logicalSource) {
 
         // - Table
-        List<Value> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RR + "tableName"), null));
+        List<Term> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "tableName"), null));
 
         // Retrieve database information from source object
 
         // - Driver URL
-        List<Value> driverObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.D2RQ + "jdbcDriver"), null));
+        List<Term> driverObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "jdbcDriver"), null));
 
         if (driverObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a driver.");
         }
 
-        DatabaseType database = DatabaseType.getDBtype(driverObject.get(0).stringValue());
+        DatabaseType database = DatabaseType.getDBtype(driverObject.get(0).getValue());
 
         // - DSN
-        List<Value> dsnObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.D2RQ + "jdbcDSN"), null));
+        List<Term> dsnObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "jdbcDSN"), null));
 
         if(dsnObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a Data Source Name.");
         }
 
-        String dsn = dsnObject.get(0).stringValue();
+        String dsn = dsnObject.get(0).getValue();
 
         // - SQL query
         String query;
-        List<Value> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RML + "query"), null));
+        List<Term> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "query"), null));
 
         if (queryObject.isEmpty()) {
             if (tables.isEmpty()) {
                 // TODO better message (include Triples Map somewhere)
 
                 throw new Error("The Logical Source does not include a SQL query nor a target table.");
-            } else if (tables.get(0).stringValue().isEmpty() || tables.get(0).stringValue().equals("\"\"")) {
+            } else if (tables.get(0).getValue().isEmpty() || tables.get(0).getValue().equals("\"\"")) {
                 throw new Error("The table name of a database should not be empty.");
             } else {
-                query = "SELECT * FROM " + tables.get(0).stringValue();
+                query = "SELECT * FROM " + tables.get(0).getValue();
             }
         } else {
-            query = queryObject.get(0).stringValue();
+            query = queryObject.get(0).getValue();
         }
 
         // - Username
-        List<Value> usernameObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.D2RQ + "username"), null));
+        List<Term> usernameObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "username"), null));
 
         if (usernameObject.isEmpty()) {
             throw new Error("The database source object " + source + " does not include a username.");
         }
 
-        String username = usernameObject.get(0).stringValue();
+        String username = usernameObject.get(0).getValue();
 
         // - Password
         String password = ""; // No password is the default.
-        List<Value> passwordObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, valueFactory.createIRI(NAMESPACES.D2RQ + "password"), null));
+        List<Term> passwordObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.D2RQ + "password"), null));
 
         if (!passwordObject.isEmpty()) {
-            password = passwordObject.get(0).stringValue();
+            password = passwordObject.get(0).getValue();
         }
 
         // - ContentType
-        List<Value> contentType = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, valueFactory.createIRI(NAMESPACES.RML + "referenceFormulation"), null));
+        List<Term> contentType = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
 
-        return new RDBAccess(dsn, database, username, password, query, (contentType.isEmpty() ? "text/csv" : contentType.get(0).stringValue()));
+        return new RDBAccess(dsn, database, username, password, query, (contentType.isEmpty() ? "text/csv" : contentType.get(0).getValue()));
     }
 
     /**
@@ -297,13 +295,13 @@ public class AccessFactory {
      * @param referenceFormulations the reference formulations used to determine the SPARQLResultFormat.
      * @return a SPARQLResultFormat.
      */
-    private SPARQLResultFormat getSPARQLResultFormat(List<Value> resultFormats, List<Value> referenceFormulations) {
+    private SPARQLResultFormat getSPARQLResultFormat(List<Term> resultFormats, List<Term> referenceFormulations) {
         if (resultFormats.isEmpty() && referenceFormulations.isEmpty()) {     // This will never be called atm but may come in handy later
             throw new Error("Please specify the sd:resultFormat of the SPARQL endpoint or a rml:referenceFormulation.");
         } else if (referenceFormulations.isEmpty()) {
 
             for (SPARQLResultFormat format: SPARQLResultFormat.values()) {
-                if (resultFormats.get(0).stringValue().equals(format.getUri())) {
+                if (resultFormats.get(0).getValue().equals(format.getUri())) {
                     return format;
                 }
             }
@@ -313,7 +311,7 @@ public class AccessFactory {
         } else if (resultFormats.isEmpty()) {
 
             for (SPARQLResultFormat format: SPARQLResultFormat.values()) {
-                if (format.getReferenceFormulations().contains(referenceFormulations.get(0).stringValue())) {
+                if (format.getReferenceFormulations().contains(referenceFormulations.get(0).getValue())) {
                     return format;
                 }
             }
@@ -323,8 +321,8 @@ public class AccessFactory {
         } else {
             for (SPARQLResultFormat format : SPARQLResultFormat.values()) {
 
-                if (resultFormats.get(0).stringValue().equals(format.getUri())
-                        && format.getReferenceFormulations().contains(referenceFormulations.get(0).stringValue())) {
+                if (resultFormats.get(0).getValue().equals(format.getUri())
+                        && format.getReferenceFormulations().contains(referenceFormulations.get(0).getValue())) {
                     return format;
                 }
             }

@@ -1,36 +1,36 @@
 package be.ugent.rml.metadata;
 
-import org.eclipse.rdf4j.model.Value;
+import be.ugent.rml.term.Term;
 
 /**
  * Holds the source triplesMap and Subject-, Object- or PredicateMap for a specific (provenanced) term.
  */
 public class Metadata {
 
-    private Value triplesMap;
-    private Value sourceMap;
+    private Term triplesMap;
+    private Term sourceMap;
 
     public Metadata() {
     }
 
-    public Metadata(Value triplesMap) {
+    public Metadata(Term triplesMap) {
         this(triplesMap, null);
     }
 
-    public Metadata(Value triplesMap, Value sourceMap) {
+    public Metadata(Term triplesMap, Term sourceMap) {
         this.triplesMap = triplesMap;
         this.sourceMap = sourceMap;
     }
 
-    Value getTriplesMap() {
+    Term getTriplesMap() {
         return triplesMap;
     }
 
-    Value getSourceMap() {
+    Term getSourceMap() {
         return sourceMap;
     }
 
-    public void setSourceMap(Value sourceMap) {
+    public void setSourceMap(Term sourceMap) {
         this.sourceMap = sourceMap;
     }
 }

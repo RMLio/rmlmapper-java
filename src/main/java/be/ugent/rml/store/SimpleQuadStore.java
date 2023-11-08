@@ -1,6 +1,6 @@
 package be.ugent.rml.store;
 
-import org.eclipse.rdf4j.model.Value;
+import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 import java.io.*;
@@ -45,8 +45,8 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
-    public List<Value> getSubjects() {
-        List<Value> terms = new ArrayList<>();
+    public List<Term> getSubjects() {
+        List<Term> terms = new ArrayList<>();
 
         for (Quad q : quads) {
             terms.add(q.getSubject());
@@ -56,14 +56,14 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
-    public void addQuad(Value subject, Value predicate, Value object, Value graph) {
+    public void addQuad(Term subject, Term predicate, Term object, Term graph) {
         if (subject != null && predicate != null && object != null) {
             quads.add(new Quad(subject, predicate, object, graph));
         }
     }
 
     @Override
-    public List<Quad> getQuads(Value subject, Value predicate, Value object, Value graph) {
+    public List<Quad> getQuads(Term subject, Term predicate, Term object, Term graph) {
         Quad quad = new Quad(subject, predicate, object, graph);
 
         List<Quad> filteredQuads = new ArrayList<>();
@@ -114,13 +114,13 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
-    public void removeQuads(Value subject, Value predicate, Value object, Value graph) {
+    public void removeQuads(Term subject, Term predicate, Term object, Term graph) {
         List<Quad> matches = this.getQuads(subject, predicate, object, graph);
         matches.forEach(m -> quads.remove(m));
     }
 
     @Override
-    public boolean contains(Value subject, Value predicate, Value object, Value graph) {
+    public boolean contains(Term subject, Term predicate, Term object, Term graph) {
         throw new UnsupportedOperationException("Method not implemented.");
     }
 
