@@ -57,7 +57,7 @@ public class AccessFactory {
                 if (isRemoteFile(value)) {
                     access = new RemoteFileAccess(value);
                 } else {
-                    String datatype = ((Literal) sources.get(0)).getDatatype()  == null ? null :((Literal) sources.get(0)).getDatatype().getValue();
+                    String datatype = ((Literal) sources.get(0)).getDatatype()  == null ? null :((NamedNode)((Literal) sources.get(0)).getDatatype()).getValue();
                     access = new LocalFileAccess(value, this.basePath, datatype);
 
                 }

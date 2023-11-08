@@ -1,14 +1,14 @@
 package be.ugent.rml.term;
 
-import be.ugent.rml.Utils;
+import org.eclipse.rdf4j.model.impl.SimpleBNode;
 
-public class BlankNode extends AbstractTerm {
+public class BlankNode extends SimpleBNode implements Term {
 
     public BlankNode(String suffix) {
         super(suffix);
     }
 
-    public BlankNode() { super(Utils.randomString(10)); }
+    public BlankNode() { super(); }
 
     @Override
     public String toString() {
@@ -22,5 +22,10 @@ public class BlankNode extends AbstractTerm {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public String getValue() {
+        return this.stringValue();
     }
 }

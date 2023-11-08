@@ -564,7 +564,7 @@ public class Executor {
                     if (Utils.isRemoteFile(value)) {
                         is = new RemoteFileAccess(value).getInputStream();
                     } else {
-                        is = new LocalFileAccess(value, basepath, ((Literal) source).getDatatype().getValue()).getInputStream();
+                        is = new LocalFileAccess(value, basepath, ( (NamedNode) ((Literal) source).getDatatype()).getValue()).getInputStream();
                     }
                     is.close(); // close resources.
                 }
