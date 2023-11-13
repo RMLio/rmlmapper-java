@@ -29,15 +29,6 @@ public class Literal extends SimpleLiteral implements Term {
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof Literal) {
-            return o.toString().equals(toString());
-        } else {
-            return false;
-        }
-    }
-
 
     /**
      * Escapes a Unicode string to an N-Triples compatible character sequence. Any special characters are
