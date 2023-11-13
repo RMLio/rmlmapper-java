@@ -8,10 +8,6 @@ public class NamedNode extends SimpleIRI implements Term{
         super(iri);
     }
 
-    @Override
-    public String toString() {
-        return "<" + this.stringValue() + ">";
-    }
 
     @Override
     public boolean equals(Object o) {

@@ -28,20 +28,6 @@ public class Literal extends SimpleLiteral implements Term {
         return (NamedNode) datatype;
     }
 
-    @Override
-    public String toString() {
-        String temp = "\"" + escapeValue(this.getValue()) + "\"";
-
-        if (getLanguage().isPresent() && !getLanguage().get().isEmpty()) {
-            temp += "@" + getLanguage().get();
-        } else if (this.datatype != null && ! this.datatype.getValue().equals("http://www.w3.org/2001/XMLSchema#string")) {
-            // https://www.w3.org/TR/turtle/#h4_turtle-literals
-            // > If there is no datatype IRI and no language tag, the datatype is xsd:string.
-            temp += "^^" + this.datatype;
-        }
-
-        return temp;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -52,6 +38,7 @@ public class Literal extends SimpleLiteral implements Term {
         }
     }
 
+
     /**
      * Escapes a Unicode string to an N-Triples compatible character sequence. Any special characters are
      * escaped using backslashes (<tt>"</tt> becomes <tt>\"</tt>, etc.), and non-ascii/non-printable
@@ -59,28 +46,29 @@ public class Literal extends SimpleLiteral implements Term {
      * option is selected.
      */
     private String escapeValue(String label) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < label.length(); i++) {
             char c = label.charAt(i);
 
             if (c == '\\') {
-                result += "\\\\";
+                result.append("\\\\");
             } else if (c == '"') {
-                result += "\\\"";
+                result.append("\\\"");
             } else if (c == '\n') {
-                result += "\\n";
+                result.append("\\n");
             } else if (c == '\r') {
-                result += "\\r";
+                result.append("\\r");
             } else if (c == '\t') {
-                result += "\\t";
+                result.append("\\t");
             } else {
-                result += c;
+                result.append(c);
             }
         }
 
-        return result;
+        return result.toString();
     }
+
 
     @Override
     public String getValue() {
