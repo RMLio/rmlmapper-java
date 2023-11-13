@@ -29,38 +29,6 @@ public class Literal extends SimpleLiteral implements Term {
     }
 
 
-
-    /**
-     * Escapes a Unicode string to an N-Triples compatible character sequence. Any special characters are
-     * escaped using backslashes (<tt>"</tt> becomes <tt>\"</tt>, etc.), and non-ascii/non-printable
-     * characters are escaped using Unicode escapes (<tt>&#x5C;uxxxx</tt> and <tt>&#x5C;Uxxxxxxxx</tt>) if the
-     * option is selected.
-     */
-    private String escapeValue(String label) {
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < label.length(); i++) {
-            char c = label.charAt(i);
-
-            if (c == '\\') {
-                result.append("\\\\");
-            } else if (c == '"') {
-                result.append("\\\"");
-            } else if (c == '\n') {
-                result.append("\\n");
-            } else if (c == '\r') {
-                result.append("\\r");
-            } else if (c == '\t') {
-                result.append("\\t");
-            } else {
-                result.append(c);
-            }
-        }
-
-        return result.toString();
-    }
-
-
     @Override
     public String getValue() {
         return this.stringValue();
