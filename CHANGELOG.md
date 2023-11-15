@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Verify LDES EventStreamTarget output for additions, modifications, and deletions.
 - Added RML-LDES test-cases.
 - Tests: let Java handle temporary files.
+- Added test for mapping with CSV file where column does not match header
 
 ### Changed
 - Build Docker image in two stages, reducing the final image size.
