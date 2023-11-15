@@ -52,12 +52,12 @@ public class AccessFactory {
 
             // if we are dealing with a literal,
             // then it's either a local or remote file.
-            if (sources.get(0) instanceof Literal) {
+            if (sources.get(0) instanceof Literal literal) {
                 String value = sources.get(0).getValue();
                 if (isRemoteFile(value)) {
                     access = new RemoteFileAccess(value);
                 } else {
-                    String datatype = ((Literal) sources.get(0)).getDatatype()  == null ? null :((NamedNode)((Literal) sources.get(0)).getDatatype()).getValue();
+                    String datatype = literal.getDatatype()  == null ? null : ((NamedNode) literal.getDatatype()).getValue();
                     access = new LocalFileAccess(value, this.basePath, datatype);
 
                 }
