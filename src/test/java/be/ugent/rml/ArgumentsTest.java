@@ -168,9 +168,9 @@ public class ArgumentsTest extends TestCore {
             System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));   // reset to original System.out
         }
 
-        assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("<http://example.com/10> <http://xmlns.com/foaf/0.1/name> \"Venus\\\"\"."));
-        assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("<http://example.com/10> <http://example.com/id> \"10\"."));
-        assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>."));
+        assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("<http://example.com/10> <http://xmlns.com/foaf/0.1/name> \"Venus\\\"\" ."));
+        assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("<http://example.com/10> <http://example.com/id> \"10\" ."));
+        assertThat(stdout.toString(StandardCharsets.UTF_8), containsString("<http://example.com/10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> ."));
     }
 
 
