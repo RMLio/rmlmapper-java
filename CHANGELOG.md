@@ -5,20 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [6.4.0] - 2023-11-14
 
+### Improvements
+- Tests: let Java handle temporary files.
+
+### Changed
+- Use the DataIO library to handle access to files.
+- Requires Java 17 language level.
+
+### Fixed
+- Test cases: add array initializers to avoid bugs.
+
+## [6.3.0] - 2023-11-14
 
 ### Improvements
 - Add support for detecting additions, modifications, and deletions in a Knowledge Graph with FnO functions.
 - Verify LDES EventStreamTarget output for additions, modifications, and deletions.
 - Added RML-LDES test-cases.
-- Tests: let Java handle temporary files.
+- Added test for mapping with CSV file where column does not match header
 
 ### Changed
 - Build Docker image in two stages, reducing the final image size.
 - LDES EventStreamTarget properties are now all optional.
-- Use the DataIO library to handle access to files.
-- Requires Java 17 language level.
 - Removed usage of legacy RDF model, using RDF4J instead.
 
 ### Fixed
@@ -655,6 +664,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[6.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.2.2...v6.3.0
 [6.2.2]: https://github.com/RMLio/rmlmapper-java/compare/v6.2.1...v6.2.2
 [6.2.1]: https://github.com/RMLio/rmlmapper-java/compare/v6.2.0...v6.2.1
 [6.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.1.3...v6.2.0

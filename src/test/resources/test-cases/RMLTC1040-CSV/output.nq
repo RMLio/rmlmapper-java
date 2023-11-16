@@ -1,0 +1,4 @@
+<http://transport.linkeddata.es/madrid/metro/services/1> <http://vocab.gtfs.org/terms#parentStation> <http://transport.linkeddata.es/madrid/metro/services/1> .
+<http://transport.linkeddata.es/madrid/metro/services/2> <http://vocab.gtfs.org/terms#parentStation> <http://transport.linkeddata.es/madrid/metro/services/2> .
+<http://transport.linkeddata.es/madrid/metro/services/3> <http://vocab.gtfs.org/terms#parentStation> <http://transport.linkeddata.es/madrid/metro/services/3> .
+<http://transport.linkeddata.es/madrid/metro/services/4> <http://vocab.gtfs.org/terms#parentStation> <http://transport.linkeddata.es/madrid/metro/services/4> .
