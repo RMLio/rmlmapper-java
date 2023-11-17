@@ -7,7 +7,6 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -217,8 +216,8 @@ public class TargetFactory {
      * @param rmlStore a QuadStore with RML rules.
      * @param outputStore a QuadStore with the RDF triples to write to the target.
      */
-    public Target getTarget(Term logicalTarget, QuadStore rmlStore, QuadStore outputStore) throws NotImplementedException, IOException {
-        Target target = null;
+    public Target getTarget(Term logicalTarget, QuadStore rmlStore, QuadStore outputStore) throws IOException {
+        Target target;
         String serializationFormat = "nquads";
         String compression = null;
         List<Quad> metadata = new ArrayList<>();
@@ -240,10 +239,9 @@ public class TargetFactory {
                 serializationFormat = "jsonld";
             }
             else {
-                throw new NotImplementedException("Serialization format for " + location + " not implemented!");
+                throw new UnsupportedOperationException("Serialization format for " + location + " not implemented!");
             }
-            target = new LocalFileTarget(location, this.basePath, serializationFormat, null, metadata);
-            return target;
+            return new LocalFileTarget(location, this.basePath, serializationFormat, null, metadata);
         }
 
         List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
@@ -252,22 +250,13 @@ public class TargetFactory {
         // Read serialization format
         try {
             String sf = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget, new NamedNode(NAMESPACES.RMLT + "serialization"), null)).get(0).getValue();
-            switch (sf) {
-                case NAMESPACES.FORMATS + "N-Triples":
-                    serializationFormat = "ntriples";
-                    break;
-                case NAMESPACES.FORMATS + "N-Quads":
-                    serializationFormat = "nquads";
-                    break;
-                case NAMESPACES.FORMATS + "JSON-LD":
-                    serializationFormat = "jsonld";
-                    break;
-                case NAMESPACES.FORMATS + "Turtle":
-                    serializationFormat = "turtle";
-                    break;
-                default:
-                    throw new NotImplementedException("Serialization format " + sf + " not implemented!");
-            }
+            serializationFormat = switch (sf) {
+                case NAMESPACES.FORMATS + "N-Triples" -> "ntriples";
+                case NAMESPACES.FORMATS + "N-Quads" -> "nquads";
+                case NAMESPACES.FORMATS + "JSON-LD" -> "jsonld";
+                case NAMESPACES.FORMATS + "Turtle" -> "turtle";
+                default -> throw new UnsupportedOperationException("Serialization format " + sf + " not implemented!");
+            };
         }
         catch (IndexOutOfBoundsException e) {
             logger.debug("No serialization format specified, falling back to default N-Quads");
@@ -279,16 +268,11 @@ public class TargetFactory {
         try {
             Term comp = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
                     new NamedNode(NAMESPACES.RMLT + "compression"), null)).get(0);
-            switch (comp.getValue()) {
-                case NAMESPACES.COMP + "gzip":
-                    compression = "gzip";
-                    break;
-                case NAMESPACES.COMP + "zip":
-                    compression = "zip";
-                    break;
-                default:
-                    throw new NotImplementedException("Compression " + comp + " is not implemented!");
-            }
+            compression = switch (comp.getValue()) {
+                case NAMESPACES.COMP + "gzip" -> "gzip";
+                case NAMESPACES.COMP + "zip" -> "zip";
+                default -> throw new UnsupportedOperationException("Compression " + comp + " is not implemented!");
+            };
             logger.debug("Compression: {}", compression);
         }
         catch (IndexOutOfBoundsException e) {
@@ -346,7 +330,7 @@ public class TargetFactory {
                     break;
                 }
                 default: {
-                    throw new NotImplementedException("Not implemented");
+                    throw new UnsupportedOperationException("Not implemented");
                 }
             }
             logger.debug("Target created: {}", target);
