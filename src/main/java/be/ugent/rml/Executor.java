@@ -410,14 +410,7 @@ public class Executor {
                     List<Term> terms = null;
 
                     try {
-                        TermGenerator generatorGraph = mappingInfo.getTermGenerator();
-                        if (checkMagic) {
-                            /* Skip generators which do not even need markers */
-                            if (generatorGraph.magic())
-                                terms = generatorGraph.generate(record);
-                        } else {
-                            terms = generatorGraph.generate(record);
-                        }
+                        terms = mappingInfo.getTermGenerator().generate(record);
                     } catch (Exception e) {
                         //todo be more nice and gentle
                         logger.error("Could not generate graph term for record {}", record, e);
