@@ -25,7 +25,8 @@ public class Executor {
     private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
     private final Initializer initializer;
-    private final HashMap<Term, List<Record>> recordsHolders = new HashMap<>();
+    private final Map<Term, List<Record>> recordsHolders = new HashMap<>();
+
     /*
      * this map stores for every Triples Map, which is a Term,
      * a map with the record index and the record's corresponding subject, which is a ProvenancedTerm.
@@ -388,7 +389,7 @@ public class Executor {
                     if (Utils.isRemoteFile(value)) {
                         is = new RemoteFileAccess(value).getInputStream();
                     } else {
-                        is = new LocalFileAccess(value, basepath, ( (NamedNode) ((Literal) source).getDatatype()).getValue()).getInputStream();
+                        is = new LocalFileAccess(value, basepath, ((Literal) source).getDatatype().getValue()).getInputStream();
                     }
                     is.close(); // close resources.
                 }
