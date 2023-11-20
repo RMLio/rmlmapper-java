@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Use the DataIO library to handle access to files.
 - Requires Java 17 language level. `List`).
 
+### Added
+- `Test handling Windows` CRLF line ending for CSV files [issue #201](https://github.com/RMLio/rmlmapper-java/issues/201)
+
 ## [6.4.0] - 2023-11-14
 
 ### Improvements
