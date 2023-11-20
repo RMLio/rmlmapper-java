@@ -109,45 +109,49 @@ that output is found below.
 ```
 usage: java -jar mapper.jar <options>
 options:
+ -b,--base-iri <arg>                 Base IRI used to expand relative IRIs
+                                     in generated terms in the output.
  -c,--configfile <arg>               path to configuration file
- -d,--duplicates                     remove duplicates in the HDT, N-Triples,
-                                     or N-Quads output
+ -d,--duplicates                     remove duplicates in the HDT,
+                                     N-Triples, or N-Quads output
+    --disable-automatic-eof-marker   Setting this option assumes input
+                                     data has a kind of End-of-File
+                                     marker. Don't use unless you're
+                                     absolutely sure what you're doing!
  -dsn,--r2rml-jdbcDSN <arg>          DSN of the database when using R2RML
                                      rules
  -e,--metadatafile <arg>             path to output metadata file
- -f,--functionfile <arg>             one or more function file paths (dynamic
-                                     functions with relative paths are found
-                                     relative to the cwd)
+ -f,--functionfile <arg>             one or more function file paths
+                                     (dynamic functions with relative
+                                     paths are found relative to the cwd)
  -h,--help                           show help info
- -l,--metadataDetailLevel <arg>      generate metadata on given detail level
-                                     (dataset - triple - term)
+ -l,--metadataDetailLevel <arg>      generate metadata on given detail
+                                     level (dataset - triple - term)
  -m,--mappingfile <arg>              one or more mapping file paths and/or
                                      strings (multiple values are
-                                     concatenated). r2rml is converted to rml
-                                     if needed using the r2rml arguments.
- -psd,--privatesecuritydata <arg>    one or more private security files 
-                                     containing all private security 
-                                     information such as usernames, passwords, 
-                                     certificates, etc.
+                                     concatenated). r2rml is converted to
+                                     rml if needed using the r2rml
+                                     arguments.RDF Format is determined
+                                     based on extension.
  -o,--outputfile <arg>               path to output file (default: stdout)
  -p,--r2rml-password <arg>           password of the database when using
                                      R2RML rules
- -s,--serialization <arg>            serialization format (nquads (default),
-                                     turtle, trig, trix, jsonld, hdt)
- -t,--triplesmaps <arg>              IRIs of the triplesmaps that should be
-                                     executed in order, split by ',' (default
-                                     is all triplesmaps)
+ -psd,--privatesecuritydata <arg>    one or more private security files
+                                     containing all private security
+                                     information such as usernames,
+                                     passwords, certificates, etc.
+ -s,--serialization <arg>            serialization format (nquads
+                                     (default), turtle, trig, trix,
+                                     jsonld, hdt)
+    --strict                         Enable strict mode. In strict mode,
+                                     the mapper will fail on invalid IRIs
+                                     instead of skipping them.
+ -t,--triplesmaps <arg>              IRIs of the triplesmaps that should
+                                     be executed in order, split by ','
+                                     (default is all triplesmaps)
  -u,--r2rml-username <arg>           username of the database when using
                                      R2RML rules
- -v,--verbose                        show more details in debugging output
- --strict                            Enable strict mode. In strict mode, the 
-                                     mapper will fail on invalid IRIs instead 
-                                     of skipping them.
- -b --base-IRI <arg>                 base IRI used to expand relative IRIs in 
-                                     mapped terms. If not set and not in --strict 
-                                     mode, will default to the @base directive 
-                                     inside the provided mapping file.
-                                                                 
+ -v,--verbose                        show more details in debugging output                                                      
 ```
 
 #### Accessing Web APIs with authentication
