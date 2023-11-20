@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Requires Java 17 language level. `List`).
 
 ### Added
-- `Test handling Windows` CRLF line ending for CSV files [issue #201](https://github.com/RMLio/rmlmapper-java/issues/201)
+- Test handling Windows CRLF line ending for CSV files ([issue #201](https://github.com/RMLio/rmlmapper-java/issues/201))
+- Added test for empty column handling in csv logical source files ([issue #159](https://github.com/RMLio/rmlmapper-java/issues/159))
 
 ## [6.4.0] - 2023-11-14
 
