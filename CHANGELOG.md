@@ -27,6 +27,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Improvements
 - Tests: let Java handle temporary files.
+- pom: upgrade maven-surefire-plugin to 3.2.2
+- pom: upgrade nexus-staging-maven-plugin to 1.6.13
+- pom: upgrade json-path to 2.8.0
+- pom: upgrade logback-classic to 1.4.11
+- resources: rml-ldes: avoid symlinks 
+- pom: upgrade RDB connectors (postgresql 42.6.0, mssql-jdbc 12.4.2.jre11, ojdbc11 23.3.0.23.09, mysql-connector-j 8.2.0)
 
 ### Changed
 - Use the DataIO library to handle access to files.
