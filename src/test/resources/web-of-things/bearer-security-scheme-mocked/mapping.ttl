@@ -19,7 +19,7 @@
 @prefix ssn-system: <http://www.w3.org/ns/ssn/systems/>.
 @prefix ssn: <http://www.w3.org/ns/ssn/>.
 @prefix sosa: <http://www.w3.org/ns/sosa/>.
-@prefix idlab-fn: <http://example.com/idlab/function/>.
+@prefix idlab-fn: <https://w3id.org/imec/idlab/function#>.
 @prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#>.
 @prefix schema: <http://schema.org/>.
 @prefix wotsec: <https://www.w3.org/2019/wot/security#> .

@@ -1,7 +1,7 @@
 
 @prefix doap:    <http://usefulinc.com/ns/doap#> .
 @prefix fnoi:    <https://w3id.org/function/vocabulary/implementation#> .
-@prefix idlab-fn-m: <http://example.com/idlab/function-mapping/> .
+@prefix idlab-fn-m: <https://w3id.org/imec/idlab/function-mapping#> .
 
 ###########
 # CLASSES #

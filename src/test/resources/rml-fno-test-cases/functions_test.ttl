@@ -1,13 +1,11 @@
 @prefix dcterms:  <http://purl.org/dc/terms/> .
 @prefix fno:      <https://w3id.org/function/ontology#> .
 @prefix grel:     <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
-@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix idlab-fn: <https://w3id.org/imec/idlab/function#> .
 @prefix lib:      <http://example.com/library#> .
 @prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
-
-@prefix :         <http://example.com/idlab/functions/string/> .
 
 ############################
 ### IDLab Functions Test ###

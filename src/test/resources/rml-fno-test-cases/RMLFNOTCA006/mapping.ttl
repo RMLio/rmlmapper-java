@@ -1,7 +1,7 @@
 @prefix ex:       <http://example.com/> .
 @prefix fnml:     <http://semweb.mmlab.be/ns/fnml#> .
 @prefix fno:      <https://w3id.org/function/ontology#> .
-@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix idlab-fn: <https://w3id.org/imec/idlab/function#> .
 @prefix rr:       <http://www.w3.org/ns/r2rml#> .
 @prefix rml:      <http://semweb.mmlab.be/ns/rml#> .
 @prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -51,7 +51,7 @@ map:pmexec_0
     rr:constant fno:executes .
 
 map:omexec_0
-    rr:constant "http://example.com/idlab/function/trueCondition" ;
+    rr:constant "https://w3id.org/imec/idlab/function#trueCondition" ;
     rr:termType rr:IRI .
 
 map:pom_1
@@ -79,7 +79,7 @@ map:pmexec_1
     rr:constant fno:executes .
 
 map:omexec_1
-    rr:constant "http://example.com/idlab/function/inRange" ;
+    rr:constant "https://w3id.org/imec/idlab/function#inRange" ;
     rr:termType rr:IRI .
 
 map:pom_2

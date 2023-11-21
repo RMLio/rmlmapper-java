@@ -86,7 +86,9 @@ public class MapperLDESTest extends TestCore {
 
     @BeforeAll
     public static void setups() throws Exception {
-        functionAgent = AgentFactory.createFromFnO("fno/functions_idlab.ttl", "fno/functions_idlab_test_classes_java_mapping.ttl");
+        functionAgent = AgentFactory.createFromFnO(
+                "fno/functions_idlab.ttl", "fno/functions_idlab_test_classes_java_mapping.ttl",
+                "fno_idlab_old/functions_idlab.ttl", "fno_idlab_old/functions_idlab_classes_java_mapping.ttl");
     }
 
     @Test

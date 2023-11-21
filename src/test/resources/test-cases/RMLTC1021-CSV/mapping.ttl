@@ -7,7 +7,7 @@
 @prefix rml: <http://semweb.mmlab.be/ns/rml#>.
 @prefix ql: <http://semweb.mmlab.be/ns/ql#>.
 @prefix : <http://mapping.example.com/>.
-@prefix idlab-fn: <http://example.com/idlab/function/>.
+@prefix idlab-fn: <https://w3id.org/imec/idlab/function#>.
 @prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#>.
 
 :map_test_000 rml:logicalSource :source_000.
@@ -27,7 +27,7 @@
 :pomexec_000 rr:predicateMap :pmexec_000.
 :pmexec_000 rr:constant fno:executes.
 :pomexec_000 rr:objectMap :omexec_000.
-:omexec_000 rr:constant "http://example.com/idlab/function/trueCondition";
+:omexec_000 rr:constant "https://w3id.org/imec/idlab/function#trueCondition";
     rr:termType rr:IRI.
 :fn_000 rr:predicateObjectMap :pom_000.
 :pom_000 a rr:PredicateObjectMap;
@@ -42,7 +42,7 @@
 :pomexec_001 rr:predicateMap :pmexec_001.
 :pmexec_001 rr:constant fno:executes.
 :pomexec_001 rr:objectMap :omexec_001.
-:omexec_001 rr:constant "http://example.com/idlab/function/equal";
+:omexec_001 rr:constant "https://w3id.org/imec/idlab/function#equal";
     rr:termType rr:IRI.
 :fn_001 rr:predicateObjectMap :pom_001.
 :pom_001 a rr:PredicateObjectMap;

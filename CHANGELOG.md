@@ -7,19 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-### Changed
-- Refactoring to use interfaces where possible (e.g. `ArrayList` -> `List`). This has consequences on the API.
-- Use the DataIO library to handle access to files.
-- Requires Java 17 language level. `List`).
+### Improvements
+- Update dependency on `idlab-functions-java` to 1.3.1. This implies three things:
+  - The namespace for IDLab functions FnO descriptions changed, so RMLMapper loads the old and the new one to remain compatible;
+  - All tests in RMLMapper use the new namespace;
+  - Stateful functions use a more compact and efficient state.
+
+## [6.4.0] - 2023-11-14
 
 ### Added
 - Test handling Windows CRLF line ending for CSV files ([issue #201](https://github.com/RMLio/rmlmapper-java/issues/201))
 - Added test for empty column handling in csv logical source files ([issue #159](https://github.com/RMLio/rmlmapper-java/issues/159))
-
-### Fixed
-- Document `--disable-automatic-eof-marker` option.
-
-## [6.4.0] - 2023-11-14
 
 ### Improvements
 - Tests: let Java handle temporary files.
@@ -33,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Test cases: add array initializers to avoid bugs.
 - Use correct prefix for `EventStreamTarget`s in tests.
 - Refactoring of Executor: code deduplication
+- Document `--disable-automatic-eof-marker` option.
 
 ## [6.3.0] - 2023-11-14
 
@@ -51,10 +50,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Don't close output streams that don't need closing.
 - Add url decoders to file paths so special characters and spaces work.
 - Test cases: add array initializers to avoid bugs.
-
-### Fixed
-- Use correct prefix for `EventStreamTarget`s in tests.
-- Refactoring of Executor: code deduplication
 
 ## [6.2.2] - 2023-10-05
 

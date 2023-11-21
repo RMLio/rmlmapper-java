@@ -6,7 +6,7 @@
 @prefix rml: <http://semweb.mmlab.be/ns/rml#>.
 @prefix ql: <http://semweb.mmlab.be/ns/ql#>.
 @prefix : <http://mapping.example.com/>.
-@prefix idlab-fn: <http://example.com/idlab/function/>.
+@prefix idlab-fn: <https://w3id.org/imec/idlab/function#>.
 @prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#>.
 
 :map_testcase rml:logicalSource :source.

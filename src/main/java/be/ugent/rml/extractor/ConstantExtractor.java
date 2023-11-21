@@ -1,7 +1,6 @@
 package be.ugent.rml.extractor;
 
 import be.ugent.idlab.knows.dataio.record.Record;
-import be.ugent.idlab.knows.functions.agent.functionModelProvider.fno.NAMESPACES;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 
 import java.io.IOException;
@@ -20,7 +19,8 @@ public class ConstantExtractor implements Extractor, SingleRecordFunctionExecuto
     public ConstantExtractor(String constant) {
         this. constantList = List.of(constant);
         this.constant = constant;
-        needsEOFMarker = constant.equals(NAMESPACES.IDLABFN + "implicitDelete");
+        needsEOFMarker = constant.equals("https://w3id.org/imec/idlab/function#implicitDelete")
+            || constant.equals("http://example.com/idlab/function/implicitDelete");
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ConstantExtractor implements Extractor, SingleRecordFunctionExecuto
 
     /**
      * Returns {@code true} if this extractor needs an End-of-File (EOF) marker the end of the dataset.
-     * At this moment only required if function http://example.com/idlab/function/implicitDelete is used.
+     * At this moment only required if function <a href="https://w3id.org/imec/idlab/function#implicitDelete">https://w3id.org/imec/idlab/function#implicitDelete</a> is used.
      * @return {@code true} if an EOF marker is required.
      */
     @Override

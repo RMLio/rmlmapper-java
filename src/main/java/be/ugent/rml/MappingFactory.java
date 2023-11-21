@@ -285,7 +285,7 @@ public class MappingFactory {
                         Object[] detailsChild = {"child", child};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
-                        joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "http://example.com/idlab/function/equal"));
+                        joinConditionFunctionExecutors.add(new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "https://w3id.org/imec/idlab/function#equal"));
                     }
                 }
 
@@ -504,7 +504,7 @@ public class MappingFactory {
         Object[] detailsChild = {"child", child};
         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
-        return new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "http://example.com/idlab/function/equal");
+        return new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "https://w3id.org/imec/idlab/function#equal");
     }
 
     private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {

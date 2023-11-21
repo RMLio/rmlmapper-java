@@ -24,7 +24,7 @@
 @prefix td: <https://www.w3.org/2019/wot/td#> .
 @prefix htv: <http://www.w3.org/2011/http#> .
 @prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
-@prefix idlab-fn: <http://example.com/idlab/function/> .
+@prefix idlab-fn: <https://w3id.org/imec/idlab/function#> .
 @base <http://example.com/rules/> .
 
 <#TargetDump> a rmlt:LogicalTarget, rmlt:EventStreamTarget;
