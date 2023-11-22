@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - The namespace for IDLab functions FnO descriptions changed, so RMLMapper loads the old and the new one to remain compatible;
   - All tests in RMLMapper use the new namespace;
   - Stateful functions use a more compact and efficient state.
+- Update dependency on `function-agent-java` to 1.2.0, the first version released on Maven Central.
 
 ## [6.4.0] - 2023-11-14
 

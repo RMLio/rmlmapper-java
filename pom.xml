@@ -262,9 +262,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.github.FnOio</groupId>
+            <groupId>be.ugent.idlab.knows</groupId>
             <artifactId>function-agent-java</artifactId>
-            <version>v1.1.0</version>
+            <version>1.2.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.jena</groupId>
