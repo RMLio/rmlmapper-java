@@ -491,7 +491,7 @@ public class ArgumentsTest extends TestCore {
 
     @Test
     public void disableEOFMarker() throws Exception {
-        String[] args = {"-m", "./argument/mapping.ttl", "-v"};
+        String[] args = {"-m", "./argument/mapping.ttl", "-v", "--disable-automatic-eof-marker"};
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setErr(ps);
