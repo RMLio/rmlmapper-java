@@ -405,7 +405,7 @@ public class Main {
             }
             executor = new Executor(rmlStore, factory, outputStore, baseIRI, strictMode, functionAgent);
 
-            if (options.hasOption("disable-automatic-eof-marker")) {
+            if (checkOptionPresence(provideOwnEOFMarkerOption, lineArgs, configFile)) {
                 logger.warn("Automatic EOF marker disabled!");
                 executor.setEOFProvidedInData();
             }
