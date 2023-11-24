@@ -2,17 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
-### Improvements
+### Changed
 - Update dependency on `idlab-functions-java` to 1.3.1. This implies three things:
   - The namespace for IDLab functions FnO descriptions changed, so RMLMapper loads the old and the new one to remain compatible;
   - All tests in RMLMapper use the new namespace;
   - Stateful functions use a more compact and efficient state.
 - Update dependency on `function-agent-java` to 1.2.0, the first version released on Maven Central.
+
+### Fixed
+- Setting option `disable-automatic-eof-marker` in a configuration file has no effect (see GitLab [issue #269](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/269)).
+- Start adhering to [Keep a Changelog](http://keepachangelog.com/en/1.1.0/) from now on (`Improvements` -> `Changed`).
 
 ## [6.4.0] - 2023-11-14
 
