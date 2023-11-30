@@ -393,14 +393,17 @@ public class Main {
                 // default initialisation with IDLab functions and GREL functions...
                 functionAgent = AgentFactory.createFromFnO(
                         "fno/functions_idlab.ttl", "fno/functions_idlab_classes_java_mapping.ttl",
+                        "fno_idlab_old/functions_idlab.ttl", "fno_idlab_old/functions_idlab_classes_java_mapping.ttl",
                         "functions_grel.ttl",
                         "grel_java_mapping.ttl");
             } else {
                 logger.debug("Using custom path to functions.ttl file: {}", Arrays.toString(fOptionValue));
-                String[] optionWithIDLabFunctionArgs = new String[fOptionValue.length + 2];
+                String[] optionWithIDLabFunctionArgs = new String[fOptionValue.length + 4];
                 optionWithIDLabFunctionArgs[0] = "fno/functions_idlab.ttl" ;
                 optionWithIDLabFunctionArgs[1] = "fno/functions_idlab_classes_java_mapping.ttl" ;
-                System.arraycopy(fOptionValue, 0, optionWithIDLabFunctionArgs, 2, fOptionValue.length);
+                optionWithIDLabFunctionArgs[2] = "fno_idlab_old/functions_idlab.ttl" ;
+                optionWithIDLabFunctionArgs[3] = "fno_idlab_old/functions_idlab_classes_java_mapping.ttl" ;
+                System.arraycopy(fOptionValue, 0, optionWithIDLabFunctionArgs, 4, fOptionValue.length);
                 functionAgent = AgentFactory.createFromFnO(optionWithIDLabFunctionArgs);
             }
             executor = new Executor(rmlStore, factory, outputStore, baseIRI, strictMode, functionAgent);

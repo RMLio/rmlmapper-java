@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Setting option `disable-automatic-eof-marker` in a configuration file has no effect (see GitLab [issue #269](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/269)).
 - Start adhering to [Keep a Changelog](http://keepachangelog.com/en/1.1.0/) from now on (`Improvements` -> `Changed`).
+- Compatibility issue with old IDLab functions FnO descriptions (see GitLab [issue #270](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/270))
 
 ## [6.4.0] - 2023-11-14
 
