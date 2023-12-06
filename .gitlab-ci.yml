@@ -80,19 +80,6 @@ General:
     - master
     - development
 
-Docker Build:
-  stage: unittests
-  image: docker:latest
-  services:
-    - docker:23.0.1-dind
-  before_script:
-    - docker info
-  script:
-    - docker build -t rmlmapper .
-  except:
-    - master
-    - development
-
 ###############################
 #                             #
 #     Automated Releases      #
