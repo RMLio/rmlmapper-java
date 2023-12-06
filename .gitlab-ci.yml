@@ -188,8 +188,8 @@ Create Release:
   only:
     - development
 
-# Generate R2RML test report and send MR to rml.io website
-# Push options: https://docs.gitlab.com/ee/user/project/push_options.html
+# Generate R2RML test report and attach it as a artifact.
+# Manual: make a MR to the rml.io website
 R2RML Test Report:
   stage: deploy
   image: docker:latest
@@ -200,7 +200,6 @@ R2RML Test Report:
     - apk add git python3 python3-dev py3-pip postgresql-dev postgresql libpq gcc musl-dev docker docker-compose java-jre-headless maven java-jdk
 
     # Clone the repository via HTTPS inside a new directory
-    - git clone "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/rml/doc/rmlio-website.git"
     - git clone "https://github.com/kg-construct/r2rml-test-cases-support"
 
     # Set the displayed user with the commits that are about to be made
@@ -211,8 +210,8 @@ R2RML Test Report:
     - docker info
   script:
     # Variables
-    - RELEASE_TAG_NAME=$(git tag -l "v*" --sort=-creatordate | head -n1)
-    - RELEASE_TAG_NAME=$(echo "$RELEASE_TAG_NAME" | cut -c2-)
+    - R2RML_TAG_NAME=$(git tag -l "v*" --sort=-creatordate | head -n1 || echo "$CI_COMMIT_REF_NAME")
+    - (if [ "$R2RML_TAG_NAME" == "$CI_COMMIT_REF_NAME" ]; then echo "$CI_COMMIT_REF_NAME"; else R2RML_TAG_NAME=$(echo "$R2RML_TAG_NAME" | cut -c2-); fi)
     - TODAY=$(date +"%Y-%m-%d")
 
     # Build RMLMapper jar
@@ -222,52 +221,26 @@ R2RML Test Report:
     - cp data/r2rml-test-cases-config-postgresql.ini r2rml-test-cases-support/config-postgresql.ini
     - cp data/r2rml-test-cases-config-mysql.ini r2rml-test-cases-support/config-mysql.ini
     - cd r2rml-test-cases-support
-    - echo "Generating test report for release v${RELEASE_TAG_NAME} on ${TODAY}"
-    - sed -i "s/VERSION/${RELEASE_TAG_NAME}/" config-postgresql.ini
-    - sed -i "s/VERSION/${RELEASE_TAG_NAME}/" config-mysql.ini
+    - echo "Generating test report for release v${R2RML_TAG_NAME} on ${TODAY}"
+    - sed -i "s/VERSION/${R2RML_TAG_NAME}/" config-postgresql.ini
+    - sed -i "s/VERSION/${R2RML_TAG_NAME}/" config-mysql.ini
     - sed -i "s/DATE/${TODAY}/" config-postgresql.ini
     - sed -i "s/DATE/${TODAY}/" config-mysql.ini
 
     # Install R2RML test cases dependencies
-    - python3 -m pip install -r requirements.txt
+    - python3 -m pip install requests 'rdflib==6.0.2' 'psycopg2-binary<3' 'mysql-connector-python<9'
 
     # Execute R2RML test cases
     - HOST=docker python3 test.py config-postgresql.ini
     - HOST=$(getent hosts docker | cut -f1 -d " ") python3 test.py config-mysql.ini # MySQL wants an IP address
 
-    # Prepare MR for rml.io website
-    - cp results.ttl ../rmlio-website/tools/rmlmapper/r2rml-test-cases-results.ttl
     - cd ..
-  after_script:
-    - RELEASE_TAG_NAME=$(git tag -l "v*" --sort=-creatordate | head -n1)
-    - RELEASE_TAG_NAME=$(echo "$RELEASE_TAG_NAME" | cut -c2-)
-
-    # Go to the new directory
-    - cd rmlio-website
-
-    # Add all generated files to Git
-    - git add .
-    - |-
-      # Check if we have modifications to commit
-      CHANGES=$(git status --porcelain | wc -l)
-      BRANCH="rmlmapper/${RELEASE_TAG_NAME}"
-
-      if [ "$CHANGES" -gt "0" ]; then
-        # Show the status of files that are about to be created, updated or deleted
-        git diff --cached --shortstat
-
-        # Create new branch
-        git checkout -b "${BRANCH}"
-
-        # Commit all changes
-        COMMIT_MESSAGE="tools/rmlmapper: update R2RML test report for RMLMapper ${RELEASE_TAG_NAME}"
-        echo "Commit message: ${COMMIT_MESSAGE}"
-        git commit -m "${COMMIT_MESSAGE}"
-
-        # Update the repository and make sure to skip the pipeline create for this commit
-        echo "Creating Merge Request of branch ${BRANCH}"
-        git push origin "${BRANCH}" -o merge_request.create -o merge_request.remove_source_branch -o merge_request.title="${COMMIT_MESSAGE}"
-      fi
-  only:
-    - tags
-
+  # Run during merge requests and tags
+  except:
+    - development
+    - master
+  artifacts:
+    when: always
+    paths:
+      - $CI_PROJECT_DIR/r2rml-test-cases-support/results.ttl
+      - $CI_PROJECT_DIR/r2rml-test-cases-support/config-*.ini

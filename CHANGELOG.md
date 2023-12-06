@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Gitlab CI R2RML test cases compliance
+- Gitlab CI Maven Central retrying on failure due to Maven Central server problems
+- Gitlab CI Docker Hub deployment fixed
+
 ## [6.5.1] - 2023-12-06
 
 ## Fixed
