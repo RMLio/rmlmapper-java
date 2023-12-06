@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [6.5.1] - 2023-12-06
+
 ## Fixed
 - Upgrade logback-classic to 1.4.14.
 - Upgrade wiremock-jre8 to 2.35.1.
@@ -700,6 +702,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[6.5.1]: https://github.com/RMLio/rmlmapper-java/compare/v6.5.0...v6.5.1
 [6.5.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.3.0...v6.5.0
 [6.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.2.2...v6.3.0
 [6.2.2]: https://github.com/RMLio/rmlmapper-java/compare/v6.2.1...v6.2.2
