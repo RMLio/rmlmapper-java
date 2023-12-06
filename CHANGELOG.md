@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - The namespace for IDLab functions FnO descriptions changed, so RMLMapper loads the old and the new one to remain compatible;
   - All tests in RMLMapper use the new namespace;
   - Stateful functions use a more compact and efficient state.
-- Update dependency on `function-agent-java` to 1.2.0, the first version released on Maven Central.
-
+  - Update dependency on `function-agent-java` to 1.2.0, the first version released on Maven Central.
+  - Upgraded rdf4j-client dependency to version 4.3.8
 ### Fixed
 - Setting option `disable-automatic-eof-marker` in a configuration file has no effect (see GitLab [issue #269](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/269)).
 - Start adhering to [Keep a Changelog](http://keepachangelog.com/en/1.1.0/) from now on (`Improvements` -> `Changed`).
