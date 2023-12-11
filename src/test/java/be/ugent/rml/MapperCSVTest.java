@@ -1,10 +1,14 @@
 package be.ugent.rml;
 
+import be.ugent.rml.cli.Main;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MapperCSVTest extends TestCore {
     @Test
@@ -338,5 +342,20 @@ public class MapperCSVTest extends TestCore {
     @Test
     public void evaluate_1042_CSV() {
         doMapping("test-cases/RMLTC1042-CSV/mapping.ttl", "test-cases/RMLTC1042-CSV/output.nq");
+    }
+
+    @Test
+    public void evaluate_1043_CSV() {
+        try{
+            Executor executor = this.createExecutor("test-cases/RMLTC1043-CSV/mapping.ttl");
+            doMapping(executor, "test-cases/RMLTC1043-CSV/output.nq");
+        }
+        catch (IllegalArgumentException e){
+            Assertions.assertTrue(e.getMessage().matches("Mapping for [^\n]* not found.*"));
+        }
+        catch (Exception err){
+            logger.error(err.getMessage());
+            Assertions.fail();
+        }
     }
 }

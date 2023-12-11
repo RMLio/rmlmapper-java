@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Start adhering to [Keep a Changelog](http://keepachangelog.com/en/1.1.0/) from now on (`Improvements` -> `Changed`).
 - Compatibility issue with old IDLab functions FnO descriptions (see GitLab [issue #270](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/270))
 
+### Added
+- Test case for working with CSV logical sources without header. 
+
 ## [6.4.0] - 2023-11-14
 
 ### Added
