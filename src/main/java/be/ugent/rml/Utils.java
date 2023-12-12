@@ -625,26 +625,25 @@ public class Utils {
         return f.getParentFile().exists();
     }
 
-    public static String getBaseDirectiveTurtle(File file) {
-        StringBuilder contentBuilder = new StringBuilder();
-        try (Stream<String> stream = Files.lines(Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)) {
-            stream.forEach(s -> contentBuilder.append(s).append("\n"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String turtle = contentBuilder.toString();
-        return Utils.getBaseDirectiveTurtle(turtle);
-    }
-
-    public static String getBaseDirectiveTurtle(InputStream is) {
-        String turtle = null;
+    /**
+     * Get the base directive from a turtle file or return the default base
+     * @param is - input stream of the turtle file
+     * @param defaultBase - default base to return if no base directive is found
+     * @return - base directive or default base
+     */
+    public static String getBaseDirectiveTurtleOrDefault(InputStream is, String defaultBase) {
+        String turtle;
         try {
             turtle = IOUtils.toString(is, StandardCharsets.UTF_8);
         } catch (IOException e) {
             turtle = "";
         }
-        return Utils.getBaseDirectiveTurtle(turtle);
+
+        String base = getBaseDirectiveTurtle(turtle);
+        if (base == null) {
+            base = defaultBase;
+        }
+        return base;
     }
 
     public static String getBaseDirectiveTurtle(String turtle) {

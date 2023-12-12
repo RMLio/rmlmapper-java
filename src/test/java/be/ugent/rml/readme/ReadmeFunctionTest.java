@@ -43,7 +43,7 @@ public class ReadmeFunctionTest {
             QuadStore outputStore = new RDF4JStore();
 
             // Create the Executor
-            Executor executor = new Executor(rmlStore, factory, outputStore, Utils.getBaseDirectiveTurtle(mappingStream), functionAgent);
+            Executor executor = new Executor(rmlStore, factory, outputStore, Utils.getBaseDirectiveTurtleOrDefault(mappingStream, "http://example.com"), functionAgent);
 
             // Execute the mapping
             QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));

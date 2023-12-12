@@ -41,6 +41,8 @@ public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static final Marker fatal = MarkerFactory.getMarker("FATAL");
 
+    private static final String defaultBaseIRI = "http://example.com";
+
     public static void main(String[] args) {
         try {
             run(args, System.getProperty("user.dir"));
@@ -370,7 +372,7 @@ public class Main {
                     }
                     // Best-effort mode, use the @base directive as a fallback
                     try (InputStream is2 = new SequenceInputStream(Collections.enumeration(lis))) {
-                        baseIRI = Utils.getBaseDirectiveTurtle(is2);
+                        baseIRI = Utils.getBaseDirectiveTurtleOrDefault(is2, defaultBaseIRI);
                     }
                 }
             }
