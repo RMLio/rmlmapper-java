@@ -11,6 +11,7 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class CSVW {
 
         configBuilder = setOptionChar(dialect, "quoteChar", configBuilder, CSVWConfigurationBuilder::withQuoteCharacter);
 
-        configBuilder = setOptionString(dialect, "encoding", configBuilder, CSVWConfigurationBuilder::withEncoding);
+        configBuilder = setOptionCharset(dialect, configBuilder, CSVWConfigurationBuilder::withEncoding);
 
         return configBuilder;
     }
@@ -95,6 +96,17 @@ public class CSVW {
         return builder;
     }
 
+    private CSVWConfigurationBuilder setOptionCharset(Term dialect, CSVWConfigurationBuilder builder, CharsetOptionSetter setter) {
+        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + "encoding"), null));
+        if (!optionTerms.isEmpty()) {
+            builder = setter.call(builder, Charset.forName(optionTerms.get(0).getValue()));
+        }
+
+        return builder;
+    }
+
+
+
     /**
      * Sets an option in CSVWConfigurationBuilder that expects a character
      *
@@ -113,7 +125,7 @@ public class CSVW {
         return builder;
     }
 
-    private CSVWConfigurationBuilder setOptionList(Term term, String option, CSVWConfigurationBuilder builder, ListOptionSetter setter) {
+    private CSVWConfigurationBuilder setOptionList(Term term, String option, CSVWConfigurationBuilder builder, ListOptionSetter<String> setter) {
         List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(term, new NamedNode(NAMESPACES.CSVW + option), null));
         if (!optionTerms.isEmpty()) {
             List<String> nulls = optionTerms.stream().map(Term::getValue).collect(Collectors.toList());
@@ -139,5 +151,9 @@ public class CSVW {
 
     private interface ListOptionSetter<T> {
         CSVWConfigurationBuilder call(CSVWConfigurationBuilder builder, List<T> values);
+    }
+
+    private interface CharsetOptionSetter {
+        CSVWConfigurationBuilder call(CSVWConfigurationBuilder builder, Charset value);
     }
 }

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Gitlab CI R2RML test cases compliance
 - Gitlab CI Maven Central retrying on failure due to Maven Central server problems
 - Gitlab CI Docker Hub deployment fixed
+- Update DataIO dependency to 1.1.0 (fixes GitLab [issue 274](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/274))
 
 ### Changed
 - Changed basepath from null to http://example.com/ (see [issue 263](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/263))
