@@ -228,7 +228,7 @@ R2RML Test Report:
     - sed -i "s/DATE/${TODAY}/" config-mysql.ini
 
     # Install R2RML test cases dependencies
-    - python3 -m pip install requests 'rdflib==6.0.2' 'psycopg2-binary<3' 'mysql-connector-python<9'
+    - python3 -m pip --break-system-packages install requests 'rdflib==6.0.2' 'psycopg2-binary<3' 'mysql-connector-python<9'
 
     # Execute R2RML test cases
     - HOST=docker python3 test.py config-postgresql.ini
