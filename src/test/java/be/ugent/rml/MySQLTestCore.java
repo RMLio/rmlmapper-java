@@ -23,7 +23,7 @@ public abstract class MySQLTestCore extends DBTestCore {
     }
 
     protected MySQLTestCore() {
-        this("mysql:8");
+        this("mysql:8.2");
     }
 
     @Override

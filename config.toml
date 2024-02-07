@@ -1,0 +1,4 @@
+[[runners]]
+  executor = "docker"
+  [runners.docker]
+    pull_policy = "if-not-present"
