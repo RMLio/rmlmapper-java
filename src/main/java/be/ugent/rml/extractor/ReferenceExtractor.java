@@ -40,4 +40,8 @@ public class ReferenceExtractor implements Extractor, SingleRecordFunctionExecut
     public Object execute(Record record) throws IOException {
         return extract(record);
     }
+
+    public String getReference(){
+        return this.reference;
+    }
 }

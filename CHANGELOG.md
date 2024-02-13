@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Gitlab CI Docker Hub deployment fixed
 - Update DataIO dependency to 1.1.0 (fixes GitLab [issue 274](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/274))
 - R2RML Test Report CI script failed in development due to missing pip parameter.
+- Optimization for self-joins without join conditions (fixes Gitlab [issue 275](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/275))
+- Optimization for self joins with join condition.
 
 ### Changed
 - Changed basepath from null to http://example.com/ (see [issue 263](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/263))

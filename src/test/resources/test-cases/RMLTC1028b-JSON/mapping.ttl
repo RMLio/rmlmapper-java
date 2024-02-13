@@ -1,3 +1,5 @@
+# same logical source and no join conditions: don't do a full join, but take the current iteration into account
+
 @prefix rml: <http://semweb.mmlab.be/ns/rml#>.
 @prefix rr: <http://www.w3.org/ns/r2rml#>.
 @prefix ql: <http://semweb.mmlab.be/ns/ql#>.

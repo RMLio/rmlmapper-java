@@ -1,0 +1,4 @@
+<http://transport.linkeddata.es/madrid/metro/services/00000000000000000004> <http://vocab.gtfs.org/terms#serviceRule> <http://transport.linkeddata.es/madrid/metro/calendar_rules/00000000000000000004> .
+<http://transport.linkeddata.es/madrid/metro/services/00000000000000000004> <http://vocab.gtfs.org/terms#serviceRule> <http://transport.linkeddata.es/madrid/metro/calendar_rules/00000000000000000005> .
+<http://transport.linkeddata.es/madrid/metro/services/00000000000000000005> <http://vocab.gtfs.org/terms#serviceRule> <http://transport.linkeddata.es/madrid/metro/calendar_rules/00000000000000000004> .
+<http://transport.linkeddata.es/madrid/metro/services/00000000000000000005> <http://vocab.gtfs.org/terms#serviceRule> <http://transport.linkeddata.es/madrid/metro/calendar_rules/00000000000000000005> .

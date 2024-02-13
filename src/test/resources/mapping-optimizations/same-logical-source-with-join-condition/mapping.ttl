@@ -1,0 +1,43 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix void: <http://rdfs.org/ns/void#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix : <http://mapping.example.com/>.
+@prefix gtfs: <http://vocab.gtfs.org/terms#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+:map_services1_000 a rr:TriplesMap;
+  rml:logicalSource :source_000;
+  rdfs:label "services1";
+  rr:subjectMap [
+    a rr:SubjectMap;
+    rr:template "http://transport.linkeddata.es/madrid/metro/services/{service_id}"
+  ];
+  rr:predicateObjectMap [
+    a rr:PredicateObjectMap;
+    rr:predicateMap [
+      a rr:PredicateMap;
+      rr:constant gtfs:serviceRule
+    ];
+    rr:objectMap [
+      a rr:ObjectMap;
+      rr:parentTriplesMap :map_calendar_rules_000;
+      rr:joinCondition [
+        rr:child "service_id";
+        rr:parent "service_id";
+      ]
+    ]
+  ].
+:source_000 a rml:LogicalSource;
+  rml:source "./CALENDAR.csv";
+  rml:referenceFormulation ql:CSV.
+:map_calendar_rules_000 a rr:TriplesMap;
+  rml:logicalSource :source_001;
+  rdfs:label "calendar_rules";
+  rr:subjectMap [
+    a rr:SubjectMap;
+    rr:template "http://transport.linkeddata.es/madrid/metro/calendar_rules/{service_id}"
+  ].
+:source_001 a rml:LogicalSource;
+  rml:source "./CALENDAR.csv";
+  rml:referenceFormulation ql:CSV.

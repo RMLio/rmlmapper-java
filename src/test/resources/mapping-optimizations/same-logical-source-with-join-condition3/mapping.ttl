@@ -1,0 +1,36 @@
+# In this test the referencing object map cannot be optimized to a 'normal' object map,
+# because the subject of the parent triples map and the terms of the child triples map are generated with references that don't appear in the join conditions.
+# Such example doesn't appear in the GTFS Madrid Benchmark.
+
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix activity: <http://example.com/activity/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@base <http://example.com/base/> .
+
+<TriplesMap1>
+  a rr:TriplesMap;
+
+  rml:logicalSource [
+    rml:source "student.csv";
+    rml:referenceFormulation ql:CSV
+  ];
+
+  rr:subjectMap [ rr:template "http://example.com/Student/{ID}/{Name}" ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:sameSportAs ;
+    rr:objectMap <RefObjectMap1>
+  ] .
+
+
+<RefObjectMap1>
+  a rr:RefObjectMap;
+  rr:parentTriplesMap <TriplesMap1> ;
+  rr:joinCondition [ rr:child "Sport" ;
+      rr:parent "Sport" ] .
+

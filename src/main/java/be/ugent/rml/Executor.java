@@ -25,6 +25,7 @@ public class Executor {
     private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
     private final Initializer initializer;
+    private final MappingOptimizer mappingOptimizer;
     private final Map<Term, List<Record>> recordsHolders = new HashMap<>();
 
     /*
@@ -68,9 +69,10 @@ public class Executor {
     }
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
-        this.initializer = new Initializer(rmlStore, functionAgent, baseIRI, strictMode);
+        this.mappingOptimizer = new MappingOptimizer(rmlStore);
+        this.rmlStore = mappingOptimizer.optimizeMapping();
+        this.initializer = new Initializer(this.rmlStore, functionAgent, baseIRI, strictMode);
         this.mappings = this.initializer.getMappings();
-        this.rmlStore = rmlStore;
         this.recordsFactory = recordsFactory;
         this.subjectCache = new HashMap<>();
         this.targetStores = new HashMap<>();
