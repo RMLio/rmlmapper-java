@@ -55,7 +55,9 @@ default:
 
 General:
   stage: unittests
-  image: maven:3-eclipse-temurin-17
+  image:
+    name: maven:3-eclipse-temurin-17
+    pull_policy: if-not-present
   services:
     - name: docker:23.0.1-dind
       # explicitly disable tls to avoid docker startup interruption
@@ -122,6 +124,7 @@ Create Release:
   image:
     entrypoint: ['']
     name: alpine/git:${GIT_VERSION}
+    pull_policy: if-not-present
   stage: release
   before_script:
     # Dependencies
@@ -192,7 +195,9 @@ Create Release:
 # Manual: make a MR to the rml.io website
 R2RML Test Report:
   stage: deploy
-  image: docker:latest
+  image:
+    name: docker:latest
+    pull_policy: if-not-present
   services:
     - docker:23.0.1-dind
   before_script:
