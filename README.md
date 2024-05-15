@@ -311,7 +311,8 @@ The tests will fail otherwise, as Testcontainers can't spin up the container.
 |      com.github.tomakehurst:wiremock-jre8      | Apache License 2.0                                                 |
 |       com.microsoft.sqlserver mssql-jdbc       | MIT                                                                |
 |         com.mysql mysql-connector-java         | GNU General Public License v2.0                                    |
-|        com.oracle.database.jdbc:ojdbc11        | Oracle Free Use Terms and Conditions                               |                                                           |
+|        com.oracle.database.jdbc:ojdbc11        | Oracle Free Use Terms and Conditions                               |
+|             net.minidev json-smart             | Apache License 2.0                                                 |
 |          org.apache.jena fuseki-main           | Apache License 2.0                                                 |
 |         org.eclipse.rdf4j rdf4j-client         | Eclipse Distribution License v1.0                                  |
 |      org.junit.jupiter junit-jupiter-api       | Eclipse Public License v2.0                                        |
