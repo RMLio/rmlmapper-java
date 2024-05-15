@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - R2RML Test Report CI script failed in development due to missing pip parameter.
 - Optimization for self-joins without join conditions (fixes Gitlab [issue 275](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/275))
 - Optimization for self joins with join condition.
+- Updated junit to 5.10.0
+- Updated jena to 4.9.0
+- Updated testcontainers to 1.18.3
+- Added explicit dependency on json-smart, since it was an indirect dependency which changed scope
+- Updated idlab-functions-java to 1.3.2, fixing an issue with IncRML
+- Updated dataio to 1.2.0
 
 ### Changed
 - Changed basepath from null to http://example.com/ (see [issue 263](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/263))
