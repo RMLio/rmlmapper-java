@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added explicit dependency on json-smart, since it was an indirect dependency which changed scope
 - Updated idlab-functions-java to 1.3.2, fixing an issue with IncRML
 - Updated dataio to 1.2.0
+- Changed scope of `json-path` dependency to `runtime`
 
 ### Changed
 - Changed basepath from null to http://example.com/ (see [issue 263](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/263))
