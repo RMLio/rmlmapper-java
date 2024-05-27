@@ -1,0 +1,29 @@
+@prefix ex: <http://example.com/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.com/base/TriplesMap1> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:referenceFormulation rml:CSV;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "student.csv"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:datatype xsd:string;
+          rml:reference "Name"
+        ];
+      rml:predicate foaf:name
+    ], [
+      rml:objectMap [
+          rml:datatype xsd:int;
+          rml:reference "Age"
+        ];
+      rml:predicate ex:age
+    ];
+  rml:subjectMap [
+      rml:template "http://example.com/{Name}"
+    ] .

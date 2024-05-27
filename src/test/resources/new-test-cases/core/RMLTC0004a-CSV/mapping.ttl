@@ -1,0 +1,41 @@
+@prefix ex: <http://example.com/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<http://example.com/base/TriplesMap1> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:referenceFormulation rml:CSV;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "student_sport.csv"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:reference "Student"
+        ];
+      rml:predicate foaf:name
+    ];
+  rml:subjectMap [
+      rml:class ex:Student;
+      rml:template "http://example.com/{Student}"
+    ] .
+
+<http://example.com/base/TriplesMap2> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:referenceFormulation rml:CSV;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "student_sport.csv"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:reference "Sport"
+        ];
+      rml:predicate foaf:name
+    ];
+  rml:subjectMap [
+      rml:class ex:Sport;
+      rml:template "http://example.com/{Sport}"
+    ] .

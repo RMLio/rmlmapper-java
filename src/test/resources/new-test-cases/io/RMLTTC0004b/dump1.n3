@@ -1,0 +1,12 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.org/> .
+ex:0 <foaf:age> "33" ;
+     <foaf:name> "Monica Geller" .
+ex:1 <foaf:age> "34" ;
+     <foaf:name> "Rachel Green" .
+ex:2 <foaf:age> "35" ;
+     <foaf:name> "Joey Tribbiani" .
+ex:3 <foaf:age> "36" ;
+     <foaf:name> "Chandler Bing" .
+ex:4 <foaf:age> "37" ;
+     <foaf:name> "Ross Geller" .

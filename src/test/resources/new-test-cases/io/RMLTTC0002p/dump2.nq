@@ -1,0 +1,5 @@
+<http://example.org/0> <http://xmlns.com/foaf/0.1/name> "Monica Geller"@nl .
+<http://example.org/1> <http://xmlns.com/foaf/0.1/name> "Rachel Green"@nl .
+<http://example.org/2> <http://xmlns.com/foaf/0.1/name> "Joey Tribbiani"@nl .
+<http://example.org/3> <http://xmlns.com/foaf/0.1/name> "Chandler Bing"@nl .
+<http://example.org/4> <http://xmlns.com/foaf/0.1/name> "Ross Geller"@nl .

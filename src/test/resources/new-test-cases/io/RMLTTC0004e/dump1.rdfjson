@@ -1,0 +1,22 @@
+{
+    "http://example.org/0" : {
+        "http://xmlns.com/foaf/0.1/age" : [ { "value" : "33" } ],
+        "http://xmlns.com/foaf/0.1/name" : [ { "value" : "Monica Geller" } ]
+    },
+    "http://example.org/1" : {
+        "http://xmlns.com/foaf/0.1/age" : [ { "value" : "34" } ],
+        "http://xmlns.com/foaf/0.1/name" : [ { "value" : "Rachel Green" } ]
+    },
+    "http://example.org/2" : {
+        "http://xmlns.com/foaf/0.1/age" : [ { "value" : "35" } ],
+        "http://xmlns.com/foaf/0.1/name" : [ { "value" : "Joey Tribbiani" } ]
+    },
+    "http://example.org/3" : {
+        "http://xmlns.com/foaf/0.1/age" : [ { "value" : "36" } ],
+        "http://xmlns.com/foaf/0.1/name" : [ { "value" : "Chandler Bing" } ]
+    },
+    "http://example.org/4" : {
+        "http://xmlns.com/foaf/0.1/age" : [ { "value" : "37" } ],
+        "http://xmlns.com/foaf/0.1/name" : [ { "value" : "Ross Geller" } ]
+    }
+}

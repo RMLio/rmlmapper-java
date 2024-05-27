@@ -1,0 +1,23 @@
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<http://example.com/base/TriplesMap1> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:referenceFormulation rml:CSV;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "data.csv"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:datatypeMap [
+              rml:template "datatype#{BAR}"
+            ];
+          rml:reference "FOO"
+        ];
+      rml:predicate ex:x
+    ];
+  rml:subjectMap [
+      rml:template "http://example.com/{FOO}"
+    ] .

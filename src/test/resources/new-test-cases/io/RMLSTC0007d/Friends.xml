@@ -1,0 +1,22 @@
+<Friends xmlns:ex="http://example.org">
+  <ex:Character id="0">
+    <ex:name>Monica Geller</ex:name>
+    <ex:age>33</ex:age>
+  </ex:Character>
+  <ex:Character id="1">
+    <ex:name>Rachel Green</ex:name>
+    <ex:age>34</ex:age>
+  </ex:Character>
+  <ex:Character id="2">
+    <ex:name>Joey Tribbiani</ex:name>
+    <ex:age>35</ex:age>
+  </ex:Character>
+  <ex:Character id="3">
+    <ex:name>Chandler Bing</ex:name>
+    <ex:age>36</ex:age>
+  </ex:Character>
+  <ex:Character id="4">
+    <ex:name>Ross Geller</ex:name>
+    <ex:age>37</ex:age>
+  </ex:Character>
+</Friends>

@@ -1,0 +1,28 @@
+@prefix activity: <http://example.com/activity/> .
+@prefix ex: <http://example.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<http://example.com/base/RefObjectMap1> a rml:RefObjectMap;
+  rml:joinCondition [
+      rml:child "Sport";
+      rml:parent "Sport"
+    ];
+  rml:parentTriplesMap <http://example.com/base/TriplesMap1> .
+
+<http://example.com/base/TriplesMap1> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:iterator "$.students[*]";
+      rml:referenceFormulation rml:JSONPath;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "student.json"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap <http://example.com/base/RefObjectMap1>;
+      rml:predicate ex:sameSportAs
+    ];
+  rml:subjectMap [
+      rml:template "http://example.com/Student/{ID}/{Name}"
+    ] .

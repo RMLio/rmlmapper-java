@@ -1,0 +1,42 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<http://example.com/base/TriplesMap1> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:iterator "$.countries[*]";
+      rml:referenceFormulation rml:JSONPath;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "country_en.json"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:language "en";
+          rml:reference "Name"
+        ];
+      rml:predicate rdfs:label
+    ];
+  rml:subjectMap [
+      rml:template "http://example.com/{Code}"
+    ] .
+
+<http://example.com/base/TriplesMap2> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:iterator "$.countries[*]";
+      rml:referenceFormulation rml:JSONPath;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "country_es.json"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:language "es";
+          rml:reference "Name"
+        ];
+      rml:predicate rdfs:label
+    ];
+  rml:subjectMap [
+      rml:template "http://example.com/{Code}"
+    ] .

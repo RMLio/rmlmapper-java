@@ -1,0 +1,33 @@
+{
+  "@context": { 
+    "foaf": "http://xmlns.com/foaf/0.1/"
+  },
+  "@graph": [
+    {                                                                                
+
+      "@id": "http://example.org/0",
+      "foaf:name": "Monica Geller",
+      "foaf:age": "33"
+    },
+    {                                                                                
+      "@id": "http://example.org/1",
+      "foaf:name": "Rachel Green",
+      "foaf:age": "34"
+    },
+    {                                                                                
+      "@id": "http://example.org/2",
+      "foaf:name": "Joey Tribbiani",
+      "foaf:age": "35"
+    },
+    {                                                                                
+      "@id": "http://example.org/3",
+      "foaf:name": "Chandler Bing",
+      "foaf:age": "36"
+    },
+      {                                                                                
+      "@id": "http://example.org/4",
+      "foaf:name": "Ross Geller",
+      "foaf:age": "37"
+    }
+  ]
+}

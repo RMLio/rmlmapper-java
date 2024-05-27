@@ -1,0 +1,20 @@
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<http://example.com/base/TriplesMap1> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:referenceFormulation rml:CSV;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "country_info.csv"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:reference "Name"
+        ];
+      rml:predicate ex:name
+    ];
+  rml:subjectMap [
+      rml:template "http://example.com/{Country Code}/{Name}"
+    ] .

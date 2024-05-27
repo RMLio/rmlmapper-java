@@ -1,0 +1,23 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/">
+  <rdf:Description rdf:about="http://example.org/0">
+    <foaf:age>33</foaf:age>
+    <foaf:name>Monica Geller</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/1">
+    <foaf:age>34</foaf:age>
+    <foaf:name>Rachel Green</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/2">
+    <foaf:age>35</foaf:age>
+    <foaf:name>Joey Tribbiani</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/3">
+    <foaf:age>36</foaf:age>
+    <foaf:name>Chandler Bing</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/4">
+    <foaf:age>37</foaf:age>
+    <foaf:name>Ross Geller</foaf:name>
+  </rdf:Description>
+</rdf:RDF>

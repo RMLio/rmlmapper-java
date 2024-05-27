@@ -1,0 +1,66 @@
+@prefix ex: <http://example.com/> .
+@prefix rml: <http://w3id.org/rml/> .
+
+<http://example.com/base/LinkMap_1_2> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:referenceFormulation rml:CSV;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "student_sport.csv"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:template "http://example.com/sport/{ID_Sport}"
+        ];
+      rml:predicate ex:plays
+    ];
+  rml:subjectMap [
+      rml:template "http://example.com/student/{ID_Student}"
+    ] .
+
+<http://example.com/base/TriplesMap1> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:referenceFormulation rml:CSV;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "student.csv"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:reference "FirstName"
+        ];
+      rml:predicate ex:firstName
+    ], [
+      rml:objectMap [
+          rml:reference "LastName"
+        ];
+      rml:predicate ex:lastName
+    ];
+  rml:subjectMap [
+      rml:template "http://example.com/student/{ID}"
+    ] .
+
+<http://example.com/base/TriplesMap2> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+      rml:referenceFormulation rml:CSV;
+      rml:source [ a rml:RelativePathSource;
+          rml:root rml:MappingDirectory;
+          rml:path "sport.csv"
+        ]
+    ];
+  rml:predicateObjectMap [
+      rml:objectMap [
+          rml:reference "Description"
+        ];
+      rml:predicate ex:description
+    ], [
+      rml:objectMap [
+          rml:reference "ID"
+        ];
+      rml:predicate ex:id
+    ];
+  rml:subjectMap [
+      rml:template "http://example.com/sport/{ID}"
+    ] .
