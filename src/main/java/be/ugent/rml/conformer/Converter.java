@@ -1,7 +1,5 @@
 package be.ugent.rml.conformer;
 
-import be.ugent.rml.term.Term;
-
 import java.util.Map;
 
 /**
@@ -10,16 +8,8 @@ import java.util.Map;
  */
 interface Converter {
     /**
-     * Detection logic needed to determine mapping format of TriplesMap.
-     * @param tm TriplesMap
-     * @return true if is specific mapping format false if not
-     */
-    boolean detect(Term tm);
-
-    /**
-     * Try to convert mapping language TriplesMap to RML.
+     * Try to convert R2RML and old RML to new RML.
      * Has to be atomic. Original model must be recovered if conversion fails.
-     * @param tm TriplesMap
      */
-    void convert(Term tm, Map<String, String> mappingOptions) throws Exception;
+    void convert(Map<String, String> mappingOptions) throws Exception;
 }

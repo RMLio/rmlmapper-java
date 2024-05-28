@@ -1,30 +1,33 @@
-<http://example.com/base/TriplesMap1> a <http://www.w3.org/ns/r2rml#TriplesMap>;
-    <http://www.w3.org/ns/r2rml#subjectMap> <http://example.com/base/SubjectMap1>;
-    <http://www.w3.org/ns/r2rml#predicateObjectMap> <http://example.com/base/POM2>, <http://example.com/base/POM1>;
-    <http://semweb.mmlab.be/ns/rml#logicalSource> <http://example.com/base/TriplesMap1_logicalSource>.
-<http://example.com/base/SubjectMap1> <http://www.w3.org/ns/r2rml#template> "http://example.com/{ID}/{Name}";
-    <http://www.w3.org/ns/r2rml#class> <http://xmlns.com/foaf/0.1/Person>.
-<http://example.com/base/POM1> <http://www.w3.org/ns/r2rml#predicate> <http://example.com/id>;
-    <http://www.w3.org/ns/r2rml#objectMap> <http://example.com/base/OM1>.
-<http://example.com/base/POM2> <http://www.w3.org/ns/r2rml#predicate> <http://xmlns.com/foaf/0.1/name>;
-    <http://www.w3.org/ns/r2rml#objectMap> <http://example.com/base/OM2>.
-<http://example.com/base/OM1> <http://semweb.mmlab.be/ns/rml#reference> "ID".
-<http://example.com/base/OM2> <http://semweb.mmlab.be/ns/rml#reference> "Name".
-<http://example.com/base/TriplesMap1_logicalSource> <http://www.w3.org/ns/r2rml#tableName> "Student" .
-<http://example.com/base/TriplesMap1_logicalSource>
-        <http://semweb.mmlab.be/ns/rml#source>
-                <http://example.com/base/TriplesMap1_database> .
-<http://example.com/base/TriplesMap1_logicalSource>
-        <http://semweb.mmlab.be/ns/rml#referenceFormulation>
-                <http://semweb.mmlab.be/ns/ql#CSV> .
+@prefix ex: <http://example.com/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.com/base/TriplesMap1_database>
-        a       <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#Database> ;
-        <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#jdbcDSN>
-                "jdbc:mysql://localhost:1234/test" ;
-        <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#jdbcDriver>
-                        "com.mysql.cj.jdbc.Driver" ;
-        <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#password>
-                "YourSTRONG!Passw0rd;" ;
-        <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#username>
-                "sa" .
+<http://example.com/base/OM1> <http://w3id.org/rml/reference> "ID" .
+
+<http://example.com/base/OM2> <http://w3id.org/rml/reference> "Name" .
+
+<http://example.com/base/POM1> <http://w3id.org/rml/objectMap> <http://example.com/base/OM1>;
+  <http://w3id.org/rml/predicate> ex:id .
+
+<http://example.com/base/POM2> <http://w3id.org/rml/objectMap> <http://example.com/base/OM2>;
+  <http://w3id.org/rml/predicate> foaf:name .
+
+<http://example.com/base/SubjectMap1> <http://w3id.org/rml/class> foaf:Person;
+  <http://w3id.org/rml/template> "http://example.com/{ID}/{Name}" .
+
+<http://example.com/base/TriplesMap1> a <http://w3id.org/rml/TriplesMap>;
+  <http://w3id.org/rml/logicalSource> <http://example.com/base/TriplesMap1_logicalSource>;
+  <http://w3id.org/rml/predicateObjectMap> <http://example.com/base/POM1>, <http://example.com/base/POM2>;
+  <http://w3id.org/rml/subjectMap> <http://example.com/base/SubjectMap1> .
+
+<http://example.com/base/TriplesMap1_database> a <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#Database>;
+  <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#jdbcDSN> "jdbc:mysql://localhost:1234/test";
+  <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#jdbcDriver> "com.mysql.cj.jdbc.Driver";
+  <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#password> "YourSTRONG!Passw0rd;";
+  <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#username> "sa" .
+
+<http://example.com/base/TriplesMap1_logicalSource> <http://w3id.org/rml/iterator>
+    "Student";
+  <http://w3id.org/rml/referenceFormulation> <http://w3id.org/rml/SQL2008Table>;
+  <http://w3id.org/rml/source> <http://example.com/base/TriplesMap1_database> .

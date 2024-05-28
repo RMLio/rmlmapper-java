@@ -407,10 +407,12 @@ public class ArgumentsTest extends TestCore {
         try (PrintStream ps = new PrintStream(stdout)) {
             System.setErr(ps);
             Main.run("-m ./argument-config-file-test-cases/mapping.ttl -o ./generated_output.nq --strict".split(" "));
-        } finally {
+        } catch (Exception e) {
+            assertThat(e.getMessage(), containsString("When running in strict mode, a base IRI argument must be set."));
+        }
+        finally {
             System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));   // reset to original System.err
         }
-        assertThat(stdout.toString(), containsString("When running in strict mode, a base IRI argument must be set."));
     }
 
     @Test

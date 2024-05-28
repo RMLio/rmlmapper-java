@@ -154,7 +154,7 @@ public class MetadataGenerator {
         termMaptoActivityMap = new HashMap<>();
 
         for (Term triplesMap : triplesMaps) {
-            List<Term> subjectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"),
+            List<Term> subjectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "subjectMap"),
                     null));
 
             if (!subjectMaps.isEmpty()) {
@@ -162,15 +162,15 @@ public class MetadataGenerator {
                 createActivityStatementsWithResultActivity(subjectMap, termMaptoActivityMap, triplesMaptoActivityMap.get(triplesMap));
             }
 
-            List<Term> predicateObjectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(triplesMap, new NamedNode(NAMESPACES.RR + "predicateObjectMap"),
+            List<Term> predicateObjectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"),
                     null));
 
             for (Term pom : predicateObjectMaps) {
                 Term pomActivity = createActivityStatementsWithResultActivity(pom, termMaptoActivityMap, triplesMaptoActivityMap.get(triplesMap));
 
-                List<Term> predicateMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(pom, new NamedNode(NAMESPACES.RR + "predicateMap"),
+                List<Term> predicateMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(pom, new NamedNode(NAMESPACES.RML2 + "predicateMap"),
                         null));
-                List<Term> objectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(pom, new NamedNode(NAMESPACES.RR + "objectMap"),
+                List<Term> objectMaps = Utils.getObjectsFromQuads(mappingQuads.getQuads(pom, new NamedNode(NAMESPACES.RML2+ "objectMap"),
                         null));
 
                 createActivityStatementsWithResultActivity(predicateMaps, termMaptoActivityMap, pomActivity);
@@ -256,7 +256,7 @@ public class MetadataGenerator {
             logicalSources = new ArrayList<>();
             for (Term triplesMap : triplesMaps) {
                 List<Term> logicalSourcesObjects = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap,
-                        new NamedNode(NAMESPACES.RML + "logicalSource"), null));
+                        new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
 
                 if (logicalSourcesObjects.isEmpty()) {
                     throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
@@ -266,7 +266,7 @@ public class MetadataGenerator {
 
                 if (logicalSource instanceof BlankNode) {
                     List<Term> sourceObjects = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource,
-                            new NamedNode(NAMESPACES.RML + "source"), null));
+                            new NamedNode(NAMESPACES.RML2 + "source"), null));
 
                     if (sourceObjects.isEmpty()) {
                         throw new Error("No Source is found for " + triplesMap + ". Exactly one Source is required per Logical Source.");

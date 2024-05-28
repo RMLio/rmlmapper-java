@@ -19,7 +19,7 @@ public class SourceNotPresentTest extends TestFunctionCore{
         // execute mapping file
         URL url = classLoader.getResource("./test-cases/RMLTC1035-CSV");
         assert url != null;
-        assertThrows(IOException.class,() -> executor.verifySources( url.getPath()));
+        assertThrows(IOException.class,() -> executor.verifySources(url.getPath(), url.getPath()));
     }
 
     @Test
@@ -29,7 +29,7 @@ public class SourceNotPresentTest extends TestFunctionCore{
         // execute mapping file
         URL url = classLoader.getResource("./test-cases/RMLTC1036-CSV");
         assert url != null;
-        executor.verifySources(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
+        executor.verifySources(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8), URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
     }
 
 

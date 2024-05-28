@@ -28,15 +28,19 @@ public class RecordsFactory {
     private Map<String, ReferenceFormulationRecordFactory> referenceFormulationRecordFactoryMap;
     private static final Logger logger = LoggerFactory.getLogger(RecordsFactory.class);
 
-    public RecordsFactory(String basePath) {
-        accessFactory = new AccessFactory(basePath);
+    public RecordsFactory(String basePath, String mappingPath) {
+        accessFactory = new AccessFactory(basePath, mappingPath);
         recordsCache = new HashMap<>();
 
         referenceFormulationRecordFactoryMap = new HashMap<>();
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.XPath, new XMLRecordFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.SPARQLResultsXML, new XMLRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.JSONPath, new JSONRecordFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.SPARQLResultsJSON, new JSONRecordFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSV, new TabularSourceFactory());
-        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDB, new TabularSourceFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDBTable, new TabularSourceFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.RDBQuery, new TabularSourceFactory());
+        referenceFormulationRecordFactoryMap.put(ReferenceFormulation.SPARQLResultsCSV, new TabularSourceFactory());
         referenceFormulationRecordFactoryMap.put(ReferenceFormulation.CSS3, new HTMLRecordFactory());
     }
 
@@ -49,7 +53,7 @@ public class RecordsFactory {
      */
     public List<Record> createRecords(Term triplesMap, QuadStore rmlStore) throws Exception {
         // Get Logical Sources.
-        List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
+        List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
 
         // Check if there is at least one Logical Source.
         if (!logicalSources.isEmpty()) {
@@ -58,22 +62,16 @@ public class RecordsFactory {
             Access access = accessFactory.getAccess(logicalSource, rmlStore);
 
             // Get Logical Source information
-            List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
-            List<Term> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "tableName"), null));
+            List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "referenceFormulation"), null));
 
             // If no rml:referenceFormulation is given, but a table is given --> CSV
-            if (referenceFormulations.isEmpty() && !tables.isEmpty()) {
-                referenceFormulations = new ArrayList<>();
-                referenceFormulations.add(0, new NamedNode(ReferenceFormulation.RDB));
-            }
-
             if (referenceFormulations.isEmpty()) {
-                throw new Error("The Logical Source of " + triplesMap + " does not have a reference formulation.");
-            } else {
-                String referenceFormulation = referenceFormulations.get(0).getValue();
-
-                return getRecords(access, logicalSource, referenceFormulation, rmlStore);
+                referenceFormulations = List.of(new NamedNode(ReferenceFormulation.RDBTable));
             }
+
+            String referenceFormulation = referenceFormulations.get(0).getValue();
+
+            return getRecords(access, logicalSource, referenceFormulation, rmlStore);
         } else {
             throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
         }
@@ -166,8 +164,8 @@ public class RecordsFactory {
         final String[] hash = {""};
 
         quads.forEach(quad -> {
-            if (!quad.getPredicate().getValue().equals(NAMESPACES.RML + "source")
-                    && !quad.getPredicate().getValue().equals(NAMESPACES.RML + "referenceFormulation") ) {
+            if (!quad.getPredicate().getValue().equals(NAMESPACES.RML2 + "source")
+                    && !quad.getPredicate().getValue().equals(NAMESPACES.RML2 + "referenceFormulation") ) {
                 hash[0] += quad.getObject().getValue();
             }
         });

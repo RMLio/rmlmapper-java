@@ -3,6 +3,7 @@ package be.ugent.rml.access;
 import be.ugent.idlab.knows.dataio.access.*;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
+import be.ugent.rml.records.ReferenceFormulation;
 import be.ugent.rml.records.SPARQLResultFormat;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,14 +28,22 @@ public class AccessFactory {
 
     // The path used when local paths are not absolute.
     private final String basePath;
+    private final String mappingPath;
     final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+
+    private static final Map<String, String> REF_FORM_MIMETYPE = Map.of(
+            NAMESPACES.RML2 + "CSV", "text/csv"
+    );
 
     /**
      * The constructor of the AccessFactory.
+     *
      * @param basePath the base path for the local file system.
+     * @param mappingPath the path to the used mapping file.
      */
-    public AccessFactory(String basePath) {
+    public AccessFactory(String basePath, String mappingPath) {
         this.basePath = basePath;
+        this.mappingPath = mappingPath;
     }
 
     /**
@@ -43,7 +53,7 @@ public class AccessFactory {
      * @return an Access instance based on the RML rules in rmlStore.
      */
     public Access getAccess(Term logicalSource, QuadStore rmlStore) {
-        List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+        List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "source"), null));
         Access access;
 
         // check if at least one source is available.
@@ -53,19 +63,30 @@ public class AccessFactory {
             // if we are dealing with a literal,
             // then it's either a local or remote file.
             if (sources.get(0) instanceof Literal literal) {
-                String value = sources.get(0).getValue();
+                String value = literal.getValue();
                 if (isRemoteFile(value)) {
-                    access = new RemoteFileAccess(value);
+                    Term refForm = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "referenceFormulation"), null)).get(0);
+                    String mimeType = REF_FORM_MIMETYPE.get(refForm.toString());
+                    access = new RemoteFileAccess(value, mimeType);
                 } else {
-                    String datatype = literal.getDatatype()  == null ? null : ((NamedNode) literal.getDatatype()).getValue();
-                    access = new LocalFileAccess(value, this.basePath, datatype);
-
+                    access = new LocalFileAccess(value, this.basePath);
                 }
             } else {
                 // if not a literal, then we are dealing with a more complex description.
                 List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
+                sourceType.remove(new NamedNode(NAMESPACES.RML2 + "Source"));
 
                 switch(sourceType.get(0).getValue()) {
+                    case NAMESPACES.RML2 + "RelativePathSource":
+                        String path = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RML2 + "path"), null)).get(0).getValue();
+                        String root = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RML2 + "root"), null)).get(0).getValue();
+                        if (root.equals(NAMESPACES.RML2 + "MappingDirectory")) {
+                            access = new LocalFileAccess(path, this.mappingPath);
+                        } else {
+                            access = new LocalFileAccess(path, this.basePath);
+                        }
+                        break;
+
                     case NAMESPACES.D2RQ + "Database":  // RDBs
                         access = getRDBAccess(rmlStore, source, logicalSource);
 
@@ -80,12 +101,12 @@ public class AccessFactory {
                         }
 
                         // Get query
-                        List<Term> query = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "query"), null));
+                        List<Term> query = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "iterator"), null));
                         if (query.isEmpty()) {
                             throw new Error("No SPARQL query found");
                         }
 
-                        List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "referenceFormulation"), null));
+                        List<Term> referenceFormulations = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "referenceFormulation"), null));
 
                         // Get result format
                         List<Term> resultFormatObject = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.SD + "resultFormat"), null));
@@ -104,11 +125,32 @@ public class AccessFactory {
                         String value = urls.get(0).getValue();
 
                         if (isRemoteFile(value)) {
-                            access = new RemoteFileAccess(value);
+                            access = new RemoteFileAccess(value, "text/csvw");
                         } else {
-                            access = new LocalFileAccess(value, this.basePath, "CSVW");
+                            access = new LocalFileAccess(value, this.basePath, "text/csvw");
                         }
 
+                        break;
+                    case NAMESPACES.TD + "Thing":
+                        Map<String, Map<String, String>> auth2 = new HashMap<>();
+                        auth2.put("data", new HashMap<>());
+                        auth2.put("info", new HashMap<>());
+
+                        try {
+                            Term propertyAffordance = rmlStore.getQuad(source, new NamedNode(NAMESPACES.TD + "hasPropertyAffordance"), null).getObject();
+                            List<Term> form = Utils.getObjectsFromQuads(rmlStore.getQuads(propertyAffordance, new NamedNode(NAMESPACES.TD + "hasForm"), null));
+                            List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "hasTarget"), null));
+                            List<Term> contentTypes = Utils.getObjectsFromQuads(rmlStore.getQuads(form.get(0), new NamedNode(NAMESPACES.HCTL + "forContentType"), null));
+
+                            // TODO: determine which protocol is used to know which vocabulary is needed for the protocol specific part.
+                            String target = targets.get(0).getValue();
+                            String contentType = contentTypes.isEmpty() ? null : contentTypes.get(0).getValue();
+
+                            access = new WoTAccess(target, contentType, new HashMap<>(), auth2);
+                        } catch (Exception e) {
+                            logger.error("Cannot create WoT TD:Thing access");
+                            access = null;
+                        }
                         break;
                     case NAMESPACES.TD + "PropertyAffordance":
                         Map<String, String> headers = new HashMap<>();
@@ -205,8 +247,40 @@ public class AccessFactory {
                         }
                         access = new WoTAccess(target, contentType, headers, auth);
                         break;
+                    case NAMESPACES.DCAT + "Distribution":
+                        List<Term> dcatUrls = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.DCAT + "downloadURL"), null));
+
+                        if (dcatUrls.isEmpty()) {
+                            throw new Error("No url found for the DCAT Distribution");
+                        }
+
+                        String dcatValue = dcatUrls.get(0).getValue();
+                        if (isRemoteFile(dcatValue)) {
+
+                            List<Term> refFormulationTerms = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "referenceFormulation"), null));
+                            String mimetype = REF_FORM_MIMETYPE.get(refFormulationTerms.get(0).getValue());
+                            if (mimetype != null) {
+                                access = new RemoteFileAccess(dcatValue, mimetype);
+                            } else {
+                                access = new RemoteFileAccess(dcatValue);
+                            }
+                        } else {
+                            logger.debug("Local file found `{}`, trying in basePath '{}' and mapping path '{}'", dcatValue, this.basePath, this.mappingPath);
+                            File f1 = new File(this.basePath, dcatValue);
+                            File f2 = new File(this.mappingPath, dcatValue);
+                            File f3 = new File(dcatValue);
+                            if (f1.exists() || f3.exists()) {
+                                access = new LocalFileAccess(dcatValue, this.basePath);
+                            } else if (f2.exists()) {
+                                access = new LocalFileAccess(dcatValue, this.mappingPath);
+                            }
+                            else {
+                                throw new Error("Cannot find " + dcatValue);
+                            }
+                        }
+                        break;
                     default:
-                        throw new NotImplementedException();
+                        throw new NotImplementedException(sourceType.get(0).getValue());
                 }
             }
 
@@ -224,9 +298,6 @@ public class AccessFactory {
      * @return an RDB Access instance for the RML rules in rmlStore.
      */
     private RDBAccess getRDBAccess(QuadStore rmlStore, Term source, Term logicalSource) {
-
-        // - Table
-        List<Term> tables = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RR + "tableName"), null));
 
         // Retrieve database information from source object
 
@@ -248,22 +319,17 @@ public class AccessFactory {
 
         String dsn = dsnObject.get(0).getValue();
 
-        // - SQL query
+        String referenceFormulation = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "referenceFormulation"), null)).get(0).getValue();
+
         String query;
-        List<Term> queryObject = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "query"), null));
+        String iterator = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "iterator"), null)).get(0).getValue();
 
-        if (queryObject.isEmpty()) {
-            if (tables.isEmpty()) {
-                // TODO better message (include Triples Map somewhere)
-
-                throw new Error("The Logical Source does not include a SQL query nor a target table.");
-            } else if (tables.get(0).getValue().isEmpty() || tables.get(0).getValue().equals("\"\"")) {
-                throw new Error("The table name of a database should not be empty.");
-            } else {
-                query = "SELECT * FROM " + tables.get(0).getValue();
-            }
+        if (referenceFormulation.equals(ReferenceFormulation.RDBTable)) {
+            // rml:iterator contains the table name
+            query = String.format("SELECT * FROM %s", iterator);
         } else {
-            query = queryObject.get(0).getValue();
+            // rml:iterator contains the query itself
+            query = iterator;
         }
 
         // - Username
@@ -296,6 +362,7 @@ public class AccessFactory {
      * @return a SPARQLResultFormat.
      */
     private SPARQLResultFormat getSPARQLResultFormat(List<Term> resultFormats, List<Term> referenceFormulations) {
+        logger.debug("Getting SPARQL result format for result format '{}' and reference formulations '{}'", resultFormats.toString(), referenceFormulations.toString());
         if (resultFormats.isEmpty() && referenceFormulations.isEmpty()) {     // This will never be called atm but may come in handy later
             throw new Error("Please specify the sd:resultFormat of the SPARQL endpoint or a rml:referenceFormulation.");
         } else if (referenceFormulations.isEmpty()) {
@@ -320,9 +387,9 @@ public class AccessFactory {
             throw new Error("Unsupported rml:referenceFormulation for a SPARQL source.");
         } else {
             for (SPARQLResultFormat format : SPARQLResultFormat.values()) {
-
-                if (resultFormats.get(0).getValue().equals(format.getUri())
-                        && format.getReferenceFormulations().contains(referenceFormulations.get(0).getValue())) {
+                logger.debug(format + "   " + resultFormats.get(0).getValue().equals(format.getUri()) + "   " + format.getReferenceFormulations().contains(referenceFormulations.get(0).getValue()));
+                logger.debug(format.getReferenceFormulations().toString());
+                if (resultFormats.get(0).getValue().equals(format.getUri())) {
                     return format;
                 }
             }

@@ -5,15 +5,8 @@ import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.ExcelSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.ODSSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
-import be.ugent.rml.NAMESPACES;
-import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.term.Literal;
-import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +16,6 @@ import java.util.List;
  * This class is a record factory that creates CSV records.
  */
 public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
-    private static final Logger logger = LoggerFactory.getLogger(TabularSourceFactory.class);
 
     /**
      * This method returns a list of CSV records for a data source.
@@ -32,39 +24,19 @@ public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
      * @param logicalSource the used Logical Source.
      * @param rmlStore      the QuadStore with the RML rules.
      * @return a list of records.
-     * @throws IOException
      */
     @Override
     public List<Record> getRecords(Access access, Term logicalSource, QuadStore rmlStore) throws Exception {
-        List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
-        Term source = sources.get(0);
-
-        if (source instanceof Literal) {
-            // We are not dealing with something like CSVW.
-            // Check for different spreadsheet formats
-            String filePath = source.getValue();
-            String extension = FilenameUtils.getExtension(filePath);
-            switch (extension) {
-                case "xlsx":
-                    return getRecordsForExcel(access);
-                case "ods":
-                    return getRecordsForODT(access);
-                default:
-                    return getRecordsForCSV(access, null);
-            }
-
-        } else {
-            List<Term> sourceType = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
-
-            // Check if we are dealing with CSVW.
-            if (sourceType.get(0).getValue().equals(NAMESPACES.CSVW + "Table")) {
-                CSVW csvw = new CSVW(rmlStore, logicalSource);
-                return getRecordsForCSV(access, csvw);
-            } else {
-                // RDBs fall under this.
-                return getRecordsForCSV(access, null);
-            }
-        }
+        // We are not dealing with something like CSVW.
+        // Check for different spreadsheet formats
+        return switch (access.getContentType().toLowerCase()) {
+            case "text/csv" -> getRecordsForCSV(access);
+            case "text/csvw" -> getRecordsForCSVW(access, rmlStore, logicalSource);
+            case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> getRecordsForExcel(access);
+            case "application/vnd.oasis.opendocument.spreadsheet" -> getRecordsForODT(access);
+            default ->
+                    throw new IllegalArgumentException(String.format("Unrecognised content type: %s", access.getContentType()));
+        };
     }
 
     /**
@@ -100,30 +72,20 @@ public class TabularSourceFactory implements ReferenceFormulationRecordFactory {
      * This method returns a CSVParser from a simple access (local/remote CSV file; no CSVW).
      *
      * @param access the used access.
-     * @return a CSVParser.
+     * @return a List of Records.
      * @throws IOException
      */
-    private List<Record> getRecordsForCSV(Access access, CSVW csvw) throws Exception {
-        try {
-            // Check if we are dealing with CSVW.
-            if (csvw == null) {
-                // RDBs fall under this
-                try (CSVSourceIterator iterator = new CSVSourceIterator(access)) {
-                    List<Record> results = new ArrayList<>();
-                    iterator.forEachRemaining(results::add);
+    private List<Record> getRecordsForCSV(Access access) throws Exception {
+        try (CSVSourceIterator iterator = new CSVSourceIterator(access)) {
+            List<Record> results = new ArrayList<>();
+            iterator.forEachRemaining(results::add);
 
-                    return results;
-                }
-            } else {
-                return csvw.getRecords(access);
-            }
-
-        } catch (IllegalArgumentException e) {
-            // We still return an empty list of records when a parser is not found.
-            // This is to support certain use cases with RDBs where queries might not be valid,
-            // but you don't want the RMLMapper to crash.
-            logger.debug("Could not parse CSV inputstream", e);
-            return new ArrayList<>();
+            return results;
         }
+    }
+
+    private List<Record> getRecordsForCSVW(Access access, QuadStore rmlStore, Term logicalSource) throws Exception {
+        CSVW csvw = new CSVW(rmlStore, logicalSource);
+        return csvw.getRecords(access);
     }
 }

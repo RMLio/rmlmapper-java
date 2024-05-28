@@ -1,14 +1,11 @@
 package be.ugent.rml;
 
-import be.ugent.rml.cli.Main;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class MapperCSVTest extends TestCore {
     @Test

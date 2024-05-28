@@ -5,11 +5,13 @@ import be.ugent.idlab.knows.dataio.access.RemoteFileAccess;
 import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.knows.idlabFunctions.IDLabFunctions;
+import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.functions.MultipleRecordsFunctionExecutor;
 import be.ugent.rml.metadata.Metadata;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.MarkerRecord;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.*;
@@ -18,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
 import java.util.*;
 
 public class Executor {
@@ -69,6 +72,23 @@ public class Executor {
     }
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent) throws Exception {
+        this(rmlStore, recordsFactory, resultingQuads, baseIRI, strictMode, functionAgent, null);
+    }
+
+    public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent, Map<String, String> mappingOptions) throws Exception {
+        // Convert mapping file to RML if needed.
+        MappingConformer conformer = new MappingConformer(rmlStore, mappingOptions);
+
+        try {
+            boolean conversionNeeded = conformer.conform();
+
+            if (conversionNeeded) {
+                logger.info("Conversion to RML was needed.");
+            }
+        } catch (Exception e) {
+            logger.error("Failed to make mapping file conformant to RML spec.", e);
+        }
+
         this.mappingOptimizer = new MappingOptimizer(rmlStore);
         this.rmlStore = mappingOptimizer.optimizeMapping();
         this.initializer = new Initializer(this.rmlStore, functionAgent, baseIRI, strictMode);
@@ -135,7 +155,7 @@ public class Executor {
     public Map<Term, QuadStore> executeWithFunction(List<Term> triplesMaps, boolean removeDuplicates, POGFunction pogFunction) throws Exception {
         //check if TriplesMaps are provided
         if (triplesMaps == null || triplesMaps.isEmpty()) {
-            triplesMaps = this.initializer.getTriplesMaps();
+            triplesMaps = this.getTriplesMaps();
         }
 
         //we execute every mapping
@@ -364,7 +384,11 @@ public class Executor {
     }
 
     public List<Term> getTriplesMaps() {
-        return initializer.getTriplesMaps();
+        List<Quad> withSubjectMaps = rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML2 + "subjectMap"), null);
+
+        return withSubjectMaps.stream()
+                .map(Quad::getSubject)
+                .filter(subject -> rmlStore.contains(subject, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null)).toList();
     }
 
     public QuadStore getRMLStore() {
@@ -379,11 +403,11 @@ public class Executor {
     }
 
     
-    public void verifySources(String basepath) throws Exception {
+    public void verifySources(String basepath, String mappingPath) throws Exception {
         for (Term triplesMap : this.getTriplesMaps()) {
-            List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
+            List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
             Term logicalSource = logicalSources.get(0);
-            List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+            List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "source"), null));
             for (Term source : sources) {
                 String value = source.getValue();
                 if (source instanceof Literal) {
@@ -391,7 +415,11 @@ public class Executor {
                     if (Utils.isRemoteFile(value)) {
                         is = new RemoteFileAccess(value).getInputStream();
                     } else {
-                        is = new LocalFileAccess(value, basepath, ((Literal) source).getDatatype().stringValue()).getInputStream();
+                        try {
+                            is = new LocalFileAccess(value, basepath, ((Literal) source).getDatatype().stringValue()).getInputStream();
+                        } catch (NoSuchFileException e) {
+                            is = new LocalFileAccess(value, mappingPath, ((Literal) source).getDatatype().stringValue()).getInputStream();
+                        }
                     }
                     is.close(); // close resources.
                 }
@@ -421,7 +449,7 @@ public class Executor {
 
                     if (terms != null) {
                         terms.forEach(term -> {
-                            if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                            if (!term.equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
                                 subjectGraphs.add(new ProvenancedTerm(term));
                             }
                         });
@@ -443,7 +471,7 @@ public class Executor {
                         TermGenerator pogGraphGenerator = pogGraphMappingInfo.getTermGenerator();
                         if (pogGraphGenerator != null) {
                             pogGraphGenerator.generate(record).forEach(term -> {
-                                if (!term.equals(new NamedNode(NAMESPACES.RR + "defaultGraph"))) {
+                                if (!term.equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
                                     poGraphs.add(new ProvenancedTerm(term));
                                 }
                             });
@@ -478,9 +506,11 @@ public class Executor {
 
                         //check if need to apply a join condition
                         if (!pogMapping.getJoinConditions().isEmpty()) {
+                            logger.debug("mapping {}'s join conditions are not empty", pogMapping.toString());
                             objects = this.getIRIsWithConditions(record, pogMapping.getParentTriplesMap(), pogMapping.getJoinConditions());
                             //this.generateTriples(subject, po.getPredicateGenerator(), objects, record, combinedGraphs);
                         } else {
+                            logger.debug("mapping {}'s join conditions are empty", pogMapping.toString());
                             objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
                         }
 

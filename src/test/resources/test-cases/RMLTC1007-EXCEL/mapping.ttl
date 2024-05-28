@@ -6,12 +6,12 @@
 @prefix map: <http://mapping.example.com/>.
 
 map:map_data1_0 rml:logicalSource map:source_0;
-    a rml:TriplesMap;
+    a rr:TriplesMap;
     rdfs:label "data1";
     rr:subjectMap map:s_0;
     rr:predicateObjectMap map:pom_0, map:pom_1.
 map:map_data2_0 rml:logicalSource map:source_1;
-    a rml:TriplesMap;
+    a rr:TriplesMap;
     rdfs:label "data2";
     rr:subjectMap map:s_1;
     rr:predicateObjectMap map:pom_2.

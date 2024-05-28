@@ -1,6 +1,5 @@
 package be.ugent.rml;
 
-
 import org.junit.jupiter.api.Test;
 
 public class MapperXMLTest extends TestCore {

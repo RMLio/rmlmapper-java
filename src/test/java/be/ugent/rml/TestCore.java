@@ -73,8 +73,7 @@ public abstract class TestCore {
            method to avoid different behavior between test code and the CLI interface! */
         convertToRml(rmlStore);
 
-        return createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(parentPath),
-                DEFAULT_BASE_IRI, strictMode);
+        return createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(parentPath, parentPath), DEFAULT_BASE_IRI, strictMode);
     }
 
     /**
@@ -87,8 +86,7 @@ public abstract class TestCore {
         rmlStore.read(new FileInputStream(privateSecurityDataFile), null, RDFFormat.TURTLE);
         String parentPath = mappingFile.getParent();
 
-        return createExecutorWithIDLabFunctions(rmlStore,
-                new RecordsFactory(parentPath), DEFAULT_BASE_IRI, BEST_EFFORT);
+        return createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(parentPath, parentPath), DEFAULT_BASE_IRI, BEST_EFFORT);
     }
 
     Executor createExecutor(String mapPath, String parentPath, StrictMode strictMode) throws Exception {
@@ -101,8 +99,9 @@ public abstract class TestCore {
     Executor createExecutor(String mapPath, final Agent functionAgent) throws Exception {
         File mappingFile = Utils.getFile(mapPath);
         QuadStore rmlStore = QuadStoreFactory.read(mappingFile);
+        convertToRml(rmlStore);
 
-        return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, BEST_EFFORT, functionAgent);
+        return new Executor(rmlStore, new RecordsFactory(mappingFile.getParent(), mappingFile.getParent()), DEFAULT_BASE_IRI, BEST_EFFORT, functionAgent);
     }
 
     /**
@@ -239,7 +238,7 @@ public abstract class TestCore {
             results.get(target).removeDuplicates();
 
             // Targets may have additional metadata that needs to be included such as LDES encapsulation
-            if (!target.getValue().equals("rmlmapper://default.store")) {
+            if (!target.getValue().equals("rmlmapper://default.store") && !target.getValue().contains(NAMESPACES.RML2 + "Target")) {
                 Target t = targetFactory.getTarget(target, executor.getRMLStore(), results.get(target));
                 results.get(target).addQuads(t.getMetadata());
             }
@@ -280,9 +279,9 @@ public abstract class TestCore {
         // Pass the test if an error occurs during mapping execution.
         try {
             convertToRml(rmlStore);
-            Executor executor = createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
+            Executor executor = createExecutorWithIDLabFunctions(rmlStore, new RecordsFactory(mappingFile.getParent(), mappingFile.getParent()), DEFAULT_BASE_IRI, strictMode);
             executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
-        } catch (Exception e) {
+        } catch (Exception | Error e) {
             // I expected you!
             logger.debug(e.getMessage(), e);
             return;

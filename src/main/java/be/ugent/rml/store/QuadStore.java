@@ -268,10 +268,18 @@ public abstract class QuadStore {
      * @param fromPredicate predicate to be renamed
      * @param toPredicate new predicate name
      */
-    public final void renameAll(Term fromPredicate, Term toPredicate) {
+    public final void renameAllPredicates(Term fromPredicate, Term toPredicate) {
         List<Quad> quads = getQuads(null, fromPredicate, null);
         for (Quad q : quads) {
             addQuad(q.getSubject(), toPredicate, q.getObject());
+        }
+        removeQuads(quads);
+    }
+
+    public final void renameAllObjects(Term fromObject, Term toObject) {
+        List<Quad> quads = getQuads(null, null, fromObject);
+        for (Quad q : quads) {
+            addQuad(q.getSubject(), q.getPredicate(), toObject);
         }
         removeQuads(quads);
     }

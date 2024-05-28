@@ -25,7 +25,7 @@ public class MappingOptimizer {
     }
 
     private void renameSameLogicalSource() {
-        List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(null,new NamedNode(NAMESPACES.RML + "logicalSource"),null));
+        List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(null,new NamedNode(NAMESPACES.RML2 + "logicalSource"),null));
         Map<Set<Term>, Term> logicalSourcesDict = new HashMap<>();
         for (Term logicalSource : logicalSources){
             // two logical Sources are considered to be identical when they have the same objects at the leaves of their subgraph
@@ -50,31 +50,31 @@ public class MappingOptimizer {
             if (!logicalSourcesDict.keySet().contains(finalObjectSet)) {
                 logicalSourcesDict.put(finalObjectSet, logicalSource);
             } else {
-                List<Term> triplesMaps = Utils.getSubjectsFromQuads(this.rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML + "logicalSource"), logicalSource));
+                List<Term> triplesMaps = Utils.getSubjectsFromQuads(this.rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML2 + "logicalSource"), logicalSource));
                 for (Term triplesMap : triplesMaps) {
-                    rmlStore.removeQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), logicalSource);
-                    rmlStore.addQuad(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), logicalSourcesDict.get(finalObjectSet));
+                    rmlStore.removeQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), logicalSource);
+                    rmlStore.addQuad(triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), logicalSourcesDict.get(finalObjectSet));
                 }
             }
         }
     }
 
     private void eliminateSelfJoins() {
-        List<Quad> refObjectMapsQuads = rmlStore.getQuads(null, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), null);
+        List<Quad> refObjectMapsQuads = rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML2 + "parentTriplesMap"), null);
         for (Quad refObjectMapQuad : refObjectMapsQuads) {
             Term parentTriplesMap = refObjectMapQuad.getObject();
             Term childObjectMap = refObjectMapQuad.getSubject();
-            Term parentLogicalSource = Utils.getObjectsFromQuads(rmlStore.getQuads(parentTriplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null)).get(0);
-            Term childPredicateObjectMap = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.RR + "objectMap"), childObjectMap)).get(0);
-            Term childTriplesMap = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.RR + "predicateObjectMap"), childPredicateObjectMap)).get(0);
-            Term childLogicalSource = Utils.getObjectsFromQuads(rmlStore.getQuads(childTriplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null)).get(0);
+            Term parentLogicalSource = Utils.getObjectsFromQuads(rmlStore.getQuads(parentTriplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null)).get(0);
+            Term childPredicateObjectMap = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML2 + "objectMap"), childObjectMap)).get(0);
+            Term childTriplesMap = Utils.getSubjectsFromQuads(rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), childPredicateObjectMap)).get(0);
+            Term childLogicalSource = Utils.getObjectsFromQuads(rmlStore.getQuads(childTriplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null)).get(0);
 
             // check if the logical sources are the same
             if (childLogicalSource.equals(parentLogicalSource)) {
 
-                List<Term> joinConditions = Utils.getObjectsFromQuads(rmlStore.getQuads(childObjectMap, new NamedNode(NAMESPACES.RR + "joinCondition"), null));
+                List<Term> joinConditions = Utils.getObjectsFromQuads(rmlStore.getQuads(childObjectMap, new NamedNode(NAMESPACES.RML2 + "joinCondition"), null));
 
-                List<Term> parentSubjectMaps = Utils.getObjectsFromQuads(rmlStore.getQuads(parentTriplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"), null));
+                List<Term> parentSubjectMaps = Utils.getObjectsFromQuads(rmlStore.getQuads(parentTriplesMap, new NamedNode(NAMESPACES.RML2 + "subjectMap"), null));
                  Term parentSubjectMap = null;
                 if (!parentSubjectMaps.isEmpty()) {
                     parentSubjectMap = parentSubjectMaps.get(0);
@@ -89,8 +89,8 @@ public class MappingOptimizer {
                     // 1. check if all join references are equal
                     List<String> joinReferences = new ArrayList<>();
                     for (Term joinCondition : joinConditions) {
-                        String parent = getObjectsFromQuads(rmlStore.getQuads(joinCondition, new NamedNode(NAMESPACES.RR + "parent"), null)).get(0).getValue();
-                        String child = getObjectsFromQuads(rmlStore.getQuads(joinCondition, new NamedNode(NAMESPACES.RR + "child"), null)).get(0).getValue();
+                        String parent = getObjectsFromQuads(rmlStore.getQuads(joinCondition, new NamedNode(NAMESPACES.RML2 + "parent"), null)).get(0).getValue();
+                        String child = getObjectsFromQuads(rmlStore.getQuads(joinCondition, new NamedNode(NAMESPACES.RML2 + "child"), null)).get(0).getValue();
                         if (child.equals(parent)) {
                             joinReferences.add(child);
                         } else {
@@ -104,7 +104,7 @@ public class MappingOptimizer {
                             // if not all references for the parent subject come back in the join conditions,
                             // 3. check if all references for the related child terms come back in the join conditions
                             // 3.1 check child subject
-                            List<Term> childSubjectMaps = Utils.getObjectsFromQuads(rmlStore.getQuads(parentTriplesMap, new NamedNode(NAMESPACES.RR + "subjectMap"), null));
+                            List<Term> childSubjectMaps = Utils.getObjectsFromQuads(rmlStore.getQuads(parentTriplesMap, new NamedNode(NAMESPACES.RML2 + "subjectMap"), null));
                             if(!childSubjectMaps.isEmpty()) {
                                 safeTerms = hasSafeReferences(childSubjectMaps.get(0), joinReferences);
                             } else {
@@ -112,7 +112,7 @@ public class MappingOptimizer {
                             }
                             //3.2 check child predicate (only make sense if the child subject was safe, otherwise we cannot eliminate the-self join)
                             if (safeTerms) {
-                                List<Term> childPredicateMaps = Utils.getObjectsFromQuads(rmlStore.getQuads(childPredicateObjectMap, new NamedNode(NAMESPACES.RR + "predicateMap"), null));
+                                List<Term> childPredicateMaps = Utils.getObjectsFromQuads(rmlStore.getQuads(childPredicateObjectMap, new NamedNode(NAMESPACES.RML2 + "predicateMap"), null));
                                 if(!childPredicateMaps.isEmpty()) {
                                     safeTerms = hasSafeReferences(childPredicateMaps.get(0), joinReferences);
                                 }
@@ -131,19 +131,19 @@ public class MappingOptimizer {
                     for (Quad parentSubjectMapQuad : parentSubjectMapQuads) {
                         Term predicate = parentSubjectMapQuad.getPredicate();
                         if (predicate.equals(new NamedNode(NAMESPACES.FNML + "functionValue"))
-                                || predicate.equals(new NamedNode(NAMESPACES.RR + "termType"))
-                                || predicate.equals(new NamedNode(NAMESPACES.RML + "reference"))
-                                || predicate.equals(new NamedNode(NAMESPACES.RR + "template"))
-                                || predicate.equals(new NamedNode(NAMESPACES.RR + "constant"))) {
+                                || predicate.equals(new NamedNode(NAMESPACES.RML2 + "termType"))
+                                || predicate.equals(new NamedNode(NAMESPACES.RML2 + "reference"))
+                                || predicate.equals(new NamedNode(NAMESPACES.RML2 + "template"))
+                                || predicate.equals(new NamedNode(NAMESPACES.RML2 + "constant"))) {
                             rmlStore.addQuad(childObjectMap, predicate, parentSubjectMapQuad.getObject());
                         }
-                        if (predicate.equals(new NamedNode(NAMESPACES.RR + "termType"))) {
+                        if (predicate.equals(new NamedNode(NAMESPACES.RML2 + "termType"))) {
                             termTypeAdded = true;
                         }
                     }
-                    rmlStore.removeQuads(childObjectMap, new NamedNode(NAMESPACES.RR + "parentTriplesMap"), parentTriplesMap);
+                    rmlStore.removeQuads(childObjectMap, new NamedNode(NAMESPACES.RML2 + "parentTriplesMap"), parentTriplesMap);
                     if (!termTypeAdded) {
-                        rmlStore.addQuad(childObjectMap, new NamedNode(NAMESPACES.RR + "termType"), new NamedNode(NAMESPACES.RR + "IRI"));
+                        rmlStore.addQuad(childObjectMap, new NamedNode(NAMESPACES.RML2 + "termType"), new NamedNode(NAMESPACES.RML2 + "IRI"));
                     }
                 }
             }
@@ -159,9 +159,9 @@ public class MappingOptimizer {
             List<Quad> linkedQuads = rmlStore.getQuads(subject, null, null);
             for (Quad linkedQuad : linkedQuads) {
                 Term predicate = linkedQuad.getPredicate();
-                if (predicate.equals(new NamedNode(NAMESPACES.RML + "reference"))) {
+                if (predicate.equals(new NamedNode(NAMESPACES.RML2 + "reference"))) {
                     references.add(linkedQuad.getObject().getValue());
-                } else if (predicate.equals(new NamedNode(NAMESPACES.RR + "template"))) {
+                } else if (predicate.equals(new NamedNode(NAMESPACES.RML2 + "template"))) {
                     String template = linkedQuad.getObject().getValue();
                     List<Extractor> extractors = Utils.parseTemplate(template, false);
                     for (Extractor extractor : extractors) {

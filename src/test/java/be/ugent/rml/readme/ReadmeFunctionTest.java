@@ -34,7 +34,7 @@ public class ReadmeFunctionTest {
             QuadStore rmlStore = QuadStoreFactory.read(mappingStream);
 
             // Set up the basepath for the records factory, i.e., the basepath for the (local file) data sources
-            RecordsFactory factory = new RecordsFactory(mappingFile.getParent());
+            RecordsFactory factory = new RecordsFactory(mappingFile.getParent(), mappingFile.getParent());
 
             // Set up the functions used during the mapping
             Agent functionAgent = AgentFactory.createFromFnO(functionPath);

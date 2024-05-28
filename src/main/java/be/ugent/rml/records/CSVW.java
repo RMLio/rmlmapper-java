@@ -10,6 +10,7 @@ import be.ugent.rml.Utils;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import org.apache.commons.io.Charsets;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class CSVW {
      * @return The list of records in the Access
      */
     List<Record> getRecords(Access access) throws Exception {
-        List<Term> sources = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+        List<Term> sources = Utils.getObjectsFromQuads(this.rmlStore.getQuads(this.logicalSource, new NamedNode(NAMESPACES.RML2 + "source"), null));
         Term source = sources.get(0);
 
         CSVWConfiguration config = getConfiguration(source);
@@ -73,7 +74,7 @@ public class CSVW {
 
         configBuilder = setOptionChar(dialect, "quoteChar", configBuilder, CSVWConfigurationBuilder::withQuoteCharacter);
 
-        configBuilder = setOptionCharset(dialect, configBuilder, CSVWConfigurationBuilder::withEncoding);
+        configBuilder = setOptionCharset(dialect, "encoding", configBuilder, CSVWConfigurationBuilder::withEncoding);
 
         return configBuilder;
     }
@@ -81,14 +82,14 @@ public class CSVW {
     /**
      * Sets an option in CSVWConfigurationBuilder that expects a string
      *
-     * @param dialect Term containing the dialect
+     * @param term Term containing the dialect
      * @param option  option to read form dialect
      * @param builder CSVWConfigurationBuilder to set the option in
      * @param setter  method of CSVWConfigurationBuilder to call
      * @return a CSVWConfigurationBuilder with the option set if the option is present in the dialect, otherwise the original CSVWConfigurationBuilder is returned
      */
-    private CSVWConfigurationBuilder setOptionString(Term dialect, String option, CSVWConfigurationBuilder builder, StringOptionSetter setter) {
-        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(dialect, new NamedNode(NAMESPACES.CSVW + option), null));
+    private CSVWConfigurationBuilder setOptionString(Term term, String option, CSVWConfigurationBuilder builder, StringOptionSetter setter) {
+        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(term, new NamedNode(NAMESPACES.CSVW + option), null));
         if (!optionTerms.isEmpty()) {
             builder = setter.call(builder, optionTerms.get(0).getValue());
         }
@@ -135,6 +136,18 @@ public class CSVW {
         return builder;
     }
 
+    private CSVWConfigurationBuilder setOptionCharset(Term term, String option, CSVWConfigurationBuilder builder, CharsetOptionSetter setter) {
+        List<Term> optionTerms = Utils.getObjectsFromQuads(this.rmlStore.getQuads(term, new NamedNode(NAMESPACES.CSVW + option), null));
+        if (!optionTerms.isEmpty()) {
+            String charsetString = optionTerms.get(0).getValue();
+            Charset charset = Charsets.toCharset(charsetString);
+
+            builder = setter.call(builder, charset);
+        }
+
+        return builder;
+    }
+
     /**
      * Functional interface to set a value of CSVWConfigurationBuilder that expects a string.
      */
@@ -154,6 +167,6 @@ public class CSVW {
     }
 
     private interface CharsetOptionSetter {
-        CSVWConfigurationBuilder call(CSVWConfigurationBuilder builder, Charset value);
+        CSVWConfigurationBuilder call(CSVWConfigurationBuilder builder, Charset charset);
     }
 }

@@ -36,11 +36,22 @@ public abstract class IteratorFormat implements ReferenceFormulationRecordFactor
 
         // document is definitely in cache, fetch records out of it
         String iterator;
-        List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "iterator"), null));
+        List<Term> iterators = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "iterator"), null));
 
-        if (iterators.isEmpty()) {
+        // SPARQL results have fixed iterators, same as SQL
+        Term referenceFormulation = rmlStore.getQuad(logicalSource, new NamedNode(NAMESPACES.RML2 + "referenceFormulation"), null).getObject();
+        if (referenceFormulation.equals(new NamedNode(NAMESPACES.FORMATS + "SPARQL_Results_JSON"))) {
+            // SPARQL JSON
+            iterator = "$.results.bindings[*]";
+        } else if (referenceFormulation.equals(new NamedNode(NAMESPACES.FORMATS + "SPARQL_Results_XML"))) {
+            // SPARQL XML
+            iterator = "//result/binding";
+        } else if (referenceFormulation.equals(new NamedNode(NAMESPACES.FORMATS + "SPARQL_Results_CSV"))) {
+            // SPARQL CSV
+            iterator = "";
+        } else if (iterators.isEmpty()) {
             // if there's no iterator present, we're dealing with XML access to PostgreSQL.
-            // XML is built on the fly and accessible on this XPath iterator
+            // PostgreSQL XML is built on the fly and accessible on this XPath iterator
             iterator = "/Results/row";
         } else {
             iterator = iterators.get(0).getValue();

@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Changed basepath from null to http://example.com/ (see [issue 263](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/263))
 - gitlab CI pull policy
 
+### Added
+- Translation to new RML. Only for Core.
+
 ## [6.5.1] - 2023-12-06
 
 ## Fixed

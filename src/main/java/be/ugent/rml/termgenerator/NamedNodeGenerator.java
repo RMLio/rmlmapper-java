@@ -26,8 +26,13 @@ public class NamedNodeGenerator extends TermGenerator {
 
     public NamedNodeGenerator(final SingleRecordFunctionExecutor functionExecutor, final String baseIRI, final StrictMode strictMode) {
         super(functionExecutor);
-        this.baseIRI = baseIRI;
         this.strictMode = strictMode;
+
+        if (baseIRI == null) {
+            this.baseIRI = "";
+        } else {
+            this.baseIRI = baseIRI;
+        }
     }
 
     @Override

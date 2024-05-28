@@ -244,12 +244,11 @@ public class TargetFactory {
             return new LocalFileTarget(location, this.basePath, serializationFormat, null, metadata);
         }
 
-        List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                new NamedNode(NAMESPACES.RMLT + "target"), null));
+        List<Term> targets = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget, new NamedNode(NAMESPACES.RML2 + "target"), null));
 
         // Read serialization format
         try {
-            String sf = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget, new NamedNode(NAMESPACES.RMLT + "serialization"), null)).get(0).getValue();
+            String sf = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget, new NamedNode(NAMESPACES.RML2 + "serialization"), null)).get(0).getValue();
             serializationFormat = switch (sf) {
                 case NAMESPACES.FORMATS + "N-Triples" -> "ntriples";
                 case NAMESPACES.FORMATS + "N-Quads" -> "nquads";
@@ -267,10 +266,12 @@ public class TargetFactory {
         // Read compression
         try {
             Term comp = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                    new NamedNode(NAMESPACES.RMLT + "compression"), null)).get(0);
+                    new NamedNode(NAMESPACES.RML2 + "compression"), null)).get(0);
             compression = switch (comp.getValue()) {
                 case NAMESPACES.COMP + "gzip" -> "gzip";
+                case NAMESPACES.RML2 + "gzip" -> "gzip";
                 case NAMESPACES.COMP + "zip" -> "zip";
+                case NAMESPACES.RML2 + "zip" -> "zip";
                 default -> throw new UnsupportedOperationException("Compression " + comp + " is not implemented!");
             };
             logger.debug("Compression: {}", compression);
@@ -288,8 +289,15 @@ public class TargetFactory {
             logger.debug("getTarget() for {}", t.toString());
 
             // If not a literal, then we are dealing with a more complex description.
-            String targetType = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
-                    new NamedNode(NAMESPACES.RDF + "type"), null)).get(0).getValue();
+            List<Term> possibleTypes = Utils.getObjectsFromQuads(rmlStore.getQuads(t, new NamedNode(NAMESPACES.RDF + "type"), null));
+            String targetType = null;
+            for (Term p: possibleTypes) {
+                // Skip any abstract rml:Target types
+                if (!p.getValue().contains(NAMESPACES.RML2 + "Target")) {
+                    targetType = p.getValue();
+                    break;
+                }
+            }
             logger.debug("Target is IRI, target type: {}", targetType);
 
             switch(targetType) {
@@ -308,6 +316,15 @@ public class TargetFactory {
                             new NamedNode(NAMESPACES.DCAT + "dataDump"), null)).get(0).getValue();
                     location = location.replace("file://", ""); // Local file starts with file://
                     logger.debug("DCAT datadump location: {}", location);
+                    target = new LocalFileTarget(location, this.basePath, serializationFormat, compression, metadata);
+                    break;
+                }
+                case NAMESPACES.DCAT + "Distribution": { // DCAT Distribution
+                    logger.debug("Target is a DCAT Distribution");
+                    String location = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
+                            new NamedNode(NAMESPACES.DCAT + "accessUrl"), null)).get(0).getValue();
+                    location = location.replace("file://", ""); // Local file starts with file://
+                    logger.debug("DCAT accessUrl location: {}", location);
                     target = new LocalFileTarget(location, this.basePath, serializationFormat, compression, metadata);
                     break;
                 }

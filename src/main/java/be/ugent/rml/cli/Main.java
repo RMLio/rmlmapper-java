@@ -6,7 +6,6 @@ import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.Executor;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.Utils;
-import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
@@ -293,21 +292,14 @@ public class Main {
                     throw new IllegalArgumentException("Unable to parse private security data as Turtle. Does the file exist and is it valid Turtle?");
                 }
             }
-
-            // Convert mapping file to RML if needed.
-            MappingConformer conformer = new MappingConformer(rmlStore, mappingOptions);
-
+            
+            String mappingPath = "";
             try {
-                boolean conversionNeeded = conformer.conform();
-
-                if (conversionNeeded) {
-                    logger.info("Conversion to RML was needed.");
-                }
+                mappingPath = Utils.getFile(lineArgs.getOptionValue('m')).getParent();
             } catch (Exception e) {
-                logger.error(fatal, "Failed to make mapping file conformant to RML spec.", e);
+                logger.debug("Mapping path unknown as mapping file supplied via stdin");
             }
-
-            RecordsFactory factory = new RecordsFactory(basePath);
+            RecordsFactory factory = new RecordsFactory(basePath, mappingPath);
 
             String outputFormat = getPriorityOptionValue(serializationFormatOption, lineArgs, configFile);
             QuadStore outputStore = getStoreForFormat(outputFormat);
@@ -408,14 +400,14 @@ public class Main {
                 System.arraycopy(fOptionValue, 0, optionWithIDLabFunctionArgs, 4, fOptionValue.length);
                 functionAgent = AgentFactory.createFromFnO(optionWithIDLabFunctionArgs);
             }
-            executor = new Executor(rmlStore, factory, outputStore, baseIRI, strictMode, functionAgent);
+            executor = new Executor(rmlStore, factory, outputStore, baseIRI, strictMode, functionAgent, mappingOptions);
 
             if (checkOptionPresence(provideOwnEOFMarkerOption, lineArgs, configFile)) {
                 logger.warn("Automatic EOF marker disabled!");
                 executor.setEOFProvidedInData();
             }
 
-            executor.verifySources(basePath);
+            executor.verifySources(basePath, mappingPath);
             if (metadataGenerator != null) {
                 metadataGenerator.preMappingGeneration(triplesMaps.isEmpty() ?
                         executor.getTriplesMaps() : triplesMaps, rmlStore);
@@ -426,9 +418,7 @@ public class Main {
             QuadStore result = null;
 
             try {
-                Map<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile),
-                        metadataGenerator);
-
+                Map<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile), metadataGenerator);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 throw e;
@@ -454,9 +444,7 @@ public class Main {
 
             // Generate post mapping metadata and output all metadata
             if (metadataGenerator != null && targets != null) {
-                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp,
-                        result);
-
+                metadataGenerator.postMappingGeneration(startTimestamp, stopTimestamp, result);
                 writeOutput(metadataGenerator.getResult(), metadataFile, outputFormat);
             }
 
@@ -468,6 +456,7 @@ public class Main {
             throw exp;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            throw e;
         }
     }
 
@@ -482,7 +471,7 @@ public class Main {
             Term term = termTargetMapping.getKey();
             QuadStore store = termTargetMapping.getValue();
 
-            if (store.size() > 0) {
+            if (!store.isEmpty()) {
                 hasNoResults = false;
                 logger.info("Target: {} has {} results", term, store.size());
             }

@@ -1,38 +1,34 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix ex: <http://example.com/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
-@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
 @prefix : <http://example.com/base/> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix ex: <http://example.com/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:TriplesMap1
-  a rr:TriplesMap;
-  rml:logicalSource <http://example.com/base/TriplesMap1_logicalSource> ;
-  rr:subjectMap :SubjectMap;
-  rr:predicateObjectMap :PredicateObjectMap.
+_:d94780746ad5435abf361541c6eb4ee21 <http://w3id.org/rml/referenceFormulation> <http://w3id.org/rml/SQL2008> .
 
-:SubjectMap rr:template "http://example.com/{ID}/{Name}".
+:ObjectMap <http://w3id.org/rml/reference> "Name" .
 
-:PredicateObjectMap rr:predicate	foaf:name ;
-  rr:objectMap :ObjectMap .
+:PredicateObjectMap <http://w3id.org/rml/objectMap> :ObjectMap;
+  <http://w3id.org/rml/predicate> foaf:name .
 
-:ObjectMap rml:reference "Name" .
+:SubjectMap <http://w3id.org/rml/template> "http://example.com/{ID}/{Name}" .
 
-<http://example.com/base/TriplesMap1_logicalSource>
-  rml:source :TriplesMap1_database ;
-  rml:query """
+:TriplesMap1 a <http://w3id.org/rml/TriplesMap>;
+  <http://w3id.org/rml/logicalSource> :TriplesMap1_logicalSource;
+  <http://w3id.org/rml/predicateObjectMap> :PredicateObjectMap;
+  <http://w3id.org/rml/subjectMap> :SubjectMap .
+
+:TriplesMap1_database a d2rq:Database;
+  d2rq:jdbcDSN "jdbc:mysql://localhost:1234/test";
+  d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver";
+  d2rq:password "YourSTRONG!Passw0rd;";
+  d2rq:username "sa" .
+
+:TriplesMap1_logicalSource <http://w3id.org/rml/iterator> """
     SELECT ID,
     Name
     FROM Student
   """;
-  rr:sqlVersion rr:SQL2008 ;
-  rml:referenceFormulation ql:CSV .
-
-:TriplesMap1_database
-  a d2rq:Database ;
-  d2rq:jdbcDSN "jdbc:mysql://localhost:1234/test" ;
-  d2rq:jdbcDriver "com.mysql.cj.jdbc.Driver" ;
-  d2rq:password "YourSTRONG!Passw0rd;" ;
-  d2rq:username "sa" .
+  <http://w3id.org/rml/referenceFormulation> <http://w3id.org/rml/SQL2008Query>;
+  <http://w3id.org/rml/source> :TriplesMap1_database .

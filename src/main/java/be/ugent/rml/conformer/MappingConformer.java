@@ -6,26 +6,29 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static be.ugent.rml.NAMESPACES.*;
 
 /**
  * Only validates by checking for at least one TriplesMap.
- * Converts mapping files to RML. Currently only R2RML converter is implemented.
+ * Converts mapping files to W3C's Knowledge Graph Community Group RML from RML and R2RML.
  * InputStream of mapping file is used to create a store. TriplesMaps in store that need conversion
  * are detected by applying the converters detection methods and saved. convert tries to convert these
- * to RML. Exceptions can be raised during validation and conversion, which the caller has to handle.
- * Output of detect() informs if convert() should be used to convert to valid RML.
+ * to W3C RML. Exceptions can be raised during validation and conversion, which the caller has to handle.
+ * Output of detect() informs if convert() should be used to convert to valid W3C RML.
  * The validated RML can be returned as a QuadStore with getStore().
  */
 public class MappingConformer {
 
+    public enum Dialect {
+        RML, // Old RML
+        R2RML, // W3C's R2RML
+        RML2 // W3C's Knowledge Graph Construction Community Group RML
+    }
+
     private QuadStore store;
-    private List<Term> unconvertedTriplesMaps = new ArrayList<>();
     private Map<String, String> mappingOptions;
 
     /**
@@ -56,67 +59,36 @@ public class MappingConformer {
      * @throws Exception if something goes wrong during detection or conversion.
      */
     public boolean conform() throws Exception {
-        boolean conversionNeeded = this.detect();
-
-        if (conversionNeeded) {
-            this.convert();
-        }
-
-        return conversionNeeded;
+        this.detect();
+        return false;
     }
 
     /**
-     * Detect if mapping file is valid RML.
+     * Detect if mapping file is valid W3C RML.
      *
-     * @return true if valid RML, false if conversion is needed
+     * @return Dialect of the mapping file. Null if invalid.
      * @throws Exception if invalid or unconvertable
      */
-    private boolean detect() throws Exception {
-        // TODO generalise for multiple converters
-        Converter converter = new R2RMLConverter(store);
+    private void detect() throws Exception {
+        // convert rml
+        RMLConverterNew converter = new RMLConverterNew(store);
+        converter.convert(mappingOptions);
 
-        // grab all terms that contain a subject map
-        List<Term> triplesMaps = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RR + "subjectMap"), null));
-
-        // grab all terms that contain a logical source
-        List<Term> logicalSources = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RML + "logicalSource"), null));
-
-        // grab all terms that contain a logical table
-        List<Term> logicalTables = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RR + "logicalTable"), null));
-
-        triplesMaps = triplesMaps.stream()
-                .filter(term -> logicalSources.contains(term) || logicalTables.contains(term))
-                .collect(Collectors.toList());
-
+        // Check if we have a valid TriplesMap.
+        List<Term> triplesMaps = Utils.getSubjectsFromQuads(store.getQuads(null, new NamedNode(RML2 + "logicalSource"), null));
         if (triplesMaps.isEmpty()) {
             throw new Exception("Mapping requires at least one TriplesMap");
         }
 
-        // Find all triples maps
-        // This could be more efficient with a while loop,
-        // but these TriplesMaps are needed in any case when calling convert().
-        for (Term triplesMap : triplesMaps) {
-            if (converter.detect(triplesMap)) {
-                unconvertedTriplesMaps.add(triplesMap);
+        // Triples Maps need a subject Map
+        List<Term> triplesMaps2 = Utils.getSubjectsFromQuads(store.getQuads(null, null, new NamedNode(RML2 + "TriplesMap")));
+        for (Term triplesMap : triplesMaps2) {
+            if (!store.contains(triplesMap, new NamedNode(RML2 + "subjectMap"), null)) {
+                throw new Exception("TriplesMap requires a subject map");
             }
         }
-
-        return !unconvertedTriplesMaps.isEmpty();
     }
 
-    /**
-     * Tries to convert to RML. Model should still be valid on failure
-     *
-     * @throws Exception conversion failed
-     */
-    private void convert() throws Exception {
-        // TODO generalise for multiple converters
-        Converter converter = new R2RMLConverter(store);
-
-        for (Term unconvertedTriplesMap : unconvertedTriplesMaps) {
-            converter.convert(unconvertedTriplesMap, mappingOptions);
-        }
-    }
 
     /**
      * Debugging helper function to check difference of models
