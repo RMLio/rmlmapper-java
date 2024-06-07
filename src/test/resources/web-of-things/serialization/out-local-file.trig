@@ -1,0 +1,681 @@
+@prefix ns0: <http://example.com/> .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1504409>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1504410>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1504411>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1504413>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1504414>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1504429>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506032>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506036>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506037>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506038>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506040>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506041>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506043>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506045>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506046>
+  ns0:fillingLevel "1" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506048>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506049>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506052>
+  ns0:fillingLevel "1" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506053>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506054>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506055>
+  ns0:fillingLevel "0.2" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506056>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506057>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506058>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506059>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506060>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506061>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506063>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506064>
+  ns0:fillingLevel "0.2" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506066>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506067>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506068>
+  ns0:fillingLevel "1" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506069>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506070>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506071>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506072>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506074>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506075>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506077>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1506078>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509832>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509833>
+  ns0:fillingLevel "1" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509834>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509835>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509836>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509838>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509839>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509840>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509841>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509842>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509846>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509847>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509848>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509849>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509850>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509851>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509852>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509853>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509854>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509855>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509856>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509857>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509858>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509859>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509860>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509862>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509863>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509864>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509865>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509866>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509867>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509868>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509869>
+  ns0:fillingLevel "0.2" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509870>
+  ns0:fillingLevel "0.2" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509871>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509872>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509873>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509874>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509875>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509876>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509877>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509878>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509879>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509880>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509881>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509882>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509883>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509884>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1509885>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511819>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511820>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511821>
+  ns0:fillingLevel "0.2" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511822>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511823>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511824>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511825>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511826>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511827>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511828>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511829>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511830>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511831>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511832>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511833>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511834>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511835>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511836>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511837>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511838>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511840>
+  ns0:fillingLevel "0.2" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511841>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511842>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511843>
+  ns0:fillingLevel "0.4" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511846>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511847>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511848>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511849>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511850>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511851>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511852>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511853>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511854>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511855>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511856>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511857>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511858>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511859>
+  ns0:fillingLevel "0.2" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1511860>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1514799>
+  ns0:fillingLevel "0.2" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1514800>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1514801>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1514802>
+  ns0:fillingLevel "0.2" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1514803>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1514804>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1514805>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517299>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517300>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517301>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517302>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517303>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517304>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517305>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517306>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517307>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517308>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517309>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517310>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517311>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517312>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517313>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517314>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517315>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517316>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517317>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1517318>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522181>
+  ns0:fillingLevel "0.8" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522182>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522183>
+  ns0:fillingLevel "0.4" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522184>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522185>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522186>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522187>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522188>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522189>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522190>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522191>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522192>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522193>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522194>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .
+
+<http://example.org/bigbelly/WasteContainer%3ABigbelly%3A1522195>
+  ns0:fillingLevel "0" ;
+  a ns0:Trashcan .

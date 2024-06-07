@@ -254,6 +254,7 @@ public class TargetFactory {
                 case NAMESPACES.FORMATS + "N-Quads" -> "nquads";
                 case NAMESPACES.FORMATS + "JSON-LD" -> "jsonld";
                 case NAMESPACES.FORMATS + "Turtle" -> "turtle";
+                case NAMESPACES.FORMATS + "TriG" -> "trig";
                 default -> throw new UnsupportedOperationException("Serialization format " + sf + " not implemented!");
             };
         }

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- Serialization format TriG is now supported for Logical Targets (fixes GitHub [issue 225](https://github.com/RMLio/rmlmapper-java/issues/225)).
+
 ## [7.0.0] - 2024-06-07
 
 ### Fixed

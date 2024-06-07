@@ -197,7 +197,6 @@ public class MapperTargetTest extends TestCore {
         }
     }
 
-    // This method is in comment because it fails: doMapper doesn't support JSON-LD testing
     @Test
     public void evaluate_jsonld_serialization() throws Exception {
         // Create Web API
@@ -210,6 +209,31 @@ public class MapperTargetTest extends TestCore {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.jsonld");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.jsonld");
+        doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
+
+        webApi.stop(0);
+
+        // Remove temp file
+        try {
+            File outputFile = Utils.getFile(tempMappingPath);
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            logger.warn("Could not delete temporary file {}", tempMappingPath, e);
+        }
+    }
+
+    @Test
+    public void evaluate_trig_serialization() throws Exception {
+        // Create Web API
+        HttpServer webApi = HttpServer.create(new InetSocketAddress(8000), 0);
+        webApi.createContext("/trashcans", new MapperWoTTest.TrashCansFileHandler());
+        webApi.setExecutor(null); // creates a default executor
+        webApi.start();
+
+        String tempMappingPath = replaceSerializationFormatInMappingFile("TriG");
+        Map<Term, String> outPaths = new HashMap<>();
+        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump"), "./web-of-things/serialization/out-local-file.trig");
+        outPaths.put(new NamedNode("rmlmapper://default.store"), "./web-of-things/serialization/out-default.trig");
         doMapping(tempMappingPath, outPaths, "./web-of-things/serialization/private-security-data.ttl");   // file not found exception when using file from serialization instead of logical-target
 
         webApi.stop(0);
