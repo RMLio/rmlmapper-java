@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [7.0.0] - 2024-06-07
+
 ### Fixed
 - Gitlab CI R2RML test cases compliance
 - Gitlab CI Maven Central retrying on failure due to Maven Central server problems
@@ -728,6 +730,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[7.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.5.1...v7.0.0
 [6.5.1]: https://github.com/RMLio/rmlmapper-java/compare/v6.5.0...v6.5.1
 [6.5.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.3.0...v6.5.0
 [6.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.2.2...v6.3.0
