@@ -1,0 +1,63 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix ex: <http://data.example.org/resource/> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix fnml:   <http://semweb.mmlab.be/ns/fnml#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
+
+ex:Organizations a rr:TriplesMap;
+    rml:logicalSource [
+        rml:source "test.xml";
+        rml:iterator "/Directory/Organization";
+        rml:referenceFormulation ql:XPath
+    ];
+    rr:subjectMap [
+        rr:template "http://data.example.org/resource/Organization_{ID}";
+        rr:class org:Organization
+    ];
+    rr:predicateObjectMap [
+        rr:predicate org:name;
+        rr:objectMap
+            [
+                rml:reference "Name"
+            ];
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate org:address;
+        rr:objectMap
+            [
+                rr:parentTriplesMap ex:Addresses ;
+                rr:joinCondition [
+                    rr:child "path(.)";
+                    rr:parent "path(..)";
+                ];
+            ];
+    ]
+.
+
+ex:Addresses a rr:TriplesMap;
+    rml:logicalSource [
+        rml:source "test.xml";
+        rml:iterator "/Directory/Organization/Address";
+        rml:referenceFormulation ql:XPath
+    ];
+    rr:subjectMap [
+        # rr:template "http://data.example.org/resource/Address_{generate-id(.)}";
+        rml:reference "if(exists(StreetName)) then 'http://data.example.org/resource/Address_' || generate-id(.) else null";
+        rr:class org:Address
+    ];
+    rr:predicateObjectMap [
+        rr:predicate org:streetName;
+        rr:objectMap
+            [
+                rml:reference "StreetName"
+            ];
+    ] ;
+.

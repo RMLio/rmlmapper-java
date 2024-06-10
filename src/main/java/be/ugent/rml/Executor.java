@@ -299,7 +299,8 @@ public class Executor {
 
             if (Boolean.TRUE.equals(expectedBoolean)) {
                 List<ProvenancedTerm> subjects = this.getSubject(triplesMap, mapping, parent, i);
-                iris.addAll(subjects);
+                if (subjects != null)
+                    iris.addAll(subjects);
             } else {
                 logger.warn("The used condition with the Parent Triples Map does not return a boolean.");
             }

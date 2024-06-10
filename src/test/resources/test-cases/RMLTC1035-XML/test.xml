@@ -1,0 +1,23 @@
+<Directory>
+	<Organization>
+		<ID>123</ID>
+		<Name>ABC FastCo</Name>
+		<Address>
+			<StreetName>ABC FastCo Lane</StreetName>
+		</Address>
+	</Organization>
+	<Organization>
+		<ID>456</ID>
+		<Name>XYZ Inc.</Name>
+		<Address>
+			<Area>XYZ Metro</Area>
+		</Address>
+	</Organization>
+	<Organization>
+		<ID>789</ID>
+		<Name>MNO Ltd</Name>
+		<Address>
+			<StreetName>99 Maine St</StreetName>
+		</Address>
+	</Organization>
+</Directory>

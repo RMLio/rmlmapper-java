@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Serialization format TriG is now supported for Logical Targets (fixes GitHub [issue 225](https://github.com/RMLio/rmlmapper-java/issues/225)).
 
+### Fixed
+- Crash when null is returned in an XPath function for subject generation (fixes GitHub [issue 236](https://github.com/RMLio/rmlmapper-java/issues/236))
+
 ## [7.0.0] - 2024-06-07
 
 ### Fixed
@@ -114,8 +117,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update dependency to `idlab-functions-java`, fixing [issue #218](https://github.com/RMLio/rmlmapper-java/issues/218) 
 
 ### Changed
-<<<<<<< HEAD
-- Dockefile: switched to Eclipse OpenJDK Docker base image because OpenJDK is deprecated
+- Dockerfile: switched to Eclipse OpenJDK Docker base image because OpenJDK is deprecated
 - CI: dropped GitHub release automation
 - CI: verify if token is valid
 

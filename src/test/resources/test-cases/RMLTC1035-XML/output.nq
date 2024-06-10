@@ -1,0 +1,12 @@
+<http://data.example.org/resource/Address_d0e33> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/org#Address> .
+<http://data.example.org/resource/Address_d0e33> <http://www.w3.org/ns/org#streetName> "99 Maine St" .
+<http://data.example.org/resource/Address_d0e9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/org#Address> .
+<http://data.example.org/resource/Address_d0e9> <http://www.w3.org/ns/org#streetName> "ABC FastCo Lane" .
+<http://data.example.org/resource/Organization_123> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/org#Organization> .
+<http://data.example.org/resource/Organization_123> <http://www.w3.org/ns/org#address> <http://data.example.org/resource/Address_d0e9> .
+<http://data.example.org/resource/Organization_123> <http://www.w3.org/ns/org#name> "ABC FastCo" .
+<http://data.example.org/resource/Organization_456> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/org#Organization> .
+<http://data.example.org/resource/Organization_456> <http://www.w3.org/ns/org#name> "XYZ Inc." .
+<http://data.example.org/resource/Organization_789> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/org#Organization> .
+<http://data.example.org/resource/Organization_789> <http://www.w3.org/ns/org#address> <http://data.example.org/resource/Address_d0e33> .
+<http://data.example.org/resource/Organization_789> <http://www.w3.org/ns/org#name> "MNO Ltd" .
