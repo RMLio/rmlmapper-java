@@ -355,4 +355,9 @@ public class MapperCSVTest extends TestCore {
             Assertions.fail();
         }
     }
+
+    @Test
+    public void evaluate_1044_CSV() {
+        doMapping("test-cases/RMLTC1044-CSV/mapping.ttl", "test-cases/RMLTC1044-CSV/output.nq");
+    }
 }

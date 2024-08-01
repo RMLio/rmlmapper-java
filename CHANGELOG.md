@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Crash when null is returned in an XPath function for subject generation (fixes GitHub [issue 236](https://github.com/RMLio/rmlmapper-java/issues/236))
+- `DATAIO_NULL` value occuring in RDF output when CSV quoted string has newline character in it (fixes GitHub [issue 238](https://github.com/RMLio/rmlmapper-java/issues/238))
 
 ## [7.0.0] - 2024-06-07
 
