@@ -217,6 +217,7 @@ R2RML Test Report:
     # Variables
     - R2RML_TAG_NAME=$(git tag -l "v*" --sort=-creatordate | head -n1 || echo "$CI_COMMIT_REF_NAME")
     - (if [ "$R2RML_TAG_NAME" == "$CI_COMMIT_REF_NAME" ]; then echo "$CI_COMMIT_REF_NAME"; else R2RML_TAG_NAME=$(echo "$R2RML_TAG_NAME" | cut -c2-); fi)
+    - R2RML_TAG_NAME=$(echo "$R2RML_TAG_NAME" | tr -d '\n')
     - TODAY=$(date +"%Y-%m-%d")
 
     # Build RMLMapper jar
