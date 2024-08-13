@@ -3,7 +3,7 @@
     <groupId>be.ugent.rml</groupId>
     <artifactId>rmlmapper</artifactId>
     <name>RMLMapper</name>
-    <version>7.0.0</version>
+    <version>7.1.0</version>
     <description>
         The RMLMapper executes RML rules to generate high quality Linked Data from multiple originally (semi-)structured data sources.
     </description>
