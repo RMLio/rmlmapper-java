@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- `release.sh` now also updates `pom.xml` with the given tag.
+
 ## [7.1.1] - 2024-09-19
 
 ### Fixed

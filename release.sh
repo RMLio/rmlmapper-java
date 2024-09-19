@@ -22,6 +22,9 @@ git checkout "$DEV_BRANCH"
 echo "Updating CHANGELOG.md"
 changefrog -n "$TAG" > /dev/null
 
+# Update project version in pom.xml
+mvn versions:set -DnewVersion=$TAG
+
 # Create release commit
 echo "Creating git commit and tag"
 git add .
