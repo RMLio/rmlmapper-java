@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [7.1.2] - 2024-09-19
+
 ### Fixed
 - `release.sh` now also updates `pom.xml` with the given tag.
 
@@ -750,6 +752,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[7.1.2]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.1...v7.1.2
 [7.1.1]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.0...v7.1.1
 [7.1.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.0.0...v7.1.0
 [7.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.5.1...v7.0.0
