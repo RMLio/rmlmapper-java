@@ -18,11 +18,6 @@ if ! changefrog --help > /dev/null; then
 fi
 git checkout "$DEV_BRANCH"
 
-# Update NPM package
-echo "Updating NPM package release"
-npm config set git-tag-version false
-npm version "$TAG" > /dev/null
-
 # Update CHANGELOG.md
 echo "Updating CHANGELOG.md"
 changefrog -n "$TAG" > /dev/null

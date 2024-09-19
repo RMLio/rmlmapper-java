@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [7.1.1] - 2024-09-19
+
 ### Fixed
 - Updated idlab-functions-java to 1.3.3 to use correct state path in stateful functions when `ifState` environment variable is set.
 
@@ -745,6 +747,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[7.1.1]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.0...v7.1.1
 [7.1.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.0.0...v7.1.0
 [7.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v6.5.1...v7.0.0
 [6.5.1]: https://github.com/RMLio/rmlmapper-java/compare/v6.5.0...v6.5.1
