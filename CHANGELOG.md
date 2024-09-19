@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Updated idlab-functions-java to 1.3.3 to use correct state path in stateful functions when `ifState` environment variable is set.
 
+### Changed
+- CI: use local script for release
+
 ## [7.1.0] - 2024-08-13
 
 ### Added
