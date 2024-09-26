@@ -112,6 +112,9 @@ options:
  -b,--base-iri <arg>                 Base IRI used to expand relative IRIs
                                      in generated terms in the output.
  -c,--configfile <arg>               path to configuration file
+    --convert-mapping                Only convert the mapping to the
+                                     latest RML specification by the W3C
+                                     Community Group
  -d,--duplicates                     remove duplicates in the HDT,
                                      N-Triples, or N-Quads output
     --disable-automatic-eof-marker   Setting this option assumes input

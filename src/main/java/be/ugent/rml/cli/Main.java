@@ -64,6 +64,7 @@ public class Main {
      */
     public static void run(String[] args, String basePath) throws Exception {
         Options options = new Options();
+        boolean onlyConvertMapping = false;
         Option mappingdocOption = Option.builder("m")
                 .longOpt("mappingfile")
                 .hasArg()
@@ -156,6 +157,10 @@ public class Main {
                 .desc("Setting this option assumes input data has a kind of End-of-File marker. " +
                         "Don't use unless you're absolutely sure what you're doing!")
                 .build();
+        Option convertMapping = Option.builder()
+                .longOpt("convert-mapping")
+                .desc("Only convert the mapping to the latest RML specification by the W3C Community Group")
+                .build();
 
         options.addOption(mappingdocOption);
         options.addOption(privateSecurityDataOption);
@@ -175,6 +180,7 @@ public class Main {
         options.addOption(strictModeOption);
         options.addOption(baseIriOption);
         options.addOption(provideOwnEOFMarkerOption);
+        options.addOption(convertMapping);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -199,6 +205,10 @@ public class Main {
                 setLoggerLevel(Level.DEBUG);
             } else {
                 setLoggerLevel(Level.ERROR);
+            }
+
+            if (checkOptionPresence(convertMapping, lineArgs, configFile)) {
+                onlyConvertMapping = true;
             }
 
             String[] mOptionValue = getOptionValues(mappingdocOption, lineArgs, configFile);
@@ -400,7 +410,14 @@ public class Main {
                 System.arraycopy(fOptionValue, 0, optionWithIDLabFunctionArgs, 4, fOptionValue.length);
                 functionAgent = AgentFactory.createFromFnO(optionWithIDLabFunctionArgs);
             }
+
             executor = new Executor(rmlStore, factory, outputStore, baseIRI, strictMode, functionAgent, mappingOptions);
+
+            if (onlyConvertMapping) {
+                logger.debug("Outputting converted mapping following the latest RML specification");
+                writeOutput(rmlStore, outputFile, "turtle");
+                System.exit(0);
+            }
 
             if (checkOptionPresence(provideOwnEOFMarkerOption, lineArgs, configFile)) {
                 logger.warn("Automatic EOF marker disabled!");
