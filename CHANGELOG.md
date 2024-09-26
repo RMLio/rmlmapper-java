@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+- CLI option `--convert-mapping` to convert your existing R2RML and older RML mappings 
+to the latest version by the W3C Community Group.
+
 ## [7.1.2] - 2024-09-19
 
 ### Fixed

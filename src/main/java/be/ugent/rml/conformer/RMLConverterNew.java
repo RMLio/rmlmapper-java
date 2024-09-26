@@ -124,7 +124,7 @@ public class RMLConverterNew implements Converter {
 
     /**
      * Replace a logical table quad with a proper logical source
-     * @param quad
+     * @param logicalTableQuad
      * @param quadStore
      */
     private void processLogicalTable(Quad logicalTableQuad, QuadStore quadStore) {
@@ -283,6 +283,12 @@ public class RMLConverterNew implements Converter {
             this.store.renameAllObjects(new NamedNode(old), new NamedNode(_new));
         }
 
+        /* Replace namespaces */
+        this.store.removeNameSpace("rml");
+        this.store.removeNameSpace("rr");
+        this.store.removeNameSpace("ql");
+        this.store.addNameSpace("rml", "http://w3id.org/rml/");
+
         dropObsolete();
     }
 
@@ -301,7 +307,6 @@ public class RMLConverterNew implements Converter {
 
     private void processQueries(Quad query, QuadStore store) throws Exception {
         Term source = store.getQuad(query.getSubject(), new NamedNode(RML2 + "source"), null).getObject();
-        System.out.println("processQueries: " + source.getValue());
         if (store.contains(source, new NamedNode(SD + "resultFormat"), null)) {
             Term supportedLanguage = store.getQuad(source, new NamedNode(SD + "resultFormat"), null).getObject();
             store.addQuad(query.getSubject(), new NamedNode(RML2 + "referenceFormulation"), supportedLanguage);

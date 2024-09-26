@@ -86,6 +86,23 @@ public abstract class QuadStore {
     public abstract void copyNameSpaces(QuadStore store);
 
     /**
+     * Add namespace to store.
+     * TODO define general Namespace class to use between QuadStore instances
+     *
+     * @param prefix String with the prefix of the namespace.
+     * @param IRI String with the IRI of the namespace.
+     */
+    public abstract void addNameSpace(String prefix, String IRI);
+
+    /**
+     * Remove namespace from store by prefix.
+     * TODO define general Namespace class to use between QuadStore instances
+     *
+     * @param prefix String with the prefix of the namespace.
+     */
+    public abstract void removeNameSpace(String prefix);
+
+    /**
      * True if RDF quads present is 0
      *
      * @return boolean

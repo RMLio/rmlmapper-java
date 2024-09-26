@@ -20,6 +20,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,6 +119,17 @@ public class RDF4JStore extends QuadStore {
         } else {
             throw new UnsupportedOperationException();
         }
+    }
+
+    @Override
+    public void addNameSpace(String prefix, String IRI) {
+            this.getModel().getNamespaces().add(new SimpleNamespace(prefix, IRI));
+    }
+
+    @Override
+    public void removeNameSpace(String prefix) {
+        Set<Namespace> namespaces = this.getModel().getNamespaces();
+        namespaces.removeIf(namespace -> namespace.getPrefix().equals(prefix));
     }
 
     @Override

@@ -83,6 +83,16 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
+    public void addNameSpace(String prefix, String IRI) {
+        // Namespace passing is not needed for .nquads and .hdt
+    }
+
+    @Override
+    public void removeNameSpace(String prefix) {
+        // Namespace passing is not needed for .nquads and .hdt
+    }
+
+    @Override
     public boolean isEmpty() {
         return quads.isEmpty();
     }
