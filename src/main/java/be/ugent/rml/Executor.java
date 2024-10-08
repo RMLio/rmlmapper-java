@@ -117,9 +117,12 @@ public class Executor {
                 if(pog.getObjectMappingInfo() != null) {
                     targets.addAll(pog.getObjectMappingInfo().getTargets());
                 }
+                if(pog.getGraphMappingInfo() != null) {
+                    targets.addAll(pog.getGraphMappingInfo().getTargets());
+                }
             }
 
-            // Graph Map
+            // Graph Map (only subjectGraphMap...)
             for(MappingInfo g: mapping.getGraphMappingInfos()) {
                 targets.addAll(g.getTargets());
             }
@@ -451,7 +454,8 @@ public class Executor {
                     if (terms != null) {
                         terms.forEach(term -> {
                             if (!term.equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
-                                subjectGraphs.add(new ProvenancedTerm(term));
+                                List<Term> targets = mappingInfo.getTargets();
+                                subjectGraphs.add(new ProvenancedTerm(term, null, targets));
                             }
                         });
                     }
@@ -473,7 +477,8 @@ public class Executor {
                         if (pogGraphGenerator != null) {
                             pogGraphGenerator.generate(record).forEach(term -> {
                                 if (!term.equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
-                                    poGraphs.add(new ProvenancedTerm(term));
+                                    List<Term> targets = pogMapping.getGraphMappingInfo().getTargets();
+                                    poGraphs.add(new ProvenancedTerm(term, null, targets));
                                 }
                             });
                         }
