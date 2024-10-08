@@ -24,5 +24,10 @@ public class SolidResourceTarget extends SolidTarget {
             return false;
         }
     }
+
+    @Override
+    public String toString() {
+        return this.solidTargetInfo.get("resourceUrl").toString();
+    }
 }
 

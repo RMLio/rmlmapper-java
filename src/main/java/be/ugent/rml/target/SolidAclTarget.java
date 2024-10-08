@@ -24,5 +24,10 @@ public class SolidAclTarget extends SolidTarget {
             return false;
         }
     }
+
+    @Override
+    public String toString() {
+        return "acl for " + this.solidTargetInfo.get("resourceUrl");
+    }
 }
 

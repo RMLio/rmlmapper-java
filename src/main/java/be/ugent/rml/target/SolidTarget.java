@@ -1,7 +1,6 @@
 package be.ugent.rml.target;
 
 import be.ugent.rml.store.Quad;
-import be.ugent.rml.store.QuadStore;
 import org.apache.http.client.HttpResponseException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -22,7 +21,7 @@ public abstract class SolidTarget implements Target {
     protected final JSONObject solidTargetInfo;
     private final List<Quad> metadata;
     private String solidHelperUrl;
-    private Boolean solidHelperDocker;
+    private boolean solidHelperDocker;
     protected String solidHelperPath;
     private ByteArrayOutputStream byteArrayOutputStream;
     private static final Logger logger = LoggerFactory.getLogger(SolidTarget.class);
@@ -52,7 +51,7 @@ public abstract class SolidTarget implements Target {
         this.solidHelperUrl = solidHelperUrl;
     }
 
-    public void setSolidHelperDocker(Boolean solidHelperDocker){
+    public void setSolidHelperDocker(boolean solidHelperDocker){
         this.solidHelperDocker = solidHelperDocker;
     }
 
@@ -97,6 +96,7 @@ public abstract class SolidTarget implements Target {
         logger.debug("Closing target");
         try {
             if (solidHelperDocker) {
+                //TODO move the docker image to an imec account
                 container = new GenericContainer<>(DockerImageName.parse("elsdvlee/solid-target-helper:latest"))
                         .withExposedPorts(8080)
                         .withCommand("npm","start")
