@@ -1,0 +1,13 @@
+services:
+  solid-target-helper:
+    # TODO host docker image on imec account instead of personal account
+    image: elsdvlee/solid-target-helper-and-testpods:latest
+    ports:
+      - "8080:8080"
+    command: "npm start"
+    healthcheck:
+      test: "[ -e healthy.flag ] || if curl http://localhost:8080/; then touch healthy.flag; else false; fi"
+      interval: 1s
+      timeout: 30s
+      retries: 65
+      start_period: 1s

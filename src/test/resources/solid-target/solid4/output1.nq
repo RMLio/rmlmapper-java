@@ -1,0 +1,5 @@
+<http://example.com/building1> <http://example.com/ont/has-floor-tile> <http://example.com/product-floortile1> <http://example.com/BuildingsGraph> .
+<http://example.com/building2> <http://example.com/ont/has-floor-tile> <http://example.com/product-floortile2> <http://example.com/BuildingsGraph> .
+<http://example.com/building3> <http://example.com/ont/has-floor-tile> <http://example.com/product-floortile1> <http://example.com/BuildingsGraph> .
+
+

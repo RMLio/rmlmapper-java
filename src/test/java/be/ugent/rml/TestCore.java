@@ -309,7 +309,7 @@ public abstract class TestCore {
         }
     }
 
-    private void compareStores(QuadStore expectedStory, QuadStore resultStore) {
+    protected void compareStores(QuadStore expectedStory, QuadStore resultStore) {
         String expectedString = expectedStory.toSortedString();
         String resultString = resultStore.toSortedString();
         // First arg is expected, second is actual
@@ -339,7 +339,7 @@ public abstract class TestCore {
         }
     }
 
-    private QuadStore filePathToStore(String path) throws Exception {
+    protected QuadStore filePathToStore(String path) throws Exception {
         // load output-turtle file
         File outputFile = Utils.getFile(path);
 

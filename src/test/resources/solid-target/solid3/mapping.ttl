@@ -1,0 +1,41 @@
+@base <http://example.com/base/>.
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix o: <http://example.com/ont/>.
+@prefix ex: <http://example.com/>.
+@prefix rmlt: <http://semweb.mmlab.be/ns/rml-target#>.
+@prefix formats: <http://www.w3.org/ns/formats/>.
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix rmli: <https://w3id.org/imec/rml/>.
+@prefix idsa: <https://w3id.org/idsa/core/>.
+
+<TriplesMap1> a rr:TriplesMap;
+    rml:logicalSource [
+        rml:source "src/test/resources/solid-target/solid3/buildings.csv";
+        rml:referenceFormulation ql:CSV;
+    ];
+    rr:subjectMap [ rr:template "http://example.com/{BuildingID}" ];
+    rr:predicateObjectMap [
+        rr:predicate o:has-floor-tile;
+        rr:objectMap [
+            rr:template "http://example.com/product-{FloorTileID}";
+            rml:logicalTarget <target1>;
+        ];
+    ].
+
+<target1> rmlt:serialization formats:Turtle;
+    rmlt:target [
+        a rmli:SolidResourceTarget;
+        rmli:resource "http://localhost:3000/example/building";
+        idsa:userAuthentication [
+            idsa:authUsername "hello@example.com";
+            idsa:authPassword "abc123";
+            solid:oidcIssuer <http://localhost:3000/>;
+            rmli:webId <http://localhost:3000/example/profile/card#me>
+        ];
+    ].
+
