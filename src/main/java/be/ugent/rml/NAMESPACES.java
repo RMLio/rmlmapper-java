@@ -34,4 +34,7 @@ public class NAMESPACES {
     public static final String COMP = "http://semweb.mmlab.be/ns/rml-compression#";
     public static final String LDES = "https://w3id.org/ldes#";
     public static final String TREE = "https://w3id.org/tree#";
+    public static final String SOLID = "http://www.w3.org/ns/solid/terms#";
+    public static final String RMLI = "https://w3id.org/imec/rml/";
+
 }

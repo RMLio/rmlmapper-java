@@ -7,6 +7,7 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -347,6 +348,20 @@ public class TargetFactory {
                     target = new SPARQLEndpointTarget(endpoint, metadata);
                     break;
                 }
+                case NAMESPACES.RMLI + "SolidResourceTarget": {
+                    logger.debug("Target is a document on a resource on a Solid Pod");
+                    String resource = getRequiredValue(t,new NamedNode(NAMESPACES.RMLI + "resource"), rmlStore).getValue();
+                    JSONObject solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
+                    target = new SolidResourceTarget(solidTargetInfo, serializationFormat, metadata);
+                    break;
+                }
+                case NAMESPACES.RMLI + "SolidAclTarget": {
+                    logger.debug("Target is a acl document for a resource on a Solid Pod");
+                    String resource = getRequiredValue(t,new NamedNode(NAMESPACES.RMLI + "forResource"), rmlStore).getValue();
+                    JSONObject solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
+                    target = new SolidAclTarget(solidTargetInfo, serializationFormat, metadata);
+                    break;
+                }
                 default: {
                     throw new UnsupportedOperationException("Not implemented");
                 }
@@ -355,7 +370,31 @@ public class TargetFactory {
             return target;
         }
         else {
-            throw new Error("The Target does not have target.");
+            throw new Error("Logical Target " + logicalTarget.getValue() + " does not have target.");
+        }
+    }
+    private JSONObject parseSolidTarget(QuadStore rmlStore, Term t, String resource){
+        Term login = getRequiredValue(t, new NamedNode(NAMESPACES.IDSA + "userAuthentication"), rmlStore);
+        String email = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authUsername"), rmlStore).getValue();
+        String password = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authPassword"), rmlStore).getValue();
+        String oidcIssuer = getRequiredValue(login, new NamedNode(NAMESPACES.SOLID + "oidcIssuer"), rmlStore).getValue();
+        String webId = getRequiredValue(login, new NamedNode(NAMESPACES.RMLI + "webId"), rmlStore).getValue();
+        // because this info will need to be sent over http in a JSON format, it is immediately stored in a JSONObject
+        JSONObject solidTargetInfo = new JSONObject();
+        solidTargetInfo.put("email", email);
+        solidTargetInfo.put("password",password);
+        solidTargetInfo.put("serverUrl", oidcIssuer);
+        solidTargetInfo.put("resourceUrl", resource);
+        solidTargetInfo.put("webId", webId);
+        return solidTargetInfo;
+    }
+
+    private Term getRequiredValue(Term subject, Term predicate, QuadStore rmlStore) throws Error {
+        List<Term> terms = Utils.getObjectsFromQuads(rmlStore.getQuads(subject, predicate, null));
+        if (terms.isEmpty()) {
+            throw new Error(subject + " has no value for predicate " + predicate);
+        } else {
+            return terms.get(0);
         }
     }
 }
