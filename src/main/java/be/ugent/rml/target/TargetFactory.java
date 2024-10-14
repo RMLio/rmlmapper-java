@@ -373,6 +373,7 @@ public class TargetFactory {
             throw new Error("Logical Target " + logicalTarget.getValue() + " does not have target.");
         }
     }
+
     private JSONObject parseSolidTarget(QuadStore rmlStore, Term t, String resource){
         Term login = getRequiredValue(t, new NamedNode(NAMESPACES.IDSA + "userAuthentication"), rmlStore);
         String email = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authUsername"), rmlStore).getValue();
