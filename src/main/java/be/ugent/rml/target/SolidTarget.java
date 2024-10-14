@@ -38,8 +38,10 @@ public abstract class SolidTarget implements Target {
     ); // TODO hdt???
 
     /**
-     * This constructor ...
-     *
+     * This constructor takes a JSON object with the solid target info, the serialization format and the metadata as argument.
+     * @param solidTargetInfo JSON object with all the target info (resource url and authentication info)
+     * @param serializationFormat String with the serialization format
+     * @param metadata a list of Quads containing metadata
      */
     public SolidTarget(JSONObject solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
         this.solidTargetInfo = solidTargetInfo;
@@ -120,7 +122,7 @@ public abstract class SolidTarget implements Target {
             OutputStream out = connection.getOutputStream();
             this.solidTargetInfo.put("data", this.byteArrayOutputStream.toString(StandardCharsets.UTF_8));
             // reset the outputstream to empty memory
-            this.byteArrayOutputStream = new ByteArrayOutputStream();
+            this.byteArrayOutputStream.reset();
             this.solidTargetInfo.put("contentType", serializationFormats.get(this.serializationFormat));
 
             out.write((solidTargetInfo.toString()).getBytes(StandardCharsets.UTF_8));
@@ -135,7 +137,7 @@ public abstract class SolidTarget implements Target {
             }
         }
         catch (Exception e) {
-            logger.error("Failed to close target for {} to {}: {}", solidHelperPath, this.solidTargetInfo.get("resourceUrl"), e);
+            logger.error("Failed to close target for {} to {}= {}", solidHelperPath, this.solidTargetInfo.get("resourceUrl"), e.getMessage());
         }
         finally {
             if(container != null) {
