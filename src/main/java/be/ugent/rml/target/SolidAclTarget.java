@@ -16,7 +16,6 @@ public class SolidAclTarget extends SolidTarget {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
         if (o instanceof SolidAclTarget) {
             SolidAclTarget target  = (SolidAclTarget) o;
             return this.solidTargetInfo.get("resourceUrl").equals(target.getSolidTargetInfo().get("resourceUrl"));
