@@ -1,15 +1,15 @@
 package be.ugent.rml.target;
 
 import be.ugent.rml.store.Quad;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 
 public class SolidResourceTarget extends SolidTarget {
 
-    public SolidResourceTarget(JSONObject solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
+    public SolidResourceTarget(Map<String, Object> solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
         super(solidTargetInfo, serializationFormat, metadata);
         solidHelperPath = "addResource";
     }

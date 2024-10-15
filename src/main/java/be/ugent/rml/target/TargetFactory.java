@@ -7,16 +7,12 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TargetFactory {
 
@@ -351,14 +347,14 @@ public class TargetFactory {
                 case NAMESPACES.RMLI + "SolidResourceTarget": {
                     logger.debug("Target is a document on a resource on a Solid Pod");
                     String resource = getRequiredValue(t,new NamedNode(NAMESPACES.RMLI + "resource"), rmlStore).getValue();
-                    JSONObject solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
+                    Map<String,Object> solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
                     target = new SolidResourceTarget(solidTargetInfo, serializationFormat, metadata);
                     break;
                 }
                 case NAMESPACES.RMLI + "SolidAclTarget": {
                     logger.debug("Target is a acl document for a resource on a Solid Pod");
                     String resource = getRequiredValue(t,new NamedNode(NAMESPACES.RMLI + "forResource"), rmlStore).getValue();
-                    JSONObject solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
+                    Map<String, Object> solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
                     target = new SolidAclTarget(solidTargetInfo, serializationFormat, metadata);
                     break;
                 }
@@ -374,14 +370,14 @@ public class TargetFactory {
         }
     }
 
-    private JSONObject parseSolidTarget(QuadStore rmlStore, Term t, String resource){
+    private Map<String,Object> parseSolidTarget(QuadStore rmlStore, Term t, String resource){
         Term login = getRequiredValue(t, new NamedNode(NAMESPACES.IDSA + "userAuthentication"), rmlStore);
         String email = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authUsername"), rmlStore).getValue();
         String password = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authPassword"), rmlStore).getValue();
         String oidcIssuer = getRequiredValue(login, new NamedNode(NAMESPACES.SOLID + "oidcIssuer"), rmlStore).getValue();
         String webId = getRequiredValue(login, new NamedNode(NAMESPACES.RMLI + "webId"), rmlStore).getValue();
         // because this info will need to be sent over http in a JSON format, it is immediately stored in a JSONObject
-        JSONObject solidTargetInfo = new JSONObject();
+        HashMap<String,Object> solidTargetInfo = new HashMap<String, Object>();
         solidTargetInfo.put("email", email);
         solidTargetInfo.put("password",password);
         solidTargetInfo.put("serverUrl", oidcIssuer);
