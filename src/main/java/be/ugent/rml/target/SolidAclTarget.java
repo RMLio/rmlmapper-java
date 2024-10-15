@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SolidAclTarget extends SolidTarget {
 
-    public SolidAclTarget(Map<String, Object> solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
+    public SolidAclTarget(Map<String, String> solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
         super(solidTargetInfo, serializationFormat, metadata);
         solidHelperPath = "addAcl";
     }

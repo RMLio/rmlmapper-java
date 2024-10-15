@@ -347,14 +347,14 @@ public class TargetFactory {
                 case NAMESPACES.RMLI + "SolidResourceTarget": {
                     logger.debug("Target is a document on a resource on a Solid Pod");
                     String resource = getRequiredValue(t,new NamedNode(NAMESPACES.RMLI + "resource"), rmlStore).getValue();
-                    Map<String,Object> solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
+                    Map<String, String> solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
                     target = new SolidResourceTarget(solidTargetInfo, serializationFormat, metadata);
                     break;
                 }
                 case NAMESPACES.RMLI + "SolidAclTarget": {
                     logger.debug("Target is a acl document for a resource on a Solid Pod");
                     String resource = getRequiredValue(t,new NamedNode(NAMESPACES.RMLI + "forResource"), rmlStore).getValue();
-                    Map<String, Object> solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
+                    Map<String, String> solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
                     target = new SolidAclTarget(solidTargetInfo, serializationFormat, metadata);
                     break;
                 }
@@ -370,14 +370,14 @@ public class TargetFactory {
         }
     }
 
-    private Map<String,Object> parseSolidTarget(QuadStore rmlStore, Term t, String resource){
+    private Map<String,String> parseSolidTarget(QuadStore rmlStore, Term t, String resource){
         Term login = getRequiredValue(t, new NamedNode(NAMESPACES.IDSA + "userAuthentication"), rmlStore);
         String email = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authUsername"), rmlStore).getValue();
         String password = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authPassword"), rmlStore).getValue();
         String oidcIssuer = getRequiredValue(login, new NamedNode(NAMESPACES.SOLID + "oidcIssuer"), rmlStore).getValue();
         String webId = getRequiredValue(login, new NamedNode(NAMESPACES.RMLI + "webId"), rmlStore).getValue();
         // because this info will need to be sent over http in a JSON format, it is immediately stored in a JSONObject
-        HashMap<String,Object> solidTargetInfo = new HashMap<String, Object>();
+        HashMap<String,String> solidTargetInfo = new HashMap<String, String>();
         solidTargetInfo.put("email", email);
         solidTargetInfo.put("password",password);
         solidTargetInfo.put("serverUrl", oidcIssuer);

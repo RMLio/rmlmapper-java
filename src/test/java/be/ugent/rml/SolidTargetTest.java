@@ -90,7 +90,7 @@ public class SolidTargetTest extends TestCore {
         try (GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("elsdvlee/solid-target-helper-and-testpods:latest"))
                 .withExposedPorts(8080)
                 .withCommand("npm", "start")
-                .waitingFor(Wait.forHealthcheck()).withStartupTimeout(Duration.ofSeconds(200));) {
+                .waitingFor(Wait.forHealthcheck()).withStartupTimeout(Duration.ofSeconds(200))) {
             container.start();
             String address = "http://" + container.getHost() + ":" + container.getMappedPort(8080) + "/";
             Main.run(("-m " + mapPath + " -shu " + address).split(" "));

@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SolidResourceTarget extends SolidTarget {
 
-    public SolidResourceTarget(Map<String, Object> solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
+    public SolidResourceTarget(Map<String, String> solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
         super(solidTargetInfo, serializationFormat, metadata);
         solidHelperPath = "addResource";
     }

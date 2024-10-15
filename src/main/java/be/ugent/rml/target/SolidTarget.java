@@ -18,7 +18,7 @@ import org.testcontainers.utility.DockerImageName;
 
 public abstract class SolidTarget implements Target {
 
-    protected final Map<String,Object> solidTargetInfo;
+    protected final Map<String, String> solidTargetInfo;
     private final List<Quad> metadata;
     private String solidHelperUrl;
     private boolean solidHelperDocker;
@@ -43,7 +43,7 @@ public abstract class SolidTarget implements Target {
      * @param serializationFormat String with the serialization format
      * @param metadata a list of Quads containing metadata
      */
-    public SolidTarget(Map<String, Object> solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
+    public SolidTarget(Map<String, String> solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
         this.solidTargetInfo = solidTargetInfo;
         this.metadata = metadata;
         this.serializationFormat = serializationFormat;
@@ -79,7 +79,7 @@ public abstract class SolidTarget implements Target {
      * This method returns the url of the Solid pod target //TODO adapt
      * @return url.
      */
-    public Map<String, Object> getSolidTargetInfo() {
+    public Map<String, String> getSolidTargetInfo() {
         return this.solidTargetInfo;
     }
 
