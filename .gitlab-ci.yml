@@ -73,7 +73,7 @@ General:
       - '$TEST.log'
   parallel:
     matrix:
-      - TEST: [ArgumentsTest, MapperCSVTest, MapperJSONTest, MapperMySQLTest, MapperPostgresR2RMLTest, MapperWoTTest, ArgumentsTestMySQLTest, MapperCSVWTest, MapperLDESTest, MapperODSTest, MapperOracleDBTest, MapperPostgresXMLTest, MapperXMLTest, CustomRMLFnOMapperCSVTest, MapperEXCELTest, MapperMappingFileURLTest, MapperSPARQLTest, MetadataTest, CustomRMLFnOMapperJSONTest, CustomRMLFnOMapperTest, MapperHTMLTest, MapperMySQLR2RMLTest, MapperPostgresCSVTest, MapperSQLServerTest, OptimizationsTest, R2RMLConverterTest, QuadTest, ReadmeTest, ReadmeFunctionTest, ConformerDetectionTest, MapperNewRMLCoreCSVTest, MapperNewRMLCoreJSONTest, MapperNewRMLCoreXMLTest, MapperNewRMLCoreMySQLTest, MapperNewRMLCorePostgresTest, MapperNewRMLIOSourceTest, MapperNewRMLIOTargetTest]
+      - TEST: [ArgumentsTest, MapperCSVTest, MapperJSONTest, MapperMySQLTest, MapperPostgresR2RMLTest, MapperWoTTest, ArgumentsTestMySQLTest, MapperCSVWTest, MapperLDESTest, MapperODSTest, MapperOracleDBTest, MapperPostgresXMLTest, MapperXMLTest, CustomRMLFnOMapperCSVTest, MapperEXCELTest, MapperMappingFileURLTest, MapperSPARQLTest, MetadataTest, CustomRMLFnOMapperJSONTest, CustomRMLFnOMapperTest, MapperHTMLTest, MapperMySQLR2RMLTest, MapperPostgresCSVTest, MapperSQLServerTest, OptimizationsTest, R2RMLConverterTest, QuadTest, ReadmeTest, ReadmeFunctionTest, ConformerDetectionTest, MapperNewRMLCoreCSVTest, MapperNewRMLCoreJSONTest, MapperNewRMLCoreXMLTest, MapperNewRMLCoreMySQLTest, MapperNewRMLCorePostgresTest, MapperNewRMLIOSourceTest, MapperNewRMLIOTargetTest, SolidTargetTest]
   except:
     - master
     - development
