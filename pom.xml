@@ -293,6 +293,11 @@
             <artifactId>dataio</artifactId>
             <version>1.3.1</version>
         </dependency>
+        <dependency> <!-- Library for generating JWTs -->
+            <groupId>org.bitbucket.b_c</groupId>
+            <artifactId>jose4j</artifactId>
+            <version>0.9.6</version>
+        </dependency>
         <!--< testcontainer dependencies > -->
         <dependency>
             <groupId>org.testcontainers</groupId>

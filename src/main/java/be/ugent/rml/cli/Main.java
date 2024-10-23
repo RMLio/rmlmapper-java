@@ -11,7 +11,6 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JStore;
-import be.ugent.rml.target.SolidTarget;
 import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
@@ -162,17 +161,6 @@ public class Main {
                 .longOpt("convert-mapping")
                 .desc("Only convert the mapping to the latest RML specification by the W3C Community Group")
                 .build();
-        // temporary solution until the oidc authentication in is implemented in JAVA
-        Option solidHelperUrlOption = Option.builder("shu")
-                .longOpt("solidHelperUrl")
-                .desc("the url on which the javascript helper application for Solid targets can be reached, default http://localhost:8080/")
-                .hasArg()
-                .build();
-        // temporary solution until the oidc authentication in is implemented in JAVA
-        Option solidHelperDockerOption = Option.builder("shd")
-                .longOpt("solidHelperDocker")
-                .desc("select this option when the docker with solid target helper inside RMLMapper is needed")
-                .build();
 
         options.addOption(mappingdocOption);
         options.addOption(privateSecurityDataOption);
@@ -193,8 +181,6 @@ public class Main {
         options.addOption(baseIriOption);
         options.addOption(provideOwnEOFMarkerOption);
         options.addOption(convertMapping);
-        options.addOption(solidHelperUrlOption);
-        options.addOption(solidHelperDockerOption);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -468,10 +454,7 @@ public class Main {
 
                 IDLabFunctions.saveState();
 
-                String solidHelperUrl = getPriorityOptionValue(solidHelperUrlOption, lineArgs, configFile, "http://localhost:8080/");
-                Boolean solidHelperDocker = checkOptionPresence(solidHelperDockerOption, lineArgs, configFile);
-
-                writeOutputTargets(targets, rmlStore, basePath, outputFile, outputFormat, solidHelperUrl, solidHelperDocker);
+                writeOutputTargets(targets, rmlStore, basePath, outputFile, outputFormat);
 
             }
             // Get stop timestamp for post mapping metadata
@@ -495,7 +478,7 @@ public class Main {
         }
     }
 
-    private static void writeOutputTargets(Map<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault, String solidHelperUrl, Boolean solidHelperDocker) throws Exception {
+    private static void writeOutputTargets(Map<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault) throws Exception {
         boolean hasNoResults = true;
 
         logger.debug("Writing to Targets: {}", targets.keySet());
@@ -532,10 +515,6 @@ public class Main {
             else {
                 logger.debug("Exporting to Target: {}", term);
                 Target target = targetFactory.getTarget(term, rmlStore, store);
-                if((target instanceof SolidTarget)) {
-                    ((SolidTarget) target).setSolidHelperUrl(solidHelperUrl);
-                    ((SolidTarget) target).setSolidHelperDocker(solidHelperDocker);
-                }
                 if (store.size() > 1) {
                     logger.info("{} quads were generated for {} Target", store.size(), term);
                 } else {

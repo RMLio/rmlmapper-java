@@ -376,8 +376,7 @@ public class TargetFactory {
         String password = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authPassword"), rmlStore).getValue();
         String oidcIssuer = getRequiredValue(login, new NamedNode(NAMESPACES.SOLID + "oidcIssuer"), rmlStore).getValue();
         String webId = getRequiredValue(login, new NamedNode(NAMESPACES.RMLI + "webId"), rmlStore).getValue();
-        // because this info will need to be sent over http in a JSON format, it is immediately stored in a JSONObject
-        HashMap<String,String> solidTargetInfo = new HashMap<String, String>();
+        HashMap<String,String> solidTargetInfo = new HashMap<>();
         solidTargetInfo.put("email", email);
         solidTargetInfo.put("password",password);
         solidTargetInfo.put("serverUrl", oidcIssuer);
