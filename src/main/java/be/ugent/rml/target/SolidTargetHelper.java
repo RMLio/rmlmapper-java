@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * SolidTargetHelper helps writing data to a Solid server, taking care of the Solid authorization flow.
@@ -30,7 +29,7 @@ public class SolidTargetHelper {
     private static final Logger log = LoggerFactory.getLogger(SolidTargetHelper.class);
     private final EllipticCurveJsonWebKey jwk;
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     /**
      *
      * Constructs a new SolidTargetHelper instance. A new private + public key pair
@@ -165,14 +164,11 @@ public class SolidTargetHelper {
                 throw new Exception("Could not get OpenID Connect info: " + oidcAccessTokenStr);
             }
             JSONObject oidcAccessToken = new JSONObject(oidcAccessTokenStr);
-            String dpopAccessToken = oidcAccessToken.getString("access_token");
+            return oidcAccessToken.getString("access_token");
             // token_type should be 'DPoP'
             // We don't use 'expires' at the moment because we send the next request immediately
             // and don't know if the next request would go to the same server. This can be checked
             // for in future implementations.
-
-            return dpopAccessToken;
-
         } catch (Throwable e) { // This is to catch runtime exceptions as well.
             throw new Exception(e);
         }
@@ -253,38 +249,18 @@ public class SolidTargetHelper {
 
             String dpopAccessToken = getDpopAccessToken(solidInfo);
 
-            ////// PUT the data //////
+            ////// HEAD the resource to a get link to where the ACL should be put //////
             // Generate new JWT token for this request
-            String headDataJWT = generateJWT(resourceUrl, "GET");
+            String headDataJWT = generateJWT(resourceUrl, "HEAD");
 
             HttpRequest headRequest = HttpRequest.newBuilder(URI.create(resourceUrl))
-                    .GET()
+                    .method("HEAD", HttpRequest.BodyPublishers.noBody())
                     .setHeader("Authorization", "DPoP " + dpopAccessToken)
                     .setHeader("DPoP", headDataJWT)
                     .build();
 
             HttpResponse<String> headResponse = httpClient.send(headRequest, HttpResponse.BodyHandlers.ofString());
 
-            String putDataJWT = generateJWT(resourceUrl, "PUT");
-
-            if (headResponse.statusCode() != HttpStatus.SC_OK) {
-
-                HttpRequest putEmptyResourceRequest = HttpRequest.newBuilder(URI.create(resourceUrl))
-                        .PUT(HttpRequest.BodyPublishers.ofString("", StandardCharsets.UTF_8))
-                        .setHeader("Content-Type", "application/n-quads") // to avoid bad request http error 'HTTP request body was passed without a Content-Type header'
-                        .setHeader("Authorization", "DPoP " + dpopAccessToken)
-                        .setHeader("DPoP", putDataJWT)
-                        .build();
-
-                HttpResponse<String> putEmptyResourceResponse = httpClient.send(putEmptyResourceRequest, HttpResponse.BodyHandlers.ofString());
-
-                if (putEmptyResourceResponse.statusCode() != HttpStatus.SC_CREATED) {
-                    String putEmptyResouceStr = putEmptyResourceResponse.body();
-                    log.error("Could not create empty resource for URL {}: {}", resourceUrl, putEmptyResouceStr);
-                    throw new Exception("Could not create empty resource for URL: " + resourceUrl + ": " + putEmptyResouceStr);
-                }
-                headResponse = httpClient.send(headRequest, HttpResponse.BodyHandlers.ofString());
-            }
             List<String> links = headResponse.headers().map().get("link");
             boolean foundLink = false;
             int index = 0;
@@ -292,6 +268,8 @@ public class SolidTargetHelper {
                 String link = links.get(index);
                 // a better method to parse the link header in Java would be welcome ...
                 if (link.contains("rel=\"acl\"")) {
+
+                    ////// PUT the ACL to the found link //////
                     String linkUrl = link.substring(link.indexOf("<") + 1, link.indexOf(">"));
                     String putAclJWT = generateJWT(linkUrl, "PUT");
                     HttpRequest putAclRequest = HttpRequest.newBuilder(URI.create(linkUrl))
@@ -311,6 +289,13 @@ public class SolidTargetHelper {
                 }
                 index += 1;
             }
+
+            if (!foundLink) {
+                String message = "Could not get ACL link for resource with URL: " + resourceUrl;
+                log.error(message);
+                throw new Exception(message);
+            }
+
         } catch (Throwable e) { // This is to catch runtime exceptions as well.
             throw new Exception(e);
         }
