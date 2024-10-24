@@ -11,7 +11,6 @@ public class SolidAclTarget extends SolidTarget {
 
     public SolidAclTarget(Map<String, String> solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
         super(solidTargetInfo, serializationFormat, metadata);
-        solidHelperPath = "addAcl";
     }
 
     @Override
@@ -27,6 +26,17 @@ public class SolidAclTarget extends SolidTarget {
     @Override
     public String toString() {
         return "acl for " + this.solidTargetInfo.get("resourceUrl");
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        try {
+            SolidTargetHelper helper = new SolidTargetHelper();
+            helper.addAcl(solidTargetInfo);
+        } catch (Exception e) {
+            logger.error("Failed to close Solid ACL target for {}: {}", this.solidTargetInfo.get("resourceUrl"), e.getMessage());
+        }
     }
 }
 

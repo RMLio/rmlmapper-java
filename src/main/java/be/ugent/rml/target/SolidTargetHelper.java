@@ -19,7 +19,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * SolidTargetHelper helps writing data to a Solid server, taking care of the Solid authorization flow.
@@ -28,6 +30,7 @@ public class SolidTargetHelper {
     private static final Logger log = LoggerFactory.getLogger(SolidTargetHelper.class);
     private final EllipticCurveJsonWebKey jwk;
 
+    private HttpClient httpClient;
     /**
      *
      * Constructs a new SolidTargetHelper instance. A new private + public key pair
@@ -37,6 +40,10 @@ public class SolidTargetHelper {
      */
     public SolidTargetHelper() throws JoseException {
         jwk = EcJwkGenerator.generateJwk(EllipticCurves.P256);
+        // Initialize a HTTP client
+        httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)   // The Community Solid Server only accepts HTTP 1.1 and complains about upgrade headers if you don't specify this.
+                .build();
     }
 
     /**
@@ -45,7 +52,7 @@ public class SolidTargetHelper {
      *                  serverUrl, webId, email, password, resourceUrl, contentType, data
      * @throws Exception Something goes wrong.
      */
-    void send(Map<String, String> solidInfo) throws Exception {
+    private String getDpopAccessToken(Map<String, String> solidInfo) throws Exception {
 
         // See https://blog.stackademic.com/how-dpop-works-a-guide-to-proof-of-possession-for-web-tokens-cbeac2d4e43c
         // for a simple and clear description of how DPoP works.
@@ -56,15 +63,6 @@ public class SolidTargetHelper {
             String webId = solidInfo.get("webId");
             String email = solidInfo.get("email");
             String password = solidInfo.get("password");
-            String resourceUrl = solidInfo.get("resourceUrl");
-            String contentType = solidInfo.get("contentType");
-            String data = solidInfo.get("data");
-
-            // Initialize a HTTP client
-            HttpClient httpClient = HttpClient.newBuilder()
-                    .version(HttpClient.Version.HTTP_1_1)   // The Community Solid Server only accepts HTTP 1.1 and complains about upgrade headers if you don't specify this.
-                    .build();
-
 
             ////// Get account controls and retrieve login URL //////
             HttpRequest accountInfoRequest = HttpRequest.newBuilder(URI.create(serverUrl + ".account/"))
@@ -173,22 +171,7 @@ public class SolidTargetHelper {
             // and don't know if the next request would go to the same server. This can be checked
             // for in future implementations.
 
-            ////// PUt the data //////
-            // Generate new JWT token for this request
-            String putDataJWT = generateJWT(resourceUrl, "PUT");
-
-            HttpRequest putDataRequest = HttpRequest.newBuilder(URI.create(resourceUrl))
-                    .PUT(HttpRequest.BodyPublishers.ofString(data, StandardCharsets.UTF_8))
-                    .setHeader("Authorization", "DPoP " + dpopAccessToken)
-                    .setHeader("DPoP", putDataJWT)
-                    .setHeader("Content-Type", contentType)
-                    .build();
-            HttpResponse<String> putDataResponse = httpClient.send(putDataRequest, HttpResponse.BodyHandlers.ofString());
-            if (putDataResponse.statusCode() != HttpStatus.SC_CREATED) {
-                String putDataStr = putDataResponse.body();
-                log.error("Could not create resource for URL {}: {}", resourceUrl, putDataStr);
-                throw new Exception("Could not create resource for URL: " + oidcAccessTokenStr + ": " + putDataStr);
-            }
+            return dpopAccessToken;
 
         } catch (Throwable e) { // This is to catch runtime exceptions as well.
             throw new Exception(e);
@@ -220,5 +203,149 @@ public class SolidTargetHelper {
         jws.setJwkHeader(jwk);
         jws.sign();
         return jws.getCompactSerialization();
+    }
+
+    /** Adds data to a Solid pod as a resource using Solid OIDC.
+     * @param solidInfo A map with all necessary data. The map should contain following keys:
+     *                  serverUrl, webId, email, password, resourceUrl, contentType, data
+     * @throws Exception Something goes wrong.
+     */
+    void addResource(Map<String, String> solidInfo) throws Exception{
+        try {
+            String resourceUrl = solidInfo.get("resourceUrl");
+            String contentType = solidInfo.get("contentType");
+            String data = solidInfo.get("data");
+
+            String dpopAccessToken = getDpopAccessToken(solidInfo);
+
+            ////// PUT the data //////
+            // Generate new JWT token for this request
+            String putDataJWT = generateJWT(resourceUrl, "PUT");
+
+            HttpRequest putDataRequest = HttpRequest.newBuilder(URI.create(resourceUrl))
+                    .PUT(HttpRequest.BodyPublishers.ofString(data, StandardCharsets.UTF_8))
+                    .setHeader("Authorization", "DPoP " + dpopAccessToken)
+                    .setHeader("DPoP", putDataJWT)
+                    .setHeader("Content-Type", contentType)
+                    .build();
+
+            HttpResponse<String> putDataResponse = httpClient.send(putDataRequest, HttpResponse.BodyHandlers.ofString());
+            if (putDataResponse.statusCode() != HttpStatus.SC_CREATED) {
+                String putDataStr = putDataResponse.body();
+                log.error("Could not create resource for URL {}: {}", resourceUrl, putDataStr);
+                throw new Exception("Could not create resource for URL: " + resourceUrl + ": " + putDataStr);
+            }
+        } catch (Throwable e) { // This is to catch runtime exceptions as well.
+            throw new Exception(e);
+        }
+    }
+
+    /** Adds data to a Solid pod as an ACL for a resource using Solid OIDC.
+     * @param solidInfo A map with all necessary data. The map should contain following keys:
+     *                  serverUrl, webId, email, password, resourceUrl, contentType, data
+     * @throws Exception Something goes wrong.
+     */
+    void addAcl(Map<String, String> solidInfo) throws Exception{
+        try {
+            String resourceUrl = solidInfo.get("resourceUrl");
+            String contentType = solidInfo.get("contentType");
+            String data = solidInfo.get("data");
+
+            String dpopAccessToken = getDpopAccessToken(solidInfo);
+
+            ////// PUT the data //////
+            // Generate new JWT token for this request
+            String headDataJWT = generateJWT(resourceUrl, "GET");
+
+            HttpRequest headRequest = HttpRequest.newBuilder(URI.create(resourceUrl))
+                    .GET()
+                    .setHeader("Authorization", "DPoP " + dpopAccessToken)
+                    .setHeader("DPoP", headDataJWT)
+                    .build();
+
+            HttpResponse<String> headResponse = httpClient.send(headRequest, HttpResponse.BodyHandlers.ofString());
+
+            String putDataJWT = generateJWT(resourceUrl, "PUT");
+
+            if (headResponse.statusCode() != HttpStatus.SC_OK) {
+
+                HttpRequest putEmptyResourceRequest = HttpRequest.newBuilder(URI.create(resourceUrl))
+                        .PUT(HttpRequest.BodyPublishers.ofString("", StandardCharsets.UTF_8))
+                        .setHeader("Content-Type", "application/n-quads") // to avoid bad request http error 'HTTP request body was passed without a Content-Type header'
+                        .setHeader("Authorization", "DPoP " + dpopAccessToken)
+                        .setHeader("DPoP", putDataJWT)
+                        .build();
+
+                HttpResponse<String> putEmptyResourceResponse = httpClient.send(putEmptyResourceRequest, HttpResponse.BodyHandlers.ofString());
+
+                if (putEmptyResourceResponse.statusCode() != HttpStatus.SC_CREATED) {
+                    String putEmptyResouceStr = putEmptyResourceResponse.body();
+                    log.error("Could not create empty resource for URL {}: {}", resourceUrl, putEmptyResouceStr);
+                    throw new Exception("Could not create empty resource for URL: " + resourceUrl + ": " + putEmptyResouceStr);
+                }
+                headResponse = httpClient.send(headRequest, HttpResponse.BodyHandlers.ofString());
+            }
+            List<String> links = headResponse.headers().map().get("link");
+            boolean foundLink = false;
+            int index = 0;
+            while (!foundLink && index < links.size() ){
+                String link = links.get(index);
+                // a better method to parse the link header in Java would be welcome ...
+                if (link.contains("rel=\"acl\"")) {
+                    String linkUrl = link.substring(link.indexOf("<") + 1, link.indexOf(">"));
+                    String putAclJWT = generateJWT(linkUrl, "PUT");
+                    HttpRequest putAclRequest = HttpRequest.newBuilder(URI.create(linkUrl))
+                            .PUT(HttpRequest.BodyPublishers.ofString(data, StandardCharsets.UTF_8))
+                            .setHeader("Content-Type", contentType)
+                            .setHeader("Authorization", "DPoP " + dpopAccessToken)
+                            .setHeader("DPoP", putAclJWT)
+                            .build();
+                    HttpResponse<String> putAclResponse = httpClient.send(putAclRequest, HttpResponse.BodyHandlers.ofString());
+
+                    if (putAclResponse.statusCode() != HttpStatus.SC_CREATED) {
+                        String putAclResponseStr = putAclResponse.body();
+                        log.error("Could not create ACL for resource with URL {}: {}", resourceUrl, putAclResponseStr);
+                        throw new Exception("Could not create ACL for resource with URL: " + resourceUrl + ": " + putAclResponseStr);
+                    }
+                    foundLink = true;
+                }
+                index += 1;
+            }
+        } catch (Throwable e) { // This is to catch runtime exceptions as well.
+            throw new Exception(e);
+        }
+    }
+
+    /** Retrieve data to a Solid pod using Solid OIDC. This method is only used for testing.
+     * @param solidInfo A map with all necessary data. The map should contain following keys:
+     *                  serverUrl, webId, email, password, resourceUrl
+     * @throws Exception Something goes wrong.
+     */
+    public String getResource(Map<String, String> solidInfo) throws Exception{
+        try {
+            String resourceUrl = solidInfo.get("resourceUrl");
+            String dpopAccessToken = getDpopAccessToken(solidInfo);
+
+            ////// GET the data //////
+            // Generate new JWT token for this request
+            String getDataJWT = generateJWT(resourceUrl, "GET");
+
+            HttpRequest getDataRequest = HttpRequest.newBuilder(URI.create(resourceUrl))
+                    .GET()
+                    .setHeader("Authorization", "DPoP " + dpopAccessToken)
+                    .setHeader("DPoP", getDataJWT)
+                    .setHeader("Accept","application/n-quads")
+                    .build();
+
+            HttpResponse<String> getDataResponse = httpClient.send(getDataRequest, HttpResponse.BodyHandlers.ofString());
+            if (getDataResponse.statusCode() != HttpStatus.SC_OK) {
+                String getDataStr = getDataResponse.body();
+                log.error("Could not create resource for URL {}: {}", resourceUrl, getDataStr);
+                throw new Exception("Could not create resource for URL: " + resourceUrl + ": " + getDataStr);
+            }
+            return getDataResponse.body();
+        } catch (Throwable e) { // This is to catch runtime exceptions as well.
+            throw new Exception(e);
+        }
     }
 }

@@ -11,7 +11,6 @@ public class SolidResourceTarget extends SolidTarget {
 
     public SolidResourceTarget(Map<String, String> solidTargetInfo, String serializationFormat, List<Quad> metadata) throws IOException {
         super(solidTargetInfo, serializationFormat, metadata);
-        solidHelperPath = "addResource";
     }
 
     @Override
@@ -26,7 +25,18 @@ public class SolidResourceTarget extends SolidTarget {
 
     @Override
     public String toString() {
-        return this.solidTargetInfo.get("resourceUrl").toString();
+        return "resource for " + this.solidTargetInfo.get("resourceUrl").toString();
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        try {
+            SolidTargetHelper helper = new SolidTargetHelper();
+            helper.addResource(solidTargetInfo);
+        } catch (Exception e) {
+            logger.error("Failed to close Solid resource target for {}: {}", this.solidTargetInfo.get("resourceUrl"), e.getMessage());
+        }
     }
 }
 

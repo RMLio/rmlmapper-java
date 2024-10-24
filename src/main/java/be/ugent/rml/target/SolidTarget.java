@@ -15,9 +15,8 @@ public abstract class SolidTarget implements Target {
 
     protected final Map<String, String> solidTargetInfo;
     private final List<Quad> metadata;
-    protected String solidHelperPath;
     private final ByteArrayOutputStream byteArrayOutputStream;
-    private static final Logger logger = LoggerFactory.getLogger(SolidTarget.class);
+    protected final Logger logger;
     private final String serializationFormat;
 
 
@@ -41,6 +40,7 @@ public abstract class SolidTarget implements Target {
         this.metadata = metadata;
         this.serializationFormat = serializationFormat;
         byteArrayOutputStream = new ByteArrayOutputStream();
+        this.logger = LoggerFactory.getLogger(SolidTarget.class);
     }
 
     /**
@@ -78,20 +78,13 @@ public abstract class SolidTarget implements Target {
     public void close() {
         /*
         Read the temporary file containing the exported triples.
-        And send the output to the solid put with an authorised fetch.
+        The rest of the method is handled in the subclass
         */
         logger.debug("Closing target");
-        try {
-            this.solidTargetInfo.put("data", this.byteArrayOutputStream.toString(StandardCharsets.UTF_8));
-            // reset the outputstream to empty memory
-            this.byteArrayOutputStream.reset();
-            this.solidTargetInfo.put("contentType", serializationFormats.get(this.serializationFormat));
-            SolidTargetHelper helper = new SolidTargetHelper();
-            helper.send(solidTargetInfo);
-        }
-        catch (Exception e) {
-            logger.error("Failed to close target for {} to {}= {}", solidHelperPath, this.solidTargetInfo.get("resourceUrl"), e.getMessage());
-        }
+        this.solidTargetInfo.put("data", this.byteArrayOutputStream.toString(StandardCharsets.UTF_8));
+        // reset the outputstream to empty memory
+        this.byteArrayOutputStream.reset();
+        this.solidTargetInfo.put("contentType", serializationFormats.get(this.serializationFormat));
     }
 
     @Override
