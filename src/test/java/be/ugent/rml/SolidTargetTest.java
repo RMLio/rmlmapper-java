@@ -93,17 +93,19 @@ public class SolidTargetTest extends TestCore {
         // We need a fixed host port because the port is part of the pod uri (also of the webid, acl file)
         // Test containers advise against the use of a fixed host port, and deprecated the related solutions
         // Finally, found a workaround here: https://github.com/testcontainers/testcontainers-java/issues/256
-        PortBinding portBinding = new PortBinding(Ports.Binding.bindPort(3000), new ExposedPort(3000));
+        int port = 3000;
+        PortBinding portBinding = new PortBinding(Ports.Binding.bindPort(port), new ExposedPort(port));
         try (GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("elsdvlee/solid-testpods:latest"))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostConfig(new HostConfig().withPortBindings(portBinding)))
-                .withExposedPorts(3000)
+                .withExposedPorts(port)
                 .withCommand("npm", "start")
                 .waitingFor(Wait.forHealthcheck()).withStartupTimeout(Duration.ofSeconds(200))){
             container.start();
+            String host = container.getHost();
             Main.run(("-m " + mapPath).split(" "));
             int i = 0;
             while (i < resourceUrls.length) {
-                Map<String, String> solidTargetInfo = getSolidTargetInfo(users[i], resourceUrls[i]);
+                Map<String, String> solidTargetInfo = getSolidTargetInfo(users[i], resourceUrls[i], host, port);
                 compareResourceWithOutput(outPaths[i], solidTargetInfo);
                 i++;
             }
@@ -111,12 +113,14 @@ public class SolidTargetTest extends TestCore {
     }
 
     // get solidTargetInfo including authentication details of testpods
-    private Map<String, String> getSolidTargetInfo(String user, String resourceUrl){
-        Map<String, String> solidTargetInfo = new HashMap<String,String>();
+    private Map<String, String> getSolidTargetInfo(String user, String resourceUrl, String host, int port){
+        final String hostURL = "http://" + host + ":" + port + "/";
+        logger.info("*** Solid container runs on {}", hostURL);
+        Map<String, String> solidTargetInfo = new HashMap<>();
         solidTargetInfo.put("email", "hello@" + user + ".com");
         solidTargetInfo.put("password","abc123");
-        solidTargetInfo.put("serverUrl", "http://localhost:3000/");
-        solidTargetInfo.put("webId", "http://localhost:3000/" + user + "/profile/card#me");
+        solidTargetInfo.put("serverUrl", hostURL);
+        solidTargetInfo.put("webId", hostURL + user + "/profile/card#me");
         solidTargetInfo.put("resourceUrl", resourceUrl);
         return solidTargetInfo;
     }
