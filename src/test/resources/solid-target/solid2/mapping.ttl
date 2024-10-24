@@ -31,12 +31,12 @@
     rmlt:target [
         a rmli:Target;
         a rmli:SolidResourceTarget;
-        rmli:resource "http://localhost:3000/example/building";
+        rmli:resource "@@HOSTPORT@@/example/building";
         idsa:userAuthentication [
             idsa:authUsername "hello@example.com";
             idsa:authPassword "abc123";
-            solid:oidcIssuer <http://localhost:3000/>;
-            rmli:webId <http://localhost:3000/example/profile/card#me>
+            solid:oidcIssuer <@@HOSTPORT@@/>;
+            rmli:webId <@@HOSTPORT@@/example/profile/card#me>
         ];
     ].
 

@@ -40,7 +40,7 @@
     ];
     rr:predicateObjectMap [
         rr:predicate acl:agent;
-        rr:object <http://localhost:3000/pod1/profile/card#me>;
+        rr:object <@@HOSTPORT@@/pod1/profile/card#me>;
     ];
     rr:predicateObjectMap [
         rr:predicate acl:mode;
@@ -48,7 +48,7 @@
     ];
     rr:predicateObjectMap [
         rr:predicate acl:accessTo;
-        rr:object <http://localhost:3000/example/building.ttl>;
+        rr:object <@@HOSTPORT@@/example/building.ttl>;
     ].
 
 <TriplesMap3> a rr:TriplesMap;
@@ -63,7 +63,7 @@
     ];
     rr:predicateObjectMap [
         rr:predicate acl:agent;
-        rr:object <http://localhost:3000/example/profile/card#me>;
+        rr:object <@@HOSTPORT@@/example/profile/card#me>;
     ];
     rr:predicateObjectMap [
         rr:predicate acl:mode;
@@ -71,7 +71,7 @@
     ];
     rr:predicateObjectMap [
         rr:predicate acl:accessTo;
-        rr:object <http://localhost:3000/example/building.ttl>;
+        rr:object <@@HOSTPORT@@/example/building.ttl>;
     ];
     rr:predicateObjectMap [
         rr:predicate acl:mode;
@@ -86,7 +86,7 @@
     rmlt:target [
         a rmlt:Target;
         a rmli:SolidResourceTarget;
-        rmli:resource <http://localhost:3000/example/building.ttl>;
+        rmli:resource <@@HOSTPORT@@/example/building.ttl>;
         idsa:userAuthentication <authentication1>;
     ].
 
@@ -94,13 +94,13 @@
     rmlt:target [
         a rmlt:Target;
         a rmli:SolidAclTarget;
-        rmli:forResource <http://localhost:3000/example/building.ttl>;
+        rmli:forResource <@@HOSTPORT@@/example/building.ttl>;
         idsa:userAuthentication <authentication1>;
     ].
 
 <authentication1> a idsa:UserAuthentication;
     idsa:authUsername "hello@example.com";
     idsa:authPassword "abc123";
-    solid:oidcIssuer <http://localhost:3000/>;
-    rmli:webId <http://localhost:3000/example/profile/card#me>.
+    solid:oidcIssuer <@@HOSTPORT@@/>;
+    rmli:webId <@@HOSTPORT@@/example/profile/card#me>.
 

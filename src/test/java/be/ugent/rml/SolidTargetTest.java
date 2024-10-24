@@ -15,7 +15,12 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,10 +107,23 @@ public class SolidTargetTest extends TestCore {
                 .waitingFor(Wait.forHealthcheck()).withStartupTimeout(Duration.ofSeconds(200))){
             container.start();
             String host = container.getHost();
-            Main.run(("-m " + mapPath).split(" "));
+            final String hostURL = "http://" + host + ":" + port;
+            logger.info("*** Solid Docker container runs on {}", hostURL);
+
+            // replace URLs in mapping file, write to temporary file, and pass that to mapper.
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            String realMapPath = classLoader.getResource(mapPath).getPath();
+            String mappingFileContents = Files.readString(Path.of(realMapPath), StandardCharsets.UTF_8);
+            String correctedMappingFileContents = mappingFileContents.replaceAll("@@HOSTPORT@@", hostURL);
+            File tempMappingFile = File.createTempFile("solidTargetTestMapping", ".ttl");
+            tempMappingFile.deleteOnExit();
+            String tmpMappingPath = tempMappingFile.getAbsolutePath();
+            Files.writeString(Path.of(tmpMappingPath), correctedMappingFileContents, StandardCharsets.UTF_8);
+
+            Main.run(("-m " + tmpMappingPath).split(" "));
             int i = 0;
             while (i < resourceUrls.length) {
-                Map<String, String> solidTargetInfo = getSolidTargetInfo(users[i], resourceUrls[i], host, port);
+                Map<String, String> solidTargetInfo = getSolidTargetInfo(users[i], resourceUrls[i], hostURL);
                 compareResourceWithOutput(outPaths[i], solidTargetInfo);
                 i++;
             }
@@ -113,14 +131,12 @@ public class SolidTargetTest extends TestCore {
     }
 
     // get solidTargetInfo including authentication details of testpods
-    private Map<String, String> getSolidTargetInfo(String user, String resourceUrl, String host, int port){
-        final String hostURL = "http://" + host + ":" + port + "/";
-        logger.info("*** Solid container runs on {}", hostURL);
+    private Map<String, String> getSolidTargetInfo(String user, String resourceUrl, String hostURL){
         Map<String, String> solidTargetInfo = new HashMap<>();
         solidTargetInfo.put("email", "hello@" + user + ".com");
         solidTargetInfo.put("password","abc123");
-        solidTargetInfo.put("serverUrl", hostURL);
-        solidTargetInfo.put("webId", hostURL + user + "/profile/card#me");
+        solidTargetInfo.put("serverUrl", hostURL + "/");
+        solidTargetInfo.put("webId", hostURL + "/" + user + "/profile/card#me");
         solidTargetInfo.put("resourceUrl", resourceUrl);
         return solidTargetInfo;
     }
