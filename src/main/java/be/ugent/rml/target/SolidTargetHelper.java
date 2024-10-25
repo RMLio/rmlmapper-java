@@ -226,10 +226,9 @@ public class SolidTargetHelper {
                     .build();
 
             HttpResponse<String> putDataResponse = httpClient.send(putDataRequest, HttpResponse.BodyHandlers.ofString());
-            if (putDataResponse.statusCode() != HttpStatus.SC_CREATED) {
-                String putDataStr = putDataResponse.body();
-                log.error("Could not create resource for URL {}: {}", resourceUrl, putDataStr);
-                throw new Exception("Could not create resource for URL: " + resourceUrl + ": " + putDataStr);
+            if (isNotSuccessful(putDataResponse.statusCode())) {
+                log.error("Could not create resource for URL {}: {}", resourceUrl, putDataResponse.statusCode());
+                throw new Exception("Could not create resource for URL " + resourceUrl + ": " + putDataResponse.statusCode());
             }
         } catch (Throwable e) { // This is to catch runtime exceptions as well.
             throw new Exception(e);
@@ -280,10 +279,9 @@ public class SolidTargetHelper {
                             .build();
                     HttpResponse<String> putAclResponse = httpClient.send(putAclRequest, HttpResponse.BodyHandlers.ofString());
 
-                    if (putAclResponse.statusCode() != HttpStatus.SC_CREATED) {
-                        String putAclResponseStr = putAclResponse.body();
-                        log.error("Could not create ACL for resource with URL {}: {}", resourceUrl, putAclResponseStr);
-                        throw new Exception("Could not create ACL for resource with URL: " + resourceUrl + ": " + putAclResponseStr);
+                    if (isNotSuccessful(putAclResponse.statusCode())) {
+                        log.error("Could not create ACL for resource with URL {}: {}", resourceUrl, putAclResponse.statusCode());
+                        throw new Exception("Could not create ACL for resource with URL " + resourceUrl + ": " + putAclResponse.statusCode());
                     }
                     foundLink = true;
                 }
@@ -291,7 +289,7 @@ public class SolidTargetHelper {
             }
 
             if (!foundLink) {
-                String message = "Could not get ACL link for resource with URL: " + resourceUrl;
+                String message = "Could not get ACL link for resource with URL " + resourceUrl;
                 log.error(message);
                 throw new Exception(message);
             }
@@ -323,14 +321,48 @@ public class SolidTargetHelper {
                     .build();
 
             HttpResponse<String> getDataResponse = httpClient.send(getDataRequest, HttpResponse.BodyHandlers.ofString());
-            if (getDataResponse.statusCode() != HttpStatus.SC_OK) {
-                String getDataStr = getDataResponse.body();
-                log.error("Could not create resource for URL {}: {}", resourceUrl, getDataStr);
-                throw new Exception("Could not create resource for URL: " + resourceUrl + ": " + getDataStr);
+            if (isNotSuccessful(getDataResponse.statusCode())) {
+                log.error("Could not get data from resource with URL {}: {}", resourceUrl, getDataResponse.statusCode());
+                throw new Exception("Could not get data from resource with URL " + resourceUrl + ": " + getDataResponse.statusCode());
             }
             return getDataResponse.body();
         } catch (Throwable e) { // This is to catch runtime exceptions as well.
             throw new Exception(e);
         }
+    }
+
+    /** Delet a resource from a Solid pod using Solid OIDC. This method is only used for testing.
+     * @param solidInfo A map with all necessary data. The map should contain following keys:
+     *                  serverUrl, webId, email, password, resourceUrl
+     * @throws Exception Something goes wrong.
+     */
+    public void deleteResource(Map<String, String> solidInfo) throws Exception{
+        try {
+            String resourceUrl = solidInfo.get("resourceUrl");
+            String dpopAccessToken = getDpopAccessToken(solidInfo);
+
+            //////DELETE the resource //////
+            // Generate new JWT token for this request
+            String deleteDataJWT = generateJWT(resourceUrl, "DELETE");
+
+            HttpRequest deleteDataRequest = HttpRequest.newBuilder(URI.create(resourceUrl))
+                    .DELETE()
+                    .setHeader("Authorization", "DPoP " + dpopAccessToken)
+                    .setHeader("DPoP", deleteDataJWT)
+                    .build();
+
+            HttpResponse<String> deleteDataResponse = httpClient.send(deleteDataRequest, HttpResponse.BodyHandlers.ofString());
+            if (isNotSuccessful(deleteDataResponse.statusCode())) {
+                log.error("Could not delete resource with URL {}: {}", resourceUrl, deleteDataResponse.statusCode());
+                throw new Exception("Could not delete resource with URL " + resourceUrl + ": " + deleteDataResponse.statusCode());
+            }
+        } catch (Throwable e) { // This is to catch runtime exceptions as well.
+            throw new Exception(e);
+        }
+    }
+
+
+    private boolean isNotSuccessful(int statusCode){
+        return (statusCode < 200) || (statusCode > 299) ;
     }
 }
