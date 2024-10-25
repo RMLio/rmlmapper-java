@@ -40,7 +40,7 @@
     ];
     rr:predicateObjectMap [
         rr:predicate acl:agent;
-        rr:object <@@HOSTPORT@@/pod1/profile/card#me>;
+        rr:object <https://pod.playground.solidlab.be/user2/profile/card#me>;
     ];
     rr:predicateObjectMap [
         rr:predicate acl:mode;
@@ -48,7 +48,7 @@
     ];
     rr:predicateObjectMap [
         rr:predicate acl:accessTo;
-        rr:object <@@HOSTPORT@@/example/building>;
+        rr:object <https://pod.playground.solidlab.be/user1/rmlmapper/building>;
     ].
 
 <TriplesMap3> a rr:TriplesMap;
@@ -63,7 +63,7 @@
     ];
     rr:predicateObjectMap [
         rr:predicate acl:agent;
-        rr:object <@@HOSTPORT@@/example/profile/card#me>;
+        rr:object <https://pod.playground.solidlab.be/user1/profile/card#me>;
     ];
     rr:predicateObjectMap [
         rr:predicate acl:mode;
@@ -71,7 +71,7 @@
     ];
     rr:predicateObjectMap [
         rr:predicate acl:accessTo;
-        rr:object <@@HOSTPORT@@/example/building>;
+        rr:object <https://pod.playground.solidlab.be/user1/rmlmapper/building>;
     ];
     rr:predicateObjectMap [
         rr:predicate acl:mode;
@@ -86,7 +86,7 @@
     rmlt:target [
         a rmlt:Target;
         a rmli:SolidResourceTarget;
-        rmli:resource "@@HOSTPORT@@/example/building";
+        rmli:resource "https://pod.playground.solidlab.be/user1/rmlmapper/building";
         idsa:userAuthentication <authentication1>;
     ].
 
@@ -94,14 +94,14 @@
     rmlt:target [
         a rmlt:Target;
         a rmli:SolidAclTarget;
-        rmli:forResource "@@HOSTPORT@@/example/building";
+        rmli:forResource "https://pod.playground.solidlab.be/user1/rmlmapper/building";
         idsa:userAuthentication <authentication1>;
     ].
 
 <authentication1> 
     a idsa:UserAuthentication;
-    idsa:authUsername "hello@example.com";
-    idsa:authPassword "abc123";
-    solid:oidcIssuer <@@HOSTPORT@@/>;
-    rmli:webId <@@HOSTPORT@@/example/profile/card#me>.
+    idsa:authUsername "user1@pod.playground.solidlab.be";
+    idsa:authPassword "user1";
+    solid:oidcIssuer <https://pod.playground.solidlab.be/>;
+    rmli:webId <https://pod.playground.solidlab.be/user1/profile/card#me>.
 

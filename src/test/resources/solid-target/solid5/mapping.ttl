@@ -32,12 +32,12 @@
 <target1> rmlt:target [
     #rmlt:serialization formats:Turtle;
     a rmli:SolidResourceTarget;
-    rmli:resource "@@HOSTPORT@@/example/building";
+    rmli:resource "https://pod.playground.solidlab.be/user1/rmlmapper/building";
     idsa:userAuthentication [
-        idsa:authUsername "hello@example.com";
-        idsa:authPassword "abc123";
-        solid:oidcIssuer <@@HOSTPORT@@/>;
-        rmli:webId <@@HOSTPORT@@/example/profile/card#me>
+        idsa:authUsername "user1@pod.playground.solidlab.be";
+        idsa:authPassword "user1";
+        solid:oidcIssuer <https://pod.playground.solidlab.be/>;
+        rmli:webId <https://pod.playground.solidlab.be/user1/profile/card#me>
     ];
 ].
 
