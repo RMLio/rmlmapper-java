@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import static be.ugent.rml.Utils.getObjectsFromQuads;
 import static be.ugent.rml.Utils.isValidrrLanguage;
 
 public class MappingFactory {
@@ -38,6 +39,9 @@ public class MappingFactory {
 
     // Base IRI to prepend to a relative IRI to make it absolute.
     private final String baseIRI;
+
+    // check on logical source is need on more than one place, so better store it
+    private Term logicalSource;
 
     // StrictMode determines RMLMapper's behaviour when an IRI for a NamedNode is invalid.
     // If set to BEST_EFFORT, RMLMapper will not generate a NamedNode and go on.
@@ -72,8 +76,8 @@ public class MappingFactory {
     private void parseSubjectMap() throws Exception {
         if (this.subjectMappingInfo == null) {
             TermGenerator generator;
-            List<Term> subjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "subject"), null));
-            subjectmaps.addAll(Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "subjectMap"), null)));
+            List<Term> subjectmaps = getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "subject"), null));
+            subjectmaps.addAll(getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "subjectMap"), null)));
 
             if (!subjectmaps.isEmpty()) {
                 if (subjectmaps.size() > 1) {
@@ -81,8 +85,8 @@ public class MappingFactory {
                 }
 
                 Term subjectmap = subjectmaps.get(0);
-                List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
-                List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RML2 + "termType"), null));
+                List<Term> functionValues = getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+                List<Term> termTypes = getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RML2 + "termType"), null));
 
                 if (termTypes.contains(new NamedNode(NAMESPACES.RML2 + "Literal"))) {
                     throw new Exception(triplesMap + " is a Literal Term Map. Accepted term types for Subject Maps are: IRI, Blank Node");
@@ -115,12 +119,13 @@ public class MappingFactory {
                 }
 
                 // get targets for subject
-                List<Term> targets = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RML2 + "logicalTarget"), null));
-
-                this.subjectMappingInfo = new MappingInfo(subjectmap, generator, targets);
+                // get Target Generators for subject
+                List<Term> targets = getTargets(subjectmap);
+                List<TermGenerator> targetGenerators = getTargetGenerators(subjectmap, baseIRI, strictMode);
+                this.subjectMappingInfo = new MappingInfo(subjectmap, generator, targets, targetGenerators);
 
                 //get classes
-                List<Term> classes = Utils.getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RML2 + "class"), null));
+                List<Term> classes = getObjectsFromQuads(store.getQuads(subjectmap, new NamedNode(NAMESPACES.RML2 + "class"), null));
 
                 //we create predicateobjects for the classes
                 for (Term c : classes) {
@@ -142,7 +147,7 @@ public class MappingFactory {
     }
 
     private void parsePredicateObjectMaps() throws Exception {
-        List<Term> predicateobjectmaps = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
+        List<Term> predicateobjectmaps = getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
 
         for (Term pom : predicateobjectmaps) {
             List<MappingInfo> predicateMappingInfos = parsePredicateMapsAndShortcuts(pom);
@@ -152,7 +157,7 @@ public class MappingFactory {
         }
     }
 
-    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<MappingInfo> predicateMappingInfos, List<MappingInfo> graphMappingInfos) throws IOException {
+    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<MappingInfo> predicateMappingInfos, List<MappingInfo> graphMappingInfos) throws Exception {
         parseObjectMapsAndShortcutsWithCallback(termMap, (oMappingInfo, childOrParent) -> {
             MappingInfo lMappingInfo = parseLanguageMappingInfo(oMappingInfo.getTerm());
 
@@ -182,15 +187,15 @@ public class MappingFactory {
         });
     }
 
-    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
-        List<Term> objectmaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "objectMap"), null));
+    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws Exception {
+        List<Term> objectmaps = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "objectMap"), null));
 
         for (Term objectmap : objectmaps) {
             parseObjectMapWithCallback(objectmap, objectMapCallback, refObjectMapCallback);
         }
 
         //dealing with rr:object
-        List<Term> objectsConstants = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "object"), null));
+        List<Term> objectsConstants = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "object"), null));
 
         for (Term o : objectsConstants) {
             TermGenerator gen;
@@ -207,13 +212,13 @@ public class MappingFactory {
         }
     }
 
-    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
-        List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws Exception {
+        List<Term> functionValues = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
         Term termType = getTermType(objectmap, true);
 
-        List<Term> datatypes = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "datatype"), null));
-        List<Term> parentTriplesMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "parentTriplesMap"), null));
-        List<Term> parentTermMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "parentTermMap"), null));
+        List<Term> datatypes = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "datatype"), null));
+        List<Term> parentTriplesMaps = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "parentTriplesMap"), null));
+        List<Term> parentTermMaps = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "parentTermMap"), null));
 
         List<SingleRecordFunctionExecutor> languages = getLanguageExecutorsForObjectMap(objectmap);
 
@@ -248,12 +253,14 @@ public class MappingFactory {
                 // get language maps targets for object map
                 // TODO why is this here?
                 MappingInfo languageMapInfo = null;
-                List<Term> languageMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "languageMap"), null));
+                List<Term> languageMaps = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "languageMap"), null));
 
-                // get targets for object map
-                List<Term> oTargets = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "logicalTarget"), null));
+                // get targets and targetGenerators for object map
+                List<Term> oTargets = getTargets(objectmap);
 
-                objectMapCallback.accept(new MappingInfo(objectmap, oGen, oTargets), "child");
+                List<TermGenerator> oTargetGenerators = getTargetGenerators(objectmap, baseIRI, strictMode);
+
+                objectMapCallback.accept(new MappingInfo(objectmap, oGen, oTargets, oTargetGenerators), "child");
             } else if (!parentTriplesMaps.isEmpty()) {
                 if (parentTriplesMaps.size() > 1) {
                     logger.warn("{} has {} Parent Triples Maps. You can only have one. A random one is taken.", triplesMap, parentTriplesMaps.size());
@@ -261,10 +268,10 @@ public class MappingFactory {
 
                 Term parentTriplesMap = parentTriplesMaps.get(0);
 
-                List<Term> rmljoinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "joinCondition"), null));
+                List<Term> rmljoinConditions = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML + "joinCondition"), null));
                 List<MultipleRecordsFunctionExecutor> joinConditionFunctionExecutors = new ArrayList<>();
 
-                List<Term> joinConditions = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "joinCondition"), null));
+                List<Term> joinConditions = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "joinCondition"), null));
 
                 for (Term joinCondition : joinConditions) {
 
@@ -293,18 +300,18 @@ public class MappingFactory {
 
                 for (Term joinCondition : rmljoinConditions) {
                     // TODO fix this for KGC_fnml
-                    Term functionValue = Utils.getObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.FNML + "functionValue"), null)).get(0);
+                    Term functionValue = getObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.FNML + "functionValue"), null)).get(0);
                     joinConditionFunctionExecutors.add(parseJoinConditionFunctionTermMap(functionValue));
                 }
 
                 // get logical source of parentTriplesMap
-                List<Term> logicalSources = Utils.getObjectsFromQuads(store.getQuads(this.triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
+                List<Term> logicalSources = getObjectsFromQuads(store.getQuads(this.triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
                 Term logicalSource = null;
                 if (!logicalSources.isEmpty()) {
                     logicalSource = logicalSources.get(0);
                 }
 
-                List<Term> parentLogicalSources = Utils.getObjectsFromQuads(store.getQuads(parentTriplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
+                List<Term> parentLogicalSources = getObjectsFromQuads(store.getQuads(parentTriplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
                 Term parentLogicalSource = null;
                 if (!parentLogicalSources.isEmpty()) {
                     parentLogicalSource = parentLogicalSources.get(0);
@@ -337,21 +344,23 @@ public class MappingFactory {
                 gen = new NamedNodeGenerator(functionExecutor, baseIRI, strictMode);
             }
 
-            // get targets for object map
-            List<Term> targets = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "logicalTarget"), null));
+            // get targets and targetGenerators for object map
+            List<Term> targets = getTargets(objectmap);
+            List<TermGenerator> targetGenerators = getTargetGenerators(objectmap, baseIRI, strictMode);
 
-            objectMapCallback.accept(new MappingInfo(objectmap, gen, targets), "child");
+            objectMapCallback.accept(new MappingInfo(objectmap, gen, targets, targetGenerators), "child");
+
         }
     }
 
     private List<MappingInfo> parseGraphMapsAndShortcuts(Term termMap) throws Exception {
         List<MappingInfo> graphMappingInfos = new ArrayList<>();
 
-        List<Term> graphMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "graphMap"), null));
+        List<Term> graphMaps = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "graphMap"), null));
 
         for (Term graphMap : graphMaps) {
-            List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(graphMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
-            List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(graphMap, new NamedNode(NAMESPACES.RML2 + "termType"), null));
+            List<Term> functionValues = getObjectsFromQuads(store.getQuads(graphMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+            List<Term> termTypes = getObjectsFromQuads(store.getQuads(graphMap, new NamedNode(NAMESPACES.RML2 + "termType"), null));
             Term termType = null;
 
             if (!termTypes.isEmpty()) {
@@ -386,13 +395,15 @@ public class MappingFactory {
                 }
             }
 
-            // get targets for graph maps
-            List<Term> targets = Utils.getObjectsFromQuads(store.getQuads(graphMap, new NamedNode(NAMESPACES.RML2 + "logicalTarget"), null));
+            // get targets and target generators for graph map
+            List<Term> targets = getTargets(graphMap);
+            List<TermGenerator> targetGenerators = getTargetGenerators(graphMap, baseIRI, strictMode);
 
-            graphMappingInfos.add(new MappingInfo(termMap, generator, targets));
+            graphMappingInfos.add(new MappingInfo(termMap, generator, targets, targetGenerators));
+
         }
 
-        List<Term> graphShortcuts = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "graph"), null));
+        List<Term> graphShortcuts = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "graph"), null));
 
         for (Term graph : graphShortcuts) {
             String gStr = graph.getValue();
@@ -403,30 +414,31 @@ public class MappingFactory {
         return graphMappingInfos;
     }
 
-    private List<MappingInfo> parsePredicateMapsAndShortcuts(Term termMap) throws IOException {
+    private List<MappingInfo> parsePredicateMapsAndShortcuts(Term termMap) throws Exception {
         List<MappingInfo> predicateMappingInfos = new ArrayList<>();
 
-        List<Term> predicateMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "predicateMap"), null));
+        List<Term> predicateMaps = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "predicateMap"), null));
 
         for (Term predicateMap : predicateMaps) {
             // get functionValue for predicate maps
-            List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(predicateMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+            List<Term> functionValues = getObjectsFromQuads(store.getQuads(predicateMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
 
-            // get targets for predicate maps
-            List<Term> targets = Utils.getObjectsFromQuads(store.getQuads(predicateMap, new NamedNode(NAMESPACES.RML2 + "logicalTarget"), null));
+            // get target generators for predicate maps
+            List<Term> targets = getTargets(predicateMap);
+            List<TermGenerator> targetGenerators = getTargetGenerators(predicateMap, baseIRI, strictMode);
 
             if (functionValues.isEmpty()) {
                 predicateMappingInfos.add(new MappingInfo(predicateMap,
                         new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false, ignoreDoubleQuotes), baseIRI, strictMode),
-                        targets));
+                        targets, targetGenerators));
             } else {
                 SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
 
-                predicateMappingInfos.add(new MappingInfo(predicateMap, new NamedNodeGenerator(functionExecutor, baseIRI, strictMode), targets));
+                predicateMappingInfos.add(new MappingInfo(predicateMap, new NamedNodeGenerator(functionExecutor, baseIRI, strictMode), targets, targetGenerators));
             }
         }
 
-        List<Term> predicateShortcuts = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "predicate"), null));
+        List<Term> predicateShortcuts = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "predicate"), null));
 
         for (Term predicate : predicateShortcuts) {
             String pStr = predicate.getValue();
@@ -437,8 +449,8 @@ public class MappingFactory {
         return predicateMappingInfos;
     }
 
-    private SingleRecordFunctionExecutor parseFunctionTermMap(Term functionValue) throws IOException {
-        List<Term> functionPOMs = Utils.getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
+    private SingleRecordFunctionExecutor parseFunctionTermMap(Term functionValue) throws Exception {
+        List<Term> functionPOMs = getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
         ArrayList<ParameterValuePair> params = new ArrayList<>();
 
         for (Term pom : functionPOMs) {
@@ -461,8 +473,8 @@ public class MappingFactory {
         return new DynamicSingleRecordFunctionExecutor(params, functionAgent);
     }
 
-    private MultipleRecordsFunctionExecutor parseJoinConditionFunctionTermMap(Term functionValue) throws IOException {
-        List<Term> functionPOMs = Utils.getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
+    private MultipleRecordsFunctionExecutor parseJoinConditionFunctionTermMap(Term functionValue) throws Exception {
+        List<Term> functionPOMs = getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
         ArrayList<ParameterValueOriginPair> params = new ArrayList<>();
 
         for (Term pom : functionPOMs) {
@@ -503,7 +515,7 @@ public class MappingFactory {
         return new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "https://w3id.org/imec/idlab/function#equal");
     }
 
-    private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {
+    private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws Exception {
         List<MappingInfo> mappingInfos = new ArrayList<>();
 
         parseObjectMapsAndShortcutsWithCallback(pom, (mappingInfo, childOrParent) -> {
@@ -519,11 +531,11 @@ public class MappingFactory {
      * @param objectmap the object for which the executors need to be determined.
      * @return a list of executors that return language tags.
      */
-    private List<SingleRecordFunctionExecutor> getLanguageExecutorsForObjectMap(Term objectmap) throws IOException {
+    private List<SingleRecordFunctionExecutor> getLanguageExecutorsForObjectMap(Term objectmap) throws Exception {
         ArrayList<SingleRecordFunctionExecutor> executors = new ArrayList<>();
 
         // Parse rr:language
-        List<Term> languages = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "language"), null));
+        List<Term> languages = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "language"), null));
 
         // Validate languages.
         languages.stream().map(Term::getValue).forEach(language -> {if (! isValidrrLanguage(language)) {
@@ -535,10 +547,10 @@ public class MappingFactory {
         }
 
         // Parse rml:languageMap
-        List<Term> languageMaps = Utils.getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "languageMap"), null));
+        List<Term> languageMaps = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "languageMap"), null));
 
         for (Term languageMap : languageMaps) {
-            List<Term> functionValues = Utils.getObjectsFromQuads(store.getQuads(languageMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+            List<Term> functionValues = getObjectsFromQuads(store.getQuads(languageMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
 
             if (functionValues.isEmpty()) {
                 executors.add(RecordFunctionExecutorFactory.generate(store, languageMap, false, ignoreDoubleQuotes));
@@ -558,11 +570,17 @@ public class MappingFactory {
             return mappingInfo;
         }
 
-        List<Term> languageMaps = Utils.getObjectsFromQuads(store.getQuads(objectMap, new NamedNode(NAMESPACES.RML2 + "languageMap"), null));
+        List<Term> languageMaps = getObjectsFromQuads(store.getQuads(objectMap, new NamedNode(NAMESPACES.RML2 + "languageMap"), null));
         if (languageMaps.size() == 1) {
             Term l = languageMaps.get(0);
-            List<Term> lTargets = Utils.getObjectsFromQuads(store.getQuads(l, new NamedNode(NAMESPACES.RML2 + "logicalTarget"), null));
-            mappingInfo = new MappingInfo(l, lTargets);
+            List<Term> lTargets = getTargets(l);
+            List<TermGenerator> lTargetGenerators = null;
+            try {
+                lTargetGenerators = getTargetGenerators(l, baseIRI, strictMode);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mappingInfo = new MappingInfo(l, lTargets, lTargetGenerators);
         }
         else if (languageMaps.size() > 1) {
             logger.warn("Multiple language maps found, a random language map is used");
@@ -575,14 +593,14 @@ public class MappingFactory {
      * If no Term Type is found, a default Term Type is return based on the R2RML specification.
      **/
     private Term getTermType(Term map, boolean isObjectMap) {
-        List<Term> termTypes = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "termType"), null));
+        List<Term> termTypes = getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "termType"), null));
 
         Term termType = null;
 
         if (!termTypes.isEmpty()) {
             termType = termTypes.get(0);
         } else {
-            List<Term> constants = Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "constant"), null));
+            List<Term> constants = getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "constant"), null));
 
             if (!constants.isEmpty()) {
                 Term constant = constants.get(0);
@@ -595,11 +613,11 @@ public class MappingFactory {
                     termType = new NamedNode(NAMESPACES.RML2 + "BlankNode");
                 }
             } else if (isObjectMap) {
-                boolean hasReference = !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "reference"), null)).isEmpty();
-                boolean hasFunctionValues = !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.FNML + "functionValue"), null)).isEmpty();
-                boolean hasLanguage = !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "language"), null)).isEmpty() ||
-                        !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "languageMap"), null)).isEmpty();
-                boolean hasDatatype = !Utils.getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "datatype"), null)).isEmpty();
+                boolean hasReference = !getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "reference"), null)).isEmpty();
+                boolean hasFunctionValues = !getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.FNML + "functionValue"), null)).isEmpty();
+                boolean hasLanguage = !getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "language"), null)).isEmpty() ||
+                        !getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "languageMap"), null)).isEmpty();
+                boolean hasDatatype = !getObjectsFromQuads(store.getQuads(map, new NamedNode(NAMESPACES.RML2 + "datatype"), null)).isEmpty();
 
                 if (hasReference || hasLanguage || hasDatatype || hasFunctionValues) {
                     termType = new NamedNode(NAMESPACES.RML2 + "Literal");
@@ -639,18 +657,18 @@ public class MappingFactory {
      * @return true if double quotes should be ignored in references, else false.
      */
     private boolean areDoubleQuotesIgnored(QuadStore store, Term triplesMap) {
-        List<Term> logicalSources = Utils.getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
+        List<Term> logicalSources = getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
 
         if (!logicalSources.isEmpty()) {
             Term logicalSource = logicalSources.get(0);
 
-            List<Term> sources = Utils.getObjectsFromQuads(store.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "source"), null));
+            List<Term> sources = getObjectsFromQuads(store.getQuads(logicalSource, new NamedNode(NAMESPACES.RML2 + "source"), null));
 
             if (!sources.isEmpty()) {
                 Term source = sources.get(0);
 
                 if (! (sources.get(0) instanceof Literal)) {
-                    List<Term> sourceType = Utils.getObjectsFromQuads(store.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
+                    List<Term> sourceType = getObjectsFromQuads(store.getQuads(source, new NamedNode(NAMESPACES.RDF + "type"), null));
 
                     return sourceType.get(0).getValue().equals(NAMESPACES.D2RQ + "Database");
                 }
@@ -659,4 +677,29 @@ public class MappingFactory {
 
         return false;
     }
+
+    private List<TermGenerator> getTargetGenerators(Term termMap, String baseIRI, StrictMode strictMode) throws Exception {
+        List<TermGenerator> targetGenerators = new ArrayList<>();
+        List<Term> logicalTargetMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RMLI + "logicalTargetMap"), null));
+        for (Term logicalTargetMap : logicalTargetMaps) {
+            SingleRecordFunctionExecutor functionExecutor;
+            List<Term> functionValues = getObjectsFromQuads(store.getQuads(logicalTargetMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
+            if (functionValues.isEmpty()) {
+                //similar to subjects, dynamic targets should always be uri
+                functionExecutor = RecordFunctionExecutorFactory.generate(store, logicalTargetMap, true, ignoreDoubleQuotes);
+            } else {
+                functionExecutor = parseFunctionTermMap(functionValues.get(0));
+            }
+            targetGenerators.add(new NamedNodeGenerator(functionExecutor, baseIRI, strictMode));
+        }
+        return targetGenerators;
+    }
+
+    private List<Term> getTargets(Term termMap){
+        List<Term> targets = new ArrayList<>();
+        List<Term> logicalTargets = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "logicalTarget"), null));
+        targets.addAll(logicalTargets);
+        return targets;
+    }
+
 }
