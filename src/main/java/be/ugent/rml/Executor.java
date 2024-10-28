@@ -322,13 +322,13 @@ public class Executor {
             List<Term> nodes = generator.generate(record);
 
             if (!nodes.isEmpty()) {
-                List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
+                List<Term> subjectTargets = getAllTargets(mapping.getSubjectMappingInfo(), record);
                 List<ProvenancedTerm> terms = new ArrayList<>();
                 Metadata meta = new Metadata(triplesMap, mapping.getSubjectMappingInfo().getTerm());
 
                 // TODO: only create metadata when it's required
                 for (Term node : nodes) {
-                    terms.add(new ProvenancedTerm(node, meta, targets));
+                    terms.add(new ProvenancedTerm(node, meta, subjectTargets));
                 }
                 this.subjectCache.get(triplesMap).put(i, terms);
                 return terms;
@@ -399,14 +399,6 @@ public class Executor {
         return this.rmlStore;
     }
 
-    public Map<Term, QuadStore> getTargets(){
-        if (this.targetStores.isEmpty()){
-            return null;
-        }
-        return this.targetStores;
-    }
-
-    
     public void verifySources(String basepath, String mappingPath) throws Exception {
         for (Term triplesMap : this.getTriplesMaps()) {
             List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
@@ -454,8 +446,8 @@ public class Executor {
                     if (terms != null) {
                         terms.forEach(term -> {
                             if (!term.equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
-                                List<Term> targets = mappingInfo.getTargets();
-                                subjectGraphs.add(new ProvenancedTerm(term, null, targets));
+                                List<Term> subjectGraphTargets = getAllTargets(mappingInfo, record);
+                                subjectGraphs.add(new ProvenancedTerm(term, null, subjectGraphTargets));
                             }
                         });
                     }
@@ -477,8 +469,8 @@ public class Executor {
                         if (pogGraphGenerator != null) {
                             pogGraphGenerator.generate(record).forEach(term -> {
                                 if (!term.equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
-                                    List<Term> targets = pogMapping.getGraphMappingInfo().getTargets();
-                                    poGraphs.add(new ProvenancedTerm(term, null, targets));
+                                    List<Term> graphTargets = getAllTargets(pogMapping.getGraphMappingInfo(), record);
+                                    poGraphs.add(new ProvenancedTerm(term, null, graphTargets));
                                 }
                             });
                         }
@@ -528,4 +520,30 @@ public class Executor {
             }
         }
     }
+
+    private List<Term> getAllTargets(MappingInfo mappingInfo, Record record) {
+        List<Term> allTargets = new ArrayList<>();
+        allTargets.addAll(generateTargetsAndAddToTargetStore(mappingInfo, record));
+        allTargets.addAll(mappingInfo.getTargets());
+        return allTargets;
+    }
+
+    private List<Term> generateTargetsAndAddToTargetStore(MappingInfo mappingInfo, Record record) {
+        List<TermGenerator> targetGenerators = mappingInfo.getTargetGenerators();
+        List<Term> generatedTargets = new ArrayList<>();
+        for (TermGenerator targetGenerator : targetGenerators) {
+            try {
+                generatedTargets.addAll(targetGenerator.generate(record));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        for (Term generatedTarget : generatedTargets){
+            if(!targetStores.containsKey(generatedTarget)){
+                targetStores.put(generatedTarget, new RDF4JStore());
+            }
+        }
+        return generatedTargets;
+    }
+
 }
