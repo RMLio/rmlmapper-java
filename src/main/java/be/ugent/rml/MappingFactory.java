@@ -257,7 +257,6 @@ public class MappingFactory {
 
                 // get targets and targetGenerators for object map
                 List<Term> oTargets = getTargets(objectmap);
-
                 List<TermGenerator> oTargetGenerators = getTargetGenerators(objectmap, baseIRI, strictMode);
 
                 objectMapCallback.accept(new MappingInfo(objectmap, oGen, oTargets, oTargetGenerators), "child");
