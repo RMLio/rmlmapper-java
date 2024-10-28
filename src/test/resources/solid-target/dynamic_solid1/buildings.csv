@@ -1,4 +1,4 @@
 BuildingID,OwnerID,FloorTileID,webid
-building1,owner1,floortile1,http://localhost/owner1/profile/card#me
-building2,owner1,floortile2,http://localhost/owner1/profile/card#me
-building3,owner2,floortile1,http://localhost/owner2/profile/card#me
+building1,user2,floortile1,https://pod.playground.solidlab.be/user2/profile/card#me
+building2,user2,floortile2,https://pod.playground.solidlab.be/user2/profile/card#me
+building3,user3,floortile1,https://pod.playground.solidlab.be/user3/profile/card#me

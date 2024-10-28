@@ -11,7 +11,7 @@
 @prefix solid: <http://www.w3.org/ns/solid/terms#>.
 @prefix acl: <http://www.w3.org/ns/auth/acl#>.
 @prefix rmli: <https://w3id.org/imec/rml/>.
-@prefix idsa: <https://w3id.org/idsa/core/>.
+@prefix ids: <https://w3id.org/idsa/core/>.
 
 <TriplesMap1> a rr:TriplesMap;
     rml:logicalSource [
@@ -31,9 +31,9 @@
     rmlt:target [
         a rmli:SolidResourceTarget;
         rmli:resource "https://pod.playground.solidlab.be/user1/rmlmapper/building";
-        idsa:userAuthentication [
-            idsa:authUsername "user1@pod.playground.solidlab.be";
-            idsa:authPassword "user1";
+        ids:userAuthentication [
+            ids:authUsername "user1@pod.playground.solidlab.be";
+            ids:authPassword "user1";
             solid:oidcIssuer <https://pod.playground.solidlab.be/>;
             rmli:webId <https://pod.playground.solidlab.be/user1/profile/card#me>
         ];

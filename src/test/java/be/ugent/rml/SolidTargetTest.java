@@ -77,6 +77,45 @@ public class SolidTargetTest extends TestCore {
                 "user2");
     }
 
+    //dynamic target on subject
+    @Test
+    public void dynamic_solid1() throws Exception{
+        doMappingSolid("solid-target/dynamic_solid1/mapping.ttl",
+                new String[]{"https://pod.playground.solidlab.be/user1/rmlmapper/building_user2",
+                        "https://pod.playground.solidlab.be/user1/rmlmapper/building_user3"},
+                new String[]{"solid-target/dynamic_solid1/output1.nq",
+                        "solid-target/dynamic_solid1/output2.nq"},
+                new String[]{"user1", "user1"});
+    }
+
+    // constant and dynamic target in object map
+    @Test
+    public void dynamic_solid2() throws Exception{
+        doMappingSolid("solid-target/dynamic_solid2/mapping.ttl",
+                new String[]{"https://pod.playground.solidlab.be/user1/rmlmapper/building_user2",
+                        "https://pod.playground.solidlab.be/user1/rmlmapper/building_user3",
+                        "https://pod.playground.solidlab.be/user1/rmlmapper/floortile"},
+                new String[]{"solid-target/dynamic_solid2/output1.nq",
+                        "solid-target/dynamic_solid2/output2.nq",
+                        "solid-target/dynamic_solid2/output3.nq"},
+                new String[]{"user1", "user1", "user1"});
+    }
+
+    //2 dynamic targets in object map
+    @Test
+    public void dynamic_solid3() throws Exception {
+        doMappingSolid("solid-target/dynamic_solid3/mapping.ttl",
+                new String[]{"https://pod.playground.solidlab.be/user1/rmlmapper/building_user2",
+                        "https://pod.playground.solidlab.be/user1/rmlmapper/building_user3",
+                        "https://pod.playground.solidlab.be/user1/rmlmapper/floortile1",
+                        "https://pod.playground.solidlab.be/user1/rmlmapper/floortile2"},
+                new String[]{"solid-target/dynamic_solid3/output1.nq",
+                        "solid-target/dynamic_solid3/output2.nq",
+                        "solid-target/dynamic_solid3/output3.nq",
+                        "solid-target/dynamic_solid3/output4.nq"},
+                new String[]{"user1", "user1", "user1", "user1"});
+    }
+
     void doMappingSolid(String mapPath, String resourceUrl, String outPath, String user) throws Exception {
         doMappingSolid(mapPath, new String[]{resourceUrl}, new String[]{outPath},new String[]{user});
     }
