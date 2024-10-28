@@ -25,6 +25,7 @@ public class PredicateObjectGraphMapping {
 
         // Language Maps are tightly connected to the object, merge the target lists
         if(this.languageMappingInfo != null) {
+            this.objectMappingInfo.addTargetGenerators(this.languageMappingInfo.getTargetGenerators());
             this.objectMappingInfo.addTargets(this.languageMappingInfo.getTargets());
         }
     }
