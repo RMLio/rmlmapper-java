@@ -7,6 +7,7 @@ import be.ugent.rml.Executor;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.Utils;
+import be.ugent.rml.conformer.MappingConformer;
 import be.ugent.rml.metadata.MetadataGenerator;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.Quad;
@@ -488,6 +489,16 @@ public class Main {
         // check if anything needs to be added to the rmlstore (e.g. dynamic targets)
         if(targets.containsKey(new NamedNode(NAMESPACES.RMLI + "ThisMapping"))){
             rmlStore.addQuads(targets.get(new NamedNode(NAMESPACES.RMLI + "ThisMapping")).getQuads(null, null, null));
+            MappingConformer conformer = new MappingConformer(rmlStore, null);
+            try {
+                boolean conversionNeeded = conformer.conform();
+
+                if (conversionNeeded) {
+                    logger.info("Conversion to RML was needed.");
+                }
+            } catch (Exception e) {
+                logger.error("Failed to make dynamic targets conformant to RML spec.", e);
+            }
             targets.remove(new NamedNode(NAMESPACES.RMLI + "ThisMapping"));
         }
 
