@@ -1,0 +1,4 @@
+BuildingID,OwnerID,FloorTileID
+building1,owner1,floortile1
+building2,owner1,floortile2
+building3,owner2,floortile1

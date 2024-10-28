@@ -1,0 +1,76 @@
+@base <http://example.com/base/>.
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix o: <http://example.com/ont/>.
+@prefix ex: <http://example.com/>.
+@prefix rmlt: <http://semweb.mmlab.be/ns/rml-target#>.
+@prefix formats: <http://www.w3.org/ns/formats/>.
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix rmli: <https://w3id.org/imec/rml/>.
+@prefix idsa: <https://w3id.org/idsa/core/>.
+
+<buildings_source> a rml:LogicalSource;
+    rml:source "src/test/resources/solid-target/dynamic_solid2/buildings.csv";
+    rml:referenceFormulation ql:CSV.
+
+<TriplesMap1> a rr:TriplesMap;
+    rml:logicalSource <buildings_source>;
+    rr:subjectMap [ rr:template "http://example.com/{BuildingID}" ];
+    rr:predicateObjectMap [
+        rr:predicate o:has-floor-tile;
+        rr:objectMap [
+            rr:template "http://example.com/product-{FloorTileID}";
+            rmli:logicalTargetMap [ rr:template "logical_target/building/{OwnerID}" ];
+            rml:logicalTarget <constant_target>;
+        ];
+    ].
+
+<TriplesMap_logical_target_building_owner> a rr:TriplesMap;
+    rml:logicalSource <buildings_source>;
+    rr:subjectMap [
+        rr:template "logical_target/building/{OwnerID}";
+        rr:class rml:LogicalTarget;
+        rml:logicalTarget rmli:ThisMapping;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rmlt:serialization;
+        rr:object formats:Turtle;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rmlt:target;
+        rr:objectMap [ rr:template "target/building/{OwnerID}" ];
+    ].
+
+<TriplesMap_target_building_owner> a rr:TriplesMap;
+    rml:logicalSource <buildings_source>;
+    rr:subjectMap [
+        rr:template "target/building/{OwnerID}";
+        rr:class rmlt:Target, rmli:SolidResourceTarget;
+        rml:logicalTarget rmli:ThisMapping;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rmli:resource;
+        rr:objectMap [ rr:template "http://localhost:3000/example/building_{OwnerID}" ];
+    ];
+    rr:predicateObjectMap [
+        rr:predicate idsa:userAuthentication;
+        rr:object <auth_example>;
+    ].
+
+<constant_target> rmlt:target [
+    #rmlt:serialization formats:N-Quads;
+    a rmli:SolidResourceTarget;
+    rmli:resource "http://localhost:3000/example/floortile";
+    idsa:userAuthentication <auth_example>;
+].
+
+<auth_example> a idsa:UserAuthentication;
+    idsa:authUsername "hello@example.com";
+    idsa:authPassword "abc123";
+    solid:oidcIssuer <http://localhost:3000/>;
+    rmli:webId <http://localhost:3000/example/profile/card#me>.
+

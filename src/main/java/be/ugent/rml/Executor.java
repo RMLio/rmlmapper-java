@@ -187,9 +187,9 @@ public class Executor {
                     List<Term> nodes = generator.generate(record);
 
                     if (!nodes.isEmpty()) {
-                        List<Term> targets = mapping.getSubjectMappingInfo().getTargets();
+                        List<Term> subjectTargets = getAllTargets(mapping.getSubjectMappingInfo(), record);
                         for (Term node : nodes) {
-                            subjects.add(new ProvenancedTerm(node, null, targets));
+                            subjects.add(new ProvenancedTerm(node, null, subjectTargets));
                         }
                     }
                     // TODO this only works for the constants in the triples map!
@@ -469,7 +469,7 @@ public class Executor {
                         if (pogGraphGenerator != null) {
                             pogGraphGenerator.generate(record).forEach(term -> {
                                 if (!term.equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
-                                    List<Term> graphTargets = getAllTargets(pogMapping.getGraphMappingInfo(), record);
+                                    List<Term> graphTargets = getAllTargets(pogGraphMappingInfo, record);
                                     poGraphs.add(new ProvenancedTerm(term, null, graphTargets));
                                 }
                             });
@@ -480,15 +480,21 @@ public class Executor {
                     /* Predicates */
                     if (pogPredicateMappingInfo != null) {
                         TermGenerator pogPredicateGenerator = pogPredicateMappingInfo.getTermGenerator();
-                        pogPredicateGenerator.generate(record).forEach(p -> predicates.add(new ProvenancedTerm(p, pogPredicateMappingInfo)));
+                        List<Term> predicateTargets = getAllTargets(pogPredicateMappingInfo, record);
+                        pogPredicateGenerator.generate(record).forEach(p -> predicates.add(new ProvenancedTerm(p, predicateTargets)));
                     }
 
                     /* Objects */
                     if (pogObjectMappingInfo != null) {
                         TermGenerator pogObjectGenerator = pogObjectMappingInfo.getTermGenerator();
                         if (pogObjectGenerator != null) {
+                            List<Term> objectTargets = getAllTargets(pogObjectMappingInfo, record);
                             List<Term> objects = pogObjectGenerator.generate(record);
-                            List<ProvenancedTerm> provenancedObjects = new ArrayList<>();
+                            ArrayList<ProvenancedTerm> provenancedObjects = new ArrayList<>();
+
+                            objects.forEach(object -> {
+                                provenancedObjects.add(new ProvenancedTerm(object, objectTargets));
+                            });
 
                             objects.forEach(object -> provenancedObjects.add(new ProvenancedTerm(object, pogObjectMappingInfo)));
 
