@@ -8,13 +8,8 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SolidTargetTest extends TestCore {
@@ -118,17 +113,5 @@ public class SolidTargetTest extends TestCore {
         // compare result to expected output
         result.removeDuplicates();
         compareStores(filePathToStore(outPath), result);
-    }
-
-    private static void replaceStringInFile(Path filePath, String target, String replacement) {
-        try {
-            List<String> lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
-            for (int i = 0; i < lines.size(); i++) {
-                lines.set(i, lines.get(i).replace(target, replacement));
-            }
-            Files.write(filePath, lines, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
