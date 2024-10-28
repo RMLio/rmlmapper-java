@@ -63,7 +63,7 @@ public class SolidTargetHelper {
             String email = solidInfo.get("email");
             String password = solidInfo.get("password");
 
-            ////// Get account controls and retrieve login URL //////
+            /* Get account controls and retrieve login URL */
             HttpRequest accountInfoRequest = HttpRequest.newBuilder(URI.create(serverUrl + ".account/"))
                     .GET().build();
             HttpResponse<String> accountInfoResponse = httpClient.send(accountInfoRequest, HttpResponse.BodyHandlers.ofString());
@@ -77,7 +77,7 @@ public class SolidTargetHelper {
             log.debug("Found login URL: {}", passwordLoginURL);
 
 
-            ////// Log in using e-mail and password and get authorization token //////
+            /* Log in using e-mail and password and get authorization token */
             String loginMessage = "{\"email\": \"" + email + "\",\"password\":\"" + password + "\"}";
             HttpRequest loginRequest = HttpRequest.newBuilder(URI.create(passwordLoginURL))
                     .POST(HttpRequest.BodyPublishers.ofString(loginMessage, StandardCharsets.UTF_8))
@@ -94,7 +94,7 @@ public class SolidTargetHelper {
             log.debug("Found authorization token.");
 
 
-            ////// Use authorization token to get client credentials URL, added to account info //////
+            /* Use authorization token to get client credentials URL, added to account info */
             HttpRequest authorizedAccountInfoRequest = HttpRequest.newBuilder(URI.create(serverUrl + ".account/"))
                     .GET()
                     .setHeader("Authorization", "CSS-Account-Token " + authorizationToken)
@@ -110,7 +110,7 @@ public class SolidTargetHelper {
             log.debug("Found client credentials URL: {}", clientCredentialsURL);
 
 
-            ////// Post WebID and token prefix to client credentials URL to get client credentials, to be used at oidc endpoint later on //////
+            /* Post WebID and token prefix to client credentials URL to get client credentials, to be used at oidc endpoint later on */
             String webIdAndTokenMessage = "{\"name\": \"my-token\",\"webId\":\"" + webId + "\"}";
             HttpRequest getOIDCTokenRequest = HttpRequest.newBuilder(URI.create(clientCredentialsURL))
                     .POST(HttpRequest.BodyPublishers.ofString(webIdAndTokenMessage, StandardCharsets.UTF_8))
@@ -129,7 +129,7 @@ public class SolidTargetHelper {
             String clientCredentialsSecret = clientCredentials.getString("secret");
 
 
-            ////// Get oidc info, used to obtain oidc token endpoints //////
+            /* Get oidc info, used to obtain oidc token endpoints */
             // GET /.well-known/openid-configuration HTTP/1.1
             HttpRequest oidcInfoRequest = HttpRequest.newBuilder(URI.create(serverUrl + ".well-known/openid-configuration"))
                     .GET().build();
@@ -145,7 +145,7 @@ public class SolidTargetHelper {
 
             String dpopJWT = generateJWT(oidcTokenEndpoint, "POST");
 
-            ////// POST a request to oidc token endpoint with client credentials to obtain an oidc access token //////
+            /* POST a request to oidc token endpoint with client credentials to obtain an oidc access token */
 
             // Generate base64 string of client credentials
             String clientCredentialsConcatenated = clientCredentialsId + ':' + clientCredentialsSecret;
@@ -214,7 +214,7 @@ public class SolidTargetHelper {
 
             String dpopAccessToken = getDpopAccessToken(solidInfo);
 
-            ////// PUT the data //////
+            /* PUT the data */
             // Generate new JWT token for this request
             String putDataJWT = generateJWT(resourceUrl, "PUT");
 
@@ -248,7 +248,7 @@ public class SolidTargetHelper {
 
             String dpopAccessToken = getDpopAccessToken(solidInfo);
 
-            ////// HEAD the resource to a get link to where the ACL should be put //////
+            /* HEAD the resource to a get link to where the ACL should be put */
             // Generate new JWT token for this request
             String headDataJWT = generateJWT(resourceUrl, "HEAD");
 
@@ -268,7 +268,7 @@ public class SolidTargetHelper {
                 // a better method to parse the link header in Java would be welcome ...
                 if (link.contains("rel=\"acl\"")) {
 
-                    ////// PUT the ACL to the found link //////
+                    /* PUT the ACL to the found link */
                     String linkUrl = link.substring(link.indexOf("<") + 1, link.indexOf(">"));
                     String putAclJWT = generateJWT(linkUrl, "PUT");
                     HttpRequest putAclRequest = HttpRequest.newBuilder(URI.create(linkUrl))
@@ -309,7 +309,7 @@ public class SolidTargetHelper {
             String resourceUrl = solidInfo.get("resourceUrl");
             String dpopAccessToken = getDpopAccessToken(solidInfo);
 
-            ////// GET the data //////
+            /* GET the data */
             // Generate new JWT token for this request
             String getDataJWT = generateJWT(resourceUrl, "GET");
 
@@ -341,7 +341,7 @@ public class SolidTargetHelper {
             String resourceUrl = solidInfo.get("resourceUrl");
             String dpopAccessToken = getDpopAccessToken(solidInfo);
 
-            //////DELETE the resource //////
+            /* DELETE the resource */
             // Generate new JWT token for this request
             String deleteDataJWT = generateJWT(resourceUrl, "DELETE");
 
