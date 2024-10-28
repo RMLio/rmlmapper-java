@@ -4,6 +4,7 @@ import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.knows.idlabFunctions.IDLabFunctions;
 import be.ugent.rml.Executor;
+import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.StrictMode;
 import be.ugent.rml.Utils;
 import be.ugent.rml.metadata.MetadataGenerator;
@@ -434,8 +435,9 @@ public class Main {
             String startTimestamp = Instant.now().toString();
             QuadStore result = null;
 
+            Map<Term, QuadStore> targets;
             try {
-                Map<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile), metadataGenerator);
+                targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile), metadataGenerator);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 throw e;
@@ -443,7 +445,6 @@ public class Main {
                 functionAgent.close();
             }
 
-            Map<Term, QuadStore> targets = executor.getTargets();
             if (targets != null) {
                 result = targets.get(new NamedNode("rmlmapper://default.store"));
                 if(result != null) {
@@ -484,6 +485,12 @@ public class Main {
         logger.debug("Writing to Targets: {}", targets.keySet());
         TargetFactory targetFactory = new TargetFactory(basePath);
 
+        // check if anything needs to be added to the rmlstore (e.g. dynamic targets)
+        if(targets.containsKey(new NamedNode(NAMESPACES.RMLI + "ThisMapping"))){
+            rmlStore.addQuads(targets.get(new NamedNode(NAMESPACES.RMLI + "ThisMapping")).getQuads(null, null, null));
+            targets.remove(new NamedNode(NAMESPACES.RMLI + "ThisMapping"));
+        }
+
         // Go over each term and export to the Target if needed
         for (Map.Entry<Term, QuadStore> termTargetMapping: targets.entrySet()) {
             Term term = termTargetMapping.getKey();
@@ -516,9 +523,9 @@ public class Main {
                 logger.debug("Exporting to Target: {}", term);
                 Target target = targetFactory.getTarget(term, rmlStore, store);
                 if (store.size() > 1) {
-                    logger.info("{} quads were generated for {} Target", store.size(), term);
+                    logger.info("{} quads were generated for {} Target", store.size(), target.toString());
                 } else {
-                    logger.info("{} quad was generated {} Target", store.size(), term);
+                    logger.info("{} quad was generated {} Target", store.size(), target.toString());
                 }
 
                 String serializationFormat = target.getSerializationFormat();
@@ -526,12 +533,13 @@ public class Main {
                 store.addQuads(target.getMetadata());
 
                 // Set character encoding
-                try (Writer out = new BufferedWriter(new OutputStreamWriter(output, Charset.defaultCharset()))) {
+                try (Writer out = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))) {
                     // Write store to target
                     store.write(out, serializationFormat);
                 }
                 // Close OS resources
                 target.close();
+                logger.debug("Exporting to Target: {}", target.toString());
             }
         }
 
@@ -556,11 +564,6 @@ public class Main {
         } else {
             return null;
         }
-    }
-
-    private static String getPriorityOptionValue(Option option, CommandLine lineArgs, Properties properties, String defaultValue) {
-        String value =  getPriorityOptionValue(option, lineArgs, properties);
-        return value == null ? defaultValue : value;
     }
 
     private static String[] getOptionValues(Option option, CommandLine lineArgs, Properties properties) {
