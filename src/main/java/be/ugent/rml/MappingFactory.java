@@ -157,7 +157,7 @@ public class MappingFactory {
         }
     }
 
-    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<MappingInfo> predicateMappingInfos, List<MappingInfo> graphMappingInfos) throws Exception {
+    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<MappingInfo> predicateMappingInfos, List<MappingInfo> graphMappingInfos) throws IOException {
         parseObjectMapsAndShortcutsWithCallback(termMap, (oMappingInfo, childOrParent) -> {
             MappingInfo lMappingInfo = parseLanguageMappingInfo(oMappingInfo.getTerm());
 
@@ -187,7 +187,7 @@ public class MappingFactory {
         });
     }
 
-    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws Exception {
+    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
         List<Term> objectmaps = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "objectMap"), null));
 
         for (Term objectmap : objectmaps) {
@@ -212,7 +212,7 @@ public class MappingFactory {
         }
     }
 
-    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws Exception {
+    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
         List<Term> functionValues = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
         Term termType = getTermType(objectmap, true);
 
@@ -413,7 +413,7 @@ public class MappingFactory {
         return graphMappingInfos;
     }
 
-    private List<MappingInfo> parsePredicateMapsAndShortcuts(Term termMap) throws Exception {
+    private List<MappingInfo> parsePredicateMapsAndShortcuts(Term termMap) throws IOException {
         List<MappingInfo> predicateMappingInfos = new ArrayList<>();
 
         List<Term> predicateMaps = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "predicateMap"), null));
@@ -448,7 +448,7 @@ public class MappingFactory {
         return predicateMappingInfos;
     }
 
-    private SingleRecordFunctionExecutor parseFunctionTermMap(Term functionValue) throws Exception {
+    private SingleRecordFunctionExecutor parseFunctionTermMap(Term functionValue) throws IOException {
         List<Term> functionPOMs = getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
         ArrayList<ParameterValuePair> params = new ArrayList<>();
 
@@ -472,7 +472,7 @@ public class MappingFactory {
         return new DynamicSingleRecordFunctionExecutor(params, functionAgent);
     }
 
-    private MultipleRecordsFunctionExecutor parseJoinConditionFunctionTermMap(Term functionValue) throws Exception {
+    private MultipleRecordsFunctionExecutor parseJoinConditionFunctionTermMap(Term functionValue) throws IOException {
         List<Term> functionPOMs = getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
         ArrayList<ParameterValueOriginPair> params = new ArrayList<>();
 
@@ -514,7 +514,7 @@ public class MappingFactory {
         return new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "https://w3id.org/imec/idlab/function#equal");
     }
 
-    private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws Exception {
+    private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {
         List<MappingInfo> mappingInfos = new ArrayList<>();
 
         parseObjectMapsAndShortcutsWithCallback(pom, (mappingInfo, childOrParent) -> {
@@ -530,7 +530,7 @@ public class MappingFactory {
      * @param objectmap the object for which the executors need to be determined.
      * @return a list of executors that return language tags.
      */
-    private List<SingleRecordFunctionExecutor> getLanguageExecutorsForObjectMap(Term objectmap) throws Exception {
+    private List<SingleRecordFunctionExecutor> getLanguageExecutorsForObjectMap(Term objectmap) throws IOException {
         ArrayList<SingleRecordFunctionExecutor> executors = new ArrayList<>();
 
         // Parse rr:language
@@ -677,7 +677,7 @@ public class MappingFactory {
         return false;
     }
 
-    private List<TermGenerator> getTargetGenerators(Term termMap, String baseIRI, StrictMode strictMode) throws Exception {
+    private List<TermGenerator> getTargetGenerators(Term termMap, String baseIRI, StrictMode strictMode) throws IOException {
         List<TermGenerator> targetGenerators = new ArrayList<>();
         List<Term> logicalTargetMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RMLI + "logicalTargetMap"), null));
         for (Term logicalTargetMap : logicalTargetMaps) {
