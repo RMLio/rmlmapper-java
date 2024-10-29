@@ -436,9 +436,8 @@ public class Main {
             String startTimestamp = Instant.now().toString();
             QuadStore result = null;
 
-            Map<Term, QuadStore> targets;
             try {
-                targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile), metadataGenerator);
+                Map<Term, QuadStore> targets = executor.execute(triplesMaps, checkOptionPresence(removeduplicatesOption, lineArgs, configFile), metadataGenerator);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 throw e;
@@ -446,6 +445,7 @@ public class Main {
                 functionAgent.close();
             }
 
+            Map<Term, QuadStore> targets = executor.getTargets();
             if (targets != null) {
                 result = targets.get(new NamedNode("rmlmapper://default.store"));
                 if(result != null) {

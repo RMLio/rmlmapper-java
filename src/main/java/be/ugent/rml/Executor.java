@@ -399,6 +399,13 @@ public class Executor {
         return this.rmlStore;
     }
 
+    public Map<Term, QuadStore> getTargets(){
+        if (this.targetStores.isEmpty()){
+            return null;
+        }
+        return this.targetStores;
+    }
+
     public void verifySources(String basepath, String mappingPath) throws Exception {
         for (Term triplesMap : this.getTriplesMaps()) {
             List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "logicalSource"), null));
@@ -476,27 +483,27 @@ public class Executor {
                         }
                     }
 
-
                     /* Predicates */
                     if (pogPredicateMappingInfo != null) {
                         TermGenerator pogPredicateGenerator = pogPredicateMappingInfo.getTermGenerator();
                         List<Term> predicateTargets = getAllTargets(pogPredicateMappingInfo, record);
-                        pogPredicateGenerator.generate(record).forEach(p -> predicates.add(new ProvenancedTerm(p, predicateTargets)));
+                        pogPredicateGenerator.generate(record).forEach(p -> {
+                            Metadata meta = new ProvenancedTerm(p, pogPredicateMappingInfo).getMetadata();
+                            predicates.add(new ProvenancedTerm(p, meta, predicateTargets));
+                        });
                     }
 
                     /* Objects */
                     if (pogObjectMappingInfo != null) {
                         TermGenerator pogObjectGenerator = pogObjectMappingInfo.getTermGenerator();
                         if (pogObjectGenerator != null) {
-                            List<Term> objectTargets = getAllTargets(pogObjectMappingInfo, record);
                             List<Term> objects = pogObjectGenerator.generate(record);
-                            ArrayList<ProvenancedTerm> provenancedObjects = new ArrayList<>();
-
+                            List<Term> objectTargets = getAllTargets(pogObjectMappingInfo, record);
+                            List<ProvenancedTerm> provenancedObjects = new ArrayList<>();
                             objects.forEach(object -> {
-                                provenancedObjects.add(new ProvenancedTerm(object, objectTargets));
+                                Metadata meta = new ProvenancedTerm(object, pogObjectMappingInfo).getMetadata();
+                                provenancedObjects.add(new ProvenancedTerm(object, meta, objectTargets));
                             });
-
-                            objects.forEach(object -> provenancedObjects.add(new ProvenancedTerm(object, pogObjectMappingInfo)));
 
                             if (!objects.isEmpty()) {
                                 //add pogs

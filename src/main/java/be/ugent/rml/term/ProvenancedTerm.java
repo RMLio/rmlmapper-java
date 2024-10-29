@@ -27,7 +27,6 @@ public class ProvenancedTerm {
 
     public ProvenancedTerm(Term term) {
         this.term = term;
-        this.targets = new ArrayList<>();
     }
 
     public ProvenancedTerm(Term term, List<Term> targets) {
