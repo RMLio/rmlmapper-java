@@ -116,6 +116,17 @@ public class SolidTargetTest extends TestCore {
                 new String[]{"user1", "user1", "user1", "user1"});
     }
 
+    //dynamic target in language map
+    @Test
+    public void dynamic_solid4() throws Exception {
+        doMappingSolid("solid-target/dynamic_solid4/mapping.ttl",
+                new String[]{"https://pod.playground.solidlab.be/user1/rmlmapper/student_en",
+                        "https://pod.playground.solidlab.be/user1/rmlmapper/student_nl"},
+                new String[]{"solid-target/dynamic_solid4/output1.nq",
+                        "solid-target/dynamic_solid4/output2.nq"},
+                new String[]{"user1", "user1"});
+    }
+
     void doMappingSolid(String mapPath, String resourceUrl, String outPath, String user) throws Exception {
         doMappingSolid(mapPath, new String[]{resourceUrl}, new String[]{outPath},new String[]{user});
     }
