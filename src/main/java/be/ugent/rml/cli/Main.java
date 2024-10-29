@@ -489,6 +489,9 @@ public class Main {
         // check if anything needs to be added to the rmlstore (e.g. dynamic targets)
         if (targets.containsKey(new NamedNode(NAMESPACES.RMLI + "ThisMapping"))){
             rmlStore.addQuads(targets.get(new NamedNode(NAMESPACES.RMLI + "ThisMapping")).getQuads(null, null, null));
+            // The generated dynamic logical targets have been added to the RML store.
+            // It is possible that they are written using the old RML terminology.
+            // Therefore, the mapping conformer needs to conform the RML store again.
             MappingConformer conformer = new MappingConformer(rmlStore, null);
             try {
                 boolean conversionNeeded = conformer.conform();
