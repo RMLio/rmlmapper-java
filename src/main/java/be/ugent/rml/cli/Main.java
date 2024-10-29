@@ -487,7 +487,7 @@ public class Main {
         TargetFactory targetFactory = new TargetFactory(basePath);
 
         // check if anything needs to be added to the rmlstore (e.g. dynamic targets)
-        if(targets.containsKey(new NamedNode(NAMESPACES.RMLI + "ThisMapping"))){
+        if (targets.containsKey(new NamedNode(NAMESPACES.RMLI + "ThisMapping"))){
             rmlStore.addQuads(targets.get(new NamedNode(NAMESPACES.RMLI + "ThisMapping")).getQuads(null, null, null));
             MappingConformer conformer = new MappingConformer(rmlStore, null);
             try {
