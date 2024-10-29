@@ -68,7 +68,7 @@ public class SolidTargetTest extends TestCore {
                 "user2");
     }
 
-    //acl for pod1, resourceUrl without .ttl
+    //acl for user2, resourceUrl without .ttl
     @Test
     public void acl2() throws Exception{
         doMappingSolid("solid-target/acl2/mapping.ttl",
