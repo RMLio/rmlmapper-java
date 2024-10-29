@@ -544,7 +544,7 @@ public class Main {
                 store.addQuads(target.getMetadata());
 
                 // Set character encoding
-                try (Writer out = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))) {
+                try (Writer out = new BufferedWriter(new OutputStreamWriter(output, Charset.defaultCharset()))) {
                     // Write store to target
                     store.write(out, serializationFormat);
                 }
