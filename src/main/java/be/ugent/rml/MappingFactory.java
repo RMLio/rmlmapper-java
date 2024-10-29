@@ -573,12 +573,7 @@ public class MappingFactory {
         if (languageMaps.size() == 1) {
             Term l = languageMaps.get(0);
             List<Term> lTargets = getTargets(l);
-            List<TermGenerator> lTargetGenerators = null;
-            try {
-                lTargetGenerators = getTargetGenerators(l, baseIRI, strictMode);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            List<TermGenerator> lTargetGenerators = getTargetGenerators(l, baseIRI, strictMode);
             mappingInfo = new MappingInfo(l, lTargets, lTargetGenerators);
         }
         else if (languageMaps.size() > 1) {
@@ -677,19 +672,25 @@ public class MappingFactory {
         return false;
     }
 
-    private List<TermGenerator> getTargetGenerators(Term termMap, String baseIRI, StrictMode strictMode) throws IOException {
+    private List<TermGenerator> getTargetGenerators(Term termMap, String baseIRI, StrictMode strictMode) {
         List<TermGenerator> targetGenerators = new ArrayList<>();
         List<Term> logicalTargetMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RMLI + "logicalTargetMap"), null));
         for (Term logicalTargetMap : logicalTargetMaps) {
-            SingleRecordFunctionExecutor functionExecutor;
+            SingleRecordFunctionExecutor functionExecutor = null;
             List<Term> functionValues = getObjectsFromQuads(store.getQuads(logicalTargetMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
             if (functionValues.isEmpty()) {
                 //similar to subjects, dynamic targets should always be uri
                 functionExecutor = RecordFunctionExecutorFactory.generate(store, logicalTargetMap, true, ignoreDoubleQuotes);
             } else {
-                functionExecutor = parseFunctionTermMap(functionValues.get(0));
+                try {
+                    functionExecutor = parseFunctionTermMap(functionValues.get(0));
+                } catch (IOException e) {
+                    logger.error("Parsing function term map failed:" + e);
+                }
             }
-            targetGenerators.add(new NamedNodeGenerator(functionExecutor, baseIRI, strictMode));
+            if (functionValues != null) {
+                targetGenerators.add(new NamedNodeGenerator(functionExecutor, baseIRI, strictMode));
+            }
         }
         return targetGenerators;
     }
