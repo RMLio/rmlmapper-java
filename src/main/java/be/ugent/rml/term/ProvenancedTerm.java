@@ -10,28 +10,29 @@ public class ProvenancedTerm {
 
     private Term term;
     private Metadata metadata;
-    private List<Term> targets = new ArrayList<>();
+    private List<Term> targets;
 
     public ProvenancedTerm(Term term, Metadata metadata, List<Term> targets) {
         this.term = term;
         this.metadata = metadata;
-        this.targets.addAll(targets);
+        this.targets = targets;
     }
 
     public ProvenancedTerm(Term term, MappingInfo mappingInfo) {
         this.term = term;
         this.metadata = new Metadata();
         this.metadata.setSourceMap(mappingInfo.getTerm());
-        this.targets.addAll(mappingInfo.getTargets());
+        this.targets = mappingInfo.getTargets();
     }
 
     public ProvenancedTerm(Term term) {
         this.term = term;
+        this.targets = new ArrayList<Term>();
     }
 
     public ProvenancedTerm(Term term, List<Term> targets) {
         this.term = term;
-        this.targets.addAll(targets);
+        this.targets = targets;
     }
 
 
