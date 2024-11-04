@@ -30,12 +30,6 @@ public class ProvenancedTerm {
         this.targets = new ArrayList<Term>();
     }
 
-    public ProvenancedTerm(Term term, List<Term> targets) {
-        this.term = term;
-        this.targets = targets;
-    }
-
-
     public Term getTerm() {
         return term;
     }
