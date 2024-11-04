@@ -548,7 +548,7 @@ public class Executor {
             try {
                 generatedTargets.addAll(targetGenerator.generate(record));
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error occurred when generating target", e);
             }
         }
         for (Term generatedTarget : generatedTargets){
