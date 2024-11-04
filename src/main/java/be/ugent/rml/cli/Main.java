@@ -537,9 +537,9 @@ public class Main {
                 logger.debug("Exporting to Target: {}", term);
                 Target target = targetFactory.getTarget(term, rmlStore, store);
                 if (store.size() > 1) {
-                    logger.info("{} quads were generated for {} Target", store.size(), target.toString());
+                    logger.info("{} quads were generated for {} Target", store.size(), target);
                 } else {
-                    logger.info("{} quad was generated {} Target", store.size(), target.toString());
+                    logger.info("{} quad was generated {} Target", store.size(), target);
                 }
 
                 String serializationFormat = target.getSerializationFormat();
@@ -553,7 +553,7 @@ public class Main {
                 }
                 // Close OS resources
                 target.close();
-                logger.debug("Exporting to Target: {}", target.toString());
+                logger.debug("Exporting to Target: {}", target);
             }
         }
 
