@@ -3,7 +3,7 @@ package be.ugent.rml;
 import be.ugent.rml.cli.Main;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.QuadStoreFactory;
-import be.ugent.rml.target.SolidTargetHelper;
+import be.ugent.rml.target.HttpRequestTargetHelper;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SolidTargetTest extends TestCore {
+public class HttpRequestTargetTest extends TestCore {
 
     //constant target in subject map
     @Test
@@ -59,7 +59,7 @@ public class SolidTargetTest extends TestCore {
                 "user1");
     }
 
-    //acl for user2, resourceUrl with .ttl
+    //acl for user2, absolute URI with .ttl
     @Test
     public void acl1() throws Exception{
         doMappingSolid("solid-target/acl1/mapping.ttl",
@@ -68,7 +68,7 @@ public class SolidTargetTest extends TestCore {
                 "user2");
     }
 
-    //acl for user2, resourceUrl without .ttl
+    //acl for user2, absolute URI without .ttl
     @Test
     public void acl2() throws Exception{
         doMappingSolid("solid-target/acl2/mapping.ttl",
@@ -127,37 +127,40 @@ public class SolidTargetTest extends TestCore {
                 new String[]{"user1", "user1"});
     }
 
-    void doMappingSolid(String mapPath, String resourceUrl, String outPath, String user) throws Exception {
-        doMappingSolid(mapPath, new String[]{resourceUrl}, new String[]{outPath},new String[]{user});
+    void doMappingSolid(String mapPath, String absoluteURI, String outPath, String user) throws Exception {
+        doMappingSolid(mapPath, new String[]{absoluteURI}, new String[]{outPath},new String[]{user});
     }
 
-    void doMappingSolid(String mapPath, String[] resourceUrls, String[] outPaths, String[] users) throws Exception {
+    void doMappingSolid(String mapPath, String[] absoluteURIs, String[] outPaths, String[] users) throws Exception {
         Main.run(("-m " + mapPath).split(" "));
-        SolidTargetHelper helper = new SolidTargetHelper();
+        HttpRequestTargetHelper helper = new HttpRequestTargetHelper();
         int i = 0;
-        while (i < resourceUrls.length) {
-            Map<String, String> solidTargetInfo = getSolidTargetInfo(users[i], resourceUrls[i]);
+        while (i < absoluteURIs.length) {
+            Map<String, String> solidTargetInfo = getHttpRequestInfo(users[i], absoluteURIs[i], "GET");
             compareResourceWithOutput(outPaths[i], solidTargetInfo);
-            helper.deleteResource(getSolidTargetInfo("user1", resourceUrls[i]));
+            helper.executeHttpRequest(getHttpRequestInfo("user1", absoluteURIs[i], "DELETE"));
             i++;
         }
     }
 
-    // get solidTargetInfo including authentication details of testpods
-    private Map<String, String> getSolidTargetInfo(String user, String resourceUrl){
-        Map<String, String> solidTargetInfo = new HashMap<>();
-        solidTargetInfo.put("email", user + "@pod.playground.solidlab.be");
-        solidTargetInfo.put("password",user);
-        solidTargetInfo.put("serverUrl", "https://pod.playground.solidlab.be/");
-        solidTargetInfo.put("webId", "https://pod.playground.solidlab.be/" + user + "/profile/card#me");
-        solidTargetInfo.put("resourceUrl", resourceUrl);
-        return solidTargetInfo;
+    // get httpRequestInfo including authentication details of testpods
+    private Map<String, String> getHttpRequestInfo(String user, String absoluteURI, String method){
+        Map<String, String> httpRequestInfo = new HashMap<>();
+        httpRequestInfo.put("methodName", method);
+        httpRequestInfo.put("email", user + "@pod.playground.solidlab.be");
+        httpRequestInfo.put("password",user);
+        httpRequestInfo.put("oidcIssuer", "https://pod.playground.solidlab.be/");
+        httpRequestInfo.put("webId", "https://pod.playground.solidlab.be/" + user + "/profile/card#me");
+        httpRequestInfo.put("authenticationType", "https://rml.io/ns/extensions#CssClientCredentialsAuthentication");
+        httpRequestInfo.put("absoluteURI", absoluteURI);
+        return httpRequestInfo;
     }
 
-    private void compareResourceWithOutput(String outPath, Map<String,String> solidTargetInfo) throws Exception {
+    private void compareResourceWithOutput(String outPath, Map<String,String> httpRequestInfo) throws Exception {
         // retrieve resource from solid pod
-        SolidTargetHelper helper = new SolidTargetHelper();
-        String response = helper.getResource(solidTargetInfo);
+        HttpRequestTargetHelper helper = new HttpRequestTargetHelper();
+        httpRequestInfo.put("methodName", "GET");
+        String response = helper.executeHttpRequest(httpRequestInfo);
         InputStream responseStream = new ByteArrayInputStream(response.getBytes());
         QuadStore result = QuadStoreFactory.read(responseStream, RDFFormat.NQUADS);
         // compare result to expected output

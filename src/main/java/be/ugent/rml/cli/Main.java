@@ -487,8 +487,8 @@ public class Main {
         TargetFactory targetFactory = new TargetFactory(basePath);
 
         // check if anything needs to be added to the rmlstore (e.g. dynamic targets)
-        if (targets.containsKey(new NamedNode(NAMESPACES.RMLI + "ThisMapping"))){
-            rmlStore.addQuads(targets.get(new NamedNode(NAMESPACES.RMLI + "ThisMapping")).getQuads(null, null, null));
+        if (targets.containsKey(new NamedNode(NAMESPACES.RMLE + "ThisMapping"))){
+            rmlStore.addQuads(targets.get(new NamedNode(NAMESPACES.RMLE + "ThisMapping")).getQuads(null, null, null));
             // The generated dynamic logical targets have been added to the RML store.
             // It is possible that they are written using the old RML terminology.
             // Therefore, the mapping conformer needs to conform the RML store again.
@@ -502,7 +502,7 @@ public class Main {
             } catch (Exception e) {
                 logger.error("Failed to make dynamic targets conformant to RML spec.", e);
             }
-            targets.remove(new NamedNode(NAMESPACES.RMLI + "ThisMapping"));
+            targets.remove(new NamedNode(NAMESPACES.RMLE + "ThisMapping"));
         }
 
         // Go over each term and export to the Target if needed

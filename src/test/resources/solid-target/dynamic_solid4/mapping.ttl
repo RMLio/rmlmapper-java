@@ -6,10 +6,9 @@
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 @prefix rmlt: <http://semweb.mmlab.be/ns/rml-target#>.
 @prefix formats: <http://www.w3.org/ns/formats/>.
-@prefix solid: <http://www.w3.org/ns/solid/terms#>.
 @prefix acl: <http://www.w3.org/ns/auth/acl#>.
-@prefix rmli: <https://w3id.org/imec/rml/>.
-@prefix ids: <https://w3id.org/idsa/core/>.
+@prefix rmle: <https://rml.io/ns/extensions#>.
+@prefix htv:  <http://www.w3.org/2011/http#>.
 @base <http://example.com/base/> .
 
 <student-source> rml:logicalSource [
@@ -28,7 +27,7 @@
       rml:reference "Name";
       rml:languageMap [
          rml:reference "lang";
-         rmli:logicalTargetMap [ rr:template "logical_target/{lang}" ]
+         rmle:logicalTargetMap [ rr:template "logical_target/{lang}" ]
       ]
     ]
   ].
@@ -38,7 +37,7 @@
    rr:subjectMap [
      rr:template "logical_target/{lang}";
      rr:class rml:LogicalTarget;
-     rml:logicalTarget rmli:ThisMapping;
+     rml:logicalTarget rmle:ThisMapping;
    ];
    rr:predicateObjectMap [
      rr:predicate rmlt:serialization;
@@ -53,21 +52,21 @@
    rml:logicalSource <student-source>;
    rr:subjectMap [
      rr:template "target/{lang}";
-     rr:class rmlt:Target, rmli:SolidResourceTarget;
-     rml:logicalTarget rmli:ThisMapping;
+     rr:class rmlt:Target, rmle:DirectHttpRequest;
+     rml:logicalTarget rmle:ThisMapping;
    ];
    rr:predicateObjectMap [
-     rr:predicate rmli:resource;
+     rr:predicate htv:absoluteURI;
      rr:objectMap [ rr:template "https://pod.playground.solidlab.be/user1/rmlmapper/student_{lang}" ];
    ];
    rr:predicateObjectMap [
-     rr:predicate ids:userAuthentication;
+     rr:predicate rmle:userAuthentication;
      rr:object <auth>;
    ].
 
-<auth> a ids:UserAuthentication;
-       ids:authUsername "user1@pod.playground.solidlab.be";
-       ids:authPassword "user1";
-       solid:oidcIssuer <https://pod.playground.solidlab.be/>;
-       rmli:webId <https://pod.playground.solidlab.be/user1/profile/card#me>.
+<auth> a rmle:CssClientCredentialsAuthentication;
+       rmle:authEmail "user1@pod.playground.solidlab.be";
+       rmle:authPassword "user1";
+       rmle:authOidcIssuer <https://pod.playground.solidlab.be/>;
+       rmle:authWebId <https://pod.playground.solidlab.be/user1/profile/card#me>.
 

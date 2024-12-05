@@ -8,10 +8,8 @@
 @prefix ex: <http://example.com/>.
 @prefix rmlt: <http://semweb.mmlab.be/ns/rml-target#>.
 @prefix formats: <http://www.w3.org/ns/formats/>.
-@prefix solid: <http://www.w3.org/ns/solid/terms#>.
-@prefix acl: <http://www.w3.org/ns/auth/acl#>.
-@prefix rmli: <https://w3id.org/imec/rml/>.
-@prefix ids: <https://w3id.org/idsa/core/>.
+@prefix rmle: <https://rml.io/ns/extensions#>.
+@prefix htv:  <http://www.w3.org/2011/http#>.
 
 <TriplesMap1> a rr:TriplesMap;
     rml:logicalSource [
@@ -29,13 +27,14 @@
 
 <target1> rmlt:serialization formats:Turtle;
     rmlt:target [
-        a rmlt:Target, rmli:SolidResourceTarget;
-        rmli:resource "https://pod.playground.solidlab.be/user1/rmlmapper/building";
-        ids:userAuthentication [
-            ids:authUsername "user1@pod.playground.solidlab.be";
-            ids:authPassword "user1";
-            solid:oidcIssuer <https://pod.playground.solidlab.be/>;
-            rmli:webId <https://pod.playground.solidlab.be/user1/profile/card#me>
+        a rmlt:Target, rmle:DirectHttpRequest;
+        htv:absoluteURI "https://pod.playground.solidlab.be/user1/rmlmapper/building";
+        rmle:userAuthentication [
+            a rmle:CssClientCredentialsAuthentication;
+            rmle:authEmail "user1@pod.playground.solidlab.be";
+            rmle:authPassword "user1";
+            rmle:authOidcIssuer <https://pod.playground.solidlab.be/>;
+            rmle:authWebId <https://pod.playground.solidlab.be/user1/profile/card#me>
         ];
     ].
 

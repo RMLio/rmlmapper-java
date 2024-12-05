@@ -344,18 +344,22 @@ public class TargetFactory {
                     target = new SPARQLEndpointTarget(endpoint, metadata);
                     break;
                 }
-                case NAMESPACES.RMLI + "SolidResourceTarget": {
-                    logger.debug("Target is a document on a resource on a Solid Pod");
-                    String resource = getRequiredValue(t,new NamedNode(NAMESPACES.RMLI + "resource"), rmlStore).getValue();
-                    Map<String, String> solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
-                    target = new SolidResourceTarget(solidTargetInfo, serializationFormat, metadata);
+                case NAMESPACES.RMLE + "DirectHttpRequest": {
+                    logger.debug("Target is a direct HTTP request");
+                    Map<String, String> httpRequestInfo = parseHttpRequest(rmlStore, t);
+                    String absoluteURI = getRequiredValue(t,new NamedNode(NAMESPACES.HTV + "absoluteURI"), rmlStore);
+                    httpRequestInfo.put("absoluteURI", absoluteURI);
+                    target = new DirectHttpRequestTarget(httpRequestInfo, serializationFormat, metadata);
                     break;
                 }
-                case NAMESPACES.RMLI + "SolidAclTarget": {
-                    logger.debug("Target is a acl document for a resource on a Solid Pod");
-                    String resource = getRequiredValue(t,new NamedNode(NAMESPACES.RMLI + "forResource"), rmlStore).getValue();
-                    Map<String, String> solidTargetInfo = parseSolidTarget(rmlStore, t, resource);
-                    target = new SolidAclTarget(solidTargetInfo, serializationFormat, metadata);
+                case NAMESPACES.RMLE + "LinkedHttpRequest": {
+                    logger.debug("Target is a linked HTTP request");
+                    Map<String, String> httpRequestInfo = parseHttpRequest(rmlStore, t);
+                    String linkingAbsoluteURI = getRequiredValue(t,new NamedNode(NAMESPACES.RMLE + "linkingAbsoluteURI"), rmlStore);
+                    String linkRelation = getRequiredValue(t,new NamedNode(NAMESPACES.RMLE + "linkRelation"), rmlStore);
+                    httpRequestInfo.put("linkingAbsoluteURI", linkingAbsoluteURI);
+                    httpRequestInfo.put("linkRelation", linkRelation);
+                    target = new LinkedHttpRequestTarget(httpRequestInfo, serializationFormat, metadata);
                     break;
                 }
                 default: {
@@ -370,27 +374,48 @@ public class TargetFactory {
         }
     }
 
-    private Map<String,String> parseSolidTarget(QuadStore rmlStore, Term t, String resource){
-        Term login = getRequiredValue(t, new NamedNode(NAMESPACES.IDSA + "userAuthentication"), rmlStore);
-        String email = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authUsername"), rmlStore).getValue();
-        String password = getRequiredValue(login, new NamedNode(NAMESPACES.IDSA + "authPassword"), rmlStore).getValue();
-        String oidcIssuer = getRequiredValue(login, new NamedNode(NAMESPACES.SOLID + "oidcIssuer"), rmlStore).getValue();
-        String webId = getRequiredValue(login, new NamedNode(NAMESPACES.RMLI + "webId"), rmlStore).getValue();
-        HashMap<String,String> solidTargetInfo = new HashMap<>();
-        solidTargetInfo.put("email", email);
-        solidTargetInfo.put("password",password);
-        solidTargetInfo.put("serverUrl", oidcIssuer);
-        solidTargetInfo.put("resourceUrl", resource);
-        solidTargetInfo.put("webId", webId);
-        return solidTargetInfo;
+    private Map<String,String> parseHttpRequest(QuadStore rmlStore, Term t){
+        HashMap<String,String> httpRequestInfo= new HashMap<>();
+        putOptionalValue(t, new NamedNode(NAMESPACES.HTV + "methodName"), rmlStore, httpRequestInfo, "methodName");
+        putOptionalValue(t, new NamedNode(NAMESPACES.RMLE + "contentTypeHeader"), rmlStore, httpRequestInfo, "contentType");
+        List<Term> authentications = Utils.getObjectsFromQuads(rmlStore.getQuads(t, new NamedNode(NAMESPACES.RMLE + "userAuthentication"), null));
+        if (!authentications.isEmpty()) {
+            Term userAuthentication = authentications.get(0);
+            String authenticationType = getRequiredValue(userAuthentication, new NamedNode(NAMESPACES.RDF + "type"), rmlStore);
+            httpRequestInfo.put("authenticationType", authenticationType);
+            switch (authenticationType) {
+                case NAMESPACES.RMLE + "CssClientCredentialsAuthentication": {
+                    String email = getRequiredValue(userAuthentication, new NamedNode(NAMESPACES.RMLE + "authEmail"), rmlStore);
+                    String password = getRequiredValue(userAuthentication, new NamedNode(NAMESPACES.RMLE + "authPassword"), rmlStore);
+                    String oidcIssuer = getRequiredValue(userAuthentication, new NamedNode(NAMESPACES.RMLE + "authOidcIssuer"), rmlStore);
+                    String webId = getRequiredValue(userAuthentication, new NamedNode(NAMESPACES.RMLE + "authWebId"), rmlStore);
+                    httpRequestInfo.put("email", email);
+                    httpRequestInfo.put("password", password);
+                    httpRequestInfo.put("oidcIssuer", oidcIssuer);
+                    httpRequestInfo.put("webId", webId);
+                    break;
+                }
+                default: {
+                    throw new UnsupportedOperationException("User authentication type " + authenticationType + "is not implemented");
+                }
+            }
+        }
+        return httpRequestInfo;
     }
 
-    private Term getRequiredValue(Term subject, Term predicate, QuadStore rmlStore) throws Error {
+    private String getRequiredValue(Term subject, Term predicate, QuadStore rmlStore) throws Error {
         List<Term> terms = Utils.getObjectsFromQuads(rmlStore.getQuads(subject, predicate, null));
         if (terms.isEmpty()) {
             throw new Error(subject + " has no value for predicate " + predicate);
         } else {
-            return terms.get(0);
+            return terms.get(0).getValue();
+        }
+    }
+
+    private void putOptionalValue(Term subject, Term predicate, QuadStore rmlStore, HashMap<String,String> map, String key) {
+        List<Term> terms = Utils.getObjectsFromQuads(rmlStore.getQuads(subject, predicate, null));
+        if (!terms.isEmpty()) {
+            map.put(key, terms.get(0).getValue());
         }
     }
 }

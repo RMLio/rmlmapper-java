@@ -674,7 +674,7 @@ public class MappingFactory {
 
     private List<TermGenerator> getTargetGenerators(Term termMap, String baseIRI, StrictMode strictMode) {
         List<TermGenerator> targetGenerators = new ArrayList<>();
-        List<Term> logicalTargetMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RMLI + "logicalTargetMap"), null));
+        List<Term> logicalTargetMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RMLE + "logicalTargetMap"), null));
         for (Term logicalTargetMap : logicalTargetMaps) {
             SingleRecordFunctionExecutor functionExecutor = null;
             List<Term> functionValues = getObjectsFromQuads(store.getQuads(logicalTargetMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));

@@ -11,9 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SolidTarget implements Target {
+public abstract class HttpRequestTarget implements Target {
 
-    protected final Map<String, String> solidTargetInfo;
+    protected final Map<String, String> httpRequestInfo;
     private final List<Quad> metadata;
     private final ByteArrayOutputStream byteArrayOutputStream;
     protected final Logger logger;
@@ -27,20 +27,20 @@ public abstract class SolidTarget implements Target {
             "trix", "text/xml",
             "trig", "application/trig",
             "nquads", "application/n-quads"
-    ); // TODO hdt???
+    );
 
     /**
-     * This constructor takes a JSON object with the solid target info, the serialization format and the metadata as argument.
-     * @param solidTargetInfo JSON object with all the target info (resource url and authentication info)
+     * This constructor takes a JSON object with the http request info, the serialization format and the metadata as argument.
+     * @param httpRequestInfo JSON object with all the target info
      * @param serializationFormat String with the serialization format
      * @param metadata a list of Quads containing metadata
      */
-    public SolidTarget(Map<String, String> solidTargetInfo, String serializationFormat, List<Quad> metadata) {
-        this.solidTargetInfo = solidTargetInfo;
+    public HttpRequestTarget(Map<String, String> httpRequestInfo, String serializationFormat, List<Quad> metadata) {
+        this.httpRequestInfo = httpRequestInfo;
         this.metadata = metadata;
         this.serializationFormat = serializationFormat;
         byteArrayOutputStream = new ByteArrayOutputStream();
-        this.logger = LoggerFactory.getLogger(SolidTarget.class);
+        this.logger = LoggerFactory.getLogger(HttpRequestTarget.class);
     }
 
     /**
@@ -62,17 +62,17 @@ public abstract class SolidTarget implements Target {
     }
 
     /**
-     * This method returns the url of the Solid pod target //TODO adapt
-     * @return url.
+     * This method returns the http request info
+     * @return map with http request info.
      */
-    public Map<String, String> getSolidTargetInfo() {
-        return this.solidTargetInfo;
+    public Map<String, String> getHttpRequestInfo() {
+        return this.httpRequestInfo;
     }
 
     /**
      * This method closes the target.
-     * When closing a Solid target, the tempFile is put on the solid pod
-     * with a PUT method.
+     * When closing a http request target, the content of the tempFile is added to the http request as body
+     * and the http request is executed.
      */
     @Override
     public void close() {
@@ -81,10 +81,16 @@ public abstract class SolidTarget implements Target {
         The rest of the method is handled in the subclass
         */
         logger.debug("Closing target");
-        this.solidTargetInfo.put("data", this.byteArrayOutputStream.toString(StandardCharsets.UTF_8));
-        // reset the outputstream to empty memory
+        this.httpRequestInfo.put("data", this.byteArrayOutputStream.toString(StandardCharsets.UTF_8));
+        // reset the output stream to empty memory
         this.byteArrayOutputStream.reset();
-        this.solidTargetInfo.put("contentType", serializationFormats.get(this.serializationFormat));
+        // add default values
+        if (!httpRequestInfo.containsKey("methodName")){
+            this.httpRequestInfo.put("methodName", "PUT");
+        }
+        if (!httpRequestInfo.containsKey("contentType")){
+            this.httpRequestInfo.put("contentType", serializationFormats.get(this.serializationFormat));
+        }
     }
 
     @Override
