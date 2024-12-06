@@ -151,7 +151,7 @@ public class HttpRequestTargetTest extends TestCore {
         httpRequestInfo.put("password",user);
         httpRequestInfo.put("oidcIssuer", "https://pod.playground.solidlab.be/");
         httpRequestInfo.put("webId", "https://pod.playground.solidlab.be/" + user + "/profile/card#me");
-        httpRequestInfo.put("authenticationType", "https://rml.io/ns/extensions#CssClientCredentialsAuthentication");
+        httpRequestInfo.put("authenticationType", NAMESPACES.RMLE + "CssClientCredentialsAuthentication");
         httpRequestInfo.put("absoluteURI", absoluteURI);
         return httpRequestInfo;
     }
