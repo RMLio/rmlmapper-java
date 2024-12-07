@@ -62,6 +62,8 @@ and see [Usage](#cli) on how to use the commandline interface!
   - local file
   - VoID dataset
   - SPARQL endpoint with SPARQL UPDATE
+  - [HTTP request access](https://rml.io/specs/access/httprequest/)
+  - [dynamic logical targets](https://rml.io/specs/target/dynamictarget/)
 
 ### Future
 - functions (all cases)
@@ -69,6 +71,7 @@ and see [Usage](#cli) on how to use the commandline interface!
 - data sources:
   - NoSQL databases
   - TPF servers
+  - [HTTP request access](https://rml.io/specs/access/httprequest/)
 
 ## Releases
 
