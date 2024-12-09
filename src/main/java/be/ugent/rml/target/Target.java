@@ -10,7 +10,7 @@ import java.util.List;
  * This interface represents the target of a knowledge graph.
  * For example, a local file, a SOLID pod, a Triple Store, and so on.
  */
-public interface Target {
+public interface Target extends AutoCloseable {
 
     /**
      * This method returns an OutputStream for the target.
