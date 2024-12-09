@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.module.ModuleDescriptor;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,9 +23,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
-/**
- * HttpRequestTargetHelper helps writing data to a web resource, taking care of the optional authorization flow.
- */
 public class HttpRequestTargetHelper {
     private static final Logger log = LoggerFactory.getLogger(HttpRequestTargetHelper.class);
     private final EllipticCurveJsonWebKey jwk;
@@ -259,7 +255,7 @@ public class HttpRequestTargetHelper {
             String linkRelation = httpRequestInfo.get("linkRelation");
             /* HEAD request to retrieve the linked absolute URI via a link relation */
             HttpRequest.Builder RequestBuilder = HttpRequest.newBuilder(URI.create(linkingAbsoluteURI))
-                    .method("HEAD", HttpRequest.BodyPublishers.noBody());
+                    .method(HttpMethod.HEAD.name(), HttpRequest.BodyPublishers.noBody());
             addAuthentication(RequestBuilder, httpRequestInfo);
             HttpRequest httpRequest = RequestBuilder.build();
 

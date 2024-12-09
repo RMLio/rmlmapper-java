@@ -86,7 +86,7 @@ public abstract class HttpRequestTarget implements Target {
         this.byteArrayOutputStream.reset();
         // add default values
         if (!httpRequestInfo.containsKey("methodName")){
-            this.httpRequestInfo.put("methodName", "PUT");
+            this.httpRequestInfo.put("methodName", HttpMethod.PUT.name());
         }
         if (!httpRequestInfo.containsKey("contentType")){
             this.httpRequestInfo.put("contentType", serializationFormats.get(this.serializationFormat));
