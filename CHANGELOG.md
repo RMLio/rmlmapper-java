@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [7.2.0] - 2024-12-09
+
 ### Added
 - CLI option `--convert-mapping` to convert your existing R2RML and older RML mappings 
 to the latest version by the W3C Community Group.
@@ -761,6 +763,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[7.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.2...v7.2.0
 [7.1.2]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.1...v7.1.2
 [7.1.1]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.0...v7.1.1
 [7.1.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.0.0...v7.1.0
