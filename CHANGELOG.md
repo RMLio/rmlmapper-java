@@ -13,6 +13,9 @@ to the latest version by the W3C Community Group.
 - HTTP request targets
 - dynamic logical targets
 
+### Fixed
+- GREL array functions handling.
+
 ## [7.1.2] - 2024-09-19
 
 ### Fixed
