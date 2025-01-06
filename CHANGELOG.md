@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Optimization for authentication with CSS Client Credentials
+- Update URI of prefix 'rmle:' to persistent w3id URI: 'https://w3id.org/imec/rml/ns/extensions#'
+
 ## [7.2.0] - 2024-12-09
 
 ### Added

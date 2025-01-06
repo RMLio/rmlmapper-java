@@ -8,7 +8,7 @@
 @prefix ex: <http://example.com/>.
 @prefix rmlt: <http://semweb.mmlab.be/ns/rml-target#>.
 @prefix formats: <http://www.w3.org/ns/formats/>.
-@prefix rmle: <https://rml.io/ns/extensions#>.
+@prefix rmle: <https://w3id.org/imec/rml/ns/extensions#>.
 @prefix htv:  <http://www.w3.org/2011/http#>.
 
 <TriplesMap1> a rr:TriplesMap;

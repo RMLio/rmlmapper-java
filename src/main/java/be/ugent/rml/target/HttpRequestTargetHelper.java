@@ -19,15 +19,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HttpRequestTargetHelper {
     private static final Logger log = LoggerFactory.getLogger(HttpRequestTargetHelper.class);
     private final EllipticCurveJsonWebKey jwk;
 
     private final HttpClient httpClient;
+
+    private Map<String, String> clientCredentialsStore;
+    private Map<String, JSONObject> oidcAccessTokenStore;
     /**
      *
      * Constructs a new HttpRequestTargetHelper instance. A new private + public key pair
@@ -37,10 +38,12 @@ public class HttpRequestTargetHelper {
      */
     public HttpRequestTargetHelper() throws JoseException {
         jwk = EcJwkGenerator.generateJwk(EllipticCurves.P256);
+        this.clientCredentialsStore = new HashMap<>();
         // Initialize a HTTP client
         httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)   // The Community Solid Server only accepts HTTP 1.1 and complains about upgrade headers if you don't specify this.
                 .build();
+        this.oidcAccessTokenStore = new HashMap<>();
     }
 
     /**
@@ -62,116 +65,137 @@ public class HttpRequestTargetHelper {
             String email = httpRequestInfo.get("email");
             String password = httpRequestInfo.get("password");
 
-            /* Get account controls and retrieve login URL */
-            HttpRequest accountInfoRequest = HttpRequest.newBuilder(URI.create(oidcIssuer + ".account/"))
-                    .GET().build();
-            HttpResponse<String> accountInfoResponse = httpClient.send(accountInfoRequest, HttpResponse.BodyHandlers.ofString());
-            String accountInfoStr = accountInfoResponse.body();
-            if (accountInfoResponse.statusCode() != HttpStatus.SC_OK) {
-                log.error("Could not get account info: {}", accountInfoStr);
-                throw new Exception("Could not get account info: " + accountInfoStr);
+            String clientCredentialsStr;
+            if (clientCredentialsStore.containsKey(webId)) {
+                clientCredentialsStr = clientCredentialsStore.get(webId);
+            } else {
+                /* Get account controls and retrieve login URL */
+                HttpRequest accountInfoRequest = HttpRequest.newBuilder(URI.create(oidcIssuer + ".account/"))
+                        .GET().build();
+                HttpResponse<String> accountInfoResponse = httpClient.send(accountInfoRequest, HttpResponse.BodyHandlers.ofString());
+                String accountInfoStr = accountInfoResponse.body();
+                if (accountInfoResponse.statusCode() != HttpStatus.SC_OK) {
+                    log.error("Could not get account info: {}", accountInfoStr);
+                    throw new Exception("Could not get account info: " + accountInfoStr);
+                }
+                JSONObject accountInfo = new JSONObject(accountInfoStr);
+                String passwordLoginURL = accountInfo.getJSONObject("controls").getJSONObject("password").getString("login");
+                log.debug("Found login URL: {}", passwordLoginURL);
+
+
+                /* Log in using e-mail and password and get authorization token */
+                String loginMessage = "{\"email\": \"" + email + "\",\"password\":\"" + password + "\"}";
+                HttpRequest loginRequest = HttpRequest.newBuilder(URI.create(passwordLoginURL))
+                        .POST(HttpRequest.BodyPublishers.ofString(loginMessage, StandardCharsets.UTF_8))
+                        .setHeader("Content-Type", "application/json")
+                        .build();
+                HttpResponse<String> loginResponse = httpClient.send(loginRequest, HttpResponse.BodyHandlers.ofString());
+                String loginInfoStr = loginResponse.body();
+                if (loginResponse.statusCode() != HttpStatus.SC_OK) {
+                    log.error("Could not log in: {}", loginInfoStr);
+                    throw new Exception("Could not get log in: " + loginInfoStr);
+                }
+                JSONObject loginInfo = new JSONObject(loginInfoStr);
+                String authorizationToken = loginInfo.getString("authorization");
+                log.debug("Found authorization token.");
+
+
+                /* Use authorization token to get client credentials URL, added to account info */
+                HttpRequest authorizedAccountInfoRequest = HttpRequest.newBuilder(URI.create(oidcIssuer + ".account/"))
+                        .GET()
+                        .setHeader("Authorization", "CSS-Account-Token " + authorizationToken)
+                        .build();
+                HttpResponse<String> authorizedAccountInfoResponse = httpClient.send(authorizedAccountInfoRequest, HttpResponse.BodyHandlers.ofString());
+                String authorizedAccountInfoStr = authorizedAccountInfoResponse.body();
+                if (authorizedAccountInfoResponse.statusCode() != HttpStatus.SC_OK) {
+                    log.error("Could not get account info: {}", authorizedAccountInfoStr);
+                    throw new Exception("Could not get account info: " + authorizedAccountInfoStr);
+                }
+                JSONObject authorizedAccountInfo = new JSONObject(authorizedAccountInfoStr);
+                String clientCredentialsURL = authorizedAccountInfo.getJSONObject("controls").getJSONObject("account").getString("clientCredentials");
+                log.debug("Found client credentials URL: {}", clientCredentialsURL);
+
+
+                /* Post WebID and token prefix to client credentials URL to get client credentials, to be used at oidc endpoint later on */
+                String webIdAndTokenMessage = "{\"name\": \"my-token\",\"webId\":\"" + webId + "\"}";
+                HttpRequest getOIDCTokenRequest = HttpRequest.newBuilder(URI.create(clientCredentialsURL))
+                        .POST(HttpRequest.BodyPublishers.ofString(webIdAndTokenMessage, StandardCharsets.UTF_8))
+                        .setHeader("Authorization", "CSS-Account-Token " + authorizationToken)
+                        .setHeader("Content-Type", "application/json")
+                        .build();
+                HttpResponse<String> getOIDCTokenResponse = httpClient.send(getOIDCTokenRequest, HttpResponse.BodyHandlers.ofString());
+                clientCredentialsStr = getOIDCTokenResponse.body();
+                clientCredentialsStore.put(webId, clientCredentialsStr);
+                if (getOIDCTokenResponse.statusCode() != HttpStatus.SC_OK) {
+                    log.error("Could not get OpenID Connect token info: {}", clientCredentialsStr);
+                    throw new Exception("Could not get OpenID Connect token info: " + clientCredentialsStr);
+                }
             }
-            JSONObject accountInfo = new JSONObject(accountInfoStr);
-            String passwordLoginURL = accountInfo.getJSONObject("controls").getJSONObject("password").getString("login");
-            log.debug("Found login URL: {}", passwordLoginURL);
-
-
-            /* Log in using e-mail and password and get authorization token */
-            String loginMessage = "{\"email\": \"" + email + "\",\"password\":\"" + password + "\"}";
-            HttpRequest loginRequest = HttpRequest.newBuilder(URI.create(passwordLoginURL))
-                    .POST(HttpRequest.BodyPublishers.ofString(loginMessage, StandardCharsets.UTF_8))
-                    .setHeader("Content-Type", "application/json")
-                    .build();
-            HttpResponse<String> loginResponse = httpClient.send(loginRequest, HttpResponse.BodyHandlers.ofString());
-            String loginInfoStr = loginResponse.body();
-            if (loginResponse.statusCode() != HttpStatus.SC_OK) {
-                log.error("Could not log in: {}", loginInfoStr);
-                throw new Exception("Could not get log in: " + loginInfoStr);
+            String accessTokenStr = null;
+            Boolean validAccessToken = false;
+            if (oidcAccessTokenStore.containsKey(webId)) {
+                JSONObject oidcAccessToken = oidcAccessTokenStore.get(webId);
+                Long expiresOn = oidcAccessToken.getLong("expires_on");
+                Long now = ((new Date().getTime()) / 1000) + 10; //adding some safety margin;
+                if (now < expiresOn) {
+                    accessTokenStr = oidcAccessToken.getString("access_token");
+                    validAccessToken = true;
+                }
             }
-            JSONObject loginInfo = new JSONObject(loginInfoStr);
-            String authorizationToken = loginInfo.getString("authorization");
-            log.debug("Found authorization token.");
+            if (!validAccessToken){
+                JSONObject clientCredentials = new JSONObject(clientCredentialsStr);
+                String clientCredentialsId = clientCredentials.getString("id");
+                log.debug("Found Client credentials. id: {}", clientCredentialsId);
+                String clientCredentialsSecret = clientCredentials.getString("secret");
 
 
-            /* Use authorization token to get client credentials URL, added to account info */
-            HttpRequest authorizedAccountInfoRequest = HttpRequest.newBuilder(URI.create(oidcIssuer + ".account/"))
-                    .GET()
-                    .setHeader("Authorization", "CSS-Account-Token " + authorizationToken)
-                    .build();
-            HttpResponse<String> authorizedAccountInfoResponse = httpClient.send(authorizedAccountInfoRequest, HttpResponse.BodyHandlers.ofString());
-            String authorizedAccountInfoStr = authorizedAccountInfoResponse.body();
-            if (authorizedAccountInfoResponse.statusCode() != HttpStatus.SC_OK) {
-                log.error("Could not get account info: {}", authorizedAccountInfoStr);
-                throw new Exception("Could not get account info: " + authorizedAccountInfoStr);
+                /* Get oidc info, used to obtain oidc token endpoints */
+                // GET /.well-known/openid-configuration HTTP/1.1
+                HttpRequest oidcInfoRequest = HttpRequest.newBuilder(URI.create(oidcIssuer + ".well-known/openid-configuration"))
+                        .GET().build();
+                HttpResponse<String> oidcInfoResponse = httpClient.send(oidcInfoRequest, HttpResponse.BodyHandlers.ofString());
+                String oidcInfoStr = oidcInfoResponse.body();
+                if (oidcInfoResponse.statusCode() != HttpStatus.SC_OK) {
+                    log.error("Could not get OpenID Connect info: {}", oidcInfoStr);
+                    throw new Exception("Could not get OpenID Connect info: " + oidcInfoStr);
+                }
+                JSONObject oidcInfo = new JSONObject(oidcInfoStr);
+                String oidcTokenEndpoint = oidcInfo.getString("token_endpoint");
+                log.debug("Found oidc token endpoint: {}", oidcTokenEndpoint);
+
+                String dpopJWT = generateJWT(oidcTokenEndpoint, "POST");
+
+                /* POST a request to oidc token endpoint with client credentials to obtain an oidc access token */
+
+                // Generate base64 string of client credentials
+                String clientCredentialsConcatenated = clientCredentialsId + ':' + clientCredentialsSecret;
+                String base64clientCredentials = Base64.getEncoder().encodeToString(clientCredentialsConcatenated.getBytes(StandardCharsets.UTF_8));
+
+                HttpRequest getOidcAccessTokenRequest = HttpRequest.newBuilder(URI.create(oidcTokenEndpoint))
+                        .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials&scope=webid", StandardCharsets.UTF_8))
+                        .setHeader("Authorization", "Basic " + base64clientCredentials)
+                        .setHeader("Content-Type", "application/x-www-form-urlencoded")
+                        .setHeader("DPoP", dpopJWT)
+                        .build();
+                HttpResponse<String> oidcAccessTokenResponse = httpClient.send(getOidcAccessTokenRequest, HttpResponse.BodyHandlers.ofString());
+                String oidcAccessTokenStr = oidcAccessTokenResponse.body();
+                if (oidcAccessTokenResponse.statusCode() != HttpStatus.SC_OK) {
+                    log.error("Could not get OpenID Connect access token: {}", oidcAccessTokenStr);
+                    throw new Exception("Could not get OpenID Connect info: " + oidcAccessTokenStr);
+                }
+                //oidcAccessToken has keys "access_token" and "expires_in".
+                // "expires_in is an integer expressed in seconds e.g. 600
+                long startDate = ((new Date().getTime()) / 1000);
+                JSONObject oidcAccessToken = new JSONObject(oidcAccessTokenStr);
+                oidcAccessToken.put("expires_on", startDate + oidcAccessToken.getInt("expires_in"));
+                oidcAccessTokenStore.put(webId, oidcAccessToken);
+                accessTokenStr = oidcAccessToken.getString("access_token");
+                // token_type should be 'DPoP'
             }
-            JSONObject authorizedAccountInfo = new JSONObject(authorizedAccountInfoStr);
-            String clientCredentialsURL = authorizedAccountInfo.getJSONObject("controls").getJSONObject("account").getString("clientCredentials");
-            log.debug("Found client credentials URL: {}", clientCredentialsURL);
-
-
-            /* Post WebID and token prefix to client credentials URL to get client credentials, to be used at oidc endpoint later on */
-            String webIdAndTokenMessage = "{\"name\": \"my-token\",\"webId\":\"" + webId + "\"}";
-            HttpRequest getOIDCTokenRequest = HttpRequest.newBuilder(URI.create(clientCredentialsURL))
-                    .POST(HttpRequest.BodyPublishers.ofString(webIdAndTokenMessage, StandardCharsets.UTF_8))
-                    .setHeader("Authorization", "CSS-Account-Token " + authorizationToken)
-                    .setHeader("Content-Type", "application/json")
-                    .build();
-            HttpResponse<String> getOIDCTokenResponse = httpClient.send(getOIDCTokenRequest, HttpResponse.BodyHandlers.ofString());
-            String clientCredentialsStr = getOIDCTokenResponse.body();
-            if (getOIDCTokenResponse.statusCode() != HttpStatus.SC_OK) {
-                log.error("Could not get OpenID Connect token info: {}", clientCredentialsStr);
-                throw new Exception("Could not get OpenID Connect token info: " + clientCredentialsStr);
-            }
-            JSONObject clientCredentials = new JSONObject(clientCredentialsStr);
-            String clientCredentialsId = clientCredentials.getString("id");
-            log.debug("Found Client credentials. id: {}", clientCredentialsId);
-            String clientCredentialsSecret = clientCredentials.getString("secret");
-
-
-            /* Get oidc info, used to obtain oidc token endpoints */
-            // GET /.well-known/openid-configuration HTTP/1.1
-            HttpRequest oidcInfoRequest = HttpRequest.newBuilder(URI.create(oidcIssuer + ".well-known/openid-configuration"))
-                    .GET().build();
-            HttpResponse<String> oidcInfoResponse = httpClient.send(oidcInfoRequest, HttpResponse.BodyHandlers.ofString());
-            String oidcInfoStr = oidcInfoResponse.body();
-            if (oidcInfoResponse.statusCode() != HttpStatus.SC_OK) {
-                log.error("Could not get OpenID Connect info: {}", oidcInfoStr);
-                throw new Exception("Could not get OpenID Connect info: " + oidcInfoStr);
-            }
-            JSONObject oidcInfo = new JSONObject(oidcInfoStr);
-            String oidcTokenEndpoint = oidcInfo.getString("token_endpoint");
-            log.debug("Found oidc token endpoint: {}", oidcTokenEndpoint);
-
-            String dpopJWT = generateJWT(oidcTokenEndpoint, "POST");
-
-            /* POST a request to oidc token endpoint with client credentials to obtain an oidc access token */
-
-            // Generate base64 string of client credentials
-            String clientCredentialsConcatenated = clientCredentialsId + ':' + clientCredentialsSecret;
-            String base64clientCredentials = Base64.getEncoder().encodeToString(clientCredentialsConcatenated.getBytes(StandardCharsets.UTF_8));
-
-            HttpRequest getOidcAccessTokenRequest = HttpRequest.newBuilder(URI.create(oidcTokenEndpoint))
-                    .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials&scope=webid", StandardCharsets.UTF_8))
-                    .setHeader("Authorization", "Basic " + base64clientCredentials)
-                    .setHeader("Content-Type", "application/x-www-form-urlencoded")
-                    .setHeader("DPoP", dpopJWT)
-                    .build();
-            HttpResponse<String> oidcAccessTokenResponse = httpClient.send(getOidcAccessTokenRequest, HttpResponse.BodyHandlers.ofString());
-            String oidcAccessTokenStr = oidcAccessTokenResponse.body();
-            if (oidcAccessTokenResponse.statusCode() != HttpStatus.SC_OK) {
-                log.error("Could not get OpenID Connect access token: {}", oidcAccessTokenStr);
-                throw new Exception("Could not get OpenID Connect info: " + oidcAccessTokenStr);
-            }
-            JSONObject oidcAccessToken = new JSONObject(oidcAccessTokenStr);
-            return oidcAccessToken.getString("access_token");
-            // token_type should be 'DPoP'
-            // We don't use 'expires' at the moment because we send the next request immediately
-            // and don't know if the next request would go to the same server. This can be checked
-            // for in future implementations.
+            return accessTokenStr;
         } catch (Throwable e) { // This is to catch runtime exceptions as well.
             throw new Exception(e);
         }
-
     }
 
     /**

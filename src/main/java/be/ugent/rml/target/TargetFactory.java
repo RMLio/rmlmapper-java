@@ -7,6 +7,7 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +20,21 @@ public class TargetFactory {
     // The path used when local paths are not absolute.
     private final String basePath;
     private static final Logger logger = LoggerFactory.getLogger(TargetFactory.class);
+    // the HttpRequestTargetHelper is instantiated once, in the TargetFactory, because it stores reusable client credentials and access tokens
+    // it is used only for targets of the type HttpRequest
+    private HttpRequestTargetHelper httpRequestTargetHelper;
 
     /**
      * The constructor of the TargetFactory.
      */
     public TargetFactory(String basePath) {
+
         this.basePath = basePath;
+        try {
+            this.httpRequestTargetHelper = new HttpRequestTargetHelper();
+        } catch (JoseException e) {
+            logger.error("Failed to initialize new HttpRequestTargetHelper: {}", e.getMessage());
+        }
     }
 
     private void detectLDESEventStreamTarget(Term logicalTarget, List<Quad> metadata, QuadStore rmlStore, QuadStore outputStore) {
@@ -54,7 +64,7 @@ public class TargetFactory {
 
                     // LDES RDF type EventStream
                     metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.RDF + "type"),
-                        new NamedNode(NAMESPACES.LDES + "EventStream")));
+                            new NamedNode(NAMESPACES.LDES + "EventStream")));
                 }
                 catch (IndexOutOfBoundsException e) {
                     logger.debug("No LDES metadata will be generated since no LDES base IRI was specified");
@@ -73,7 +83,7 @@ public class TargetFactory {
                     if (ldes_iri != null) {
                         try {
                             Term shape = Utils.getObjectsFromQuads(rmlStore.getQuads(ldes,
-                                new NamedNode(NAMESPACES.TREE + "shape"), null)).get(0);
+                                    new NamedNode(NAMESPACES.TREE + "shape"), null)).get(0);
                             logger.debug("SHACL shape: {}", shape.getValue());
                             // TODO: Handle embedded SHACL shapes in RML mapping rules as well.
                             metadata.add(new Quad(ldes_iri, new NamedNode(NAMESPACES.TREE + "shape"), shape));
@@ -81,7 +91,7 @@ public class TargetFactory {
                             logger.debug("No TREE SHACL shape specified for LDES.");
                         }
                     }
-                    
+
                     // Optional versionOf path
                     try {
                         versionOfPathObj = Utils.getObjectsFromQuads(rmlStore.getQuads(ldes,
@@ -179,7 +189,7 @@ public class TargetFactory {
                             List<Term> timestampObj = Utils.getObjectsFromQuads(outputStore.getQuads(m, timestampPathObj, null));
                             if (timestampObj.isEmpty()) {
                                 outputStore.addQuad(new Quad(memberIRI, timestampPathObj,
-                                    new Literal(Instant.ofEpochMilli(currentTime).toString(), new NamedNode(NAMESPACES.XSD + "dateTime"))));
+                                        new Literal(Instant.ofEpochMilli(currentTime).toString(), new NamedNode(NAMESPACES.XSD + "dateTime"))));
                             } else {
                                 for (Term v : timestampObj) {
                                     outputStore.addQuad(new Quad(memberIRI, timestampPathObj, v));
@@ -349,7 +359,7 @@ public class TargetFactory {
                     Map<String, String> httpRequestInfo = parseHttpRequest(rmlStore, t);
                     String absoluteURI = getRequiredValue(t,new NamedNode(NAMESPACES.HTV + "absoluteURI"), rmlStore);
                     httpRequestInfo.put("absoluteURI", absoluteURI);
-                    target = new DirectHttpRequestTarget(httpRequestInfo, serializationFormat, metadata);
+                    target = new DirectHttpRequestTarget(httpRequestInfo, serializationFormat, metadata, httpRequestTargetHelper);
                     break;
                 }
                 case NAMESPACES.RMLE + "LinkedHttpRequest": {
@@ -359,7 +369,7 @@ public class TargetFactory {
                     String linkRelation = getRequiredValue(t,new NamedNode(NAMESPACES.RMLE + "linkRelation"), rmlStore);
                     httpRequestInfo.put("linkingAbsoluteURI", linkingAbsoluteURI);
                     httpRequestInfo.put("linkRelation", linkRelation);
-                    target = new LinkedHttpRequestTarget(httpRequestInfo, serializationFormat, metadata);
+                    target = new LinkedHttpRequestTarget(httpRequestInfo, serializationFormat, metadata, httpRequestTargetHelper);
                     break;
                 }
                 default: {

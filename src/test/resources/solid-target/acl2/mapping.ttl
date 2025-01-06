@@ -9,7 +9,7 @@
 @prefix rmlt: <http://semweb.mmlab.be/ns/rml-target#>.
 @prefix formats: <http://www.w3.org/ns/formats/>.
 @prefix acl: <http://www.w3.org/ns/auth/acl#>.
-@prefix rmle: <https://rml.io/ns/extensions#>.
+@prefix rmle: <https://w3id.org/imec/rml/ns/extensions#>.
 @prefix htv:  <http://www.w3.org/2011/http#>.
 @prefix void: <http://rdfs.org/ns/void#>.
 

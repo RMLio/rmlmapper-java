@@ -137,7 +137,7 @@ public class HttpRequestTargetTest extends TestCore {
         int i = 0;
         while (i < absoluteURIs.length) {
             Map<String, String> solidTargetInfo = getHttpRequestInfo(users[i], absoluteURIs[i], "GET");
-            compareResourceWithOutput(outPaths[i], solidTargetInfo);
+            compareResourceWithOutput(outPaths[i], solidTargetInfo, helper);
             helper.executeHttpRequest(getHttpRequestInfo("user1", absoluteURIs[i], "DELETE"));
             i++;
         }
@@ -156,9 +156,8 @@ public class HttpRequestTargetTest extends TestCore {
         return httpRequestInfo;
     }
 
-    private void compareResourceWithOutput(String outPath, Map<String,String> httpRequestInfo) throws Exception {
+    private void compareResourceWithOutput(String outPath, Map<String,String> httpRequestInfo, HttpRequestTargetHelper helper) throws Exception {
         // retrieve resource from solid pod
-        HttpRequestTargetHelper helper = new HttpRequestTargetHelper();
         httpRequestInfo.put("methodName", "GET");
         String response = helper.executeHttpRequest(httpRequestInfo);
         InputStream responseStream = new ByteArrayInputStream(response.getBytes());

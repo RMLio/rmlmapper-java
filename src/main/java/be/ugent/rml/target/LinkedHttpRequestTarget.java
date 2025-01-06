@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class LinkedHttpRequestTarget extends HttpRequestTarget {
 
-    public LinkedHttpRequestTarget(Map<String, String> httpRequestInfo, String serializationFormat, List<Quad> metadata) throws IOException {
-        super(httpRequestInfo, serializationFormat, metadata);
+    public LinkedHttpRequestTarget(Map<String, String> httpRequestInfo, String serializationFormat, List<Quad> metadata, HttpRequestTargetHelper httpRequestTargetHelper) throws IOException {
+        super(httpRequestInfo, serializationFormat, metadata, httpRequestTargetHelper);
     }
 
     @Override
@@ -34,8 +34,7 @@ public class LinkedHttpRequestTarget extends HttpRequestTarget {
     public void close() {
         super.close();
         try {
-            HttpRequestTargetHelper helper = new HttpRequestTargetHelper();
-            helper.executeLinkedHttpRequest(httpRequestInfo);
+            this.httpRequestTargetHelper.executeLinkedHttpRequest(httpRequestInfo);
         } catch (Exception e) {
             logger.error("Failed to close http request target linked to {} with link relation {}: {}",
                     this.httpRequestInfo.get("linkingAbsoluteURI"), this.httpRequestInfo.get("linkRelation"), e.getMessage());

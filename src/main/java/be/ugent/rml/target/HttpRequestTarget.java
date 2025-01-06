@@ -18,7 +18,7 @@ public abstract class HttpRequestTarget implements Target {
     private final ByteArrayOutputStream byteArrayOutputStream;
     protected final Logger logger;
     private final String serializationFormat;
-
+    protected HttpRequestTargetHelper httpRequestTargetHelper;
 
     private static final Map<String, String> serializationFormats = Map.of(
             "ntriples","application/n-triples",
@@ -35,12 +35,14 @@ public abstract class HttpRequestTarget implements Target {
      * @param serializationFormat String with the serialization format
      * @param metadata a list of Quads containing metadata
      */
-    public HttpRequestTarget(Map<String, String> httpRequestInfo, String serializationFormat, List<Quad> metadata) {
+    public HttpRequestTarget(Map<String, String> httpRequestInfo, String serializationFormat, List<Quad> metadata,
+                             HttpRequestTargetHelper httpRequestTargetHelper) {
         this.httpRequestInfo = httpRequestInfo;
         this.metadata = metadata;
         this.serializationFormat = serializationFormat;
         byteArrayOutputStream = new ByteArrayOutputStream();
         this.logger = LoggerFactory.getLogger(HttpRequestTarget.class);
+        this.httpRequestTargetHelper = httpRequestTargetHelper;
     }
 
     /**
