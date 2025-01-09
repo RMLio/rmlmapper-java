@@ -285,7 +285,7 @@ public class MappingFactory {
                         Map<String, Object[]> parameters = new HashMap<>();
 
                         boolean ignoreDoubleQuotesInParent = this.areDoubleQuotesIgnored(store, parentTriplesMap);
-                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0), ignoreDoubleQuotesInParent);
+                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0), ignoreDoubleQuotesInParent, strictMode.equals(StrictMode.STRICT));
                         Object[] detailsParent = {"parent", parent};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
 
@@ -680,7 +680,7 @@ public class MappingFactory {
             List<Term> functionValues = getObjectsFromQuads(store.getQuads(logicalTargetMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
             if (functionValues.isEmpty()) {
                 //similar to subjects, dynamic targets should always be uri
-                functionExecutor = RecordFunctionExecutorFactory.generate(store, logicalTargetMap, true, ignoreDoubleQuotes);
+                functionExecutor = RecordFunctionExecutorFactory.generate(store, logicalTargetMap, true, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT));
             } else {
                 try {
                     functionExecutor = parseFunctionTermMap(functionValues.get(0));
