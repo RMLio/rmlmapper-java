@@ -22,6 +22,9 @@ to the latest version by the W3C Community Group.
 ### Fixed
 - GREL array functions handling.
 
+### Fixed
+- Added all known content types for newline delimited JSON
+
 ## [7.1.2] - 2024-09-19
 
 ### Fixed

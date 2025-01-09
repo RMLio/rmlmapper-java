@@ -10,7 +10,10 @@ public class JSONRecordFactory extends IteratorFormat {
     @Override
     protected SourceIterator getIterator(Access access, String iterator) throws Exception {
         String contentType = access.getContentType();
-        if (contentType.equals("jsonl") || contentType.equals("application/jsonl")) {
+        if (contentType.equals("jsonl")
+                || contentType.equals("application/jsonl")
+                || contentType.equals("x-ld+ndjson")
+                || contentType.equals("application/x-ld+ndjson")) {
             return new JSONLinesSourceIterator(access, iterator);
         }
         return new JSONSourceIterator(access, iterator);
