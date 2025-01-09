@@ -163,7 +163,7 @@ public class MappingOptimizer {
                     references.add(linkedQuad.getObject().getValue());
                 } else if (predicate.equals(new NamedNode(NAMESPACES.RML2 + "template"))) {
                     String template = linkedQuad.getObject().getValue();
-                    List<Extractor> extractors = Utils.parseTemplate(template, false);
+                    List<Extractor> extractors = Utils.parseTemplate(template, false, false);
                     for (Extractor extractor : extractors) {
                         if (extractor instanceof ReferenceExtractor) {
                             references.add(((ReferenceExtractor) extractor).getReference());

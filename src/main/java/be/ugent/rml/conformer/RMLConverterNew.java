@@ -61,7 +61,6 @@ public class RMLConverterNew implements Converter {
         put(RR + "defaultGraph", RML2 + "defaultGraph");
         put(RML + "LanguageMap", RML2 + "LanguageMap");
         put(RMLT + "LogicalTarget", RML2 + "LogicalTarget");
-        put(RR + "GraphMap", RML2 + "GraphMap");
         put(RMLT + "Target", RML2 + "Target");
     }};
 

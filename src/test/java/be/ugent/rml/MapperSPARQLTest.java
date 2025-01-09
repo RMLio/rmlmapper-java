@@ -23,7 +23,6 @@ import static be.ugent.rml.DBTestCore.deleteTempMappingFile;
 public class MapperSPARQLTest extends TestCore {
 
     private static int PORTNUMBER_SPARQL;
-    private FusekiServer.Builder builder;
     private FusekiServer server;
 
     public static Stream<Arguments> data() {
@@ -95,8 +94,7 @@ public class MapperSPARQLTest extends TestCore {
 
     @BeforeEach
     public void intialize() {
-        builder = FusekiServer.create();
-        builder.port(PORTNUMBER_SPARQL);
+
     }
 
     @BeforeAll
@@ -116,9 +114,12 @@ public class MapperSPARQLTest extends TestCore {
         String outputPath = "test-cases/" + testCaseName + "-SPARQL/output.nq";
         String tempMappingPath = replacePortInMappingFile(mappingPath, "" + PORTNUMBER_SPARQL);
 
-        builder.add("/ds"+(1), RDFDataMgr.loadDataset(resourcePath));
-        this.server = builder.build();
-        this.server.start();
+        server = FusekiServer.create()
+                .port(PORTNUMBER_SPARQL)
+                .add("/ds"+(1), RDFDataMgr.loadDataset(resourcePath))
+                .build();
+
+        server.start();
 
         // mapping
         if (!expectedException) {
@@ -134,6 +135,7 @@ public class MapperSPARQLTest extends TestCore {
     public void stopServer() {
         if (server != null) {
             server.stop();
+            server = null;
         }
 
         System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");

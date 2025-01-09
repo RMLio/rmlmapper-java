@@ -1,23 +1,24 @@
 package be.ugent.rml.extractor;
 
 import be.ugent.idlab.knows.dataio.record.Record;
+import be.ugent.idlab.knows.dataio.record.RecordValue;
 import be.ugent.rml.functions.SingleRecordFunctionExecutor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ReferenceExtractor implements Extractor, SingleRecordFunctionExecutor {
 
     public String reference;
-    private boolean ignoreDoubleQuotes;
+    private final boolean ignoreDoubleQuotes;
+    private final boolean strictReferenceResolution;
 
-    public ReferenceExtractor(String reference, boolean ignoreDoubleQuotes) {
+    public ReferenceExtractor(String reference, boolean ignoreDoubleQuotes, boolean strictReferenceResolution) {
         this.reference = reference;
         this.ignoreDoubleQuotes = ignoreDoubleQuotes;
-    }
-
-    public ReferenceExtractor(String reference) {
-        this(reference, false);
+        this.strictReferenceResolution = strictReferenceResolution;
     }
 
     @Override
@@ -28,7 +29,21 @@ public class ReferenceExtractor implements Extractor, SingleRecordFunctionExecut
             temp = temp.substring(1, temp.length() - 1);
         }
 
-        return record.get(temp);
+        RecordValue recordValue = record.get(temp);
+
+        if (recordValue.isOk()) {
+            Object value = recordValue.getValue();
+            if (value instanceof Iterable<?>) {
+                return new ArrayList<>((Collection<?>) value);
+            } else {
+                return List.of(value);
+            }
+        } else if (recordValue.isEmpty() ||
+                recordValue.isNotFound() && !strictReferenceResolution) {
+            return List.of();
+        } else {
+            throw new IllegalArgumentException(recordValue.getMessage());
+        }
     }
 
     @Override

@@ -30,7 +30,7 @@ public class MapperODSTest extends TestCore {
 
     @Test
     public void evaluate_0002c_ODS() {
-        doMapping("./test-cases/RMLTC0002c-ODS/mapping.ttl", "./test-cases/RMLTC0002c-ODS/output.nq");
+        doMappingExpectError("./test-cases/RMLTC0002c-ODS/mapping.ttl", StrictMode.STRICT);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MapperODSTest extends TestCore {
 
     @Test
     public void evaluate_0007h_ODS() {
-        doMapping("./test-cases/RMLTC0007h-ODS/mapping.ttl", "./test-cases/RMLTC0007h-ODS/output.nq");
+        doMappingExpectError("./test-cases/RMLTC0007h-ODS/mapping.ttl");
     }
 
     @Test

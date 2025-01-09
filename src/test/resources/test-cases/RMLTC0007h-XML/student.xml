@@ -3,6 +3,7 @@
 <students>
   <student>
     <ID>10</ID>
-    <Name>Venus</Name>
+    <FirstName>Venus</FirstName>
+    <LastName>Williams</LastName>
   </student>
 </students>

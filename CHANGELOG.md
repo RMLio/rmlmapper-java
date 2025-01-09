@@ -7,11 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+<<<<<<< HEAD
 ### Fixed
 - Optimization for authentication with CSS Client Credentials
 - Update URI of prefix 'rmle:' to persistent w3id URI: 'https://w3id.org/imec/rml/ns/extensions#'
 
 ## [7.2.0] - 2024-12-09
+=======
+### Changed
+- Some tests are changed because record error handling has changed.
+>>>>>>> da10cd7c (Update to DataIO 2.0.0)
 
 ### Added
 - CLI option `--convert-mapping` to convert your existing R2RML and older RML mappings 
@@ -24,6 +29,14 @@ to the latest version by the W3C Community Group.
 
 ### Fixed
 - Added all known content types for newline delimited JSON
+- Updated all Jena library dependencies to version 5.0.0
+- Added explicit dependencies on commons-io:2.18.0, commons-compress-1.27.1 and commons-lang3:3.17.0 to avoid runtime errors.
+- Updated rdf4j-client to 5.1.0
+- Updated wiremock to 3.9.1 (3.10.0 contains bugs in combination with saxon).
+- Updated grel-functions-java to v0.10.0
+- Updated dataio to 2.0.0, *the* reason for most changes ;)
+- Updated testcontainers to 1.18.3
+- Inconsistencies in test case RMLTC0007h (mapping + all formats) and RMLTC0009a (JSON)
 
 ## [7.1.2] - 2024-09-19
 

@@ -300,7 +300,7 @@ public class ArgumentsTest extends TestCore {
             byte[] encoded = Files.readAllBytes(Paths.get(actualJSONPath));
             String content = new String(encoded, StandardCharsets.UTF_8);
 
-            assertTrue(content.contains("\"http://xmlns.com/foaf/0.1/name\" : ["));
+            assertTrue(content.contains("\"http://xmlns.com/foaf/0.1/name\": ["));
         } catch (IOException e) {
             e.printStackTrace();
         }

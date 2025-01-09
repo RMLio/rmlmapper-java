@@ -115,7 +115,7 @@ public class MapperSQLServerTest extends DBTestCore {
         if (!expectedException) {
             doMapping(tempMappingPath, outputPath);
         } else {
-            doMappingExpectError(tempMappingPath);
+            doMappingExpectError(tempMappingPath, StrictMode.STRICT);
         }
 
         deleteTempMappingFile(tempMappingPath);

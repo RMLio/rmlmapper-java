@@ -23,7 +23,7 @@ public class MapperPostgresR2RMLTest extends PostgresTestCore {
                 Arguments.of("R2RMLTC0001b", false, BOTH),
                 Arguments.of("R2RMLTC0002a", false, BOTH),
                 Arguments.of("R2RMLTC0002b", false, BOTH),
-                Arguments.of("R2RMLTC0002c", true, BOTH),
+                Arguments.of("R2RMLTC0002c", true, STRICT_ONLY),
                 Arguments.of("R2RMLTC0002d", false, BOTH),
                 Arguments.of("R2RMLTC0002e", true, BOTH),
 //                Arguments.of("R2RMLTC0002f", true, BOTH), Issue #189

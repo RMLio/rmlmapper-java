@@ -28,7 +28,7 @@ public class MapperPostgresCSVTest extends PostgresTestCore {
                 Arguments.of("RMLTC0001b", false, BOTH),
                 Arguments.of("RMLTC0002a", false, BOTH),
                 Arguments.of("RMLTC0002b", false, BOTH),
-                Arguments.of("RMLTC0002c", true, BOTH),
+                Arguments.of("RMLTC0002c", true, STRICT_ONLY),
                 Arguments.of("RMLTC0002d", false, BOTH),
                 Arguments.of("RMLTC0002e", true, BOTH),
 //                Arguments.of("RMLTC0002f", false, BOTH),

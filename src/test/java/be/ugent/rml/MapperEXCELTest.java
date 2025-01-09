@@ -30,7 +30,7 @@ public class MapperEXCELTest extends TestCore {
 
     @Test
     public void evaluate_0002c_EXCEL() {
-        doMapping("./test-cases/RMLTC0002c-EXCEL/mapping.ttl", "./test-cases/RMLTC0002c-EXCEL/output.nq");
+        doMappingExpectError("./test-cases/RMLTC0002c-EXCEL/mapping.ttl", StrictMode.STRICT);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MapperEXCELTest extends TestCore {
 
     @Test
     public void evaluate_0007h_EXCEL() {
-        doMapping("./test-cases/RMLTC0007h-EXCEL/mapping.ttl", "./test-cases/RMLTC0007h-EXCEL/output.nq");
+        doMappingExpectError("./test-cases/RMLTC0007h-EXCEL/mapping.ttl");
     }
 
     @Test

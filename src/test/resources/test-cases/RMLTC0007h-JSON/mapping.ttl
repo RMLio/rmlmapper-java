@@ -15,14 +15,14 @@
   ];
 
   rr:subjectMap [ 
-    rr:template "http://example.com/Student/{ID}/{Name}";
-    rr:graphMap [ rml:reference "Name"; rr:termType rr:Literal; ]
+    rr:template "http://example.com/Student/{ID}/{FirstName}";
+    rr:graphMap [ rml:reference "LastName"; rr:termType rr:Literal; ]
   ];
 
   rr:predicateObjectMap [ 
     rr:predicate foaf:name;
     rr:objectMap [
-      rml:reference "Name"
+      rml:reference "LastName"
     ]
   ].
 

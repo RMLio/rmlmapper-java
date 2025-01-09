@@ -1,6 +1,7 @@
 package be.ugent.rml.records;
 
 import be.ugent.idlab.knows.dataio.record.Record;
+import be.ugent.idlab.knows.dataio.record.RecordValue;
 import be.ugent.knows.idlabFunctions.IDLabFunctions;
 
 import java.util.Collections;
@@ -19,7 +20,7 @@ public class MarkerRecord extends Record {
      * @return a list of objects for the column.
      */
     @Override
-    public List<Object> get(String value) {
-        return marker;
+    public RecordValue get(String value) {
+        return RecordValue.ok(marker);
     }
 }

@@ -41,7 +41,7 @@ public class MapperJSONTest extends TestCore {
 
     @Test
     public void evaluate_0002c_JSON() {
-        doMapping("./test-cases/RMLTC0002c-JSON/mapping.ttl", "./test-cases/RMLTC0002c-JSON/output.nq");
+        doMappingExpectError("./test-cases/RMLTC0002c-JSON/mapping.ttl", StrictMode.STRICT);
     }
 
     @Test

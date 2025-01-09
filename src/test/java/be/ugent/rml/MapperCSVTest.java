@@ -35,7 +35,7 @@ public class MapperCSVTest extends TestCore {
 
     @Test
     public void evaluate_0002c_CSV() {
-        doMappingExpectError("./test-cases/RMLTC0002c-CSV/mapping.ttl");
+        doMappingExpectError("./test-cases/RMLTC0002c-CSV/mapping.ttl", StrictMode.STRICT);
     }
 
     @Test

@@ -1,6 +1,8 @@
+USE TestDB;
 DROP TABLE IF EXISTS student;
 CREATE TABLE student (
   "ID" INTEGER,
-  "Name" VARCHAR(50)
+  "FirstName" VARCHAR(50),
+  "LastName" VARCHAR(50)
 );
-INSERT INTO student values ('10', 'Venus');
+INSERT INTO student values ('10', 'Venus', 'Williams');

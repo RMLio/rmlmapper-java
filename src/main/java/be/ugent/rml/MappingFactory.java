@@ -97,7 +97,7 @@ public class MappingFactory {
                 if (functionValues.isEmpty()) {
                     //checking if we are dealing with a Blank Node as subject
                     if (isBlankNode) {
-                        SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, subjectmap, true, ignoreDoubleQuotes);
+                        SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, subjectmap, true, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT));
 
                         if (executor != null) {
                             generator = new BlankNodeGenerator(executor);
@@ -106,7 +106,7 @@ public class MappingFactory {
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
-                        generator = new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, subjectmap, true, ignoreDoubleQuotes), baseIRI, strictMode);
+                        generator = new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, subjectmap, true, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT)), baseIRI, strictMode);
                     }
                 } else {
                     SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
@@ -224,7 +224,7 @@ public class MappingFactory {
 
         if (functionValues.isEmpty()) {
             boolean encodeIRI = termType != null && termType.getValue().equals(NAMESPACES.RML2 + "IRI");
-            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, encodeIRI, ignoreDoubleQuotes);
+            SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, objectmap, encodeIRI, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT));
 
             if (parentTriplesMaps.isEmpty() && parentTermMaps.isEmpty()) {
                 TermGenerator oGen;
@@ -289,7 +289,7 @@ public class MappingFactory {
                         Object[] detailsParent = {"parent", parent};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
 
-                        SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0), ignoreDoubleQuotes);
+                        SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0), ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT));
                         Object[] detailsChild = {"child", child};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 
@@ -373,7 +373,7 @@ public class MappingFactory {
             TermGenerator generator;
 
             if (functionValues.isEmpty()) {
-                SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, graphMap, true, ignoreDoubleQuotes);
+                SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, graphMap, true, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT));
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RML2 + "IRI"))) {
                     generator = new NamedNodeGenerator(executor, baseIRI, strictMode);
@@ -428,7 +428,7 @@ public class MappingFactory {
 
             if (functionValues.isEmpty()) {
                 predicateMappingInfos.add(new MappingInfo(predicateMap,
-                        new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false, ignoreDoubleQuotes), baseIRI, strictMode),
+                        new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT)), baseIRI, strictMode),
                         targets, targetGenerators));
             } else {
                 SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
@@ -552,7 +552,7 @@ public class MappingFactory {
             List<Term> functionValues = getObjectsFromQuads(store.getQuads(languageMap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
 
             if (functionValues.isEmpty()) {
-                executors.add(RecordFunctionExecutorFactory.generate(store, languageMap, false, ignoreDoubleQuotes));
+                executors.add(RecordFunctionExecutorFactory.generate(store, languageMap, false, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT)));
             } else {
                 executors.add(parseFunctionTermMap(functionValues.get(0)));
             }
