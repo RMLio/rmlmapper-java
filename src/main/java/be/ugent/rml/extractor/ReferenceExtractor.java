@@ -31,15 +31,15 @@ public class ReferenceExtractor implements Extractor, SingleRecordFunctionExecut
 
         RecordValue recordValue = record.get(temp);
 
-        if (recordValue.isOk()) {
+        if (recordValue.isOk()) { // This means no error occurred during reference resolving and the value is not a null value
             Object value = recordValue.getValue();
             if (value instanceof Iterable<?>) {
                 return new ArrayList<>((Collection<?>) value);
             } else {
                 return List.of(value);
             }
-        } else if (recordValue.isEmpty() ||
-                recordValue.isNotFound() && !strictReferenceResolution) {
+        } else if (recordValue.isEmpty() ||  // The record has a null value
+                recordValue.isNotFound() && !strictReferenceResolution) {   // The reference has not been found (e.g. nu field with that name)
             return List.of();
         } else {
             throw new IllegalArgumentException(recordValue.getMessage());
