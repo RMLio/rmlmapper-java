@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Optimization for authentication with CSS Client Credentials
 - Update URI of prefix 'rmle:' to persistent w3id URI: 'https://w3id.org/imec/rml/ns/extensions#'
 - Added all known content types for newline delimited JSON
+- Fixed the return type of GREL array slice function in function description.
 - Updated all Jena library dependencies to version 5.0.0
 - Added explicit dependencies on commons-io:2.18.0, commons-compress-1.27.1 and commons-lang3:3.17.0 to avoid runtime errors.
 - Updated rdf4j-client to 5.1.0

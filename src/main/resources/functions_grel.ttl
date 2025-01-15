@@ -113,7 +113,7 @@ grel:array_slice
     fno:name            "slice" ;
     dcterms:description "slice" ;
     fno:expects         ( grel:param_a grel:p_int_i_from grel:p_int_i_opt_to ) ;
-    fno:returns         ( grel:output_number ) .
+    fno:returns         ( grel:output_array ) .
 
 #REVERSE
 
