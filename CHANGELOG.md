@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Upgraded logback-core to 1.5.16 to fix 2 security CVEs.
+
 ## [7.3.0] - 2025-01-22
 
 ### Changed

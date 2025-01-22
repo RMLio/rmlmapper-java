@@ -148,7 +148,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.14</version>
+            <version>1.5.16</version>
         </dependency>
 
         <!-- Force these versions of commons libraries to avoid runtime errors -->
