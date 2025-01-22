@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [7.3.0] - 2025-01-22
+
 ### Changed
 - Some tests are changed because record error handling has changed.
 
@@ -780,6 +782,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[7.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.2.0...v7.3.0
 [7.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.2...v7.2.0
 [7.1.2]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.1...v7.1.2
 [7.1.1]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.0...v7.1.1
