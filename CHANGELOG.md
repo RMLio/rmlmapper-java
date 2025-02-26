@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Updated Function Agent to 1.2.1 because of a bugfix (See [this issue in Gitlab](https://gitlab.ilabt.imec.be/KNoWS/fno/proc/function-component/-/issues/23), fixes [#249](https://github.com/RMLio/rmlmapper-java/issues/249) on GitHub;
+
 ## [7.3.1] - 2025-01-22
 
 ### Fixed
