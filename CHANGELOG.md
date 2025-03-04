@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [7.3.2] - 2025-03-04
+
 ### Fixed
 - Updated Function Agent to 1.2.1 because of a bugfix (See [this issue in Gitlab](https://gitlab.ilabt.imec.be/KNoWS/fno/proc/function-component/-/issues/23), fixes [#249](https://github.com/RMLio/rmlmapper-java/issues/249) on GitHub;
 
@@ -791,6 +793,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[7.3.2]: https://github.com/RMLio/rmlmapper-java/compare/v7.3.1...v7.3.2
 [7.3.1]: https://github.com/RMLio/rmlmapper-java/compare/v7.3.0...v7.3.1
 [7.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.2.0...v7.3.0
 [7.2.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.1.2...v7.2.0
