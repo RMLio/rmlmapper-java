@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Better handle unsupported reference formulation (See [issue 247](https://github.com/RMLio/rmlmapper-java/issues/247))
+
 ## [7.3.2] - 2025-03-04
 
 ### Fixed

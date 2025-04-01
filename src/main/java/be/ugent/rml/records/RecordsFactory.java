@@ -137,6 +137,7 @@ public class RecordsFactory {
                 // Select the Record Factory based on the reference formulation.
                 if (!referenceFormulationRecordFactoryMap.containsKey(referenceFormulation)) {
                     logger.error("Referenceformulation {} is unsupported!", referenceFormulation);
+		    return List.of();
                 }
                 ReferenceFormulationRecordFactory factory = referenceFormulationRecordFactoryMap.get(referenceFormulation);
                 records = factory.getRecords(access, logicalSource, rmlStore);
