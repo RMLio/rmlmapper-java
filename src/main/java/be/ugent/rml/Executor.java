@@ -373,7 +373,7 @@ public class Executor {
                 p -> objects.forEach(
                         o -> graphs.forEach(
                                 g -> {
-                                    if (g.getTerm().equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
+                                    if (g != null && g.getTerm().equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
                                         results.add(new PredicateObjectGraph(p, o, null));
                                     } else {
                                         results.add(new PredicateObjectGraph(p, o, g));

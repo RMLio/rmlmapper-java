@@ -202,8 +202,16 @@ public class MappingFactory {
             SingleRecordFunctionExecutor fn = new ConstantExtractor(o.getValue());
 
             if (o instanceof Literal) {
-                Term datatype = new NamedNode(((Literal) o).getDatatype().toString());
-                gen = new LiteralGenerator(fn, datatype);
+                if (((Literal) o).getDatatype() != null) {
+                    Term datatype = new NamedNode(((Literal) o).getDatatype().toString());
+                    gen = new LiteralGenerator(fn, datatype);
+                } else if (((Literal) o).getLanguage().isPresent()) {
+                    SingleRecordFunctionExecutor executor = new ConstantExtractor(((Literal) o).getLanguage().get());
+                    gen = new LiteralGenerator(fn, executor);
+                } else {
+                    gen = new LiteralGenerator(fn);
+                }
+
             } else {
                 gen = new NamedNodeGenerator(fn, baseIRI, strictMode);
             }
