@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Better handle unsupported reference formulation (See [issue 247](https://github.com/RMLio/rmlmapper-java/issues/247))
 - Graph Maps with default graph must not be ignored (See [issue 252](https://github.com/RMLio/rmlmapper-java/issues/252))
+- Honor datatypes for constants (See [issue 251](https://github.com/RMLio/rmlmapper-java/issues/251))
 
 ## [7.3.2] - 2025-03-04
 

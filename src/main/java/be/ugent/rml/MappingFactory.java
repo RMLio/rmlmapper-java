@@ -202,7 +202,8 @@ public class MappingFactory {
             SingleRecordFunctionExecutor fn = new ConstantExtractor(o.getValue());
 
             if (o instanceof Literal) {
-                gen = new LiteralGenerator(fn);
+                Term datatype = new NamedNode(((Literal) o).getDatatype().toString());
+                gen = new LiteralGenerator(fn, datatype);
             } else {
                 gen = new NamedNodeGenerator(fn, baseIRI, strictMode);
             }
