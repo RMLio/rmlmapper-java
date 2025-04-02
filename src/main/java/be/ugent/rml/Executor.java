@@ -372,7 +372,13 @@ public class Executor {
         predicates.forEach(
                 p -> objects.forEach(
                         o -> graphs.forEach(
-                                g -> results.add(new PredicateObjectGraph(p, o, g))
+                                g -> {
+                                    if (g.getTerm().equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
+                                        results.add(new PredicateObjectGraph(p, o, null));
+                                    } else {
+                                        results.add(new PredicateObjectGraph(p, o, g));
+                                    }
+                                }
                         )
                 )
         );
@@ -475,10 +481,8 @@ public class Executor {
                         TermGenerator pogGraphGenerator = pogGraphMappingInfo.getTermGenerator();
                         if (pogGraphGenerator != null) {
                             pogGraphGenerator.generate(record).forEach(term -> {
-                                if (!term.equals(new NamedNode(NAMESPACES.RML2 + "defaultGraph"))) {
-                                    List<Term> graphTargets = getAllTargets(pogGraphMappingInfo, record);
-                                    poGraphs.add(new ProvenancedTerm(term, null, graphTargets));
-                                }
+                                List<Term> graphTargets = getAllTargets(pogGraphMappingInfo, record);
+                                poGraphs.add(new ProvenancedTerm(term, null, graphTargets));
                             });
                         }
                     }
