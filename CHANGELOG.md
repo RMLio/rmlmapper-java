@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [7.3.3] - 2025-04-07
+
 ### Fixed
 - Better handle unsupported reference formulation (See [issue 247](https://github.com/RMLio/rmlmapper-java/issues/247))
 - Graph Maps with default graph must not be ignored (See [issue 252](https://github.com/RMLio/rmlmapper-java/issues/252))
@@ -799,6 +801,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[7.3.3]: https://github.com/RMLio/rmlmapper-java/compare/v7.3.2...v7.3.3
 [7.3.2]: https://github.com/RMLio/rmlmapper-java/compare/v7.3.1...v7.3.2
 [7.3.1]: https://github.com/RMLio/rmlmapper-java/compare/v7.3.0...v7.3.1
 [7.3.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.2.0...v7.3.0
