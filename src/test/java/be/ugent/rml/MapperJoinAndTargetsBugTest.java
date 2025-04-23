@@ -14,7 +14,6 @@ public class MapperJoinAndTargetsBugTest extends TestCore {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/base/StudentTarget"), "./joins-and-targets/students.ttl");
         outPaths.put(new NamedNode("http://example.com/base/SportTarget"), "./joins-and-targets/sports.ttl");
-        //outPaths.put(new NamedNode("rmlmapper://default.store"), "./new-test-cases/io/RMLTTC0002f/default.nq");
         doMapping("./joins-and-targets/mapping.rml.ttl", outPaths);
     }
 }
