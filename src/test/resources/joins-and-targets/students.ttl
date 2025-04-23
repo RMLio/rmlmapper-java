@@ -1,0 +1,5 @@
+
+<http://example.com/resource/student_10> <http://example.com/ontology/practises> <http://example.com/resource/sport_100>;
+  <http://xmlns.com/foaf/0.1/name> "Venus Williams" .
+
+<http://example.com/resource/student_20> <http://xmlns.com/foaf/0.1/name> "Demi Moore" .

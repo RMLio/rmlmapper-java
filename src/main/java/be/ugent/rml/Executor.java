@@ -529,7 +529,16 @@ public class Executor {
                             objects = this.getAllIRIs(pogMapping.getParentTriplesMap());
                         }
 
-                        pogs.addAll(combineMultiplePOGs(predicates, objects, poGraphs));
+                        // Remove targets from objects because they come from another triples map!
+                        // They need to be "cloned" because they are terms that might be cached to use as subject,
+                        // in which case the targets must NOT be removed.
+                        final List<ProvenancedTerm> objectsWithoutTargets = objects.stream().map(provenancedTerm -> {
+                            List<Term> noTargets = Collections.emptyList();
+                            return new ProvenancedTerm(
+                                    provenancedTerm.getTerm(), provenancedTerm.getMetadata(), noTargets);
+                        }).toList();
+
+                        pogs.addAll(combineMultiplePOGs(predicates, objectsWithoutTargets, poGraphs));
                     }
                 }
 
