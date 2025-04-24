@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.GZIPOutputStream;
 
 import static org.apache.commons.io.FileUtils.getFile;
@@ -37,7 +39,7 @@ public class LocalFileTarget implements Target {
      */
     public LocalFileTarget(String path, String basePath, String serializationFormat, String compression, List<Quad> metadata) {
         this.path = path;
-        this.basePath = basePath;
+        this.basePath = Objects.requireNonNullElseGet(basePath, () -> Path.of(path).toAbsolutePath().getParent().toString());
         this.serializationFormat = serializationFormat;
         this.compression = compression;
         this.metadata = metadata;

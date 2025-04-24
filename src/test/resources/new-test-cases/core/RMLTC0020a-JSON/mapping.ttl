@@ -16,6 +16,6 @@
       rml:predicate rdf:type
     ];
   rml:subjectMap [
-      rml:template "{Name}";
+      rml:template "{$.Name}";
       rml:termType rml:IRI
     ] .

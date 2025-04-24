@@ -5,6 +5,7 @@ import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.records.ReferenceFormulation;
 import be.ugent.rml.records.SPARQLResultFormat;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
@@ -78,12 +79,18 @@ public class AccessFactory {
 
                 switch(sourceType.get(0).getValue()) {
                     case NAMESPACES.RML2 + "RelativePathSource":
+                    case NAMESPACES.RML2 + "FilePath":
                         String path = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RML2 + "path"), null)).get(0).getValue();
-                        String root = Utils.getObjectsFromQuads(rmlStore.getQuads(source, new NamedNode(NAMESPACES.RML2 + "root"), null)).get(0).getValue();
-                        if (root.equals(NAMESPACES.RML2 + "MappingDirectory")) {
-                            access = new LocalFileAccess(path, this.mappingPath);
+                        List<Quad> rootNodes = rmlStore.getQuads(source, new NamedNode(NAMESPACES.RML2 + "root"), null);
+                        if (rootNodes.isEmpty()) {
+                            access = new LocalFileAccess(path, null);
                         } else {
-                            access = new LocalFileAccess(path, this.basePath);
+                            String root = Utils.getObjectsFromQuads(rootNodes).get(0).getValue();
+                            if (root.equals(NAMESPACES.RML2 + "MappingDirectory")) {
+                                access = new LocalFileAccess(path, this.mappingPath);
+                            } else {
+                                access = new LocalFileAccess(path, this.basePath);
+                            }
                         }
                         break;
 

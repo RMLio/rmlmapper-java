@@ -456,7 +456,7 @@ public class Main {
 
                 IDLabFunctions.saveState();
 
-                writeOutputTargets(targets, rmlStore, basePath, outputFile, outputFormat);
+                writeOutputTargets(targets, rmlStore, basePath, outputFile, outputFormat, mappingPath);
 
             }
             // Get stop timestamp for post mapping metadata
@@ -480,11 +480,11 @@ public class Main {
         }
     }
 
-    private static void writeOutputTargets(Map<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault) throws Exception {
+    private static void writeOutputTargets(Map<Term, QuadStore> targets, QuadStore rmlStore, String basePath, String outputFileDefault, String outputFormatDefault, String mappingPath) throws Exception {
         boolean hasNoResults = true;
 
         logger.debug("Writing to Targets: {}", targets.keySet());
-        TargetFactory targetFactory = new TargetFactory(basePath);
+        TargetFactory targetFactory = new TargetFactory(basePath, mappingPath);
 
         // check if anything needs to be added to the rmlstore (e.g. dynamic targets)
         if (targets.containsKey(new NamedNode(NAMESPACES.RMLE + "ThisMapping"))){

@@ -17,13 +17,18 @@ public class RecordFunctionExecutorFactory {
         List<Term> templates = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "template"), null));
         List<Term> constants = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "constant"), null));
 
-        if (!references.isEmpty()) {
-            return new ReferenceExtractor(references.get(0).getValue(), ignoreDoubleQuotes, strictReferenceResolution);
-        } else if (!templates.isEmpty()) {
-            return new ConcatFunction(Utils.parseTemplate(templates.get(0).getValue(), ignoreDoubleQuotes, strictReferenceResolution), encodeURI);
-        } else if (!constants.isEmpty()) {
-            return new ConstantExtractor(constants.get(0).getValue());
-        } else {
+        try {
+            if (!references.isEmpty()) {
+                return new ReferenceExtractor(references.get(0).getValue(), ignoreDoubleQuotes, strictReferenceResolution);
+            } else if (!templates.isEmpty()) {
+                return new ConcatFunction(Utils.parseTemplate(templates.get(0).getValue(), ignoreDoubleQuotes, strictReferenceResolution), encodeURI);
+            } else if (!constants.isEmpty()) {
+                return new ConstantExtractor(constants.get(0).getValue());
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Extracting constant or references failed: " + e.getMessage());
             return null;
         }
     }

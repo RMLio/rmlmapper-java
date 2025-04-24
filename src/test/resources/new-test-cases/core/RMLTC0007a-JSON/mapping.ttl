@@ -16,5 +16,5 @@
       rml:predicate rdf:type
     ];
   rml:subjectMap [
-      rml:template "http://example.com/Student/{ID}/{FirstName}"
+      rml:template "http://example.com/Student/{$.ID}/{$.FirstName}"
     ] .

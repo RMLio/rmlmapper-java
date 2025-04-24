@@ -1,26 +1,15 @@
 @prefix rml: <http://w3id.org/rml/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix void: <http://rdfs.org/ns/void#> .
-@prefix formats: <http://www.w3.org/ns/formats/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @base <http://example.com/rules/> .
-
-<#VoIDSourceAccess> a rml:Source, void:Dataset;
-  void:dataDump <https://kg-construct.github.io/rml-resources/resources/rml-io/RMLSTC0006b/Friends.nt>;
-.
 
 <#TriplesMap> a rml:TriplesMap;
   rml:logicalSource [ a rml:LogicalSource;
-    rml:source <#VoIDSourceAccess>;
-    rml:iterator """
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-
-    SELECT ?id ?name ?age WHERE {
-        ?person foaf:name ?name .
-        ?person foaf:age ?age .
-        BIND(REPLACE(STR(?person),"http://example.org/", "") AS ?id) .
-    }
-    """;
-    rml:referenceFormulation formats:SPARQL_Results_CSV;
+    rml:source [ a rml:FilePath, rml:Source;
+      rml:root rml:CurrentWorkingDirectory;
+      rml:path "./Friends.csv"
+    ];
+    rml:referenceFormulation rml:CSV;
   ];
   rml:subjectMap [ a rml:SubjectMap;
     rml:template "http://example.org/{id}";

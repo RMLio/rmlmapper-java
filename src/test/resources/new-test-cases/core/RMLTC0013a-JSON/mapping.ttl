@@ -12,10 +12,10 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:reference "DateOfBirth"
+          rml:reference "$.DateOfBirth"
         ];
       rml:predicate ex:BirthDay
     ];
   rml:subjectMap [
-      rml:template "http://example.com/Person/{ID}/{Name}/{DateOfBirth}"
+      rml:template "http://example.com/Person/{$.ID}/{$.Name}/{$.DateOfBirth}"
     ] .

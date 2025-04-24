@@ -1,0 +1,6 @@
+<http://example.org/25> <http://example.com/employee> "Bob Smith" .
+<http://example.org/25> <http://example.com/employee> "Eve Davis" .
+<http://example.org/25> <http://example.com/employee> "Sarah Lee" .
+<http://example.org/35> <http://example.com/employee> "Liam Brown" .
+<http://example.org/35> <http://example.com/employee> "Olivia Martinez" .
+<http://example.org/35> <http://example.com/employee> "Sophia White" .

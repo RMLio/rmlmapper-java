@@ -1,0 +1,4 @@
+<http://example.org/25> <http://example.com/department> "Engineering" .
+<http://example.org/25> <http://example.com/department> "Marketing" .
+<http://example.org/35> <http://example.com/department> "Research & Development" .
+<http://example.org/35> <http://example.com/department> "Sales" .

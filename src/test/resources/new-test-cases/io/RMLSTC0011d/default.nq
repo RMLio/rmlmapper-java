@@ -1,0 +1,4 @@
+<http://example.org/Engineering> <http://xmlns.com/foaf/0.1/name> "Alice Johnson" .
+<http://example.org/Marketing> <http://xmlns.com/foaf/0.1/name> "John Doe" .
+<http://example.org/Research%20%26%20Development> <http://xmlns.com/foaf/0.1/name> "Emma Wilson" .
+<http://example.org/Sales> <http://xmlns.com/foaf/0.1/name> "Michael Green" .

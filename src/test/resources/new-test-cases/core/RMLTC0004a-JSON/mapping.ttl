@@ -13,13 +13,13 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:reference "Student"
+          rml:reference "$.Student"
         ];
       rml:predicate foaf:name
     ];
   rml:subjectMap [
       rml:class ex:Student;
-      rml:template "http://example.com/{Student}"
+      rml:template "http://example.com/{$.Student}"
     ] .
 
 <http://example.com/base/TriplesMap2> a rml:TriplesMap;
@@ -33,11 +33,11 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:reference "Sport"
+          rml:reference "$.Sport"
         ];
       rml:predicate foaf:name
     ];
   rml:subjectMap [
       rml:class ex:Sport;
-      rml:template "http://example.com/{Sport}"
+      rml:template "http://example.com/{$.Sport}"
     ] .

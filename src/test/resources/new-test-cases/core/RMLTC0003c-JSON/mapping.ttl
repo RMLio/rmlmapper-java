@@ -12,11 +12,11 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:template "{FirstName} {LastName}";
+          rml:template "{$.FirstName} {$.LastName}";
           rml:termType rml:Literal
         ];
       rml:predicate foaf:name
     ];
   rml:subjectMap [
-      rml:template "http://example.com/Student{ID}"
+      rml:template "http://example.com/Student{$.ID}"
     ] .

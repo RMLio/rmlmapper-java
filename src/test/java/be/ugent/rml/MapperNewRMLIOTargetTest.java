@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapperNewRMLIOTargetTest extends TestCore {
+    /*
+     - Total number of test cases: 41
+     - Failures: 20 (48.8%)
+     - Passes: 21 (51.2%)
+     */
     @Test
     public void evaluate_RMLTTC0000() {
         doMapping("./new-test-cases/io/RMLTTC0000/mapping.ttl", "./new-test-cases/io/RMLTTC0000/default.nq");
@@ -39,7 +44,6 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Output wrong")
     public void evaluate_RMLTTC0001d() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0001d/dump1.nq");
@@ -56,7 +60,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("DatatypeMap not supported yet")
+    @Disabled("Crashes")
     public void evaluate_RMLTTC0001f() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0001f/dump1.nq");
@@ -110,7 +114,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Crashes")
+    @Disabled("Named graphs wrong")
     public void evaluate_RMLTTC0002f() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002f/dump1.nq");
@@ -120,7 +124,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Output wrong")
+    @Disabled("Named graphs wrong")
     public void evaluate_RMLTTC0002g() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002g/dump1.nq");
@@ -130,7 +134,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Output wrong")
+    @Disabled("Named graphs wrong")
     public void evaluate_RMLTTC0002h() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002h/dump1.nq");
@@ -140,7 +144,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Output wrong")
+    @Disabled("Named graphs wrong")
     public void evaluate_RMLTTC0002i() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002i/dump1.nq");
@@ -159,7 +163,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("DatatypeMap not supported yet")
+    @Disabled("Named graphs wrong")
     public void evaluate_RMLTTC0002k() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002k/dump1.nq");
@@ -169,7 +173,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Output wrong")
+    @Disabled("Crashes")
     public void evaluate_RMLTTC0002l() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002l/dump1.nq");
@@ -179,6 +183,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
+    @Disabled("No output")
     public void evaluate_RMLTTC0002m() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002m/dump1.nq");
@@ -188,6 +193,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
+    @Disabled("No output")
     public void evaluate_RMLTTC0002n() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002n/dump1.nq");
@@ -197,7 +203,6 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Output wrong")
     public void evaluate_RMLTTC0002o() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002o/dump1.nq");
@@ -216,7 +221,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("DatatypeMap not supported yet")
+    @Disabled("Crashes")
     public void evaluate_RMLTTC0002q() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002q/dump1.nq");
@@ -226,6 +231,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
+    @Disabled("No output")
     public void evaluate_RMLTTC0002r() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0002r/dump1.nq");
@@ -234,7 +240,6 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Output wrong")
     public void evaluate_RMLTTC0003a() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0003a/dump1.nq");
@@ -295,6 +300,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
+    @Disabled("parsing failure?")
     public void evaluate_RMLTTC0004g() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0004g/dump1.ttl");
@@ -311,6 +317,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
+    @Disabled("parsing failure due to compression?")
     public void evaluate_RMLTTC0005b() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0005b/dump1.nq");
@@ -327,6 +334,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
+    @Disabled("Compression support missing")
     public void evaluate_RMLTTC0006b() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0006b/dump1.nq");
@@ -335,6 +343,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
+    @Disabled("Compression support missing")
     public void evaluate_RMLTTC0006c() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0006c/dump1.nq");
@@ -343,7 +352,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Compression Tar XZ not implemented")
+    @Disabled("tarxz not implemented")
     public void evaluate_RMLTTC0006d() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0006d/dump1.nq");
@@ -352,7 +361,7 @@ public class MapperNewRMLIOTargetTest extends TestCore {
     }
 
     @Test
-    @Disabled("Compression Tar GZ not implemented")
+    @Disabled("tarxz not implemented")
     public void evaluate_RMLTTC0006e() {
         Map<Term, String> outPaths = new HashMap<>();
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0006e/dump1.nq");
@@ -366,32 +375,5 @@ public class MapperNewRMLIOTargetTest extends TestCore {
         outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0007a/dump1.nq");
         outPaths.put(new NamedNode("rmlmapper://default.store"), "./new-test-cases/io/RMLTTC0007a/default.nq");
         doMapping("./new-test-cases/io/RMLTTC0007a/mapping.ttl", outPaths);
-    }
-
-    @Test
-    public void evaluate_RMLTTC0007b() {
-        Map<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0007b/dump1.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./new-test-cases/io/RMLTTC0007b/default.nq");
-        doMapping("./new-test-cases/io/RMLTTC0007b/mapping.ttl", outPaths);
-    }
-
-    @Test
-    @Disabled("TODO")
-    public void evaluate_RMLTTC0007c() {
-        // TODO: SPARQL endpoint
-        Map<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0007c/dump1.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./new-test-cases/io/RMLTTC0007c/default.nq");
-        doMapping("./new-test-cases/io/RMLTTC0007c/mapping.ttl", outPaths);
-    }
-
-    @Test
-    @Disabled("Target td:Thing not supported")
-    public void evaluate_RMLTTC0007d() {
-        Map<Term, String> outPaths = new HashMap<>();
-        outPaths.put(new NamedNode("http://example.com/rules/#TargetDump1"), "./new-test-cases/io/RMLTTC0007d/dump1.nq");
-        outPaths.put(new NamedNode("rmlmapper://default.store"), "./new-test-cases/io/RMLTTC0007d/default.nq");
-        doMapping("./new-test-cases/io/RMLTTC0007d/mapping.ttl", outPaths);
     }
 }

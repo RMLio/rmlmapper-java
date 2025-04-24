@@ -1,17 +1,14 @@
 @prefix rml: <http://w3id.org/rml/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix dcat: <http://www.w3.org/ns/dcat#> .
-@prefix void: <http://rdfs.org/ns/void#> .
 @prefix formats: <http://www.w3.org/ns/formats/> .
 @base <http://example.com/rules/> .
 
-<#DCATSourceAccess> a rml:Source, dcat:Distribution;
-    dcat:downloadURL <https://kg-construct.github.io/rml-resources/resources/rml-io/RMLTTC0002r/Friends.json>;
-.
-
 <#TriplesMap> a rml:TriplesMap;
   rml:logicalSource [ a rml:LogicalSource;
-    rml:source <#DCATSourceAccess>;
+    rml:source [ a rml:FilePath;
+      rml:root rml:MappingDirectory;
+      rml:path "Friends.json";
+    ];
     rml:referenceFormulation rml:JSONPath;
     rml:iterator "$[*]";
   ];
@@ -39,8 +36,9 @@
 .
 
 <#TargetDump1> a rml:LogicalTarget;
-  rml:target [ a rml:Target, void:Dataset;
-    void:dataDump <file://./dump1.nq>;
+  rml:target [ a rml:Target, rml:FilePath;
+    rml:root rml:CurrentWorkingDirectory;
+    rml:path "./dump1.nq";
   ];
   rml:serialization formats:N-Quads;
 .

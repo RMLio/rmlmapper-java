@@ -12,11 +12,11 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:reference "Name"
+          rml:reference "$.Name"
         ];
       rml:predicate foaf:name
     ];
   rml:subjectMap [
-      rml:template "{Name}";
+      rml:template "{$.Name}";
       rml:termType rml:BlankNode
     ] .

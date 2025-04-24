@@ -13,12 +13,12 @@
   rml:predicateObjectMap [
       rml:objectMap [
           rml:language "en";
-          rml:reference "Name"
+          rml:reference "$.Name"
         ];
       rml:predicate rdfs:label
     ];
   rml:subjectMap [
-      rml:template "http://example.com/{Code}"
+      rml:template "http://example.com/{$.Code}"
     ] .
 
 <http://example.com/base/TriplesMap2> a rml:TriplesMap;
@@ -33,10 +33,10 @@
   rml:predicateObjectMap [
       rml:objectMap [
           rml:language "es";
-          rml:reference "Name"
+          rml:reference "$.Name"
         ];
       rml:predicate rdfs:label
     ];
   rml:subjectMap [
-      rml:template "http://example.com/{Code}"
+      rml:template "http://example.com/{$.Code}"
     ] .

@@ -1,0 +1,65 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@base <http://example.com/rules/> .
+
+<#TriplesMap> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+    rml:source [ a rml:FilePath;
+      rml:root rml:MappingDirectory;
+      rml:path "Friends.json";
+      rml:encoding rml:UTF-8
+    ];
+    rml:referenceFormulation rml:JSONPath;
+    rml:iterator "$[*]";
+  ];
+  rml:subjectMap [ a rml:SubjectMap;
+    rml:template "http://example.org/{$.id}";
+  ];
+  rml:predicateObjectMap [ a rml:PredicateObjectMap;
+    rml:predicateMap [ a rml:PredicateMap;
+      rml:constant foaf:name;
+    ];
+    rml:objectMap [ a rml:ObjectMap;
+      rml:reference "$.name";
+    ];
+  ];
+  rml:predicateObjectMap [ a rml:PredicateObjectMap;
+    rml:predicateMap [ a rml:PredicateMap;
+      rml:constant foaf:age;
+    ];
+    rml:objectMap [ a rml:ObjectMap;
+      rml:reference "$.age";
+    ];
+  ];
+.
+
+<#TriplesMap2> a rml:TriplesMap;
+  rml:logicalSource [ a rml:LogicalSource;
+    rml:source [ a rml:RelativePathSource;
+      rml:root rml:MappingDirectory;
+      rml:path "Friends2.json";
+      rml:encoding rml:UTF-8
+    ];
+    rml:referenceFormulation rml:JSONPath;
+    rml:iterator "$[*]";
+  ];
+  rml:subjectMap [ a rml:SubjectMap;
+    rml:template "http://example.org/{$.id}";
+  ];
+  rml:predicateObjectMap [ a rml:PredicateObjectMap;
+    rml:predicateMap [ a rml:PredicateMap;
+      rml:constant foaf:name;
+    ];
+    rml:objectMap [ a rml:ObjectMap;
+      rml:reference "$.name";
+    ];
+  ];
+  rml:predicateObjectMap [ a rml:PredicateObjectMap;
+    rml:predicateMap [ a rml:PredicateMap;
+      rml:constant foaf:age;
+    ];
+    rml:objectMap [ a rml:ObjectMap;
+      rml:reference "$.age";
+    ];
+  ];
+.

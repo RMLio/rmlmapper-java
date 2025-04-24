@@ -13,11 +13,11 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:reference "amount"
+          rml:reference "$.amount"
         ];
       rml:predicate ex:owes
     ];
   rml:subjectMap [
       rml:class foaf:Person;
-      rml:template "http://example.com/{fname};{lname}"
+      rml:template "http://example.com/{$.fname};{$.lname}"
     ] .

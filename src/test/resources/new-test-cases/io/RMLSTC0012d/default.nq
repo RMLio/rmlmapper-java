@@ -1,0 +1,4 @@
+<http://example.org/25> <http://example.com/manager> "Alice Johnson" .
+<http://example.org/25> <http://example.com/manager> "John Doe" .
+<http://example.org/35> <http://example.com/manager> "Emma Wilson" .
+<http://example.org/35> <http://example.com/manager> "Michael Green" .

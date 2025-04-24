@@ -17,11 +17,11 @@
       rml:predicate rdf:type
     ], [
       rml:objectMap [
-          rml:reference "FirstName"
+          rml:reference "$.FirstName"
         ];
       rml:predicate foaf:name
     ];
   rml:subjectMap [
       rml:graph ex:PersonGraph;
-      rml:template "http://example.com/Student/{ID}/{FirstName}"
+      rml:template "http://example.com/Student/{$.ID}/{$.FirstName}"
     ] .

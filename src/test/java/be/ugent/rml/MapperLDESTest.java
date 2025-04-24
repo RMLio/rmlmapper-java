@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MapperLDESTest extends TestCore {
     private static Agent functionAgent;
     private static NamedNode LDES_LOGICAL_TARGET_IRI = new NamedNode("http://example.com/rules/#LDESLogicalTarget");
-    private static TargetFactory targetFactory = new TargetFactory(System.getProperty("user.dir"));
+    private static TargetFactory targetFactory = new TargetFactory(System.getProperty("user.dir"), System.getProperty("user.dir"));
 
     @AfterEach
     public void cleanUp() throws IOException {

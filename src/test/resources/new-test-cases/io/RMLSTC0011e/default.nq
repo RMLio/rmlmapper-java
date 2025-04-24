@@ -1,0 +1,18 @@
+<http://example.org/Bob%20Smith> <http://example.com/skill> "AWS" .
+<http://example.org/Bob%20Smith> <http://example.com/skill> "JavaScript" .
+<http://example.org/Bob%20Smith> <http://example.com/skill> "Python" .
+<http://example.org/Eve%20Davis> <http://example.com/skill> "Docker" .
+<http://example.org/Eve%20Davis> <http://example.com/skill> "Kubernetes" .
+<http://example.org/Eve%20Davis> <http://example.com/skill> "Terraform" .
+<http://example.org/Liam%20Brown> <http://example.com/skill> "Deep Learning" .
+<http://example.org/Liam%20Brown> <http://example.com/skill> "Machine Learning" .
+<http://example.org/Liam%20Brown> <http://example.com/skill> "Python" .
+<http://example.org/Olivia%20Martinez> <http://example.com/skill> "CRM" .
+<http://example.org/Olivia%20Martinez> <http://example.com/skill> "Lead Generation" .
+<http://example.org/Olivia%20Martinez> <http://example.com/skill> "Negotiation" .
+<http://example.org/Sarah%20Lee> <http://example.com/skill> "Copywriting" .
+<http://example.org/Sarah%20Lee> <http://example.com/skill> "Google Ads" .
+<http://example.org/Sarah%20Lee> <http://example.com/skill> "SEO" .
+<http://example.org/Sophia%20White> <http://example.com/skill> "Data Analysis" .
+<http://example.org/Sophia%20White> <http://example.com/skill> "R" .
+<http://example.org/Sophia%20White> <http://example.com/skill> "SQL" .

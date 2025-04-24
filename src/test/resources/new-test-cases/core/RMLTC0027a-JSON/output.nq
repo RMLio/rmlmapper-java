@@ -1,0 +1,4 @@
+<http://example.com/Bob> <http://example.com/amount> "30" .
+<http://example.com/Jones> <http://example.com/amount> "20" .
+<http://example.com/Smith> <http://example.com/amount> "30" .
+<http://example.com/Sue> <http://example.com/amount> "20" .

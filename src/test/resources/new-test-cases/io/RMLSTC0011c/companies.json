@@ -1,0 +1,91 @@
+{
+    "companies": [
+      {
+        "name": "TechCorp",
+        "location": {
+          "country": "USA",
+          "state": "California",
+          "city": "San Francisco"
+        },
+        "departments": [
+          {
+            "name": "Engineering",
+            "manager": {
+              "name": "Alice Johnson",
+              "age": 42
+            },
+            "employees": [
+              {
+                "name": "Bob Smith",
+                "role": "Software Engineer",
+                "skills": ["Python", "JavaScript", "AWS"]
+              },
+              {
+                "name": "Eve Davis",
+                "role": "DevOps Engineer",
+                "skills": ["Docker", "Kubernetes", "Terraform"]
+              }
+            ]
+          },
+          {
+            "name": "Marketing",
+            "manager": {
+              "name": "John Doe",
+              "age": 39
+            },
+            "employees": [
+              {
+                "name": "Sarah Lee",
+                "role": "Marketing Specialist",
+                "skills": ["SEO", "Google Ads", "Copywriting"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "InnovateX",
+        "location": {
+          "country": "Canada",
+          "state": "Ontario",
+          "city": "Toronto"
+        },
+        "departments": [
+          {
+            "name": "Research & Development",
+            "manager": {
+              "name": "Emma Wilson",
+              "age": 45
+            },
+            "employees": [
+              {
+                "name": "Liam Brown",
+                "role": "AI Researcher",
+                "skills": ["Machine Learning", "Deep Learning", "Python"]
+              },
+              {
+                "name": "Sophia White",
+                "role": "Data Scientist",
+                "skills": ["Data Analysis", "R", "SQL"]
+              }
+            ]
+          },
+          {
+            "name": "Sales",
+            "manager": {
+              "name": "Michael Green",
+              "age": 38
+            },
+            "employees": [
+              {
+                "name": "Olivia Martinez",
+                "role": "Sales Executive",
+                "skills": ["Negotiation", "CRM", "Lead Generation"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  

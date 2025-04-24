@@ -20,15 +20,15 @@
       rml:predicate rdf:type
     ], [
       rml:objectMap [
-          rml:reference "ID"
+          rml:reference "$.ID"
         ];
       rml:predicate ex:id
     ], [
       rml:objectMap [
-          rml:reference "FirstName"
+          rml:reference "$.FirstName"
         ];
       rml:predicate foaf:name
     ];
   rml:subjectMap [
-      rml:template "http://example.com/Student/{ID}/{FirstName}"
+      rml:template "http://example.com/Student/{$.ID}/{$.FirstName}"
     ] .

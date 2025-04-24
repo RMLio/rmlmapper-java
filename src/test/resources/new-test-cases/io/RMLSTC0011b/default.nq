@@ -1,0 +1,4 @@
+<http://example.org/InnovateX> <http://example.com/department> "Research & Development" .
+<http://example.org/InnovateX> <http://example.com/department> "Sales" .
+<http://example.org/TechCorp> <http://example.com/department> "Engineering" .
+<http://example.org/TechCorp> <http://example.com/department> "Marketing" .

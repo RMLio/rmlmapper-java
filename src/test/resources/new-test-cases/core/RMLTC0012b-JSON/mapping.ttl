@@ -13,13 +13,13 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:template "{fname} {lname}";
+          rml:template "{$.fname} {$.lname}";
           rml:termType rml:Literal
         ];
       rml:predicate foaf:name
     ];
   rml:subjectMap [
-      rml:template "{fname}{lname}";
+      rml:template "{$.fname}{$.lname}";
       rml:termType rml:BlankNode
     ] .
 
@@ -34,11 +34,11 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:reference "city"
+          rml:reference "$.city"
         ];
       rml:predicate ex:city
     ];
   rml:subjectMap [
-      rml:template "{fname}{lname}";
+      rml:template "{$.fname}{$.lname}";
       rml:termType rml:BlankNode
     ] .

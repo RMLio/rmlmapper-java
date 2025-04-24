@@ -12,7 +12,7 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:reference "Name"
+          rml:reference "$.Name"
         ];
       rml:predicate ex:name
     ];

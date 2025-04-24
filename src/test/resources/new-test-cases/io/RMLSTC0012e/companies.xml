@@ -1,0 +1,112 @@
+<companies>
+    <company id="25">
+        <name>TechCorp</name>
+        <location>
+            <country>USA</country>
+            <state>California</state>
+            <city>San Francisco</city>
+        </location>
+        <departments>
+            <department>
+                <name>Engineering</name>
+                <manager>
+                    <name>Alice Johnson</name>
+                    <age>42</age>
+                </manager>
+                <employees>
+                    <employee>
+                        <name>Bob Smith</name>
+                        <role>Software Engineer</role>
+                        <skills>
+                            <skill>Python</skill>
+                            <skill>JavaScript</skill>
+                            <skill>AWS</skill>
+                        </skills>
+                    </employee>
+                    <employee>
+                        <name>Eve Davis</name>
+                        <role>DevOps Engineer</role>
+                        <skills>
+                            <skill>Docker</skill>
+                            <skill>Kubernetes</skill>
+                            <skill>Terraform</skill>
+                        </skills>
+                    </employee>
+                </employees>
+            </department>
+            <department>
+                <name>Marketing</name>
+                <manager>
+                    <name>John Doe</name>
+                    <age>39</age>
+                </manager>
+                <employees>
+                    <employee>
+                        <name>Sarah Lee</name>
+                        <role>Marketing Specialist</role>
+                        <skills>
+                            <skill>SEO</skill>
+                            <skill>Google Ads</skill>
+                            <skill>Copywriting</skill>
+                        </skills>
+                    </employee>
+                </employees>
+            </department>
+        </departments>
+    </company>
+    <company id="35">
+        <name>InnovateX</name>
+        <location>
+            <country>Canada</country>
+            <state>Ontario</state>
+            <city>Toronto</city>
+        </location>
+        <departments>
+            <department>
+                <name>Research &amp; Development</name>
+                <manager>
+                    <name>Emma Wilson</name>
+                    <age>45</age>
+                </manager>
+                <employees>
+                    <employee>
+                        <name>Liam Brown</name>
+                        <role>AI Researcher</role>
+                        <skills>
+                            <skill>Machine Learning</skill>
+                            <skill>Deep Learning</skill>
+                            <skill>Python</skill>
+                        </skills>
+                    </employee>
+                    <employee>
+                        <name>Sophia White</name>
+                        <role>Data Scientist</role>
+                        <skills>
+                            <skill>Data Analysis</skill>
+                            <skill>R</skill>
+                            <skill>SQL</skill>
+                        </skills>
+                    </employee>
+                </employees>
+            </department>
+            <department>
+                <name>Sales</name>
+                <manager>
+                    <name>Michael Green</name>
+                    <age>38</age>
+                </manager>
+                <employees>
+                    <employee>
+                        <name>Olivia Martinez</name>
+                        <role>Sales Executive</role>
+                        <skills>
+                            <skill>Negotiation</skill>
+                            <skill>CRM</skill>
+                            <skill>Lead Generation</skill>
+                        </skills>
+                    </employee>
+                </employees>
+            </department>
+        </departments>
+    </company>
+</companies>

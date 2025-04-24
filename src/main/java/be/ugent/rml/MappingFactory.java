@@ -5,6 +5,7 @@ import be.ugent.rml.extractor.ConstantExtractor;
 import be.ugent.rml.extractor.HashExtractor;
 import be.ugent.rml.extractor.ReferenceExtractor;
 import be.ugent.rml.functions.*;
+import be.ugent.rml.store.Quad;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
@@ -63,17 +64,23 @@ public class MappingFactory {
         this.predicateObjectGraphMappings = new ArrayList<>();
         this.graphMappingInfos = null;
         this.ignoreDoubleQuotes = this.areDoubleQuotesIgnored(store, triplesMap);
+        String triplesMapBaseIRI = this.baseIRI;
 
-        parseSubjectMap();
-        parsePredicateObjectMaps();
-        graphMappingInfos = parseGraphMapsAndShortcuts(subjectMappingInfo.getTerm());
+        /* Override base IRI if specified by the rml:baseIRI predicate in a RML TriplesMap */
+        if (!this.store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "baseIRI"), null).isEmpty()) {
+            triplesMapBaseIRI = this.store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "baseIRI"), null).get(0).getObject().getValue();
+        }
+
+        parseSubjectMap(triplesMapBaseIRI);
+        parsePredicateObjectMaps(triplesMapBaseIRI);
+        graphMappingInfos = parseGraphMapsAndShortcuts(subjectMappingInfo.getTerm(), triplesMapBaseIRI);
 
 
         //return the mapping
         return new Mapping(subjectMappingInfo, predicateObjectGraphMappings, graphMappingInfos);
     }
 
-    private void parseSubjectMap() throws Exception {
+    private void parseSubjectMap(String triplesMapBaseIRI) throws Exception {
         if (this.subjectMappingInfo == null) {
             TermGenerator generator;
             List<Term> subjectmaps = getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "subject"), null));
@@ -106,22 +113,22 @@ public class MappingFactory {
                         }
                     } else {
                         //we are not dealing with a Blank Node, so we create the template
-                        generator = new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, subjectmap, true, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT)), baseIRI, strictMode);
+                        generator = new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, subjectmap, true, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT)), triplesMapBaseIRI, strictMode);
                     }
                 } else {
-                    SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
+                    SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0), triplesMapBaseIRI);
 
                     if (isBlankNode) {
                         generator = new BlankNodeGenerator(functionExecutor);
                     } else {
-                        generator = new NamedNodeGenerator(functionExecutor, baseIRI, strictMode);
+                        generator = new NamedNodeGenerator(functionExecutor, triplesMapBaseIRI, strictMode);
                     }
                 }
 
                 // get targets for subject
                 // get Target Generators for subject
                 List<Term> targets = getTargets(subjectmap);
-                List<TermGenerator> targetGenerators = getTargetGenerators(subjectmap, baseIRI, strictMode);
+                List<TermGenerator> targetGenerators = getTargetGenerators(subjectmap, strictMode, triplesMapBaseIRI);
                 this.subjectMappingInfo = new MappingInfo(subjectmap, generator, targets, targetGenerators);
 
                 //get classes
@@ -133,8 +140,8 @@ public class MappingFactory {
                      * Don't put in graph for rr:class, subject is already put in graph, otherwise double export.
                      * Same holds for targets, the rdf:type triple will be exported to the subject target already.
                      */
-                    NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(new ConstantExtractor(NAMESPACES.RDF + "type"), baseIRI, strictMode);
-                    NamedNodeGenerator objectGenerator = new NamedNodeGenerator(new ConstantExtractor(c.getValue()), baseIRI, strictMode);
+                    NamedNodeGenerator predicateGenerator = new NamedNodeGenerator(new ConstantExtractor(NAMESPACES.RDF + "type"), triplesMapBaseIRI, strictMode);
+                    NamedNodeGenerator objectGenerator = new NamedNodeGenerator(new ConstantExtractor(c.getValue()), triplesMapBaseIRI, strictMode);
                     predicateObjectGraphMappings.add(new PredicateObjectGraphMapping(
                             new MappingInfo(subjectmap, predicateGenerator),
                             new MappingInfo(subjectmap, objectGenerator),
@@ -146,20 +153,20 @@ public class MappingFactory {
         }
     }
 
-    private void parsePredicateObjectMaps() throws Exception {
+    private void parsePredicateObjectMaps(String triplesMapBaseIRI) throws Exception {
         List<Term> predicateobjectmaps = getObjectsFromQuads(store.getQuads(triplesMap, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
 
         for (Term pom : predicateobjectmaps) {
-            List<MappingInfo> predicateMappingInfos = parsePredicateMapsAndShortcuts(pom);
-            List<MappingInfo> graphMappingInfos = parseGraphMapsAndShortcuts(pom);
+            List<MappingInfo> predicateMappingInfos = parsePredicateMapsAndShortcuts(pom, triplesMapBaseIRI);
+            List<MappingInfo> graphMappingInfos = parseGraphMapsAndShortcuts(pom, triplesMapBaseIRI);
 
-            parseObjectMapsAndShortcutsAndGeneratePOGGenerators(pom, predicateMappingInfos, graphMappingInfos);
+            parseObjectMapsAndShortcutsAndGeneratePOGGenerators(pom, predicateMappingInfos, graphMappingInfos, triplesMapBaseIRI);
         }
     }
 
-    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<MappingInfo> predicateMappingInfos, List<MappingInfo> graphMappingInfos) throws IOException {
+    private void parseObjectMapsAndShortcutsAndGeneratePOGGenerators(Term termMap, List<MappingInfo> predicateMappingInfos, List<MappingInfo> graphMappingInfos, String triplesMapBaseIRI) throws IOException {
         parseObjectMapsAndShortcutsWithCallback(termMap, (oMappingInfo, childOrParent) -> {
-            MappingInfo lMappingInfo = parseLanguageMappingInfo(oMappingInfo.getTerm());
+            MappingInfo lMappingInfo = parseLanguageMappingInfo(oMappingInfo.getTerm(), triplesMapBaseIRI);
 
             predicateMappingInfos.forEach(pMappingInfo -> {
                 if (graphMappingInfos.isEmpty()) {
@@ -172,7 +179,7 @@ public class MappingFactory {
             });
         }, (parentTriplesMap, joinConditionFunctionExecutors) -> {
             predicateMappingInfos.forEach(pMappingInfo -> {
-                List<PredicateObjectGraphMapping> pos = getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(pMappingInfo, null, graphMappingInfos);
+                List<PredicateObjectGraphMapping> pos = getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(pMappingInfo, null, graphMappingInfos, triplesMapBaseIRI);
 
                 pos.forEach(pogMappingInfo -> {
                     pogMappingInfo.setParentTriplesMap(parentTriplesMap);
@@ -184,14 +191,14 @@ public class MappingFactory {
                     predicateObjectGraphMappings.add(pogMappingInfo);
                 });
             });
-        });
+        }, triplesMapBaseIRI);
     }
 
-    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
+    private void parseObjectMapsAndShortcutsWithCallback(Term termMap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback, String triplesMapBaseIRI) throws IOException {
         List<Term> objectmaps = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "objectMap"), null));
 
         for (Term objectmap : objectmaps) {
-            parseObjectMapWithCallback(objectmap, objectMapCallback, refObjectMapCallback);
+            parseObjectMapWithCallback(objectmap, objectMapCallback, refObjectMapCallback, triplesMapBaseIRI);
         }
 
         //dealing with rr:object
@@ -213,7 +220,7 @@ public class MappingFactory {
                 }
 
             } else {
-                gen = new NamedNodeGenerator(fn, baseIRI, strictMode);
+                gen = new NamedNodeGenerator(fn, triplesMapBaseIRI, strictMode);
             }
 
             // rr:object shortcut can never have targets
@@ -221,7 +228,7 @@ public class MappingFactory {
         }
     }
 
-    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback) throws IOException {
+    private void parseObjectMapWithCallback(Term objectmap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback, String triplesMapBaseIRI) throws IOException {
         List<Term> functionValues = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
         Term termType = getTermType(objectmap, true);
 
@@ -229,7 +236,7 @@ public class MappingFactory {
         List<Term> parentTriplesMaps = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "parentTriplesMap"), null));
         List<Term> parentTermMaps = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.RML2 + "parentTermMap"), null));
 
-        List<SingleRecordFunctionExecutor> languages = getLanguageExecutorsForObjectMap(objectmap);
+        List<SingleRecordFunctionExecutor> languages = getLanguageExecutorsForObjectMap(objectmap, triplesMapBaseIRI);
 
         if (functionValues.isEmpty()) {
             boolean encodeIRI = termType != null && termType.getValue().equals(NAMESPACES.RML2 + "IRI");
@@ -249,7 +256,7 @@ public class MappingFactory {
                         oGen = new LiteralGenerator(executor);
                     }
                 } else if (termType.equals(new NamedNode(NAMESPACES.RML2 + "IRI"))) {
-                    oGen = new NamedNodeGenerator(executor, baseIRI, strictMode);
+                    oGen = new NamedNodeGenerator(executor, triplesMapBaseIRI, strictMode);
                 } else {
                     if (executor == null) {
                         // This will generate Blank Node with random identifiers.
@@ -266,7 +273,7 @@ public class MappingFactory {
 
                 // get targets and targetGenerators for object map
                 List<Term> oTargets = getTargets(objectmap);
-                List<TermGenerator> oTargetGenerators = getTargetGenerators(objectmap, baseIRI, strictMode);
+                List<TermGenerator> oTargetGenerators = getTargetGenerators(objectmap, strictMode, triplesMapBaseIRI);
 
                 objectMapCallback.accept(new MappingInfo(objectmap, oGen, oTargets, oTargetGenerators), "child");
             } else if (!parentTriplesMaps.isEmpty()) {
@@ -309,7 +316,7 @@ public class MappingFactory {
                 for (Term joinCondition : rmljoinConditions) {
                     // TODO fix this for KGC_fnml
                     Term functionValue = getObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.FNML + "functionValue"), null)).get(0);
-                    joinConditionFunctionExecutors.add(parseJoinConditionFunctionTermMap(functionValue));
+                    joinConditionFunctionExecutors.add(parseJoinConditionFunctionTermMap(functionValue, triplesMapBaseIRI));
                 }
 
                 // get logical source of parentTriplesMap
@@ -331,10 +338,10 @@ public class MappingFactory {
             } else if (!parentTermMaps.isEmpty()) {
                 parseObjectMapWithCallback(parentTermMaps.get(0), (objectGenerator, childOrParent) -> {
                     objectMapCallback.accept(objectGenerator, "parent");
-                }, null);
+                }, null, triplesMapBaseIRI);
             }
         } else {
-            SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
+            SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0), triplesMapBaseIRI);
             TermGenerator gen;
 
             //TODO is literal the default?
@@ -349,19 +356,19 @@ public class MappingFactory {
                     gen = new LiteralGenerator(functionExecutor);
                 }
             } else {
-                gen = new NamedNodeGenerator(functionExecutor, baseIRI, strictMode);
+                gen = new NamedNodeGenerator(functionExecutor, triplesMapBaseIRI, strictMode);
             }
 
             // get targets and targetGenerators for object map
             List<Term> targets = getTargets(objectmap);
-            List<TermGenerator> targetGenerators = getTargetGenerators(objectmap, baseIRI, strictMode);
+            List<TermGenerator> targetGenerators = getTargetGenerators(objectmap, strictMode, triplesMapBaseIRI);
 
             objectMapCallback.accept(new MappingInfo(objectmap, gen, targets, targetGenerators), "child");
 
         }
     }
 
-    private List<MappingInfo> parseGraphMapsAndShortcuts(Term termMap) throws Exception {
+    private List<MappingInfo> parseGraphMapsAndShortcuts(Term termMap, String triplesMapBaseIRI) throws Exception {
         List<MappingInfo> graphMappingInfos = new ArrayList<>();
 
         List<Term> graphMaps = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "graphMap"), null));
@@ -385,7 +392,7 @@ public class MappingFactory {
                 SingleRecordFunctionExecutor executor = RecordFunctionExecutorFactory.generate(store, graphMap, true, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT));
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RML2 + "IRI"))) {
-                    generator = new NamedNodeGenerator(executor, baseIRI, strictMode);
+                    generator = new NamedNodeGenerator(executor, triplesMapBaseIRI, strictMode);
                 } else {
                     if (executor == null) {
                         generator = new BlankNodeGenerator();
@@ -394,10 +401,10 @@ public class MappingFactory {
                     }
                 }
             } else {
-                SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
+                SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0), triplesMapBaseIRI);
 
                 if (termType == null || termType.equals(new NamedNode(NAMESPACES.RML2 + "IRI"))) {
-                    generator = new NamedNodeGenerator(functionExecutor, baseIRI, strictMode);
+                    generator = new NamedNodeGenerator(functionExecutor, triplesMapBaseIRI, strictMode);
                 } else {
                     generator = new BlankNodeGenerator(functionExecutor);
                 }
@@ -405,7 +412,7 @@ public class MappingFactory {
 
             // get targets and target generators for graph map
             List<Term> targets = getTargets(graphMap);
-            List<TermGenerator> targetGenerators = getTargetGenerators(graphMap, baseIRI, strictMode);
+            List<TermGenerator> targetGenerators = getTargetGenerators(graphMap, strictMode, triplesMapBaseIRI);
 
             graphMappingInfos.add(new MappingInfo(termMap, generator, targets, targetGenerators));
 
@@ -416,13 +423,13 @@ public class MappingFactory {
         for (Term graph : graphShortcuts) {
             String gStr = graph.getValue();
             // rr:graph shortcut can never have targets
-            graphMappingInfos.add(new MappingInfo(termMap, new NamedNodeGenerator(new ConstantExtractor(gStr), baseIRI, strictMode)));
+            graphMappingInfos.add(new MappingInfo(termMap, new NamedNodeGenerator(new ConstantExtractor(gStr), triplesMapBaseIRI, strictMode)));
         }
 
         return graphMappingInfos;
     }
 
-    private List<MappingInfo> parsePredicateMapsAndShortcuts(Term termMap) throws IOException {
+    private List<MappingInfo> parsePredicateMapsAndShortcuts(Term termMap, String triplesMapBaseIRI) throws IOException {
         List<MappingInfo> predicateMappingInfos = new ArrayList<>();
 
         List<Term> predicateMaps = getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RML2 + "predicateMap"), null));
@@ -433,16 +440,16 @@ public class MappingFactory {
 
             // get target generators for predicate maps
             List<Term> targets = getTargets(predicateMap);
-            List<TermGenerator> targetGenerators = getTargetGenerators(predicateMap, baseIRI, strictMode);
+            List<TermGenerator> targetGenerators = getTargetGenerators(predicateMap, strictMode, triplesMapBaseIRI);
 
             if (functionValues.isEmpty()) {
                 predicateMappingInfos.add(new MappingInfo(predicateMap,
-                        new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT)), baseIRI, strictMode),
+                        new NamedNodeGenerator(RecordFunctionExecutorFactory.generate(store, predicateMap, false, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT)), triplesMapBaseIRI, strictMode),
                         targets, targetGenerators));
             } else {
-                SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0));
+                SingleRecordFunctionExecutor functionExecutor = parseFunctionTermMap(functionValues.get(0), triplesMapBaseIRI);
 
-                predicateMappingInfos.add(new MappingInfo(predicateMap, new NamedNodeGenerator(functionExecutor, baseIRI, strictMode), targets, targetGenerators));
+                predicateMappingInfos.add(new MappingInfo(predicateMap, new NamedNodeGenerator(functionExecutor, triplesMapBaseIRI, strictMode), targets, targetGenerators));
             }
         }
 
@@ -451,19 +458,19 @@ public class MappingFactory {
         for (Term predicate : predicateShortcuts) {
             String pStr = predicate.getValue();
             // rr:predicate shortcut can never have targets
-            predicateMappingInfos.add(new MappingInfo(termMap, new NamedNodeGenerator(new ConstantExtractor(pStr), baseIRI, strictMode)));
+            predicateMappingInfos.add(new MappingInfo(termMap, new NamedNodeGenerator(new ConstantExtractor(pStr), triplesMapBaseIRI, strictMode)));
         }
 
         return predicateMappingInfos;
     }
 
-    private SingleRecordFunctionExecutor parseFunctionTermMap(Term functionValue) throws IOException {
+    private SingleRecordFunctionExecutor parseFunctionTermMap(Term functionValue, String triplesMapBaseIRI) throws IOException {
         List<Term> functionPOMs = getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
         ArrayList<ParameterValuePair> params = new ArrayList<>();
 
         for (Term pom : functionPOMs) {
-            List<MappingInfo> pMappingInfos = parsePredicateMapsAndShortcuts(pom);
-            List<MappingInfo> oMappingInfos = parseObjectMapsAndShortcuts(pom);
+            List<MappingInfo> pMappingInfos = parsePredicateMapsAndShortcuts(pom, triplesMapBaseIRI);
+            List<MappingInfo> oMappingInfos = parseObjectMapsAndShortcuts(pom, triplesMapBaseIRI);
 
             List<TermGenerator> pGenerators = new ArrayList<>();
             pMappingInfos.forEach(mappingInfo -> {
@@ -481,12 +488,12 @@ public class MappingFactory {
         return new DynamicSingleRecordFunctionExecutor(params, functionAgent);
     }
 
-    private MultipleRecordsFunctionExecutor parseJoinConditionFunctionTermMap(Term functionValue) throws IOException {
+    private MultipleRecordsFunctionExecutor parseJoinConditionFunctionTermMap(Term functionValue, String triplesMapBaseIRI) throws IOException {
         List<Term> functionPOMs = getObjectsFromQuads(store.getQuads(functionValue, new NamedNode(NAMESPACES.RML2 + "predicateObjectMap"), null));
         ArrayList<ParameterValueOriginPair> params = new ArrayList<>();
 
         for (Term pom : functionPOMs) {
-            List<MappingInfo> pMappingInfos = parsePredicateMapsAndShortcuts(pom);
+            List<MappingInfo> pMappingInfos = parsePredicateMapsAndShortcuts(pom, triplesMapBaseIRI);
 
             List<TermGenerator> pGenerators = new ArrayList<>();
             pMappingInfos.forEach(mappingInfo -> {
@@ -496,7 +503,7 @@ public class MappingFactory {
             ArrayList<TermGeneratorOriginPair> objectGeneratorOriginPairs = new ArrayList<>();
             parseObjectMapsAndShortcutsWithCallback(pom, (oGen, childOrParent) -> {
                 objectGeneratorOriginPairs.add(new TermGeneratorOriginPair(oGen.getTermGenerator(), childOrParent));
-            }, null);
+            }, null, triplesMapBaseIRI);
 
             params.add(new ParameterValueOriginPair(pGenerators, objectGeneratorOriginPairs));
         }
@@ -523,13 +530,13 @@ public class MappingFactory {
         return new StaticMultipleRecordsFunctionExecutor(parameters, functionAgent, "https://w3id.org/imec/idlab/function#equal");
     }
 
-    private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom) throws IOException {
+    private List<MappingInfo> parseObjectMapsAndShortcuts(Term pom, String triplesMapBaseIRI) throws IOException {
         List<MappingInfo> mappingInfos = new ArrayList<>();
 
         parseObjectMapsAndShortcutsWithCallback(pom, (mappingInfo, childOrParent) -> {
             mappingInfos.add(mappingInfo);
         }, (term, joinConditionFunctions) -> {
-        });
+        }, triplesMapBaseIRI);
 
         return mappingInfos;
     }
@@ -537,9 +544,10 @@ public class MappingFactory {
     /**
      * This method returns all executors for the languages of an Object Map.
      * @param objectmap the object for which the executors need to be determined.
+     * @param triplesMapBaseIRI the base IRI to use for this Triples Map.
      * @return a list of executors that return language tags.
      */
-    private List<SingleRecordFunctionExecutor> getLanguageExecutorsForObjectMap(Term objectmap) throws IOException {
+    private List<SingleRecordFunctionExecutor> getLanguageExecutorsForObjectMap(Term objectmap, String triplesMapBaseIRI) throws IOException {
         ArrayList<SingleRecordFunctionExecutor> executors = new ArrayList<>();
 
         // Parse rr:language
@@ -563,14 +571,14 @@ public class MappingFactory {
             if (functionValues.isEmpty()) {
                 executors.add(RecordFunctionExecutorFactory.generate(store, languageMap, false, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT)));
             } else {
-                executors.add(parseFunctionTermMap(functionValues.get(0)));
+                executors.add(parseFunctionTermMap(functionValues.get(0), triplesMapBaseIRI));
             }
         }
 
         return executors;
     }
 
-    private MappingInfo parseLanguageMappingInfo(Term objectMap) {
+    private MappingInfo parseLanguageMappingInfo(Term objectMap, String triplesMapBaseIRI) {
         // get optional language map targets for object map
         MappingInfo mappingInfo = null;
 
@@ -582,7 +590,7 @@ public class MappingFactory {
         if (languageMaps.size() == 1) {
             Term l = languageMaps.get(0);
             List<Term> lTargets = getTargets(l);
-            List<TermGenerator> lTargetGenerators = getTargetGenerators(l, baseIRI, strictMode);
+            List<TermGenerator> lTargetGenerators = getTargetGenerators(l, strictMode, triplesMapBaseIRI);
             mappingInfo = new MappingInfo(l, lTargets, lTargetGenerators);
         }
         else if (languageMaps.size() > 1) {
@@ -635,11 +643,11 @@ public class MappingFactory {
         return termType;
     }
 
-    private List<PredicateObjectGraphMapping> getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(MappingInfo pMappingInfo, MappingInfo oMappingInfo, List<MappingInfo> gMappingInfos) {
+    private List<PredicateObjectGraphMapping> getPredicateObjectGraphMappingFromMultipleGraphMappingInfos(MappingInfo pMappingInfo, MappingInfo oMappingInfo, List<MappingInfo> gMappingInfos, String triplesMapBaseIRI) {
         ArrayList<PredicateObjectGraphMapping> list = new ArrayList<>();
         MappingInfo lMappingInfo = null;
         if(oMappingInfo != null) {
-            lMappingInfo = parseLanguageMappingInfo(oMappingInfo.getTerm());
+            lMappingInfo = parseLanguageMappingInfo(oMappingInfo.getTerm(), triplesMapBaseIRI);
         }
 
         for(MappingInfo gMappingInfo: gMappingInfos) {
@@ -681,7 +689,7 @@ public class MappingFactory {
         return false;
     }
 
-    private List<TermGenerator> getTargetGenerators(Term termMap, String baseIRI, StrictMode strictMode) {
+    private List<TermGenerator> getTargetGenerators(Term termMap, StrictMode strictMode, String triplesMapBaseIRI) {
         List<TermGenerator> targetGenerators = new ArrayList<>();
         List<Term> logicalTargetMaps = Utils.getObjectsFromQuads(store.getQuads(termMap, new NamedNode(NAMESPACES.RMLE + "logicalTargetMap"), null));
         for (Term logicalTargetMap : logicalTargetMaps) {
@@ -692,13 +700,13 @@ public class MappingFactory {
                 functionExecutor = RecordFunctionExecutorFactory.generate(store, logicalTargetMap, true, ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT));
             } else {
                 try {
-                    functionExecutor = parseFunctionTermMap(functionValues.get(0));
+                    functionExecutor = parseFunctionTermMap(functionValues.get(0), triplesMapBaseIRI);
                 } catch (IOException e) {
                     logger.error("Parsing function term map failed:" + e);
                 }
             }
             if (functionValues != null) {
-                targetGenerators.add(new NamedNodeGenerator(functionExecutor, baseIRI, strictMode));
+                targetGenerators.add(new NamedNodeGenerator(functionExecutor, triplesMapBaseIRI, strictMode));
             }
         }
         return targetGenerators;

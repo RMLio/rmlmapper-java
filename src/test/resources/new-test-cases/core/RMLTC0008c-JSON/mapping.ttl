@@ -13,10 +13,10 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:reference "Name"
+          rml:reference "$.Name"
         ];
       rml:predicate ex:name, foaf:name
     ];
   rml:subjectMap [
-      rml:template "http://example.com/Student/{ID}/{Name}"
+      rml:template "http://example.com/Student/{$.ID}/{$.Name}"
     ] .

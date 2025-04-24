@@ -5,8 +5,8 @@
 
 <http://example.com/base/RefObjectMap1> a rml:RefObjectMap;
   rml:joinCondition [
-      rml:child "Sport";
-      rml:parent "Sport"
+      rml:child "$.Sport";
+      rml:parent "$.Sport"
     ];
   rml:parentTriplesMap <http://example.com/base/TriplesMap1> .
 
@@ -24,5 +24,5 @@
       rml:predicate ex:sameSportAs
     ];
   rml:subjectMap [
-      rml:template "http://example.com/Student/{ID}/{Name}"
+      rml:template "http://example.com/Student/{$.ID}/{$.Name}"
     ] .

@@ -226,7 +226,7 @@ public abstract class TestCore {
      */
     void doMapping(Executor executor, Map<Term, String> outPaths) throws Exception {
         logger.debug("Comparing target outputs");
-        TargetFactory targetFactory = new TargetFactory("http://example.org/rules/");
+        TargetFactory targetFactory = new TargetFactory("http://example.org/rules/", System.getProperty("user.dir"));
         Map<Term, QuadStore> results = executor.execute(null);
 
         for (Map.Entry<Term, String> entry: outPaths.entrySet()) {

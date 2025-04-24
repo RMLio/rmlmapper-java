@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static be.ugent.rml.StrictMode.STRICT;
+
 public abstract class IteratorFormat implements ReferenceFormulationRecordFactory {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     protected Map<Access, VirtualAccess> cache;

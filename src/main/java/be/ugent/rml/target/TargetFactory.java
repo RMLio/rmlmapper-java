@@ -1,5 +1,6 @@
 package be.ugent.rml.target;
 
+import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.Quad;
@@ -20,6 +21,7 @@ public class TargetFactory {
     // The path used when local paths are not absolute.
     private final String basePath;
     private static final Logger logger = LoggerFactory.getLogger(TargetFactory.class);
+    private final String mappingPath;
     // the HttpRequestTargetHelper is instantiated once, in the TargetFactory, because it stores reusable client credentials and access tokens
     // it is used only for targets of the type HttpRequest
     private HttpRequestTargetHelper httpRequestTargetHelper;
@@ -27,9 +29,9 @@ public class TargetFactory {
     /**
      * The constructor of the TargetFactory.
      */
-    public TargetFactory(String basePath) {
-
+    public TargetFactory(String basePath, String mappingPath) {
         this.basePath = basePath;
+        this.mappingPath = mappingPath;
         try {
             this.httpRequestTargetHelper = new HttpRequestTargetHelper();
         } catch (JoseException e) {
@@ -336,6 +338,22 @@ public class TargetFactory {
                     target = new LocalFileTarget(location, this.basePath, serializationFormat, compression, metadata);
                     break;
                 }
+                case NAMESPACES.RML2 + "FilePath": { // rml:FilePath
+                    logger.debug("Target is a RML2 FilePath");
+                    String path = Utils.getObjectsFromQuads(rmlStore.getQuads(t, new NamedNode(NAMESPACES.RML2 + "path"), null)).get(0).getValue();
+                    List<Quad> rootNodes = rmlStore.getQuads(t, new NamedNode(NAMESPACES.RML2 + "root"), null);
+                    if (rootNodes.isEmpty()) {
+                        target = new LocalFileTarget(path, null, serializationFormat, compression, metadata);
+                    } else {
+                        String root = Utils.getObjectsFromQuads(rootNodes).get(0).getValue();
+                        if (root.equals(NAMESPACES.RML2 + "MappingDirectory")) {
+                            target = new LocalFileTarget(path, this.mappingPath, serializationFormat, compression, metadata);
+                        } else {
+                            target = new LocalFileTarget(path, this.basePath, serializationFormat, compression, metadata);
+                        }
+                    }
+                    break;
+                }
                 case NAMESPACES.SD + "Service": { // SPARQL Service
                     logger.debug("Target is a SD Service");
                     String endpoint = Utils.getObjectsFromQuads(rmlStore.getQuads(t,
@@ -373,7 +391,7 @@ public class TargetFactory {
                     break;
                 }
                 default: {
-                    throw new UnsupportedOperationException("Not implemented");
+                    throw new UnsupportedOperationException("Not implemented: " + targetType);
                 }
             }
             logger.debug("Target created: {}", target);

@@ -13,20 +13,20 @@
     ];
   rml:predicateObjectMap [
       rml:objectMap [
-          rml:template "{fname} {lname}";
+          rml:template "{$.fname} {$.lname}";
           rml:termType rml:Literal
         ];
       rml:predicate foaf:name
     ], [
       rml:objectMap [
-          rml:reference "amount"
+          rml:reference "$.amount"
         ];
       rml:predicate ex:amount
     ];
   rml:subjectMap [
-      rml:template "{fname}_{lname}_{amount}";
+      rml:template "{$.fname}_{$.lname}_{$.amount}";
       rml:termType rml:BlankNode
     ], [
-      rml:template "{amount}_{fname}_{lname}";
+      rml:template "{$.amount}_{$.fname}_{$.lname}";
       rml:termType rml:BlankNode
     ] .

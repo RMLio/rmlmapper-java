@@ -1,16 +1,14 @@
 @prefix rml: <http://w3id.org/rml/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @base <http://example.com/rules/> .
 
-<#DCATSourceAccess> a rml:Source, dcat:Distribution;
-  dcat:downloadURL <https://kg-construct.github.io/rml-resources/resources/rml-io/RMLSTC0001b/Friends-UTF16.json>;
-  rml:encoding rml:UTF-16;
-.
 
 <#TriplesMap> a rml:TriplesMap;
   rml:logicalSource [ a rml:LogicalSource;
-    rml:source <#DCATSourceAccess>;
+    rml:source [ a rml:FilePath;
+      rml:root rml:MappingDirectory;
+      rml:path "Friends-UTF16.json"
+    ];
     rml:referenceFormulation rml:JSONPath;
     rml:iterator "$[*]";
   ];

@@ -17,23 +17,23 @@
       rml:predicate rdf:type
     ], [
       rml:objectMap [
-          rml:reference "ID"
+          rml:reference "$.ID"
         ];
       rml:predicate ex:id
     ], [
       rml:objectMap [
-          rml:reference "Name"
+          rml:reference "$.Name"
         ];
       rml:predicate foaf:name
     ], [
       rml:objectMap [
-          rml:reference "Sport"
+          rml:reference "$.Sport"
         ];
       rml:predicate ex:Sport
     ];
   rml:subjectMap [
       rml:graphMap [
-          rml:template "http://example.com/graph/Student/{ID}/{Name}"
+          rml:template "http://example.com/graph/Student/{$.ID}/{$.Name}"
         ];
-      rml:template "http://example.com/Student/{ID}/{Name}"
+      rml:template "http://example.com/Student/{$.ID}/{$.Name}"
     ] .
