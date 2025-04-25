@@ -40,6 +40,11 @@ public class MapperNewRMLCoreJSONTest extends TestCore {
     }
 
     @Test
+    public void evaluate_new_0002g_JSON() {
+        doMappingExpectError("./new-test-cases/core/RMLTC0002g-JSON/mapping.ttl");
+    }
+
+    @Test
     public void evaluate_new_0003c_JSON() {
         doMapping("./new-test-cases/core/RMLTC0003c-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0003c-JSON/output.nq");
     }
@@ -251,6 +256,12 @@ public class MapperNewRMLCoreJSONTest extends TestCore {
     @Test
     public void evaluate_new_0023f_JSON() {
         doMappingExpectError("./new-test-cases/core/RMLTC0023f-JSON/mapping.ttl", StrictMode.STRICT);
+    }
+
+    @Test
+    @Disabled("RMLMapper cannot parse rml:subject correctly.")
+    public void evaluate_new_0025a_JSON() {
+        doMapping("./new-test-cases/core/RMLTC0025a-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0025a-JSON/output.nq");
     }
 
     @Test
