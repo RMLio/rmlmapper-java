@@ -127,7 +127,20 @@ public abstract class QuadStore {
     public abstract void read(InputStream is, String base, RDFFormat format) throws Exception;
 
     /**
-     * Write out the QuadStore in given format
+     * Write out the QuadStore in given format.
+     * Deprecated, use write(OutputStream out, String format) instead.
+     * TODO remove this method in future versions, use write(OutputStream out, String format) instead.
+     *
+     * @param out    Writer output location
+     * @param format QuadStore format (.TTL)
+     * @throws Exception
+     */
+    @Deprecated
+    public abstract void write(Writer out, String format) throws Exception;
+
+    /**
+     * Write out the QuadStore in given format, using a binary output stream.
+     * Override this method if you want to support binary formats like Jelly.
      * TODO use class or enum for output format
      *
      * @param out    OutputStream to write to
@@ -138,7 +151,18 @@ public abstract class QuadStore {
 
     // END OF ABSTRACT METHODS
 
-    // following final methods use the abstract metho`ds to provide additional functionality or helper functions
+    // following final methods use the abstract methods to provide additional functionality or helper functions
+    /**
+     * Helper function
+     *
+     * @param out
+     * @param format
+     * @throws Exception
+     */
+    public final void write(PrintStream out, String format) throws Exception {
+        write(new PrintWriter(out), format);
+    }
+
     /**
      * Helper function
      *

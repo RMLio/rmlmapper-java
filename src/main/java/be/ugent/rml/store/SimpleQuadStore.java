@@ -108,14 +108,19 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
-    public void write(OutputStream out, String format) throws IOException {
+    public void write(Writer out, String format) throws IOException {
         switch (format) {
             case "nquads":
-                toNQuads(new BufferedWriter(new OutputStreamWriter(out)));
+                toNQuads(out);
                 break;
             default:
                 throw new Error("Serialization " + format + " not supported");
         }
+    }
+
+    @Override
+    public void write(OutputStream out, String format) throws IOException {
+        write(new BufferedWriter(new OutputStreamWriter(out)), format);
     }
 
     @Override
