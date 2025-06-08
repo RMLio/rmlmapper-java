@@ -56,7 +56,7 @@ and see [Usage](#cli) on how to use the commandline interface!
   - For examples on how to use functions within RML mapping documents, you can have a look at the [RML+FnO test cases](https://github.com/RMLio/rml-fno-test-cases)
 - configuration file
 - metadata generation
-- output formats: nquads (default), turtle, trig, trix, jsonld, hdt
+- output formats: nquads (default), turtle, trig, trix, jsonld, hdt, [jelly](https://w3id.org/jelly)
 - join conditions
 - targets:
   - local file
@@ -104,7 +104,7 @@ The following options are most common.
 
 - `-m, --mapping <arg>`: one or more mapping file paths and/or strings (multiple values are concatenated).
 - `-o, --output <arg>`: path to output file
-- `-s,--serialization <arg>`: serialization format (nquads (default), trig, trix, jsonld, hdt)
+- `-s,--serialization <arg>`: serialization format (nquads (default), trig, trix, jsonld, hdt, [jelly](https://w3id.org/jelly))
 
 All options can be found when executing `java -jar rmlmapper.jar --help`,
 that output is found below.
@@ -148,7 +148,7 @@ options:
                                      passwords, certificates, etc.
  -s,--serialization <arg>            serialization format (nquads
                                      (default), turtle, trig, trix,
-                                     jsonld, hdt)
+                                     jsonld, hdt, jelly)
     --strict                         Enable strict mode. In strict mode,
                                      the mapper will fail on invalid IRIs
                                      instead of skipping them.
@@ -307,31 +307,34 @@ The tests will fail otherwise, as Testcontainers can't spin up the container.
 
 ## Dependencies
 
-|                   Dependency                   | License                                                            |
-|:----------------------------------------------:|--------------------------------------------------------------------|
-|         ch.qos.logback logback-classic         | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
-|      com.github.fnoio function-agent-java      | MIT                                                                |
-|      com.github.fnoio grel-functions-java      | MIT                                                                |
-|     com.github.fnoio idlab-functions-java      | MIT                                                                |
-|           com.github.rdfhdt hdt-java           | GNU Lesser General Public License v3.0                             |
-|      com.github.tomakehurst:wiremock-jre8      | Apache License 2.0                                                 |
-|       com.microsoft.sqlserver mssql-jdbc       | MIT                                                                |
-|         com.mysql mysql-connector-java         | GNU General Public License v2.0                                    |
-|        com.oracle.database.jdbc:ojdbc11        | Oracle Free Use Terms and Conditions                               |
-|             net.minidev json-smart             | Apache License 2.0                                                 |
-|          org.apache.jena fuseki-main           | Apache License 2.0                                                 |
-|         org.eclipse.rdf4j rdf4j-client         | Eclipse Distribution License v1.0                                  |
-|      org.junit.jupiter junit-jupiter-api       | Eclipse Public License v2.0                                        |
-|     org.junit.jupiter junit-jupiter-engine     | Eclipse Public License v2.0                                        |
-|     org.junit.jupiter junit-jupiter-params     | Eclipse Public License v2.0                                        |
-|     org.junit.vintage junit-vintage-engine     | Eclipse Public License v2.0                                        |
-|           org.postgresql postgresql            | BSD                                                                |
-|            org.testcontainers jdbc             | MIT                                                                |
-|        org.testcontainers junit-jupiter        | MIT                                                                |
-|         org.testcontainers mssqlserver         | MIT                                                                |
-|            org.testcontainers mysql            | MIT                                                                |
-|          org.testcontainers oracle-xe          | MIT                                                                |
-|         org.testcontainers postgresql          | MIT                                                                |
+|               Dependency               | License                                                            |
+|:--------------------------------------:|--------------------------------------------------------------------|
+|     ch.qos.logback logback-classic     | Eclipse Public License 1.0 & GNU Lesser General Public License 2.1 |
+|  com.github.fnoio function-agent-java  | MIT                                                                |
+|  com.github.fnoio grel-functions-java  | MIT                                                                |
+| com.github.fnoio idlab-functions-java  | MIT                                                                |
+|       com.github.rdfhdt hdt-java       | GNU Lesser General Public License v3.0                             |
+|  com.github.tomakehurst:wiremock-jre8  | Apache License 2.0                                                 |
+|   com.google.protobuf protobuf-java    | BSD 3-clause                                                       |
+|   com.microsoft.sqlserver mssql-jdbc   | MIT                                                                |
+|     com.mysql mysql-connector-java     | GNU General Public License v2.0                                    |
+|    com.oracle.database.jdbc:ojdbc11    | Oracle Free Use Terms and Conditions                               |
+|     eu.neverblink.jelly jelly-core     | Apache License 2.0                                                 |
+|    eu.neverblink.jelly jelly-rdf4j     | Apache License 2.0                                                 |
+|         net.minidev json-smart         | Apache License 2.0                                                 |
+|      org.apache.jena fuseki-main       | Apache License 2.0                                                 |
+|     org.eclipse.rdf4j rdf4j-client     | Eclipse Distribution License v1.0                                  |
+|  org.junit.jupiter junit-jupiter-api   | Eclipse Public License v2.0                                        |
+| org.junit.jupiter junit-jupiter-engine | Eclipse Public License v2.0                                        |
+| org.junit.jupiter junit-jupiter-params | Eclipse Public License v2.0                                        |
+| org.junit.vintage junit-vintage-engine | Eclipse Public License v2.0                                        |
+|       org.postgresql postgresql        | BSD                                                                |
+|        org.testcontainers jdbc         | MIT                                                                |
+|    org.testcontainers junit-jupiter    | MIT                                                                |
+|     org.testcontainers mssqlserver     | MIT                                                                |
+|        org.testcontainers mysql        | MIT                                                                |
+|      org.testcontainers oracle-xe      | MIT                                                                |
+|     org.testcontainers postgresql      | MIT                                                                |
 
 ## Commercial Support
 

@@ -130,37 +130,15 @@ public abstract class QuadStore {
      * Write out the QuadStore in given format
      * TODO use class or enum for output format
      *
-     * @param out    Writer output location
+     * @param out    OutputStream to write to
      * @param format QuadStore format (.TTL)
      * @throws Exception
      */
-    public abstract void write(Writer out, String format) throws Exception;
+    public abstract void write(OutputStream out, String format) throws Exception;
 
     // END OF ABSTRACT METHODS
 
-    // following final methods use the abstract methods to provide additional functionality or helper functions
-    /**
-     * Helper function
-     *
-     * @param out
-     * @param format
-     * @throws Exception
-     */
-    public final void write(ByteArrayOutputStream out, String format) throws Exception {
-        write(new BufferedWriter(new OutputStreamWriter(out)), format);
-    }
-
-    /**
-     * Helper function
-     *
-     * @param out
-     * @param format
-     * @throws Exception
-     */
-    public final void write(PrintStream out, String format) throws Exception {
-        write(new PrintWriter(out), format);
-    }
-
+    // following final methods use the abstract metho`ds to provide additional functionality or helper functions
     /**
      * Helper function
      *

@@ -264,6 +264,17 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>eu.neverblink.jelly</groupId>
+            <artifactId>jelly-rdf4j</artifactId>
+            <version>3.1.2</version>
+            <exclusions> <!-- Exclude RDF4J, use the version from the rdf4j-client dependency -->
+                <exclusion>
+                    <groupId>org.eclipse.rdf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>be.ugent.idlab.knows</groupId>
             <artifactId>function-agent-java</artifactId>
             <version>1.2.1</version>

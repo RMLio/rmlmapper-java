@@ -4,6 +4,9 @@ import be.ugent.rml.term.BlankNode;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import eu.neverblink.jelly.convert.rdf4j.rio.JellyFormat;
+import eu.neverblink.jelly.convert.rdf4j.rio.JellyWriterSettings;
+import eu.neverblink.jelly.core.JellyOptions;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.*;
 import org.eclipse.rdf4j.model.util.Models;
@@ -16,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +153,7 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public void write(Writer out, String format) throws Exception {
+    public void write(OutputStream out, String format) throws Exception {
         switch (format) {
             case "turtle":
                 Rio.write(model, out, RDFFormat.TURTLE);
@@ -171,6 +175,12 @@ public class RDF4JStore extends QuadStore {
                 break;
             case "ntriples":
                 Rio.write(model, out, RDFFormat.NTRIPLES);
+                break;
+            case "jelly":
+                var settings = JellyWriterSettings.empty();
+                // Mark RDF-star as not used
+                settings.setJellyOptions(JellyOptions.BIG_STRICT);
+                Rio.write(model, out, JellyFormat.JELLY, settings);
                 break;
             default:
                 throw new Exception("Serialization " + format + " not supported");
