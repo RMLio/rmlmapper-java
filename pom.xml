@@ -39,6 +39,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <jena.version>5.0.0</jena.version>
+        <jelly.version>3.1.2</jelly.version>
         <testcontainers.version>1.18.3</testcontainers.version>
     </properties>
 
@@ -266,7 +267,7 @@
         <dependency>
             <groupId>eu.neverblink.jelly</groupId>
             <artifactId>jelly-rdf4j</artifactId>
-            <version>3.1.2</version>
+            <version>${jelly.version}</version>
             <exclusions> <!-- Exclude RDF4J, use the version from the rdf4j-client dependency -->
                 <exclusion>
                     <groupId>org.eclipse.rdf4j</groupId>
