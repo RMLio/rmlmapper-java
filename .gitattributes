@@ -1,1 +1,4 @@
 docs/apidocs/* binary
+
+# Mark Jelly files as binary
+*.jelly binary

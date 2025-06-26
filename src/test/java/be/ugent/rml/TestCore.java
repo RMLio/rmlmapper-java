@@ -12,6 +12,7 @@ import be.ugent.rml.target.Target;
 import be.ugent.rml.target.TargetFactory;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import eu.neverblink.jelly.convert.rdf4j.rio.JellyFormat;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -351,6 +352,8 @@ public abstract class TestCore {
             store = QuadStoreFactory.read(outputFile, RDFFormat.JSONLD);
         } else if (path.endsWith(".trig")) {
             store = QuadStoreFactory.read(outputFile, RDFFormat.TRIG);
+        } else if (path.endsWith(".jelly")) {
+            store = QuadStoreFactory.read(outputFile, JellyFormat.JELLY);
         } else {
             store = QuadStoreFactory.read(outputFile);
         }

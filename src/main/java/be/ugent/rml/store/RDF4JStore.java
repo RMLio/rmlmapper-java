@@ -4,6 +4,9 @@ import be.ugent.rml.term.BlankNode;
 import be.ugent.rml.term.Literal;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
+import eu.neverblink.jelly.convert.rdf4j.rio.JellyFormat;
+import eu.neverblink.jelly.convert.rdf4j.rio.JellyWriterSettings;
+import eu.neverblink.jelly.core.JellyOptions;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.*;
 import org.eclipse.rdf4j.model.util.Models;
@@ -15,8 +18,7 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -172,8 +174,26 @@ public class RDF4JStore extends QuadStore {
             case "ntriples":
                 Rio.write(model, out, RDFFormat.NTRIPLES);
                 break;
+            case "jelly":
+                throw new UnsupportedOperationException(
+                    "Writing Jelly format to a Writer is not supported. Use OutputStream instead."
+                );
             default:
                 throw new Exception("Serialization " + format + " not supported");
+        }
+    }
+
+    @Override
+    public void write(OutputStream out, String format) throws Exception {
+        // Jelly is the only format that requires a binary output stream
+        if (format.equals("jelly")) {
+            var settings = JellyWriterSettings.empty();
+            // Mark RDF-star as not used
+            settings.setJellyOptions(JellyOptions.BIG_STRICT);
+            Rio.write(model, out, JellyFormat.JELLY, settings);
+        } else {
+            // For all other formats, fall back to using the Writer
+            write(new BufferedWriter(new OutputStreamWriter(out)), format);
         }
     }
 

@@ -378,6 +378,28 @@ public class ArgumentsTest extends TestCore {
         }
     }
 
+    @Test
+    public void outputJelly() throws Exception {
+        String cwd = Utils.getFile("argument").getAbsolutePath();
+        String mappingFilePath = (new File(cwd, "mapping.ttl")).getAbsolutePath();
+        String actualJellyPath = (new File("./generated_output.jelly")).getAbsolutePath();
+        String expectedJellyPath = Utils.getFile( "argument/output-jelly/target_output.jelly").getAbsolutePath();
+
+        Main.run(new String[]{"-m" , mappingFilePath , "-o" , actualJellyPath , "-s", "jelly"}, cwd);
+        compareFiles(
+                expectedJellyPath,
+                actualJellyPath,
+                false
+        );
+
+        try {
+            File outputFile = Utils.getFile(actualJellyPath);
+            assertTrue(outputFile.delete());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Test
     public void quoteInLiteral() throws Exception {
