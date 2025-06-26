@@ -119,6 +119,11 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
+    public void write(OutputStream out, String format) throws IOException {
+        write(new BufferedWriter(new OutputStreamWriter(out)), format);
+    }
+
+    @Override
     public boolean equals(Object o) {
         throw new UnsupportedOperationException("Method not implemented.");
     }

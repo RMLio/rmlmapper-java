@@ -127,7 +127,7 @@ public class Main {
                 .build();
         Option serializationFormatOption = Option.builder("s")
                 .longOpt("serialization")
-                .desc("serialization format (nquads (default), turtle, trig, trix, jsonld, hdt)")
+                .desc("serialization format (nquads (default), turtle, trig, trix, jsonld, hdt, jelly)")
                 .hasArg()
                 .build();
         Option jdbcDSNOption = Option.builder("dsn")
@@ -545,12 +545,7 @@ public class Main {
                 String serializationFormat = target.getSerializationFormat();
                 OutputStream output = target.getOutputStream();
                 store.addQuads(target.getMetadata());
-
-                // Set character encoding
-                try (Writer out = new BufferedWriter(new OutputStreamWriter(output, Charset.defaultCharset()))) {
-                    // Write store to target
-                    store.write(out, serializationFormat);
-                }
+                store.write(output, serializationFormat);
                 // Close OS resources
                 target.close();
                 logger.debug("Exporting to Target: {}", target);
@@ -637,7 +632,7 @@ public class Main {
             logger.info("{} quad was generated for default Target", store.size());
         }
 
-        Writer out = null;
+        OutputStream out = null;
         try {
 
             String doneMessage = null;
@@ -653,11 +648,11 @@ public class Main {
 
                 doneMessage = "Writing to " + targetFile.getPath() + " is done.";
 
-                out = Files.newBufferedWriter(targetFile.toPath(), StandardCharsets.UTF_8);
+                out = Files.newOutputStream(targetFile.toPath());
 
             } else {
                 isSystemOut = true;
-                out = new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
+                out = System.out;
             }
 
             store.write(out, format);

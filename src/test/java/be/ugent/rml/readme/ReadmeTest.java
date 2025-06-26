@@ -44,8 +44,7 @@ public class ReadmeTest {
             QuadStore result = executor.execute(null).get(new NamedNode("rmlmapper://default.store"));
 
             // Output the result
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
-            result.write(out, "turtle");
+            result.write(System.out, "turtle");
         } catch (Exception e) {
             fail("No exception was expected.");
         }
