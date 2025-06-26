@@ -39,7 +39,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <jena.version>5.0.0</jena.version>
-        <jelly.version>3.1.2</jelly.version>
+        <jelly.version>3.2.0</jelly.version>
         <testcontainers.version>1.18.3</testcontainers.version>
     </properties>
 
