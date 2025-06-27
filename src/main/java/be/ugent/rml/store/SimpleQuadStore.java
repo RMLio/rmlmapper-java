@@ -1,9 +1,11 @@
 package be.ugent.rml.store;
 
+import be.ugent.rml.Utils;
 import be.ugent.rml.term.Term;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,13 +48,7 @@ public class SimpleQuadStore extends QuadStore {
 
     @Override
     public List<Term> getSubjects() {
-        List<Term> terms = new ArrayList<>();
-
-        for (Quad q : quads) {
-            terms.add(q.getSubject());
-        }
-
-        return terms;
+        return Utils.getSubjectsFromQuads(quads);
     }
 
     @Override
@@ -108,19 +104,12 @@ public class SimpleQuadStore extends QuadStore {
     }
 
     @Override
-    public void write(Writer out, String format) throws IOException {
-        switch (format) {
-            case "nquads":
-                toNQuads(out);
-                break;
-            default:
-                throw new Error("Serialization " + format + " not supported");
-        }
-    }
-
-    @Override
     public void write(OutputStream out, String format) throws IOException {
-        write(new BufferedWriter(new OutputStreamWriter(out)), format);
+        if (format.equals("nquads")) {
+            toNQuads(out);
+        } else {
+            throw new Error("Serialization " + format + " not supported");
+        }
     }
 
     @Override
@@ -149,9 +138,11 @@ public class SimpleQuadStore extends QuadStore {
         throw new UnsupportedOperationException("Method not implemented.");
     }
 
-    private void toNQuads(Writer out) throws IOException {
-        for (Quad q : quads) {
-            out.write(getNQuadOfQuad(q) + "\n");
+    private void toNQuads(OutputStream out) throws IOException {
+        try (Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
+            for (Quad q : quads) {
+                writer.write(getNQuadOfQuad(q) + "\n");
+            }
         }
     }
 

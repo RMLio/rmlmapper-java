@@ -151,7 +151,7 @@ public class RDF4JStore extends QuadStore {
     }
 
     @Override
-    public void write(Writer out, String format) throws Exception {
+    public void write(OutputStream out, String format) throws Exception {
         switch (format) {
             case "turtle":
                 Rio.write(model, out, RDFFormat.TURTLE);
@@ -175,25 +175,15 @@ public class RDF4JStore extends QuadStore {
                 Rio.write(model, out, RDFFormat.NTRIPLES);
                 break;
             case "jelly":
+                var settings = JellyWriterSettings.empty();
+                // Mark RDF-star as not used
+                settings.setJellyOptions(JellyOptions.BIG_STRICT);
+                Rio.write(model, out, JellyFormat.JELLY, settings);
                 throw new UnsupportedOperationException(
                     "Writing Jelly format to a Writer is not supported. Use OutputStream instead."
                 );
             default:
                 throw new Exception("Serialization " + format + " not supported");
-        }
-    }
-
-    @Override
-    public void write(OutputStream out, String format) throws Exception {
-        // Jelly is the only format that requires a binary output stream
-        if (format.equals("jelly")) {
-            var settings = JellyWriterSettings.empty();
-            // Mark RDF-star as not used
-            settings.setJellyOptions(JellyOptions.BIG_STRICT);
-            Rio.write(model, out, JellyFormat.JELLY, settings);
-        } else {
-            // For all other formats, fall back to using the Writer
-            write(new BufferedWriter(new OutputStreamWriter(out)), format);
         }
     }
 
