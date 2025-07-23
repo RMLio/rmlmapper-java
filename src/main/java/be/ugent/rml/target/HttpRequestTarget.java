@@ -14,6 +14,7 @@ import java.util.Map;
 public abstract class HttpRequestTarget implements Target {
 
     protected final Map<String, String> httpRequestInfo;
+    protected final Map<String, String> httpRequestHeaders;
     private final List<Quad> metadata;
     private final ByteArrayOutputStream byteArrayOutputStream;
     protected final Logger logger;
@@ -30,14 +31,16 @@ public abstract class HttpRequestTarget implements Target {
     );
 
     /**
-     * This constructor takes a JSON object with the http request info, the serialization format and the metadata as argument.
-     * @param httpRequestInfo JSON object with all the target info
+     * This constructor takes a map with the http request info, a map with the http request headers, the serialization format and the metadata as argument.
+     * @param httpRequestInfo Map with all the target info
+     * @param httpRequestHeaders Map with HTTP request headers
      * @param serializationFormat String with the serialization format
      * @param metadata a list of Quads containing metadata
      */
-    public HttpRequestTarget(Map<String, String> httpRequestInfo, String serializationFormat, List<Quad> metadata,
+    public HttpRequestTarget(Map<String, String> httpRequestInfo, Map<String, String> httpRequestHeaders, String serializationFormat, List<Quad> metadata,
                              HttpRequestTargetHelper httpRequestTargetHelper) {
         this.httpRequestInfo = httpRequestInfo;
+        this.httpRequestHeaders = httpRequestHeaders;
         this.metadata = metadata;
         this.serializationFormat = serializationFormat;
         byteArrayOutputStream = new ByteArrayOutputStream();
@@ -90,8 +93,8 @@ public abstract class HttpRequestTarget implements Target {
         if (!httpRequestInfo.containsKey("methodName")){
             this.httpRequestInfo.put("methodName", HttpMethod.PUT.name());
         }
-        if (!httpRequestInfo.containsKey("contentType")){
-            this.httpRequestInfo.put("contentType", serializationFormats.get(this.serializationFormat));
+        if (!httpRequestHeaders.containsKey("content-type")){
+            this.httpRequestHeaders.put("content-type", serializationFormats.get(this.serializationFormat));
         }
     }
 

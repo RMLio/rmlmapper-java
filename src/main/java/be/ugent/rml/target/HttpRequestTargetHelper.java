@@ -225,14 +225,13 @@ public class HttpRequestTargetHelper {
     }
 
     /** Executes a HTTP request to a web resource, optionally using authentication with CSS client credentials.
-     * @param httpRequestInfo A map with all necessary data. The map should contain following keys: absoluteURI, methodName.
-     *                        The map may contain following keys: contentType, accept, data,
-     *                        authenticationType, email, password, oidcIssuer, webId
-     *                        absoluteURI, methodName, contentType, data
+     * @param httpRequestInfo A map with all necessary data except headers. The map should contain following keys: absoluteURI, methodName.
+     *                        The map may contain following keys: data, authenticationType, email, password, oidcIssuer, webId
+     * @param httpRequestHeaders A map with all headers 
      * @return response body
      * @throws Exception Something goes wrong.
      */
-    public String executeHttpRequest(Map<String, String> httpRequestInfo) throws Exception{
+    public String executeHttpRequest(Map<String, String> httpRequestInfo, Map<String, String> httpRequestHeaders) throws Exception{
         try {
             String absoluteURI = httpRequestInfo.get("absoluteURI");
             String methodName = httpRequestInfo.get("methodName");
@@ -245,12 +244,11 @@ public class HttpRequestTargetHelper {
             } else {
                 RequestBuilder.method(methodName, HttpRequest.BodyPublishers.noBody());
             }
-            if (httpRequestInfo.containsKey("contentType")){
-                RequestBuilder.setHeader("Content-Type", httpRequestInfo.get("contentType"));
+
+            for (Map.Entry<String, String> entry : httpRequestHeaders.entrySet()) {
+                RequestBuilder.setHeader(entry.getKey(), entry.getValue());
             }
-            if (httpRequestInfo.containsKey("accept")){
-                RequestBuilder.setHeader("Accept", httpRequestInfo.get("accept"));
-            }
+
             addAuthentication(RequestBuilder, httpRequestInfo);
             HttpRequest httpRequest = RequestBuilder.build();
 
@@ -268,12 +266,12 @@ public class HttpRequestTargetHelper {
     /** Executes a HTTP request to a linked web resource, optionally using authentication with CSS client credentials.
      * @param httpRequestInfo A map with all necessary data. The map should contain following keys:
      *                        linkingAbsoluteURI, linkRelation, methodName.
-     *                        The map may contain following keys: contentType, accept, data,
-     *                        authenticationType, email, password, oidcIssuer, webId
+     *                        The map may contain following keys: data, authenticationType, email, password, oidcIssuer, webId
+    * @param httpRequestHeaders A map with all headers 
      * @return response body
      * @throws Exception Something goes wrong.
      */
-    public String executeLinkedHttpRequest(Map<String, String> httpRequestInfo) throws Exception{
+    public String executeLinkedHttpRequest(Map<String, String> httpRequestInfo, Map<String, String> httpRequestHeaders) throws Exception{
         try {
             String linkingAbsoluteURI = httpRequestInfo.get("linkingAbsoluteURI");
             String linkRelation = httpRequestInfo.get("linkRelation");
@@ -296,7 +294,7 @@ public class HttpRequestTargetHelper {
                 if (link.contains("rel=\"" + linkRelation + "\"")) {
                     absoluteURI = link.substring(link.indexOf("<") + 1, link.indexOf(">"));
                     httpRequestInfo.put("absoluteURI", absoluteURI);
-                    responseBody = executeHttpRequest(httpRequestInfo);
+                    responseBody = executeHttpRequest(httpRequestInfo, httpRequestHeaders);
                     foundLink = true;
                 }
                 index += 1;

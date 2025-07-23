@@ -377,7 +377,8 @@ public class TargetFactory {
                     Map<String, String> httpRequestInfo = parseHttpRequest(rmlStore, t);
                     String absoluteURI = getRequiredValue(t,new NamedNode(NAMESPACES.HTV + "absoluteURI"), rmlStore);
                     httpRequestInfo.put("absoluteURI", absoluteURI);
-                    target = new DirectHttpRequestTarget(httpRequestInfo, serializationFormat, metadata, httpRequestTargetHelper);
+                    Map<String,String> httpRequestHeaders = parseHttpRequestHeaders(rmlStore, t);
+                    target = new DirectHttpRequestTarget(httpRequestInfo, httpRequestHeaders, serializationFormat, metadata, httpRequestTargetHelper);
                     break;
                 }
                 case NAMESPACES.RMLE + "LinkedHttpRequest": {
@@ -387,7 +388,8 @@ public class TargetFactory {
                     String linkRelation = getRequiredValue(t,new NamedNode(NAMESPACES.RMLE + "linkRelation"), rmlStore);
                     httpRequestInfo.put("linkingAbsoluteURI", linkingAbsoluteURI);
                     httpRequestInfo.put("linkRelation", linkRelation);
-                    target = new LinkedHttpRequestTarget(httpRequestInfo, serializationFormat, metadata, httpRequestTargetHelper);
+                    Map<String,String> httpRequestHeaders = parseHttpRequestHeaders(rmlStore, t);
+                    target = new LinkedHttpRequestTarget(httpRequestInfo, httpRequestHeaders, serializationFormat, metadata, httpRequestTargetHelper);
                     break;
                 }
                 default: {
@@ -405,7 +407,6 @@ public class TargetFactory {
     private Map<String,String> parseHttpRequest(QuadStore rmlStore, Term t){
         HashMap<String,String> httpRequestInfo= new HashMap<>();
         putOptionalValue(t, new NamedNode(NAMESPACES.HTV + "methodName"), rmlStore, httpRequestInfo, "methodName");
-        putOptionalValue(t, new NamedNode(NAMESPACES.RMLE + "contentTypeHeader"), rmlStore, httpRequestInfo, "contentType");
         List<Term> authentications = Utils.getObjectsFromQuads(rmlStore.getQuads(t, new NamedNode(NAMESPACES.RMLE + "userAuthentication"), null));
         if (!authentications.isEmpty()) {
             Term userAuthentication = authentications.get(0);
@@ -429,6 +430,23 @@ public class TargetFactory {
             }
         }
         return httpRequestInfo;
+    }
+
+    private Map<String,String> parseHttpRequestHeaders(QuadStore rmlStore, Term t){
+        HashMap<String,String> httpRequestHeaders = new HashMap<>();
+        List<Term> headersList = Utils.getObjectsFromQuads(rmlStore.getQuads(t, new NamedNode(NAMESPACES.HTV + "headers"), null));
+        if (!headersList.isEmpty()) {
+            Term rest = headersList.get(0);
+            while (rest.getValue() != NAMESPACES.RDF + "nil") {
+                Term first = Utils.getObjectsFromQuads(rmlStore.getQuads(rest, new NamedNode(NAMESPACES.RDF + "first"), null)).get(0);
+                String headerName = getRequiredValue(first, new NamedNode(NAMESPACES.HTV + "fieldName"), rmlStore);
+                String headerValue = getRequiredValue(first, new NamedNode(NAMESPACES.HTV + "fieldValue"), rmlStore);
+                //convert header name to lower case because HTTP headers are case-insensitive: easer to retrieve specific header 
+                httpRequestHeaders.put(headerName.toLowerCase(), headerValue);
+                rest = Utils.getObjectsFromQuads(rmlStore.getQuads(rest, new NamedNode(NAMESPACES.RDF + "rest"), null)).get(0);
+            }
+        }
+        return httpRequestHeaders;
     }
 
     private String getRequiredValue(Term subject, Term predicate, QuadStore rmlStore) throws Error {

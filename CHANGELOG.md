@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - A join between triples maps with different logical targets might result in quads ending up in wrong targets.
+- rmle:contentTypeHeader and rmle:acceptHeader is replaced by generic htv:headers for Http Request Targets.
 
 ### Added
 - Option to serialize output as Jelly.

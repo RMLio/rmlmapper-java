@@ -59,6 +59,17 @@ public class HttpRequestTargetTest extends TestCore {
                 "user1");
     }
 
+    //constant target with explicit method and headers
+    @Test
+    public void solid6() throws Exception {
+        doMappingSolid("./solid-target/solid6/mapping.ttl",
+                "https://pod.playground.solidlab.be/user1/rmlmapper/building",
+                "solid-target/solid6/output1.nq",
+                "user1");
+    }
+
+    // TODO text with 2 headers
+
     //acl for user2, absolute URI with .ttl
     @Test
     public void acl1() throws Exception{
@@ -138,7 +149,7 @@ public class HttpRequestTargetTest extends TestCore {
         while (i < absoluteURIs.length) {
             Map<String, String> solidTargetInfo = getHttpRequestInfo(users[i], absoluteURIs[i], "GET");
             compareResourceWithOutput(outPaths[i], solidTargetInfo, helper);
-            helper.executeHttpRequest(getHttpRequestInfo("user1", absoluteURIs[i], "DELETE"));
+            helper.executeHttpRequest(getHttpRequestInfo("user1", absoluteURIs[i], "DELETE"), Map.of());
             i++;
         }
     }
@@ -159,7 +170,7 @@ public class HttpRequestTargetTest extends TestCore {
     private void compareResourceWithOutput(String outPath, Map<String,String> httpRequestInfo, HttpRequestTargetHelper helper) throws Exception {
         // retrieve resource from solid pod
         httpRequestInfo.put("methodName", "GET");
-        String response = helper.executeHttpRequest(httpRequestInfo);
+        String response = helper.executeHttpRequest(httpRequestInfo, Map.of());
         InputStream responseStream = new ByteArrayInputStream(response.getBytes());
         QuadStore result = QuadStoreFactory.read(responseStream, RDFFormat.NQUADS);
         // compare result to expected output
