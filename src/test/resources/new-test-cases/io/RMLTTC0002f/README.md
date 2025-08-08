@@ -43,7 +43,7 @@
 @prefix rml: <http://w3id.org/rml/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix formats: <http://www.w3.org/ns/formats/> .
-@prefix ex: <http://example.org> .
+@prefix ex: <http://example.org/> .
 @base <http://example.com/rules/> .
 
 <#TriplesMap> a rml:TriplesMap;
@@ -106,15 +106,15 @@
 
 **Output 2**
 ```
-<http://example.org/0> <http://xmlns.com/foaf/0.1/age> "33" <http://example.org/PeopleGraph>.
+<http://example.org/0> <http://xmlns.com/foaf/0.1/age> "33" .
 <http://example.org/0> <http://xmlns.com/foaf/0.1/name> "Monica Geller" <http://example.org/PeopleGraph> .
-<http://example.org/1> <http://xmlns.com/foaf/0.1/age> "34" <http://example.org/PeopleGraph> .
+<http://example.org/1> <http://xmlns.com/foaf/0.1/age> "34" .
 <http://example.org/1> <http://xmlns.com/foaf/0.1/name> "Rachel Green" <http://example.org/PeopleGraph> .
-<http://example.org/2> <http://xmlns.com/foaf/0.1/age> "35" <http://example.org/PeopleGraph> .
+<http://example.org/2> <http://xmlns.com/foaf/0.1/age> "35" .
 <http://example.org/2> <http://xmlns.com/foaf/0.1/name> "Joey Tribbiani" <http://example.org/PeopleGraph> .
-<http://example.org/3> <http://xmlns.com/foaf/0.1/age> "36" <http://example.org/PeopleGraph> .
+<http://example.org/3> <http://xmlns.com/foaf/0.1/age> "36" .
 <http://example.org/3> <http://xmlns.com/foaf/0.1/name> "Chandler Bing" <http://example.org/PeopleGraph> .
-<http://example.org/4> <http://xmlns.com/foaf/0.1/age> "37" <http://example.org/PeopleGraph> .
+<http://example.org/4> <http://xmlns.com/foaf/0.1/age> "37" .
 <http://example.org/4> <http://xmlns.com/foaf/0.1/name> "Ross Geller" <http://example.org/PeopleGraph> .
 
 ```

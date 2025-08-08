@@ -34,7 +34,7 @@
       rml:constant ex:skill;
     ];
     rml:objectMap [ a rml:ObjectMap;
-      rml:reference "$.skills";
+      rml:reference "$.skills[*]";
     ];
   ].
 

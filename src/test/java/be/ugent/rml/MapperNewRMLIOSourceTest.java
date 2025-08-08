@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 public class MapperNewRMLIOSourceTest extends TestCore {
     /*
      - Total number of test cases: 32
-     - Failures: 12 (37.5%)
-     - Passes: 20 (62.5%)
+     - Failures: 10
+     - Passes: 22
      */
     @Test
     public void evaluate_RMLSTC0001a() {
@@ -49,13 +49,12 @@ public class MapperNewRMLIOSourceTest extends TestCore {
     }
 
     @Test
-    @Disabled("Crashes")
+    @Disabled("RML Logical Source n-triples file not supported yet")
     public void evaluate_RMLSTC0003() {
         doMapping("./new-test-cases/io/RMLSTC0003/mapping.ttl", "./new-test-cases/io/RMLSTC0003/default.nq");
     }
 
     @Test
-    @Disabled("RML Logical Source handles CSVW null values incorrect")
     public void evaluate_RMLSTC0004a() {
         doMapping("./new-test-cases/io/RMLSTC0004a/mapping.ttl", "./new-test-cases/io/RMLSTC0004a/default.nq");
     }
@@ -78,7 +77,6 @@ public class MapperNewRMLIOSourceTest extends TestCore {
     }
 
     @Test
-    @Disabled("Output wrong")
     public void evaluate_RMLSTC0006b() {
         doMapping("./new-test-cases/io/RMLSTC0006b/mapping.ttl", "./new-test-cases/io/RMLSTC0006b/default.nq");
     }

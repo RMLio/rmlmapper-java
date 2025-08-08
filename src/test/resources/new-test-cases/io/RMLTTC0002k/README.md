@@ -44,7 +44,7 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix formats: <http://www.w3.org/ns/formats/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix ex: <http://example.org> .
+@prefix ex: <http://example.org/> .
 @base <http://example.com/rules/> .
 
 <#TriplesMap> a rml:TriplesMap;
@@ -105,6 +105,11 @@
 
 **Output 1**
 ```
+<http://example.org/0> <http://xmlns.com/foaf/0.1/name> "Monica Geller"@en .
+<http://example.org/1> <http://xmlns.com/foaf/0.1/name> "Rachel Green"@en .
+<http://example.org/2> <http://xmlns.com/foaf/0.1/name> "Joey Tribbiani"@en .
+<http://example.org/3> <http://xmlns.com/foaf/0.1/name> "Chandler Bing"@en .
+<http://example.org/4> <http://xmlns.com/foaf/0.1/name> "Ross Geller"@en .
 
 ```
 

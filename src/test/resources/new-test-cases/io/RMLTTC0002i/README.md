@@ -43,7 +43,7 @@
 @prefix rml: <http://w3id.org/rml/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix formats: <http://www.w3.org/ns/formats/> .
-@prefix ex: <http://example.org> .
+@prefix ex: <http://example.org/> .
 @base <http://example.com/rules/> .
 
 <#TriplesMap> a rml:TriplesMap;

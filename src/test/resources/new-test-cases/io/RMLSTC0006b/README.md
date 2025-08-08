@@ -8,12 +8,12 @@
 
 **Input**
 ```
-id, name, age
-0, Monica Geller, 33
-1, Rachel Green, 34
-2, Joey Tribbiani, 35
-3, Chandler Bing, 36
-4, Ross Geller, 37
+id,name,age
+0,Monica Geller,33
+1,Rachel Green,34
+2,Joey Tribbiani,35
+3,Chandler Bing,36
+4,Ross Geller,37
 
 ```
 

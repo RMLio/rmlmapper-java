@@ -71,8 +71,8 @@
       rml:reference "$.name";
     ];
     rml:graphMap [ a rml:GraphMap;
-      rml:constant ex:PeopleGraph1;
-      rml:logicalTarget <#TargetDump1>;
+      rml:constant ex:PeopleGraph2;
+      rml:logicalTarget <#TargetDump2>;
     ];
   ];
   rml:predicateObjectMap [ a rml:PredicateObjectMap;
@@ -93,6 +93,13 @@
   rml:serialization formats:N-Quads;
 .
 
+<#TargetDump2> a rml:LogicalTarget;
+  rml:target [ a rml:Target, rml:FilePath;
+    rml:root rml:CurrentWorkingDirectory;
+    rml:path "./dump2.nq";
+  ];
+  rml:serialization formats:N-Quads;
+.
 ```
 
 **Output 1**

@@ -79,7 +79,7 @@
 <#TargetDump1> a rml:LogicalTarget;
   rml:target [ a rml:Target, rml:FilePath;
     rml:root rml:CurrentWorkingDirectory;
-    rml:path "./dump1.nq";
+    rml:path "./dump1.ttl";
   ];
   rml:serialization formats:Turtle;
 .
@@ -93,19 +93,16 @@
 
 **Output 2**
 ```
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix ex: <http://example.org/> .
-
-<ex:0> <foaf:age> "33" .
-<ex:0> <foaf:name> "Monica Geller" .
-<ex:1> <foaf:age> "34" .
-<ex:1> <foaf:name> "Rachel Green" .
-<ex:2> <foaf:age> "35" .
-<ex:2> <foaf:name> "Joey Tribbiani" .
-<ex:3> <foaf:age> "36" .
-<ex:3> <foaf:name> "Chandler Bing" .
-<ex:4> <foaf:age> "37" .
-<ex:4> <foaf:name> "Ross Geller" .
+<http://example.org/0> <http://xmlns.com/foaf/0.1/name> "Monica Geller" .
+<http://example.org/1> <http://xmlns.com/foaf/0.1/name> "Rachel Green" .
+<http://example.org/2> <http://xmlns.com/foaf/0.1/name> "Joey Tribbiani" .
+<http://example.org/3> <http://xmlns.com/foaf/0.1/name> "Chandler Bing" .
+<http://example.org/4> <http://xmlns.com/foaf/0.1/name> "Ross Geller" .
+<http://example.org/0> <http://xmlns.com/foaf/0.1/age> "33" .
+<http://example.org/1> <http://xmlns.com/foaf/0.1/age> "34" .
+<http://example.org/2> <http://xmlns.com/foaf/0.1/age> "35" .
+<http://example.org/3> <http://xmlns.com/foaf/0.1/age> "36" .
+<http://example.org/4> <http://xmlns.com/foaf/0.1/age> "37" .
 
 ```
 

@@ -37,7 +37,7 @@
 <#TargetDump1> a rml:LogicalTarget;
   rml:target [ a rml:Target, rml:FilePath;
     rml:root rml:CurrentWorkingDirectory;
-    rml:path "./dump1.nq";
+    rml:path "./dump1.rdfxml";
   ];
   rml:serialization formats:RDF_XML;
 .
