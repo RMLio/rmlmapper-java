@@ -23,6 +23,8 @@ and see [Usage](#cli) on how to use the commandline interface!
   - [Including functions](#including-functions)
   - [Generating metadata](#generating-metadata)
 - [Testing](#testing)
+  - [Command line](#command-line)
+  - [IntelliJ](#intellij)
   - [RDBs](#rdbs)
 - [Dependencies](#dependencies)
 - [Commercial Support](#commercial-support)
@@ -38,26 +40,31 @@ and see [Usage](#cli) on how to use the commandline interface!
 ## Features
 
 ### Supported
+
 - local data sources:
   - Excel (.xlsx)
   - LibreOffice (.ods)
-  - CSV files (including CSVW)
-  - JSON files (JSONPath)
+  - CSV files
+    - including CSVW, for an overview of which parts of CSVW are supported, have a look at the [test cases, introduced in v4.4.0](https://github.com/RMLio/rmlmapper-java/tree/master/src/test/resources/test-cases-CSVW)
+  - JSON files (JSONPath (`@` can be used to select the current object.))
   - XML files (XPath)
 - remote data sources:
   - relational databases (MySQL, PostgreSQL, Oracle, and SQLServer)
-  - Web APIs with W3C Web of Things
+  - Web APIs with W3C Web of Things, see [an exemplary test case, introduced in v4.13.0](https://github.com/RMLio/rmlmapper-java/blob/master/src/test/resources/web-of-things/logical-target/sparql/mapping.ttl)
   - SPARQL endpoints
   - files via HTTP urls (via GET)
-    - CSV files
+    - CSV files, see [an exemplary test case, introduced in v0.1.0](https://github.com/RMLio/rmlmapper-java/blob/master/src/test/resources/test-cases/RMLTC1003-CSV/mapping.ttl)
     - JSON files (JSONPath (`@` can be used to select the current object.))
     - XML files (XPath)
 - functions (most cases)
   - For examples on how to use functions within RML mapping documents, you can have a look at the [RML+FnO test cases](https://github.com/RMLio/rml-fno-test-cases)
+  - Notable function examples include
+    - SHA1 and MD5 functions, see [this comment on issue 100](https://github.com/RMLio/rmlmapper-java/issues/100#issuecomment-826547387)
+    - Lookup function, see [this comment on issue 200](https://github.com/RMLio/rmlmapper-java/issues/220#issuecomment-1754422677)
 - configuration file
 - metadata generation
-- output formats: nquads (default), turtle, trig, trix, jsonld, hdt, [jelly](https://w3id.org/jelly)
 - join conditions
+- output formats: nquads (default), turtle, trig, trix, jsonld, hdt, [jelly](https://w3id.org/jelly)
 - targets:
   - local file
   - VoID dataset
@@ -65,24 +72,33 @@ and see [Usage](#cli) on how to use the commandline interface!
   - [HTTP request access](https://rml.io/specs/access/httprequest/)
   - [dynamic logical targets](https://rml.io/specs/target/dynamictarget/)
 
+All functionalities above refer to using RML as maintained at <https://rml.io/specs/rml>.
+There is _some_ support for RML as developed within W3C's [Knowledge Graph Construction Community Group](https://www.w3.org/community/kg-construct/), for a recent view, see the [test cases, support introduced in v7.0.0](https://github.com/RMLio/rmlmapper-java/tree/master/src/test/resources/new-test-cases).
+
 ### Future
+
 - functions (all cases)
 - conditions (all cases)
+- logical views
+  - Currently, this can be mitigated: we maintain a preprocessor to support this: [RML-view-to-CSV](https://github.com/RMLio/rml-view-to-csv).
 - data sources:
   - NoSQL databases
   - TPF servers
   - [HTTP request access](https://rml.io/specs/access/httprequest/)
+  - dynamic logical source
+    - Currently, this can be mitigated: RMLMapper allows to use the commandline interface to combine multiple mapping rules, so you could script it, for more info, see [issue 161](https://github.com/RMLio/rmlmapper-java/issues/161).
 
 ## Releases
 
 The standalone jar file (that has a [commandline interface](#cli)) for every release can be found on the release's page on GitHub.
-You can find the latest release [here](https://github.com/RMLio/rmlmapper-java/releases/latest).
+You can find the latest release on [the dedicated RMLMapper-JAVA Github release page](https://github.com/RMLio/rmlmapper-java/releases/latest).
 This is the recommended way to get started with RMLMapper.
 Do you want to build from source yourself? Check [Build](#build).
 
 ## Build
+
 The RMLMapper is built using Maven.
-As it is also tested against Oracle (check [here](#accessing-oracle-database) for details),
+As it is also tested against Oracle (check [the RDB documentation below](#rdbs) for details),
 it needs a specific set-up to run all tests.
 That's why we recommend to build without testing: `mvn install -DskipTests=true`.
 If you want, you can install with tests, and just skip the Oracle tests: `mvn test -Dtest=!Mapper_OracleDB_Test`.
@@ -92,14 +108,17 @@ A standalone jar can be found in `/target`.
 Two jars are found in `/target`: a slim jar without bundled dependencies, and a standalone jar (suffixed with `-all.jar`) with all dependencies bundled.
 
 Building with profile `no-buildnumber` disables using and updating `buildNumber.properties` (and uses `0` as build number), e.g.:
-```
+
+```bash
 mvn clean package -P no-buildnumber
 ```
+
 outputs for example `target/rmlmapper-<version>-r0.jar`
 
 ## Usage
 
 ### CLI
+
 The following options are most common.
 
 - `-m, --mapping <arg>`: one or more mapping file paths and/or strings (multiple values are concatenated).
@@ -163,13 +182,13 @@ options:
 #### Accessing Web APIs with authentication
 
 The [W3C Web of Things Security Ontology](https://www.w3.org/2019/wot/security)
-is used to describe how Web APIs authentication should be performed 
+is used to describe how Web APIs authentication should be performed
 but does not include the necessary credentials to access the Web API.
 These credentials can be supplied using the `-psd <PATH>` CLI argument.
 The `PATH` argument must point to one or more private security files
 which contain the necessary credentials to access the Web API.
 
-An example can be found in the test cases 
+An example can be found in the test cases
 [src/test/resources/web-of-things](src/test/resources/web-of-things).
 
 ### Library
@@ -197,13 +216,12 @@ The RMLMapper is executed in the `/data` folder in the Docker container.
 ### Including functions
 
 There are three ways to include (new) functions within the RML Mapper
-  * dynamic loading: you add links to java files or jar files, and those files are loaded dynamically at runtime
-  * preloading: you register functionality via code, and you need to rebuild the mapper to use that functionality
-  * add as dependency
+
+- dynamic loading: you add links to java files or jar files, and those files are loaded dynamically at runtime
+- preloading: you register functionality via code, and you need to rebuild the mapper to use that functionality
+- add as dependency
 
 Registration of functions is done using a Turtle file, which you can find in `src/main/resources/functions.ttl`
-
-
 
 #### Dynamic loading
 
@@ -215,6 +233,7 @@ You can change the functions.ttl path (or use multiple functions.ttl paths) usin
 For example the snippets below dynamically link an fno:Function to a library, provided by a jar-file (`CustomFunctions.jar`). The example links a function that parses the latitude (`50.2`) out of the following string `"POINT (50.2 5.3)"`.
 
  `functions.ttl` contains the description of the function in Turtle:
+
 ```turtle
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix doap:    <http://usefulinc.com/ns/doap#> .
@@ -244,7 +263,9 @@ grelm:parsePointLat
     fno:methodMapping    [ a                fnom:Function ;
                            fnom:method-name "parsePointLat" ] .
 ```
+
 The accompanying java file `CustomFunctions.java`:
+
 ```java
 public class CustomFunctions {
   public static String parsePointLat(String s) {
@@ -252,7 +273,9 @@ public class CustomFunctions {
   }
 }
 ```
+
 To dynamically include the custom function, compile the java-file and include `functions.ttl` with the `-f` option:
+
 ```bash
 javac CustomFunctions.java && jar cvf CustomFunctions.jar CustomFunctions.class
 java -jar mapper.jar -f functions.ttl <other options>
@@ -289,21 +312,26 @@ and up to which level metadata should be stored (dataset, triple, or term level 
 ## Testing
 
 ### Command line
-Run the tests via `test.sh`. 
+
+Run the tests via `test.sh`.
 
 ### IntelliJ
-Right-click `src/test/java` directory and select "Run 'All tests'". 
+
+Right-click `src/test/java` directory and select "Run 'All tests'".
 
 #### Derived tests
+
 Some tests (Excel, ODS) are derived from other tests (CSV) using a script (`./generate_spreadsheet_test_cases.sh`)
 
 ### RDBs
+
 Make sure you have [Docker](https://www.docker.com) running. On Unix, others read-write permission (006) is required on `/var/run/docker.sock` in order to run the tests.
-The tests will fail otherwise, as Testcontainers can't spin up the container. 
+The tests will fail otherwise, as Testcontainers can't spin up the container.
 
 #### Problems
-* A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests will always succeed locally.
-* A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on Windows 7 machines.
+
+- A problem with Docker (can't start the container) causes the SQLServer tests to fail locally. These tests will always succeed locally.
+- A problem with Docker (can't start the container) causes the PostgreSQL tests to fail locally on Windows 7 machines.
 
 ## Dependencies
 
@@ -340,12 +368,12 @@ The tests will fail otherwise, as Testcontainers can't spin up the container.
 
 Do you need...
 
--   training?
--   specific features?
--   different integrations?
--   bugfixes, on _your_ timeline?
--   custom code, built by experts?
--   commercial support and licensing?
+- training?
+- specific features?
+- different integrations?
+- bugfixes, on _your_ timeline?
+- custom code, built by experts?
+- commercial support and licensing?
 
 You're welcome to [contact us](mailto:info@rml.io) regarding
 on-premise, enterprise, and internal installations, integrations, and deployments.
@@ -357,6 +385,7 @@ We also offer consulting for all-things-RML.
 ## Remarks
 
 ### Typed spreadsheet files
+
 All spreadsheet files are as of yet regarded as plain CSV files. No type information like Currency, Date... is used.
 
 ### XML file parsing performance
@@ -374,40 +403,44 @@ The regex has no support for languages of length 5-8, but this currently only ap
 
 Performance depends on the serialization format (`--serialization <format>`)
 and if duplicate removal is enabled (`--duplicates`).
-Experimenting with various configurations may lead to better performance for 
+Experimenting with various configurations may lead to better performance for
 your use case.
 
 ### I have a question! Where can I get help?
 
-Do you have any question related to writing RML mapping rules, 
-the RML specification, etc., feel free to ask them 
-here: https://github.com/kg-construct/rml-questions !
-If you have found a bug or need a feature for the RMLMapper itself, 
+Do you have any question related to writing RML mapping rules,
+the RML specification, etc., feel free to ask them
+here: <https://github.com/kg-construct/rml-questions> !
+If you have found a bug or need a feature for the RMLMapper itself,
 you can make an issue in this repository.
 
 ## Documentation
+
 Generate static files at /docs/apidocs with:
-```
+
+```bash
 mvn javadoc:javadoc
 ```
 
 ### UML Diagrams
 
 #### Architecture UML Diagram
+
 ##### How to generate with IntelliJ IDEA
+
 (Requires Ultimate edition)
 
-* Right click on package: "be.ugent.rml"
-* Diagrams > Show Diagram > Java Class Diagrams
-* Choose what properties of the classes you want to show in the upper left corner
-* Export to file > .png  | Save diagram > .uml
+- Right click on package: "be.ugent.rml"
+- Diagrams > Show Diagram > Java Class Diagrams
+- Choose what properties of the classes you want to show in the upper left corner
+- Export to file > .png  | Save diagram > .uml
 
 #### Sequence Diagram
+
 ##### Edit on [draw.io](https://www.draw.io)
-* Go to [draw.io](https://www.draw.io)
-* Click on 'Open Existing Diagram' and choose the .html file
+
+- Go to [draw.io](https://www.draw.io)
+- Click on 'Open Existing Diagram' and choose the .html file
 
 [1]: A. Dimou, T. De Nies, R. Verborgh, E. Mannens, P. Mechant, and R. Van de Walle, “Automated metadata generation for linked data generation and publishing workflows,” in Proceedings of the 9th Workshop on Linked Data on the Web, Montreal, Canada, 2016, pp. 1–10.
 [PDF](http://events.linkeddata.org/ldow2016/papers/LDOW2016_paper_04.pdf)
-
-

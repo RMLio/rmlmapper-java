@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Heyvaert"
+  given-names: "Pieter"
+  orcid: "https://orcid.org/0000-0002-1583-5719"
+- family-names: "Van Assche"
+  given-names: "Dylan"
+  orcid: "https://orcid.org/0000-0002-7195-9935"
+- family-names: "De Meester"
+  given-names: "Ben"
+  orcid: "https://orcid.org/0000-0003-0248-0987"
+- family-names: "Haesendonck"
+  given-names: "Gerald"
+  orcid: "https://orcid.org/0000-0003-1605-3855"
+- family-names: "de Vleeschauwer"
+  given-names: "Els"
+  orcid: "https://orcid.org/0000-0002-8630-3947"
+- given-names: "Sitt Min Oo"
+  orcid: "https://orcid.org/0000-0001-9157-7507"
+title: "RMLMapper-JAVA"
+doi: 10.5281/zenodo.3929132
+url: "https://github.com/RMLio/rmlmapper-java"
