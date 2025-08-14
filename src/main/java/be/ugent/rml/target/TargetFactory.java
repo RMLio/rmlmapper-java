@@ -1,6 +1,5 @@
 package be.ugent.rml.target;
 
-import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
 import be.ugent.rml.NAMESPACES;
 import be.ugent.rml.Utils;
 import be.ugent.rml.store.Quad;
@@ -437,7 +436,7 @@ public class TargetFactory {
         List<Term> headersList = Utils.getObjectsFromQuads(rmlStore.getQuads(t, new NamedNode(NAMESPACES.HTV + "headers"), null));
         if (!headersList.isEmpty()) {
             Term rest = headersList.get(0);
-            while (rest.getValue() != NAMESPACES.RDF + "nil") {
+            while (!rest.getValue().equals(NAMESPACES.RDF + "nil")) {
                 Term first = Utils.getObjectsFromQuads(rmlStore.getQuads(rest, new NamedNode(NAMESPACES.RDF + "first"), null)).get(0);
                 String headerName = getRequiredValue(first, new NamedNode(NAMESPACES.HTV + "fieldName"), rmlStore);
                 String headerValue = getRequiredValue(first, new NamedNode(NAMESPACES.HTV + "fieldValue"), rmlStore);
