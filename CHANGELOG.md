@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Updated new RML test cases for IO and Core.
+- Updated dependency of DataIO to 2.1.2
 
 ### Removed
 - `QuadStore`: removed deprecated `write` methods.
