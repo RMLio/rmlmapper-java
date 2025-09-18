@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [8.0.0] - 2025-09-18
+
 ### Fixed
 - A join between triples maps with different logical targets might result in quads ending up in wrong targets.
 - rmle:contentTypeHeader and rmle:acceptHeader is replaced by generic htv:headers for Http Request Targets.
@@ -817,6 +819,7 @@ and [169](https://gitlab.ilabt.imec.be/rml/proc/rmlmapper-java/-/issues/169))
 - support for accessing remote files (via HTTP GET)
 - basic support for functions
 
+[8.0.0]: https://github.com/RMLio/rmlmapper-java/compare/v7.3.3...v8.0.0
 [7.3.3]: https://github.com/RMLio/rmlmapper-java/compare/v7.3.2...v7.3.3
 [7.3.2]: https://github.com/RMLio/rmlmapper-java/compare/v7.3.1...v7.3.2
 [7.3.1]: https://github.com/RMLio/rmlmapper-java/compare/v7.3.0...v7.3.1
