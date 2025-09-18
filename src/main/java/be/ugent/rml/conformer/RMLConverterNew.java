@@ -17,7 +17,7 @@ import static be.ugent.rml.NAMESPACES.*;
 
 public class RMLConverterNew implements Converter {
 
-    private static Logger logger = LoggerFactory.getLogger(RMLConverterNew.class);
+    private final static Logger logger = LoggerFactory.getLogger(RMLConverterNew.class);
 
     private final Map<String, ReplacementEntry> replacementsObjects = new HashMap<>() {{
         /* Old RML */
@@ -46,6 +46,7 @@ public class RMLConverterNew implements Converter {
         put(QL + "JSONPath", ReferenceFormulation.JSONPath);
         put(QL + "XPath", ReferenceFormulation.XPath);
         put(RML + "LogicalSource", RML2 + "LogicalSource");
+        put(RR + "Literal", RML2 + "Literal");
         put(RML + "TriplesMap", RML2 + "TriplesMap");
         put(RR + "BlankNode", RML2 + "BlankNode");
         put(RR + "IRI", RML2 + "IRI");
