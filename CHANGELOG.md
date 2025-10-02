@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Dependency updates to address some vulnerabilities:
+- DataIO to 2.5.2
+- Jena to 5.2.0
+- commons-lang3 to 3.18.0
+- json-smart to 2.5.2
+- Added dependency to commons-cli (a transitive dependency which got lost)
+
 ## [8.0.0] - 2025-09-18
 
 ### Fixed
