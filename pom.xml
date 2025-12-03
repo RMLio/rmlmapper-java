@@ -40,7 +40,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <jena.version>5.0.0</jena.version>
         <jelly.version>3.2.0</jelly.version>
-        <testcontainers.version>1.18.3</testcontainers.version>
+        <testcontainers.version>2.0.2</testcontainers.version>
     </properties>
 
     <scm>
@@ -335,37 +335,37 @@
         <!--< testcontainer dependencies > -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
+            <artifactId>testcontainers-postgresql</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>mysql</artifactId>
+            <artifactId>testcontainers-mysql</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>mssqlserver</artifactId>
+            <artifactId>testcontainers-mssqlserver</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>oracle-xe</artifactId>
+            <artifactId>testcontainers-oracle-xe</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>jdbc</artifactId>
+            <artifactId>testcontainers-jdbc</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
