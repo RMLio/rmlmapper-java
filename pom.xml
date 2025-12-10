@@ -3,7 +3,7 @@
     <groupId>be.ugent.rml</groupId>
     <artifactId>rmlmapper</artifactId>
     <name>RMLMapper</name>
-    <version>8.0.0</version>
+    <version>8.0.1-SNAPSHOT</version>
     <description>
         The RMLMapper executes RML rules to generate high quality Linked Data from multiple originally (semi-)structured data sources.
     </description>
@@ -325,7 +325,7 @@
         <dependency>
             <groupId>be.ugent.idlab.knows</groupId>
             <artifactId>dataio</artifactId>
-            <version>2.1.5</version>
+            <version>2.2.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
