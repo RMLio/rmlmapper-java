@@ -295,7 +295,7 @@
         <dependency>
             <groupId>com.github.fnoio</groupId>
             <artifactId>grel-functions-java</artifactId>
-            <version>v0.10.0</version>
+            <version>v0.10.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>

@@ -16,7 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added dependency to commons-cli (a transitive dependency which got lost)
 - Update DataIO to 2.2.0 (to address https://github.com/RMLio/rmlmapper-java/issues/266)
 - Update testcontainers-* dependencies to 2.0.2
-- GitLab CI: update GitLab CI Docker (services) to version 29 
+- GitLab CI: update GitLab CI Docker (services) to version 29
+- Update grel-functions-java to v0.10.1 to fix bug in quotioent function
 
 ## [8.0.0] - 2025-09-18
 
