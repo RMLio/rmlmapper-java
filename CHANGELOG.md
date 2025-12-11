@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - json-smart to 2.5.2
 - Added dependency to commons-cli (a transitive dependency which got lost)
 - Update DataIO to 2.2.0 (to address https://github.com/RMLio/rmlmapper-java/issues/266)
+- Update testcontainers-* dependencies to 2.0.2
 
 ## [8.0.0] - 2025-09-18
 
