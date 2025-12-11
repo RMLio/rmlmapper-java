@@ -55,7 +55,7 @@ General:
     name: maven:3-eclipse-temurin-17
     pull_policy: if-not-present
   services:
-    - name: docker:23.0.1-dind
+    - name: docker:29-dind
       # explicitly disable tls to avoid docker startup interruption
       command: ["--tls=false"]
   variables:
@@ -83,10 +83,10 @@ General:
 R2RML Test Report:
   stage: deploy
   image:
-    name: docker:latest
+    name: docker:29
     pull_policy: if-not-present
   services:
-    - docker:23.0.1-dind
+    - docker:29-dind
   before_script:
     # Dependencies
     - apk add git python3 python3-dev py3-pip postgresql-dev postgresql libpq gcc musl-dev docker docker-compose java-jre-headless maven java-jdk
