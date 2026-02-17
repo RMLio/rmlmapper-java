@@ -73,7 +73,8 @@ public class RecordsFactory {
 
             return getRecords(access, logicalSource, referenceFormulation, rmlStore);
         } else {
-            throw new Error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
+            logger.error("No Logical Source is found for " + triplesMap + ". Exactly one Logical Source is required per Triples Map.");
+            return new ArrayList<>();
         }
     }
 
