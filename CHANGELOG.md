@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+- RMLMapper crashes when parent Triples Map cannot be found (https://github.com/RMLio/rmlmapper-java/issues/270). This changes behaviour of RMLMapper (log error instead of stopping), but is still valid RML Processor behaviour.
+
 ## [8.1.0] - 2025-12-23
 
 ### Added
