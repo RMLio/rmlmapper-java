@@ -23,6 +23,10 @@ public class Initializer {
     private final Map<Term, Mapping> mappings;
 
     public Initializer(final QuadStore rmlStore, final Agent functionAgent, final String baseIRI, final StrictMode strictMode) throws Exception {
+        this(rmlStore, functionAgent, baseIRI, strictMode, false);
+    }
+
+    public Initializer(final QuadStore rmlStore, final Agent functionAgent, final String baseIRI, final StrictMode strictMode, final boolean naturalDatatypes) throws Exception {
         this.rmlStore = rmlStore;
         //we get all the TriplesMaps from the mapping
         List<Quad> subjectMapQuads = rmlStore.getQuads(null, new NamedNode(NAMESPACES.RML2 + "subjectMap"), null);
@@ -41,7 +45,7 @@ public class Initializer {
                         "grel_java_mapping.ttl")
                 : functionAgent;
 
-        this.factory = new MappingFactory(initialisedFunctionAgent, baseIRI, strictMode);
+        this.factory = new MappingFactory(initialisedFunctionAgent, baseIRI, strictMode, naturalDatatypes);
         extractMappings();
     }
 
