@@ -228,6 +228,14 @@ public class MappingFactory {
         }
     }
 
+    /**
+     * The values of an expression map of a join condition as strings: a constant ("100")
+     * and a JSON number (100) are equal when their strings are (RMLTC0030c, kg-construct/rml-core).
+     */
+    private static SingleRecordFunctionExecutor stringValues(SingleRecordFunctionExecutor executor) {
+        return record -> FunctionUtils.functionObjectToList(executor.execute(record));
+    }
+
     private void parseObjectMapWithCallback(Term objectmap, BiConsumer<MappingInfo, String> objectMapCallback, BiConsumer<Term, List<MultipleRecordsFunctionExecutor>> refObjectMapCallback, String triplesMapBaseIRI) throws IOException {
         List<Term> functionValues = getObjectsFromQuads(store.getQuads(objectmap, new NamedNode(NAMESPACES.FNML + "functionValue"), null));
         Term termType = getTermType(objectmap, true);
@@ -292,20 +300,29 @@ public class MappingFactory {
 
                     List<String> parents = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.RML2 + "parent"), null));
                     List<String> childs = Utils.getLiteralObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.RML2 + "child"), null));
+                    // RML-Core: in place of rml:parent and rml:child, the expression maps
+                    // rml:parentMap and rml:childMap (a reference, a template or a constant)
+                    List<Term> parentMaps = getObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.RML2 + "parentMap"), null));
+                    List<Term> childMaps = getObjectsFromQuads(store.getQuads(joinCondition, new NamedNode(NAMESPACES.RML2 + "childMap"), null));
 
-                    if (parents.isEmpty()) {
+                    if (parents.isEmpty() && parentMaps.isEmpty()) {
                         throw new Error("One of the join conditions of " + triplesMap + " is missing rr:parent.");
-                    } else if (childs.isEmpty()) {
+                    } else if (childs.isEmpty() && childMaps.isEmpty()) {
                         throw new Error("One of the join conditions of " + triplesMap + " is missing rr:child.");
                     } else {
                         Map<String, Object[]> parameters = new HashMap<>();
+                        boolean strict = strictMode.equals(StrictMode.STRICT);
 
                         boolean ignoreDoubleQuotesInParent = this.areDoubleQuotesIgnored(store, parentTriplesMap);
-                        SingleRecordFunctionExecutor parent = new ReferenceExtractor(parents.get(0), ignoreDoubleQuotesInParent, strictMode.equals(StrictMode.STRICT));
+                        SingleRecordFunctionExecutor parent = !parents.isEmpty()
+                                ? new ReferenceExtractor(parents.get(0), ignoreDoubleQuotesInParent, strict)
+                                : stringValues(RecordFunctionExecutorFactory.generate(store, parentMaps.get(0), false, ignoreDoubleQuotesInParent, strict));
                         Object[] detailsParent = {"parent", parent};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter", detailsParent);
 
-                        SingleRecordFunctionExecutor child = new ReferenceExtractor(childs.get(0), ignoreDoubleQuotes, strictMode.equals(StrictMode.STRICT));
+                        SingleRecordFunctionExecutor child = !childs.isEmpty()
+                                ? new ReferenceExtractor(childs.get(0), ignoreDoubleQuotes, strict)
+                                : stringValues(RecordFunctionExecutorFactory.generate(store, childMaps.get(0), false, ignoreDoubleQuotes, strict));
                         Object[] detailsChild = {"child", child};
                         parameters.put("http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParameter2", detailsChild);
 

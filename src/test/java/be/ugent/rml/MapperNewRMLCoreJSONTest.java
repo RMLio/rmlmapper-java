@@ -330,4 +330,34 @@ public class MapperNewRMLCoreJSONTest extends TestCore {
     public void evaluate_new_0029c_JSON() {
         doMapping("./new-test-cases/core/RMLTC0029c-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0029c-JSON/output.nq");
     }
+
+    @Test
+    public void evaluate_new_0030a_JSON() {
+        doMapping("./new-test-cases/core/RMLTC0030a-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0030a-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_new_0030b_JSON() {
+        doMapping("./new-test-cases/core/RMLTC0030b-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0030b-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_new_0030c_JSON() {
+        doMapping("./new-test-cases/core/RMLTC0030c-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0030c-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_new_0030d_JSON() {
+        doMapping("./new-test-cases/core/RMLTC0030d-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0030d-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_new_0030e_JSON() {
+        doMapping("./new-test-cases/core/RMLTC0030e-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0030e-JSON/output.nq");
+    }
+
+    @Test
+    public void evaluate_new_0030f_JSON() {
+        doMapping("./new-test-cases/core/RMLTC0030f-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0030f-JSON/output.nq");
+    }
 }
