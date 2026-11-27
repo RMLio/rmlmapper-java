@@ -76,6 +76,11 @@ public class Executor {
     }
 
     public Executor(QuadStore rmlStore, RecordsFactory recordsFactory, QuadStore resultingQuads, String baseIRI, StrictMode strictMode, final Agent functionAgent, Map<String, String> mappingOptions) throws Exception {
+        // A mapping written in the vocabulary of the W3C KG-Construct CG (before the
+        // conversion of a legacy mapping to it) gives natural RDF literals.
+        boolean naturalDatatypes = rmlStore.getQuads(null, null, null).stream()
+                .anyMatch(q -> q.getPredicate().getValue().startsWith(NAMESPACES.RML2));
+
         // Convert mapping file to RML if needed.
         MappingConformer conformer = new MappingConformer(rmlStore, mappingOptions);
 
@@ -91,7 +96,7 @@ public class Executor {
 
         this.mappingOptimizer = new MappingOptimizer(rmlStore);
         this.rmlStore = mappingOptimizer.optimizeMapping();
-        this.initializer = new Initializer(this.rmlStore, functionAgent, baseIRI, strictMode);
+        this.initializer = new Initializer(this.rmlStore, functionAgent, baseIRI, strictMode, naturalDatatypes);
         this.mappings = this.initializer.getMappings();
         this.recordsFactory = recordsFactory;
         this.subjectCache = new HashMap<>();

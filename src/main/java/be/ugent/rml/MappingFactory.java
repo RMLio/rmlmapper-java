@@ -49,12 +49,21 @@ public class MappingFactory {
     // If set to STRICT, RMLMapper will stop execution with an exception.
     private final StrictMode strictMode;
 
+    // Whether references give their natural RDF literals (RML-Core): true for a
+    // mapping written in the vocabulary of the W3C KG-Construct CG.
+    private final boolean naturalDatatypes;
+
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public MappingFactory(final Agent functionAgent, final String baseIRI, final StrictMode strictMode) {
+        this(functionAgent, baseIRI, strictMode, false);
+    }
+
+    public MappingFactory(final Agent functionAgent, final String baseIRI, final StrictMode strictMode, final boolean naturalDatatypes) {
         this.functionAgent = functionAgent;
         this.baseIRI = baseIRI;
         this.strictMode = strictMode;
+        this.naturalDatatypes = naturalDatatypes;
     }
 
     public Mapping createMapping(Term triplesMap, QuadStore store) throws Exception {
@@ -253,7 +262,7 @@ public class MappingFactory {
                     } else if (!languages.isEmpty()) {
                         oGen = new LiteralGenerator(executor, languages.get(0));
                     } else {
-                        oGen = new LiteralGenerator(executor);
+                        oGen = new LiteralGenerator(executor, naturalDatatypes);
                     }
                 } else if (termType.equals(new NamedNode(NAMESPACES.RML2 + "IRI"))) {
                     oGen = new NamedNodeGenerator(executor, triplesMapBaseIRI, strictMode);
