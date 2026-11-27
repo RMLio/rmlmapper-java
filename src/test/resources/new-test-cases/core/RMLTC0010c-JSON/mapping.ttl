@@ -13,10 +13,10 @@
   rml:predicateObjectMap [
       rml:predicate ex:code;
       rml:objectMap [
-          rml:template "\\{\\{\\{ {$.['ISO 3166']} \\}\\}\\}";
+          rml:template "\\{\\{\\{ {$['ISO 3166']} \\}\\}\\}";
           rml:termType rml:Literal
         ]
     ];
   rml:subjectMap [
-      rml:template "http://example.com/{$.['Country Code']}/{$.Name}"
+      rml:template "http://example.com/{$['Country Code']}/{$.Name}"
     ] .

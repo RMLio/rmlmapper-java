@@ -135,19 +135,16 @@ public class MapperNewRMLCoreJSONTest extends TestCore {
     }
 
     @Test
-    @Disabled("Needs latest JSONPath IETF support")
     public void evaluate_new_0010a_JSON() {
         doMapping("./new-test-cases/core/RMLTC0010a-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0010a-JSON/output.nq");
     }
 
     @Test
-    @Disabled("Needs latest JSONPath IETF support")
     public void evaluate_new_0010b_JSON() {
         doMapping("./new-test-cases/core/RMLTC0010b-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0010b-JSON/output.nq");
     }
 
     @Test
-    @Disabled("Needs latest JSONPath IETF support")
     public void evaluate_new_0010c_JSON() {
         doMapping("./new-test-cases/core/RMLTC0010c-JSON/mapping.ttl", "./new-test-cases/core/RMLTC0010c-JSON/output.nq");
     }
