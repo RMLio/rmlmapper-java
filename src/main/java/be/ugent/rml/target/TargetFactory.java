@@ -274,8 +274,16 @@ public class TargetFactory {
 
         // Read compression
         try {
-            Term comp = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
-                    new NamedNode(NAMESPACES.RML2 + "compression"), null)).get(0);
+            // RML-IO gives rml:compression the domain rml:Target (RMLTTC0006b-e of
+            // kg-construct/rml-io); on the logical target, as before, it is still read
+            List<Term> compressions = new ArrayList<>();
+            for (Term t : targets) {
+                compressions.addAll(Utils.getObjectsFromQuads(rmlStore.getQuads(t,
+                        new NamedNode(NAMESPACES.RML2 + "compression"), null)));
+            }
+            compressions.addAll(Utils.getObjectsFromQuads(rmlStore.getQuads(logicalTarget,
+                    new NamedNode(NAMESPACES.RML2 + "compression"), null)));
+            Term comp = compressions.get(0);
             compression = switch (comp.getValue()) {
                 case NAMESPACES.COMP + "gzip" -> "gzip";
                 case NAMESPACES.RML2 + "gzip" -> "gzip";
